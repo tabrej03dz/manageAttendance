@@ -61,9 +61,9 @@
         <!-- /.content-header -->
 
         @yield('content')
+    </div>
 
-@include('dashboard.layout.footer')
-
+    @include('dashboard.layout.footer')
 
 
 
