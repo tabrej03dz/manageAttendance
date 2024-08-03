@@ -37,23 +37,37 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkIn(Request $request){
-        dd($request->all());
+//        dd($request->all());
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
         if ($record == null){
-            AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => 4.0]);
+            $attendanceRecord = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => 4.0]);
+            if ($request->file('image')){
+                $file = $request->file('image')->store('public/images');
+                $attendanceRecord->check_in_image = str_replace('public/', '', $file);
+                $attendanceRecord->save();
+            }
         }
         return redirect()->back()->with('success', 'checked in successfully');
     }
 
-    public function checkOut(){
+    public function checkOut(Request $request){
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
         if ($record){
             $duration = Carbon::now()->diff($record->check_in);
 //            dd($duration->format('%h:%i'));
             $record->update(['check_out' => Carbon::now(), 'duration' => $duration->format('%H:%I:%S')]);
         }else{
-            AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => 4.0]);
+            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => 4.0]);
+        }
+        if ($request->file('image')){
+            $file = $request->file('image')->store('public/images');
+            $record->check_out_image = str_replace('public/', '', $file);
+            $record->save();
         }
         return redirect()->back()->with('success', 'checked in successfully');
+    }
+
+    public function form($formType){
+        return view('dashboard.attendance.form', compact('formType'));
     }
 }

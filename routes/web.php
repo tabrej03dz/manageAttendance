@@ -27,10 +27,10 @@ Route::middleware('auth')->group(function (){
     Route::prefix('attendance')->name('attendance.')->group(function(){
         Route::get('/', [AttendanceRecordController::class, 'index'])->name('index');
         Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
-        Route::get('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
+        Route::post('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
+        Route::get('form/{form_type}', [AttendanceRecordController::class, 'form'])->name('form');
     });
 
-    Route::get('form', function(){
-       return view('dashboard.attendance.form');
-    })->name('form');
+
+
 });

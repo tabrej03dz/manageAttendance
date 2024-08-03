@@ -5,19 +5,15 @@
         <h1>Capture Image from Camera</h1>
         <video id="video" autoplay></video>
         <button id="snap">Capture</button>
-<<<<<<< HEAD
-        <canvas id="canvas"></canvas>
-=======
         <canvas id="canvas" style="display: none;"></canvas>
         <img id="imagePreview" style="display: none; max-width: 100%; height: auto;"/>
 
-        <form action="{{ route('attendance.check_in') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <form action="{{$formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
             @csrf
-            <input type="file" id="capturedImage" name="image">
+            <input type="file" id="capturedImage" name="image" style="display: none;">
             <button type="submit" id="upload">Upload</button>
         </form>
 
->>>>>>> 82dee7bcf3ab97a3374b310fe63ec60669556877
         <script>
             // Get access to the camera
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -34,15 +30,8 @@
             document.getElementById('snap').addEventListener('click', function() {
                 var canvas = document.getElementById('canvas');
                 var video = document.getElementById('video');
-<<<<<<< HEAD
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                // The image can be accessed via canvas.toDataURL() or further processed
-            });
-
-=======
                 var imagePreview = document.getElementById('imagePreview');
+
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
@@ -80,7 +69,6 @@
                     alert('Please capture an image first.');
                 }
             });
->>>>>>> 82dee7bcf3ab97a3374b310fe63ec60669556877
         </script>
     </div>
 @endsection
