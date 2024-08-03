@@ -27,6 +27,7 @@
                 canvas.getContext('2d').drawImage(video, 0, 0);
                 // The image can be accessed via canvas.toDataURL() or further processed
             });
+            mm
         </script>
     </div>
 @endsection
