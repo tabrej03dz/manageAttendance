@@ -1,19 +1,16 @@
 @extends('dashboard.layout.root')
 
 @section('content')
-    <div class="container mt-5">
-        <h1>Capture Image from Camera</h1>
-        <video id="video" autoplay></video>
-        <button id="snap">Capture</button>
-        <canvas id="canvas" style="display: none;"></canvas>
-        <img id="imagePreview" style="display: none; max-width: 100%; height: auto;"/>
+<script src="https://cdn.tailwindcss.com"></script>
 
-        <form action="{{$formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
-            @csrf
-            <input type="file" id="capturedImage" name="image" disabled>
-            <button type="submit" id="upload">Submit</button>
-        </form>
+<h1 class="flex justify-center font-serif text-blue-400 font-bold md:text-xl lg:text-2xl">Capture Image from Camera</h1>
+    <div class="container lg:mt-5 mt-2 flex justify-center">
+        <video id="video" autoplay class="mb-4 border-4 border-red-500 rounded-lg shadow-lg"></video>
+        
+        <canvas id="canvas" class="hidden"></canvas>
+        <img id="imagePreview" class="hidden max-w-full h-auto rounded-lg shadow-lg" />
 
+       
         <script>
             // Get access to the camera
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -71,4 +68,17 @@
             });
         </script>
     </div>
+    <div class="flex justify-center w-full">
+        <form action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm" class=" bg-white w-auto p-6 ">
+            @csrf
+            <div class="mb-4">
+                <input type="file" id="capturedImage" name="image" class="border-2 border-black p-2 rounded w-full">
+            </div>
+        </form>
+        <div class="flex justify-center gap-2 m-4">
+            <button type="submit" id="upload"  class="px-4 py-2 bg-green-400 rounded-full italic text-white hover:bg-green-500">Submit</button>
+            <button type="button" id="snap" class="px-4 py-2 bg-blue-400 rounded-full italic text-white hover:bg-blue-500">Capture</button>
+        </div>
+    </div>
+
 @endsection
