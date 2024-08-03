@@ -10,7 +10,7 @@
 
         <form action="{{$formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm">
             @csrf
-            <input type="file" id="capturedImage" name="image">
+            <input type="file" id="capturedImage" name="image" disabled>
             <button type="submit" id="upload">Submit</button>
         </form>
 
