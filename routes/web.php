@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,10 @@ Route::middleware('auth')->group(function (){
         Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::post('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('form/{form_type}', [AttendanceRecordController::class, 'form'])->name('form');
+    });
+
+    Route::prefix('employee')->name('employee.')->group(function (){
+        Route::get('/', [EmployeeController::class, 'index'])->name('index');
     });
 
 
