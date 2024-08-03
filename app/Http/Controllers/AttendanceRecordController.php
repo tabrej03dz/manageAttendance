@@ -36,7 +36,8 @@ class AttendanceRecordController extends Controller
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords'));
     }
 
-    public function checkIn(){
+    public function checkIn(Request $request){
+        dd($request->all());
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
         if ($record == null){
             AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => 4.0]);

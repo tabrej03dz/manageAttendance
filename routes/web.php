@@ -26,7 +26,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 Route::middleware('auth')->group(function (){
     Route::prefix('attendance')->name('attendance.')->group(function(){
         Route::get('/', [AttendanceRecordController::class, 'index'])->name('index');
-        Route::get('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
+        Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::get('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
     });
 
