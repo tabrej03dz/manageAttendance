@@ -39,7 +39,7 @@
                         <img src="{{asset('storage/'. $record?->check_in_image)}}" alt="">
                     </td>
                     <td>{{$record?->check_out?->format('h:i:s')}}</td>
-                    <td><img src="{{asset('storage/'. $record?->check_in_image)}}" alt=""></td>
+                    <td><img src="{{asset('storage/'. $record?->check_out_image)}}" alt=""></td>
                     <td>{{$record?->duration}}</td>
                 </tr>
             @endforeach
