@@ -21,12 +21,7 @@
             </div>
         </form>
 
-<<<<<<< HEAD
-
-=======
         </div>
-       
->>>>>>> 29c2cefa23ef60d48d317d8301e76baebd50697c
         <script>
             // Get access to the camera
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -84,6 +79,6 @@
             });
         </script>
     </div>
-    
+
 
 @endsection

@@ -6,12 +6,11 @@
             <thead class="thead-dark">
             <tr>
                 <th>#</th>
-                <th>Check-in Time</th>
-                <th>Check-in Image</th>
-                <th>Check-out Time</th>
-                <th>Check-out Image</th>
-                <th>Working Hours</th>
-                <th>Check-in/out</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Image</th>
+
             </tr>
             </thead>
             <tbody>
@@ -20,9 +19,9 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{$employee->name}}</td>
                     <td>{{$employee->email}}</td>
-                    <td>{{$record?->check_out?->format('h:i:s')}}</td>
-                    <td><img src="{{asset('storage/'. $record?->check_out_image)}}" alt=""></td>
-                    <td>{{$record?->duration}}</td>
+                    <td>{{$employee->phone}}</td>
+                    <td><img src="{{asset('storage/'. $employee->photo)}}" alt=""></td>
+                    <td></td>
                 </tr>
             @endforeach
             <!-- Add more rows as needed -->
