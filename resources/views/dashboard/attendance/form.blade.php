@@ -6,11 +6,11 @@
 <h1 class="flex justify-center font-serif text-blue-400 font-bold md:text-xl lg:text-2xl">Capture Image from Camera</h1>
     <div class="container lg:mt-5 mt-2 flex justify-center">
         <video id="video" autoplay class="mb-4 border-4 border-red-500 rounded-lg shadow-lg"></video>
-        
+
         <canvas id="canvas" class="hidden"></canvas>
         <img id="imagePreview" class="hidden max-w-full h-auto rounded-lg shadow-lg" />
 
-       
+
         <script>
             // Get access to the camera
             navigator.mediaDevices.getUserMedia({ video: true })
