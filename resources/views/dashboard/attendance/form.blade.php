@@ -9,8 +9,24 @@
 
         <canvas id="canvas" class="hidden"></canvas>
         <img id="imagePreview" class="hidden max-w-full h-auto rounded-lg shadow-lg" />
+        <div class="flex justify-center w-full">
+            <form action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm" class=" bg-white w-auto p-6 ">
+                @csrf
+                <div class="mb-4">
+                    <input type="file" id="capturedImage" name="image" class="border-2 border-black p-2 rounded w-full">
+                </div>
+            <div class="flex justify-center gap-2 m-4">
+                <input type="submit" id="upload" value="submit"  class="px-4 py-2 bg-green-400 rounded-full italic text-white hover:bg-green-500"/>
+                <button type="button" id="snap" class="px-4 py-2 bg-blue-400 rounded-full italic text-white hover:bg-blue-500">Capture</button>
+            </div>
+        </form>
 
+<<<<<<< HEAD
 
+=======
+        </div>
+       
+>>>>>>> 29c2cefa23ef60d48d317d8301e76baebd50697c
         <script>
             // Get access to the camera
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -68,17 +84,6 @@
             });
         </script>
     </div>
-    <div class="flex justify-center w-full">
-        <form action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm" class=" bg-white w-auto p-6 ">
-            @csrf
-            <div class="mb-4">
-                <input type="file" id="capturedImage" name="image" class="border-2 border-black p-2 rounded w-full">
-            </div>
-        </form>
-        <div class="flex justify-center gap-2 m-4">
-            <button type="submit" id="upload"  class="px-4 py-2 bg-green-400 rounded-full italic text-white hover:bg-green-500">Submit</button>
-            <button type="button" id="snap" class="px-4 py-2 bg-blue-400 rounded-full italic text-white hover:bg-blue-500">Capture</button>
-        </div>
-    </div>
+    
 
 @endsection
