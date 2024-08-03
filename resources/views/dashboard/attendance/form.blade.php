@@ -2,13 +2,31 @@
 
 @section('content')
     <div class="container mt-5">
-        <h2>Check In Form</h2>
-        <form>
-            <div class="form-group">
-                <label for="captureImage">Capture Image</label>
-                <input type="file" id="captureImage" capture="user" accept="image/*" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        <h1>Capture Image from Camera</h1>
+        <video id="video" autoplay></video>
+        <button id="snap">Capture</button>
+        <canvas id="canvas"></canvas>
+        <script>
+            // Get access to the camera
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    var video = document.getElementById('video');
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                });
+
+            // Capture the image when the button is clicked
+            document.getElementById('snap').addEventListener('click', function() {
+                var canvas = document.getElementById('canvas');
+                var video = document.getElementById('video');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                // The image can be accessed via canvas.toDataURL() or further processed
+            });
+        </script>
     </div>
 @endsection
