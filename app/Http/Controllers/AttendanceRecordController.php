@@ -42,7 +42,7 @@ class AttendanceRecordController extends Controller
                 $attendanceRecord->save();
             }
         }
-        return redirect()->back()->with('success', 'checked in successfully');
+        return redirect('attendance')->with('success', 'checked in successfully');
     }
 
     public function checkOut(Request $request){
