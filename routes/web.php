@@ -29,4 +29,8 @@ Route::middleware('auth')->group(function (){
         Route::get('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::get('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
     });
+
+    Route::get('form', function(){
+       return view('dashboard.attendance.form');
+    })->name('form');
 });

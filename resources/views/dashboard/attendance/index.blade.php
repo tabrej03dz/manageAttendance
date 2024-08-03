@@ -3,6 +3,12 @@
 @section('content')
     <div class="container mt-5">
         <h2 class="mb-4">{{$dates->first()->date->format('Y-M')}} Month</h2>
+        <form action="{{route('attendance.index')}}">
+            @csrf
+            <input type="date" name="start" placeholder="Start Date">
+            <input type="date" name="end" placeholder="End Date">
+            <input type="submit" value="Filter" class="btn btn-success">
+        </form>
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
             <tr>

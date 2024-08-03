@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class AttendanceRecordController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
 
         // Get the start and end of the current month
         $startOfMonth = Carbon::now()->startOfMonth();
