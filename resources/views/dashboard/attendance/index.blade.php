@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mt-5">
         <h2 class="mb-4 d-inline-block">{{ $dates->first()->date->format('Y-M') }} Month</h2>
-        <form action="{{ route('attendance.index') }}" class="d-inline-block ml-2">
+        <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" class="d-inline-block ml-2">
             @csrf
             <input type="date" name="start" placeholder="Start Date" class="form-control d-inline-block mb-2 mb-sm-0"
                 style="width: auto;">
@@ -14,7 +14,12 @@
         <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}"
             class="btn btn-primary ml-2 mb-2 mb-sm-0">Check In</a>
         <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
-            class="btn btn-danger ml-2 mb-2 mb-sm-0">Check Out</a>
+            class="btn btn-danger ml-2 mb-2 mb-sm-0">Check Out</a> <br>
+
+        @foreach($users as $u)
+            <a href="{{route('attendance.index', ['user' => $u?->id])}}" class="btn btn-success">{{ucfirst($u?->name)}}</a>
+        @endforeach
+
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead class="thead-dark">
@@ -39,13 +44,17 @@
                             <td>{{ $d->format('d-[D]') }}</td>
                             <td>{{ $record?->check_in->format('h:i:s') }}</td>
                             <td>
+                                @if($record?->check_in_image)
                                 <img src="{{ asset('storage/' . $record?->check_in_image) }}" alt="Check-in Image"
                                     class="img-fluid" style="max-width: 100px;">
+                                @endif
                             </td>
                             <td>{{ $record?->check_out?->format('h:i:s') }}</td>
                             <td>
+                                @if($record?->check_out_image)
                                 <img src="{{ asset('storage/' . $record?->check_out_image) }}" alt="Check-out Image"
                                     class="img-fluid" style="max-width: 100px;">
+                                @endif
                             </td>
                             <td>{{ $record?->duration }}</td>
                         </tr>

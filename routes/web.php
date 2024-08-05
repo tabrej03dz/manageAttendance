@@ -26,7 +26,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
 Route::middleware('auth')->group(function (){
     Route::prefix('attendance')->name('attendance.')->group(function(){
-        Route::get('/', [AttendanceRecordController::class, 'index'])->name('index');
+        Route::get('index/{user?}', [AttendanceRecordController::class, 'index'])->name('index');
         Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::post('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('form/{form_type}', [AttendanceRecordController::class, 'form'])->name('form');
@@ -34,6 +34,11 @@ Route::middleware('auth')->group(function (){
 
     Route::prefix('employee')->name('employee.')->group(function (){
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('create', [EmployeeController::class, 'create'])->name('create');
+        Route::post('store', [EmployeeController::class, 'store'])->name('store');
+        Route::get('edit/{employee}', [EmployeeController::class, 'edit'])->name('edit');
+        Route::post('update/{employee}', [EmployeeController::class, 'update'])->name('update');
+        Route::get('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
     });
 
 

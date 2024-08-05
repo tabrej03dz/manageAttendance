@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
+
 class AttendanceRecordController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request, User $user = null){
         if ($request->start){
             $startOfMonth = Carbon::parse($request->start);
         }else{
@@ -26,27 +28,30 @@ class AttendanceRecordController extends Controller
             $dates->push((object)[
                 'date' => $date->copy(),
             ]);
-            $attendanceRecords->orWhereDate('created_at', $date);
+            $attendanceRecords->orWhereDate('created_at', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
         }
         $attendanceRecords = $attendanceRecords->get();
-        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords'));
+        $users = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'super_admin');
+        })->get();
+        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user'));
     }
 
     public function checkIn(Request $request){
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
         if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => 4.0]);
+            $attendanceRecord = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => '04:00']);
             if ($request->file('image')){
                 $file = $request->file('image')->store('public/images');
                 $attendanceRecord->check_in_image = str_replace('public/', '', $file);
                 $attendanceRecord->save();
             }
         }
-        return redirect('attendance')->with('success', 'checked in successfully');
+        return redirect('attendance/index')->with('success', 'checked in successfully');
     }
 
     public function checkOut(Request $request){
-        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
+        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
             $duration = Carbon::now()->diff($record->check_in);
             $record->update(['check_out' => Carbon::now(), 'duration' => $duration->format('%H:%I:%S')]);
@@ -58,7 +63,7 @@ class AttendanceRecordController extends Controller
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
         }
-        return redirect('attendance')->with('success', 'checked in successfully');
+        return redirect('attendance/index')->with('success', 'checked in successfully');
     }
 
     public function form($formType){

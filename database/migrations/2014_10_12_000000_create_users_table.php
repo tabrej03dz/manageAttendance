@@ -20,7 +20,12 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->string('photo')->nullable();
+            $table->date('joining_date')->nullable();
             $table->string('designation')->nullable();
+            $table->text('responsibility')->nullable();
+            $table->decimal('salary')->nullable();
+            $table->time('check_in_time')->nullable();
+            $table->time('check_out_time')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
