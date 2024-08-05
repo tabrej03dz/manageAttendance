@@ -1,84 +1,98 @@
 @extends('dashboard.layout.root')
 
 @section('content')
-<script src="https://cdn.tailwindcss.com"></script>
+    <div class="container-fluid mt-3 mt-md-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <h1 class="text-center mb-4">Capture Image from Camera</h1>
 
-<h1 class="flex justify-center font-serif text-blue-400 font-bold md:text-xl lg:text-2xl">Capture Image from Camera</h1>
-    <div class="container lg:mt-5 mt-2 flex justify-center">
-        <video id="video" autoplay class="mb-4 border-4 border-red-500 rounded-lg shadow-lg"></video>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <video id="video" class="w-100 border border-secondary rounded" autoplay></video>
+                            <canvas id="canvas" class="d-none"></canvas>
+                            <img id="imagePreview" class="d-none img-fluid border border-secondary rounded mt-3"
+                                alt="Captured image" />
+                        </div>
 
-        <canvas id="canvas" class="hidden"></canvas>
-        <img id="imagePreview" class="hidden max-w-full h-auto rounded-lg shadow-lg" />
-        <div class="flex justify-center w-full">
-            <form action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}" method="POST" enctype="multipart/form-data" id="uploadForm" class=" bg-white w-auto p-6 ">
-                @csrf
-                <div class="mb-4">
-                    <input type="file" id="capturedImage" name="image" class="border-2 border-black p-2 rounded w-full">
+                        <div class="d-grid gap-2">
+                            <button id="snap" class="btn btn-primary">Capture</button>
+                        </div>
+
+                        <form
+                            action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}"
+                            method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
+                            @csrf
+                            <div class="mb-3 d-none">
+                                <input type="file" id="capturedImage" name="image" class="form-control">
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" id="upload" class="btn btn-success">Submit</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            <div class="flex justify-center gap-2 m-4">
-                <input type="submit" id="upload" value="submit"  class="px-4 py-2 bg-green-400 rounded-full italic text-white hover:bg-green-500"/>
-                <button type="button" id="snap" class="px-4 py-2 bg-blue-400 rounded-full italic text-white hover:bg-blue-500">Capture</button>
             </div>
-        </form>
-
         </div>
-        <script>
-            // Get access to the camera
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function(stream) {
-                    var video = document.getElementById('video');
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch(function(err) {
-                    console.log("An error occurred: " + err);
-                });
-
-            // Capture the image when the button is clicked
-            document.getElementById('snap').addEventListener('click', function() {
-                var canvas = document.getElementById('canvas');
-                var video = document.getElementById('video');
-                var imagePreview = document.getElementById('imagePreview');
-
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-
-                // Convert the image to a data URL
-                var dataURL = canvas.toDataURL('image/png');
-
-                // Display the captured image and hide the video
-                video.style.display = 'none';
-                imagePreview.style.display = 'block';
-                imagePreview.src = dataURL;
-
-                // Convert the data URL to a Blob object
-                fetch(dataURL)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        // Create a file from the Blob object
-                        var file = new File([blob], 'capturedImage.png', { type: 'image/png' });
-
-                        // Create a DataTransfer object and add the file to it
-                        var dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(file);
-
-                        // Set the file input's files property to the DataTransfer object's files
-                        var input = document.getElementById('capturedImage');
-                        input.files = dataTransfer.files;
-                    });
-            });
-
-            // Add a submit event listener to the form
-            document.getElementById('uploadForm').addEventListener('submit', function(e) {
-                var input = document.getElementById('capturedImage');
-                if (input.files.length === 0) {
-                    e.preventDefault();
-                    alert('Please capture an image first.');
-                }
-            });
-        </script>
     </div>
 
+    <script>
+        navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+            .then(function(stream) {
+                var video = document.getElementById('video');
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function(err) {
+                console.log("An error occurred: " + err);
+            });
 
+
+        document.getElementById('snap').addEventListener('click', function() {
+            var canvas = document.getElementById('canvas');
+            var video = document.getElementById('video');
+            var imagePreview = document.getElementById('imagePreview');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+
+            var dataURL = canvas.toDataURL('image/png');
+
+
+            video.classList.add('d-none');
+            imagePreview.classList.remove('d-none');
+            imagePreview.src = dataURL;
+
+
+            fetch(dataURL)
+                .then(res => res.blob())
+                .then(blob => {
+
+                    var file = new File([blob], 'capturedImage.png', {
+                        type: 'image/png'
+                    });
+
+
+                    var dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+
+
+                    var input = document.getElementById('capturedImage');
+                    input.files = dataTransfer.files;
+                });
+        });
+
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            var input = document.getElementById('capturedImage');
+            if (input.files.length === 0) {
+                e.preventDefault();
+                alert('Please capture an image first.');
+            }
+        });
+    </script>
 @endsection
