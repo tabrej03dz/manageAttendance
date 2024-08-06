@@ -26,6 +26,7 @@ return new class extends Migration
             $table->decimal('salary')->nullable();
             $table->time('check_in_time')->nullable();
             $table->time('check_out_time')->nullable();
+            $table->decimal('office_time', 4,2)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

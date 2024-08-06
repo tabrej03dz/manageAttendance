@@ -30,6 +30,7 @@
                         <th>Check-out Time</th>
                         <th>Check-out Image</th>
                         <th>Working Hours</th>
+                        <th>Day Type</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,8 +42,9 @@
                             });
                         @endphp
                         <tr>
+
                             <td>{{ $d->format('d-[D]') }}</td>
-                            <td>{{ $record?->check_in->format('h:i:s') }}</td>
+                            <td>{{ $record?->check_in?->format('h:i:s') }}</td>
                             <td>
                                 @if($record?->check_in_image)
                                 <img src="{{ asset('storage/' . $record?->check_in_image) }}" alt="Check-in Image"
@@ -57,6 +59,7 @@
                                 @endif
                             </td>
                             <td>{{ $record?->duration }}</td>
+                            <td>{{ $record?->day_type }}</td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -38,23 +38,42 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkIn(Request $request){
-        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->first();
+        $user = auth()->user();
+        $previousRecords = AttendanceRecord::where('user_id', $user->id)->where('created_at', '!=', today())->orderBy('created_at', 'desc')->take(3)->get();
+        $count = 0;
+        foreach ($previousRecords as $previous){
+            if ($previous->check_in?->format('H:i') > $user->check_in_time && $previous->day_type == 'half day'){
+                $count++;
+            }
+        }
+        $yesterday = AttendanceRecord::whereDate('created_at', Carbon::yesterday())->where('user_id', $user->id)->first();
+        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_in' => Carbon::now(), 'duration' => '04:00']);
+            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2]);
             if ($request->file('image')){
                 $file = $request->file('image')->store('public/images');
                 $attendanceRecord->check_in_image = str_replace('public/', '', $file);
-                $attendanceRecord->save();
             }
+            if ($count == 3){
+                $attendanceRecord->day_type = 'half day';
+                $attendanceRecord->duration = $user->office_time / 2;
+            }
+            $attendanceRecord->save();
+
+        }
+        if ($yesterday == null){
+            AttendanceRecord::create(['user_id' => $user->id, 'day_type' => 'leave', 'created_at' => Carbon::yesterday()]);
         }
         return redirect('attendance/index')->with('success', 'checked in successfully');
     }
 
     public function checkOut(Request $request){
+        $user = auth()->user();
+        $yesterday = AttendanceRecord::whereDate('created_at', Carbon::yesterday())->where('user_id', $user->id)->first();
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
-            $duration = Carbon::now()->diff($record->check_in);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $duration->format('%H:%I:%S')]);
+            $duration = Carbon::now()->diffInMinutes($record->check_in)/60;
+            $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time/2) : $duration]);
         }else{
             $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => 4.0]);
         }
@@ -62,6 +81,9 @@ class AttendanceRecordController extends Controller
             $file = $request->file('image')->store('public/images');
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
+        }
+        if ($yesterday == null){
+            AttendanceRecord::create(['user_id' => $user->id, 'day_type' => 'leave', 'created_at' => Carbon::yesterday()]);
         }
         return redirect('attendance/index')->with('success', 'checked in successfully');
     }

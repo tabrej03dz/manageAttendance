@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController extends Controller
 {
     public function index(){
-        $employees = User::all();
+        $employees = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'super_admin');
+        })->get();
         return view('dashboard.employee.index', compact('employees'));
     }
 
@@ -20,11 +22,15 @@ class EmployeeController extends Controller
     }
 
     public function store(EmployeeRequest $request){
-        $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password ')]);
+        $checkInTime = Carbon::parse($request->check_in_time);
+        $checkOutTime = Carbon::parse($request->check_out_time);
+        $officeTime = $checkInTime->diffInMinutes($checkOutTime);
+        $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password')]);
         if ($request->file('photo')){
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
+        $employee->office_time = $officeTime / 60;
         $employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
         $employee->save();
         return redirect('employee')->with('success', 'Employee Registered successfully');
