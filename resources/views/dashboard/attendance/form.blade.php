@@ -26,6 +26,8 @@
                             <div class="mb-3 d-none">
                                 <input type="file" id="capturedImage" name="image" class="form-control">
                             </div>
+                            <input type="text" name="latitude" id="latitude" placeholder="Latitude">
+                            <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             <div class="d-grid">
                                 <button type="submit" id="upload" class="btn btn-success">Submit</button>
                             </div>
@@ -94,5 +96,25 @@
                 alert('Please capture an image first.');
             }
         });
+    </script>
+
+
+    <script>
+        // Check if the Geolocation API is available
+        if (navigator.geolocation) {
+            // Get the current position
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                },
+                function(error) {
+                    console.error("Error getting geolocation: ", error.message);
+                },
+
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
     </script>
 @endsection

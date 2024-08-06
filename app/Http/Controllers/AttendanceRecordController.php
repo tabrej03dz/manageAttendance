@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
+use App\Models\Office;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -38,6 +39,24 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkIn(Request $request){
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+
+        // Office coordinates from the database
+        $office = Office::first();
+        $officeLatitude = $office->latitude;
+        $officeLongitude = $office->longitude;
+        $radius = $office->radius ?? '100';
+
+        // Calculate the distance
+        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+
+        // Check if the distance is within 100 meters
+        if (!($distance <= $radius)) {
+            return back()->with('error', 'you are '. $distance. ' of distance from office');
+        }
+
+
         $user = auth()->user();
         $previousRecords = AttendanceRecord::where('user_id', $user->id)->where('created_at', '!=', today())->orderBy('created_at', 'desc')->take(3)->get();
         $count = 0;
@@ -91,4 +110,33 @@ class AttendanceRecordController extends Controller
     public function form($formType){
         return view('dashboard.attendance.form', compact('formType'));
     }
+
+
+
+
+    private function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
+    {
+        $earthRadius = 6371000; // Earth radius in meters
+
+        // Convert latitude and longitude from degrees to radians
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+
+        // Haversine formula
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos($latFrom) * cos($latTo) *
+            sin($lonDelta / 2) * sin($lonDelta / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        // Distance in meters
+        $distance = $earthRadius * $c;
+
+        return $distance;
+    }
+
 }
