@@ -23,7 +23,7 @@
                             action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}"
                             method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
                             @csrf
-                            <div class="mb-3 ">
+                            <div class="mb-3 d-none">
                                 <input type="file" id="capturedImage" name="image" class="form-control">
 
                                 <input type="text" name="latitude" id="latitude" placeholder="Latitude">
