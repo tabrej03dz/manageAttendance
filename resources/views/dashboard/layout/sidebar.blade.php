@@ -52,6 +52,26 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{route('office.index')}}" class="nav-link">
+                        <i class="nav-icon fas fa-th"></i>
+                        <p>
+                            Office
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <form action="{{route('logout')}}" method="post">
+                        @csrf
+                        <button type="submit" class="nav-link"><i class="nav-icon fas fa-th"></i>
+                            <p>
+                                logout
+                            </p>
+                        </button>
+                    </form>
+                </li>
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

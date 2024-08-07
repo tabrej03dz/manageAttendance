@@ -23,11 +23,12 @@
                             action="{{ $formType == 'check_in' ? route('attendance.check_in') : route('attendance.check_out') }}"
                             method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
                             @csrf
-                            <div class="mb-3 d-none">
+                            <div class="mb-3 ">
                                 <input type="file" id="capturedImage" name="image" class="form-control">
+
+                                <input type="text" name="latitude" id="latitude" placeholder="Latitude">
+                                <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             </div>
-                            <input type="text" name="latitude" id="latitude" placeholder="Latitude">
-                            <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             <div class="d-grid">
                                 <button type="submit" id="upload" class="btn btn-success">Submit</button>
                             </div>
@@ -98,23 +99,40 @@
         });
     </script>
 
+    <form action="">
+
+    </form>
 
     <script>
-        // Check if the Geolocation API is available
-        if (navigator.geolocation) {
-            // Get the current position
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
+        window.onload = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
                     document.getElementById('latitude').value = position.coords.latitude;
                     document.getElementById('longitude').value = position.coords.longitude;
-                },
-                function(error) {
-                    console.error("Error getting geolocation: ", error.message);
-                },
-
-            );
-        } else {
-            console.error("Geolocation is not supported by this browser.");
+                }, function(error) {
+                    console.error("Error getting coordinates: ", error);
+                });
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+            }
         }
     </script>
+{{--    <script>--}}
+{{--        // Check if the Geolocation API is available--}}
+{{--        if (navigator.geolocation) {--}}
+{{--            // Get the current position--}}
+{{--            navigator.geolocation.getCurrentPosition(--}}
+{{--                function(position) {--}}
+{{--                    document.getElementById('latitude').value = position.coords.latitude;--}}
+{{--                    document.getElementById('longitude').value = position.coords.longitude;--}}
+{{--                },--}}
+{{--                function(error) {--}}
+{{--                    console.error("Error getting geolocation: ", error.message);--}}
+{{--                },--}}
+
+{{--            );--}}
+{{--        } else {--}}
+{{--            console.error("Geolocation is not supported by this browser.");--}}
+{{--        }--}}
+{{--    </script>--}}
 @endsection

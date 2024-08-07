@@ -1,5 +1,20 @@
 @extends('dashboard.layout.root')
 @section('content')
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary w-100">Check In</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger w-100">Check Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">

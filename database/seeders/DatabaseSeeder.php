@@ -22,10 +22,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $user = User::create(['name' => 'Super Admin', 'email' => 'super@admin.com', 'password' => Hash::make('password')]);
+        $office = Office::create(['name' => 'Main Office', 'latitude' => 26.494535801545734, 'longitude' => 80.27970222977625, 'radius' => 100]);
+
+        $user = User::create(['name' => 'Super Admin', 'email' => 'super@admin.com', 'password' => Hash::make('password'), 'office_id' => $office->id]);
         Role::create(['name' => 'super_admin']);
         $user->assignRole('super_admin');
-
-        Office::create(['name' => 'Main Office', 'latitude' => 26.494535801545734, 'longitude' => 80.27970222977625, 'radius' => 100]);
     }
 }

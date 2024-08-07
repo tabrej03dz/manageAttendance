@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\OfficeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,15 @@ Route::middleware('auth')->group(function (){
         Route::get('edit/{employee}', [EmployeeController::class, 'edit'])->name('edit');
         Route::post('update/{employee}', [EmployeeController::class, 'update'])->name('update');
         Route::get('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
+    });
+
+    Route::prefix('office')->name('office.')->group(function(){
+       Route::get('/', [OfficeController::class, 'index'])->name('index');
+       Route::get('create', [OfficeController::class, 'create'])->name('create');
+       Route::get('edit/{office}', [OfficeController::class, 'edit'])->name('edit');
+       Route::post('store', [OfficeController::class, 'store'])->name('store');
+       Route::post('update/{office}', [OfficeController::class, 'update'])->name('update');
+       Route::get('delete/{office}', [OfficeController::class, 'delete'])->name('delete');
     });
 
 

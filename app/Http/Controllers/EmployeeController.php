@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use App\Models\Office;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,7 +19,8 @@ class EmployeeController extends Controller
     }
 
     public function create(){
-        return view('dashboard.employee.create');
+        $offices = Office::all();
+        return view('dashboard.employee.create', compact('offices'));
     }
 
     public function store(EmployeeRequest $request){
@@ -37,7 +39,8 @@ class EmployeeController extends Controller
     }
 
     public function edit(User $employee){
-        return view('dashboard.employee.edit', compact('employee'));
+        $offices = Office::all();
+        return view('dashboard.employee.edit', compact('employee', 'offices'));
     }
 
     public function update(Request $request, User $employee){
@@ -55,9 +58,7 @@ class EmployeeController extends Controller
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
-        $employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
-        $employee->save();
-
+        $employee->joining_date =  $request->joining_date;
         return redirect('employee')->with('success', 'Record Updated successfully');
     }
 

@@ -75,6 +75,15 @@
                             <label for="check_out_time" class="form-label">Check Out Time</label>
                             <input type="time" class="form-control" id="check_out_time" name="check_out_time" required>
                         </div>
+                        <div class="col-md-6">
+                            <label for="office_id" class="form-label">Office</label>
+                            <select name="office_id" class="form-control" id="office_id">
+                                <option value="">Select Office</option>
+                                @foreach($offices as $office)
+                                    <option value="{{$office->id}}">{{$office->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Register</button>
                         </div>

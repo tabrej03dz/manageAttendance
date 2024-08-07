@@ -39,11 +39,12 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkIn(Request $request){
+        $user = auth()->user();
         $latitude = $request->latitude;
         $longitude = $request->longitude;
 
         // Office coordinates from the database
-        $office = Office::first();
+        $office = $user->office;
         $officeLatitude = $office->latitude;
         $officeLongitude = $office->longitude;
         $radius = $office->radius ?? '100';
@@ -52,49 +53,60 @@ class AttendanceRecordController extends Controller
         $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
 
         // Check if the distance is within 100 meters
-        if (!($distance <= $radius)) {
-            return back()->with('error', 'you are '. $distance. ' of distance from office');
-        }
+//        if (!($distance <= $radius)) {
+//            return back()->with('error', 'you are '. $distance. ' of distance from office');
+//        }
 
 
-        $user = auth()->user();
-        $previousRecords = AttendanceRecord::where('user_id', $user->id)->where('created_at', '!=', today())->orderBy('created_at', 'desc')->take(3)->get();
+
+        $previousRecords = AttendanceRecord::where('user_id', $user->id)
+            ->whereMonth('created_at', today()->month)
+            ->get();
         $count = 0;
         foreach ($previousRecords as $previous){
-            if ($previous->check_in?->format('H:i') > $user->check_in_time && $previous->day_type == 'half day'){
+            if ($previous->check_in?->format('H:i') >$user->check_in_time->addMinute(10)->format('H:i')){
                 $count++;
             }
         }
-        $yesterday = AttendanceRecord::whereDate('created_at', Carbon::yesterday())->where('user_id', $user->id)->first();
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2]);
+            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance]);
             if ($request->file('image')){
                 $file = $request->file('image')->store('public/images');
                 $attendanceRecord->check_in_image = str_replace('public/', '', $file);
             }
-            if ($count == 3){
+//            dd($request->check_in?->format('H:i'));
+            if ($count >= 2 && now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
                 $attendanceRecord->day_type = 'half day';
                 $attendanceRecord->duration = $user->office_time / 2;
             }
             $attendanceRecord->save();
-
-        }
-        if ($yesterday == null){
-            AttendanceRecord::create(['user_id' => $user->id, 'day_type' => 'leave', 'created_at' => Carbon::yesterday()]);
         }
         return redirect('attendance/index')->with('success', 'checked in successfully');
     }
 
     public function checkOut(Request $request){
         $user = auth()->user();
+
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+
+        // Office coordinates from the database
+        $office = $user->office;
+        $officeLatitude = $office->latitude;
+        $officeLongitude = $office->longitude;
+        $radius = $office->radius ?? '100';
+
+        // Calculate the distance
+        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+
         $yesterday = AttendanceRecord::whereDate('created_at', Carbon::yesterday())->where('user_id', $user->id)->first();
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in)/60;
-            $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time/2) : $duration]);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time)/2 : $duration, 'check_out_distance' => $distance]);
         }else{
-            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => 4.0]);
+            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => ($user->office_time)/2 , 'check_out_distance' => $distance]);
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');

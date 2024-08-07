@@ -31,6 +31,7 @@
                         <th>Check-out Image</th>
                         <th>Working Hours</th>
                         <th>Day Type</th>
+                        <th>Check-in Distance</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,6 +61,7 @@
                             </td>
                             <td>{{ $record?->duration }}</td>
                             <td>{{ $record?->day_type }}</td>
+                            <td>{{ $record?->check_in_distance }}</td>
                         </tr>
                     @endforeach
                 </tbody>

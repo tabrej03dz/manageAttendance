@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="joining_date" class="form-label">Joining Date</label>
-                            <input type="text" class="form-control" id="joining_date" name="joining_date" value="{{$employee->joining_date?? ''}}" required>
+                            <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{$employee->joining_date?? ''}}" required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -67,13 +67,22 @@
 
                         <div class="col-md-6">
                             <label for="check_in_time" class="form-label">Check In Time</label>
-                            <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{$employee->check_in_time ?? ''}}" required>
+                            <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{$employee->check_in_time ?? ''}}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="office_id" class="form-label">Select Office</label>
+                            <select name="office_id" class="form-control" id="office_id">
+                                <option value="">Select Office</option>
+                                @foreach($offices as $office)
+                                    <option value="{{$office->id}}" {{$office->id == $employee->office_id ? 'selected' : ''}}>{{$office->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="check_out_time" class="form-label">Check Out Time</label>
-                            <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{$employee->check_out_time ?? ''}}" required>
+                            <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{$employee->check_out_time ?? ''}}">
                         </div>
                         <div class="col-md-6">
                             <label for="password" class="form-label">Password</label>
