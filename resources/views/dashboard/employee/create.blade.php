@@ -41,17 +41,17 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="photo" class="form-label">Photo</label>
-                            <input type="file" class="form-control" id="photo" name="photo" required>
+                            <input type="file" class="form-control" id="photo" name="photo" >
                         </div>
                         <div class="col-md-6">
                             <label for="joining_date" class="form-label">Joining Date</label>
-                            <input type="date" class="form-control" id="joining_date" name="joining_date" required>
+                            <input type="date" class="form-control" id="joining_date" name="joining_date" >
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="designation" class="form-label">Designation</label>
-                            <input type="text" class="form-control" id="designation" name="designation" required>
+                            <input type="text" class="form-control" id="designation" name="designation" >
                         </div>
 
                         <div class="col-md-6">
@@ -67,13 +67,13 @@
 
                         <div class="col-md-6">
                             <label for="check_in_time" class="form-label">Check In Time</label>
-                            <input type="time" class="form-control" id="check_in_time" name="check_in_time" required>
+                            <input type="time" class="form-control" id="check_in_time" name="check_in_time" >
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="check_out_time" class="form-label">Check Out Time</label>
-                            <input type="time" class="form-control" id="check_out_time" name="check_out_time" required>
+                            <input type="time" class="form-control" id="check_out_time" name="check_out_time" >
                         </div>
                         <div class="col-md-6">
                             <label for="office_id" class="form-label">Office</label>

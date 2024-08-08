@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -27,6 +28,12 @@ class DatabaseSeeder extends Seeder
 
         $user = User::create(['name' => 'Super Admin', 'email' => 'super@admin.com', 'password' => Hash::make('password'), 'office_id' => $office->id, 'check_in_time' => '10:00:00', 'check_out_time' => '07:00:00']);
         Role::create(['name' => 'super_admin']);
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'employee']);
+
+        Permission::create('show records');
+        Permission::create(['name' => 'check-in']);
+        Permission::create(['name' => 'check-out']);
         $user->assignRole('super_admin');
     }
 }

@@ -45,13 +45,13 @@
                         </div>
                         <div class="col-md-6">
                             <label for="joining_date" class="form-label">Joining Date</label>
-                            <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{$employee->joining_date?? ''}}" required>
+                            <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{$employee->joining_date?? ''}}" >
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="designation" class="form-label">Designation</label>
-                            <input type="text" class="form-control" id="designation" name="designation" value="{{$employee->designation?? ''}}" required>
+                            <input type="text" class="form-control" id="designation" name="designation" value="{{$employee->designation?? ''}}" >
                         </div>
 
                         <div class="col-md-6">
