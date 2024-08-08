@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('day_type', ['half day', 'full_day','leave', 'holiday', '__'])->default('__');
             $table->decimal('check_in_distance', 6,2)->nullable();
             $table->decimal('check_out_distance', 6,2)->nullable();
-            $table->time('late')->nullable();
+            $table->integer('late')->nullable();
             $table->timestamps();
         });
     }

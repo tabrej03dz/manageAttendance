@@ -81,9 +81,12 @@ class AttendanceRecordController extends Controller
                 $attendanceRecord->check_in_image = str_replace('public/', '', $file);
             }
 //            dd($request->check_in?->format('H:i'));
-            if ($count >= 2 && now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
-                $attendanceRecord->day_type = 'half day';
-                $attendanceRecord->duration = $user->office_time / 2;
+            if (now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
+                $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
+                if ($count >= 2){
+                    $attendanceRecord->day_type = 'half day';
+                    $attendanceRecord->duration = $user->office_time / 2;
+                }
             }
             $attendanceRecord->save();
         }
