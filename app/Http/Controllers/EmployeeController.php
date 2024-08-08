@@ -44,7 +44,7 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request, User $employee){
-        $employee->update($request->except(['password', 'photo', 'joining_date']));
+        $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id]));
         if ($request->filled('password')){
             $employee->password = Hash::make($request->password);
         }
