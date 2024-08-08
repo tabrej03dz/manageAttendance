@@ -53,4 +53,7 @@ Route::middleware('auth')->group(function (){
 
 
 
+    Route::get('/userprofile', function(){
+        return view('dashboard.user.profile');
+    })->name('userprofile');
 });
