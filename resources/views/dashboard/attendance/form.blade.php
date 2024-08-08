@@ -87,7 +87,6 @@
                         type: 'image/png'
                     });
 
-
                     var dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
 

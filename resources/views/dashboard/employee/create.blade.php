@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="joining_date" class="form-label">Joining Date</label>
-                            <input type="text" class="form-control" id="joining_date" name="joining_date" required>
+                            <input type="date" class="form-control" id="joining_date" name="joining_date" required>
                         </div>
                     </div>
                     <div class="row mb-3">
