@@ -26,13 +26,12 @@ class EmployeeController extends Controller
     public function store(EmployeeRequest $request){
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
-        $officeTime = $checkInTime->diffInMinutes($checkOutTime);
         $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password')]);
         if ($request->file('photo')){
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
-        $employee->office_time = $officeTime / 60;
+        $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
         //$employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
         $employee->joining_date = $request->joining_date;
         $employee->save();

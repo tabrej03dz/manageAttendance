@@ -25,4 +25,11 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    public static function getTime($totalMinutes){
+        $hours = (int)($totalMinutes/60);
+        $minutes = $totalMinutes % 60;
+
+        return "$hours : $minutes";
+    }
 }

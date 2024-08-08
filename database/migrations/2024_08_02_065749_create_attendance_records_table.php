@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->dateTime('check_in')->nullable();
             $table->string('check_in_image')->nullable();
-            $table->decimal('duration', 8,2)->nullable();
+            $table->integer('duration')->nullable();
             $table->dateTime('check_out')->nullable();
             $table->string('check_out_image')->nullable();
             $table->enum('day_type', ['half day', 'full_day','leave', 'holiday', '__'])->default('__');

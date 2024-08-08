@@ -50,7 +50,7 @@
 
                             <td>{{ $d->format('d-[D]') }}</td>
                             <td>{{ $record?->check_in?->format('h:i:s') }}</td>
-                            <td>{{ (int)($record?->late/60) . ' : ' .$record?->late%60}}</td>
+                            <td>{{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}</td>
                             <td>
                                 @if($record?->check_in_image)
                                 <img src="{{ asset('storage/' . $record?->check_in_image) }}" alt="Check-in Image"
@@ -64,7 +64,7 @@
                                     class="img-fluid" style="max-width: 100px;">
                                 @endif
                             </td>
-                            <td>{{ $record?->duration }}</td>
+                            <td>{{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}</td>
                             <td>{{ $record?->day_type }}</td>
                             <td>{{ $record?->check_in_distance }}</td>
                             <td>{{ $record?->check_out_distance }}</td>
