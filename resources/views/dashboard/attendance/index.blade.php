@@ -28,6 +28,7 @@
                     <tr>
                         <th>Date</th>
                         <th>Check-in Time</th>
+                        <th>Late</th>
                         <th>Check-in Image</th>
                         <th>Check-out Time</th>
                         <th>Check-out Image</th>
@@ -49,6 +50,7 @@
 
                             <td>{{ $d->format('d-[D]') }}</td>
                             <td>{{ $record?->check_in?->format('h:i:s') }}</td>
+                            <td>{{ (int)($record?->late/60) . ' : ' .$record?->late%60}}</td>
                             <td>
                                 @if($record?->check_in_image)
                                 <img src="{{ asset('storage/' . $record?->check_in_image) }}" alt="Check-in Image"
