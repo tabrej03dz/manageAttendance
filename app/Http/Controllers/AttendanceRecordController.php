@@ -69,7 +69,7 @@ class AttendanceRecordController extends Controller
             ->get();
         $count = 0;
         foreach ($previousRecords as $previous){
-            if ($previous->check_in?->format('H:i') >$user->check_in_time->addMinute(10)->format('H:i')){
+            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinute(10)?->format('H:i')){
                 $count++;
             }
         }
