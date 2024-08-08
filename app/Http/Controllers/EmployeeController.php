@@ -26,7 +26,7 @@ class EmployeeController extends Controller
     public function store(EmployeeRequest $request){
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
-        $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password')]);
+        $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password'), 'office_id' => $request->office_id]);
         if ($request->file('photo')){
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);

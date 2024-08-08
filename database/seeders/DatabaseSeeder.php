@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'employee']);
 
-        Permission::create('show records');
+        Permission::create(['name' => 'show records']);
         Permission::create(['name' => 'check-in']);
         Permission::create(['name' => 'check-out']);
         $user->assignRole('super_admin');
