@@ -33,7 +33,8 @@ class EmployeeController extends Controller
             $employee->photo = str_replace('public/', '', $file);
         }
         $employee->office_time = $officeTime / 60;
-        $employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
+        //$employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
+        $employee->joining_date = $request->joining_date;
         $employee->save();
         return redirect('employee')->with('success', 'Employee Registered successfully');
     }
