@@ -6,6 +6,14 @@
             <div class="col-12 col-md-8 col-lg-6">
                 <h1 class="text-center mb-4">Capture Image from Camera</h1>
 
+                @if($errors->any())
+                    <ul>
+                        @foreach($errors->all() as $e)
+                            <li class="text-danger">{{$e}}</li>
+                        @endforeach
+                    </ul>
+                @endif
+
                 <div class="card">
                     <div class="card-body">
                         <div class="mb-3">
@@ -98,10 +106,6 @@
             }
         });
     </script>
-
-    <form action="">
-
-    </form>
 
     <script>
         window.onload = function() {

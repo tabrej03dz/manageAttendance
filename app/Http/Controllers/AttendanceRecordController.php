@@ -39,6 +39,11 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkIn(Request $request){
+        $request->validate([
+            'image' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ]);
         $user = auth()->user();
         $latitude = $request->latitude;
         $longitude = $request->longitude;

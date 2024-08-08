@@ -16,9 +16,11 @@
         <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
             class="btn btn-danger ml-2 mb-2 mb-sm-0">Check Out</a> <br>
 
-        @foreach($users as $u)
-            <a href="{{route('attendance.index', ['user' => $u?->id])}}" class="btn btn-success">{{ucfirst($u?->name)}}</a>
-        @endforeach
+        @role('super_admin')
+            @foreach($users as $u)
+                <a href="{{route('attendance.index', ['user' => $u?->id])}}" class="btn btn-success m-2">{{ucfirst($u?->name)}}</a>
+            @endforeach
+        @endrole
 
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
