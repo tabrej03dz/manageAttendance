@@ -75,7 +75,7 @@ class AttendanceRecordController extends Controller
         }
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time, 'check_in_distance' => $distance]);
+            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance]);
             if ($request->file('image')){
                 $file = $request->file('image')->store('public/images');
                 $attendanceRecord->check_in_image = str_replace('public/', '', $file);
@@ -133,25 +133,20 @@ class AttendanceRecordController extends Controller
     private function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
     {
         $earthRadius = 6371000; // Earth radius in meters
-
         // Convert latitude and longitude from degrees to radians
         $latFrom = deg2rad($latitudeFrom);
         $lonFrom = deg2rad($longitudeFrom);
         $latTo = deg2rad($latitudeTo);
         $lonTo = deg2rad($longitudeTo);
-
         // Haversine formula
         $latDelta = $latTo - $latFrom;
         $lonDelta = $lonTo - $lonFrom;
-
         $a = sin($latDelta / 2) * sin($latDelta / 2) +
-            cos($latFrom) * cos($latTo) *
-            sin($lonDelta / 2) * sin($lonDelta / 2);
+            cos($latFrom) * cos($latTo)
+            * sin($lonDelta / 2) * sin($lonDelta / 2);
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
         // Distance in meters
         $distance = $earthRadius * $c;
-
         return $distance;
     }
 

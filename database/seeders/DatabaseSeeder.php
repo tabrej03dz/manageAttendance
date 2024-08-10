@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'show records']);
         Permission::create(['name' => 'check-in']);
         Permission::create(['name' => 'check-out']);
+        Permission::create(['name' => 'show employee']);
+        Permission::create(['name' => 'show employee']);
         $user->assignRole('super_admin');
     }
 }

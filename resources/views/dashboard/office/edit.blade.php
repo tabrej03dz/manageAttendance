@@ -1,8 +1,9 @@
 @extends('dashboard.layout.root')
 @section('content')
-    <div class="container mt-5">
-        <h2>Edit</h2>
-        <form action="{{ route('office.update', ['office' => $office->id]) }}" method="POST">
+    <div class="content">
+        <div class="container-fluid">
+            <h2>Edit</h2>
+            <form action="{{ route('office.update', ['office' => $office->id]) }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="name">Office Name</label>
@@ -22,5 +23,6 @@
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
+        </div>
     </div>
 @endsection

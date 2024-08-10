@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +54,6 @@ Route::middleware('auth')->group(function (){
 
 
 
-    Route::get('/userprofile', function(){
-        return view('dashboard.user.profile');
-    })->name('userprofile');
+    Route::get('/userprofile', [HomeController::class, 'profile'])->name('userprofile');
+    Route::post('userPassword', [HomeController::class, 'changePassword'])->name('userPassword');
 });
