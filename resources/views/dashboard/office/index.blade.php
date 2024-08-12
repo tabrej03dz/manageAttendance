@@ -15,6 +15,7 @@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Radius</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
