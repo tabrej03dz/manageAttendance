@@ -39,6 +39,15 @@
                         </p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{route('attendance.day-wise')}}" class="nav-link">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>
+                            Attendance
+                        </p>
+                    </a>
+                </li>
                 @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{route('employee.index')}}" class="nav-link">

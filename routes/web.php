@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function (){
         Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::post('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('form/{form_type}', [AttendanceRecordController::class, 'form'])->name('form');
+        Route::get('day-wise', [AttendanceRecordController::class, 'dayWise'])->name('day-wise');
     });
 
     Route::prefix('employee')->name('employee.')->group(function (){

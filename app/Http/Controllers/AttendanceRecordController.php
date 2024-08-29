@@ -148,4 +148,9 @@ class AttendanceRecordController extends Controller
         return $distance;
     }
 
+    public function dayWise(){
+        $employees = User::all();
+//        dd($employees);
+        return view('dashboard.attendance.dayWise', compact('employees'));
+    }
 }
