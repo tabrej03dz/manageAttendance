@@ -3,6 +3,7 @@
 @section('content')
     <div class="content">
         <div class="container-fluid">
+            <h2 class="mb-4 d-inline-block">Employees</h2>
             <h2 class="mb-4 d-inline-block">{{ $dates->first()->date->format('Y-M') }} Month</h2>
             <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" method="GET" class="d-inline-block ml-2">
                 @csrf

@@ -155,7 +155,6 @@ class AttendanceRecordController extends Controller
         }else{
             $date = today();
         }
-//        dd($date);
         $employees = User::all();
 //        dd($employees);
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));

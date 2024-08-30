@@ -61,7 +61,6 @@
         @yield('content')
     </div>
 
-    @include('dashboard.layout.footer')
 
 
 
