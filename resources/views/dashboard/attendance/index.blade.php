@@ -55,7 +55,7 @@
                             <td>{{ $record?->check_out?->format('h:i:s A') }}</td>
                             <td>
                                 @if($record?->check_out_image)
-                                    <a href="{{asset('storage/' . $record->check_out_image) }}">
+                                    <a href="{{asset('storage/' . $record->check_out_image) }}" target="_blank">
                                         <img src="{{ asset('storage/' . $record->check_out_image) }}" alt="Check-out Image" class="img-fluid" style="max-width: 100px;">
                                     </a>
                                 @endif

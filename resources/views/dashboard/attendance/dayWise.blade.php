@@ -6,8 +6,9 @@
 {{--            <h2 class="mb-4 d-inline-block">{{ $dates->first()->date->format('Y-M') }} Month</h2>--}}
             <form action="{{ route('attendance.day-wise')}}" method="GET" class="d-inline-block ml-2">
                 @csrf
-                <input type="date" name="date" placeholder="Start Date" class="form-control d-inline-block mb-2 mb-sm-0" style="width: auto;">
+                <input type="date" name="date" placeholder="Date" class="form-control d-inline-block mb-2 mb-sm-0" style="width: auto;">
                 <input type="submit" value="Filter" class="btn btn-success mb-2 mb-sm-0">
+                <a href="{{route('attendance.day-wise')}}" class="btn btn-info ">Clear</a>
             </form>
 
             <div class="table-responsive mt-3">
@@ -30,7 +31,7 @@
                     <tbody>
                     @foreach ($employees as $employee)
                         @php
-                            $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)->whereDate('created_at', today())->first();
+                            $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)->whereDate('created_at', $date ?? today())->first();
                         @endphp
                         <tr >
                             <td>{{ $loop->iteration }}</td>
@@ -47,7 +48,7 @@
                             <td>{{ $record?->check_out?->format('h:i:s A') }}</td>
                             <td>
                                 @if($record?->check_out_image)
-                                    <a href="{{asset('storage/' . $record->check_out_image) }}">
+                                    <a href="{{asset('storage/' . $record->check_out_image) }}" target="_blank">
                                         <img src="{{ asset('storage/' . $record->check_out_image) }}" alt="Check-out Image" class="img-fluid" style="max-width: 100px;">
                                     </a>
                                 @endif
