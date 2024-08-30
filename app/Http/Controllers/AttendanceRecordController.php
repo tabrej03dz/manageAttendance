@@ -111,6 +111,7 @@ class AttendanceRecordController extends Controller
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
+//            dd($duration);
             $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time)/2 : $duration, 'check_out_distance' => $distance, 'day_type' => '__']);
         }else{
             $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => ($user->office_time)/2 , 'check_out_distance' => $distance]);
@@ -152,8 +153,9 @@ class AttendanceRecordController extends Controller
         if ($request->date){
             $date = $request->date;
         }else{
-            $date = '';
+            $date = today();
         }
+//        dd($date);
         $employees = User::all();
 //        dd($employees);
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));

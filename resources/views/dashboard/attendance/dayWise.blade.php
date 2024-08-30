@@ -31,7 +31,7 @@
                     <tbody>
                     @foreach ($employees as $employee)
                         @php
-                            $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)->whereDate('created_at', $date ?? today())->first();
+                            $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)->whereDate('created_at', $date)->first();
                         @endphp
                         <tr >
                             <td>{{ $loop->iteration }}</td>
