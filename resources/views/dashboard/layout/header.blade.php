@@ -118,4 +118,3 @@
     <!-- /.navbar -->
 
   @include('dashboard.layout.sidebar')
-

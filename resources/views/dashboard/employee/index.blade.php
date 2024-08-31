@@ -28,7 +28,7 @@
                         <td>{{$employee->email}}</td>
                         <td>{{$employee->phone}}</td>
                         <td><img src="{{asset('storage/'. $employee->photo)}}" alt="" style="width: 100px;"></td>
-                        <td>{{$employee->office->name}}</td>
+                        <td>{{$employee->office?->name}}</td>
                         <td>
                             <a href="{{route('employee.edit', ['employee' => $employee->id])}}" class="btn btn-primary">Edit</a>
                             <a href="{{route('employee.delete', ['employee' => $employee->id])}}" class="btn btn-danger">Delete</a>
