@@ -39,7 +39,7 @@
                         </p>
                     </a>
                 </li>
-                @role('admin|super_admin')
+{{--                @role('admin|super_admin')--}}
                 <li class="nav-item">
                     <a href="{{route('attendance.day-wise')}}" class="nav-link">
                         <i class="nav-icon fas fa-calendar-alt"></i>
@@ -48,7 +48,7 @@
                         </p>
                     </a>
                 </li>
-                @endrole
+{{--                @endrole--}}
                 @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{route('employee.index')}}" class="nav-link">

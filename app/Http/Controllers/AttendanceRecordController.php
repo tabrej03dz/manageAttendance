@@ -155,7 +155,11 @@ class AttendanceRecordController extends Controller
         }else{
             $date = today();
         }
-        $employees = User::all();
+        if (auth()->user()->hasRole('super_admin|admin')){
+            $employees = User::all();
+        }else{
+            $employees = User::where('id', auth()->user()->id)->get();
+        }
 //        dd($employees);
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));
     }
