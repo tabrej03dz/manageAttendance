@@ -23,10 +23,11 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::middleware('auth')->group(function (){
 //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
 
-Route::middleware('auth')->group(function (){
+
     Route::prefix('attendance')->name('attendance.')->group(function(){
         Route::get('index/{user?}', [AttendanceRecordController::class, 'index'])->name('index');
         Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');

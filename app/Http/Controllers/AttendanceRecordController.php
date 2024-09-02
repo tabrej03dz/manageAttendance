@@ -74,11 +74,8 @@ class AttendanceRecordController extends Controller
         }
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance, 'day_type' => 'half day']);
-            if ($request->file('image')){
-                $file = $request->file('image')->store('public/images');
-                $attendanceRecord->check_in_image = str_replace('public/', '', $file);
-            }
+            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance, 'day_type' => '__']);
+
 //            dd($request->check_in?->format('H:i'));
             if (now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
                 $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
@@ -86,6 +83,10 @@ class AttendanceRecordController extends Controller
                     $attendanceRecord->day_type = 'half day';
                     $attendanceRecord->duration = $user->office_time;
                 }
+            }
+            if ($request->file('image')){
+                $file = $request->file('image')->store('public/images');
+                $attendanceRecord->check_in_image = str_replace('public/', '', $file);
             }
             $attendanceRecord->save();
         }
