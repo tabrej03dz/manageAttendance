@@ -38,59 +38,151 @@ class AttendanceRecordController extends Controller
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user'));
     }
 
-    public function checkIn(Request $request){
+//    public function checkIn(Request $request){
+//        $request->validate([
+//            'image' => 'required',
+//            'latitude' => 'required',
+//            'longitude' => 'required',
+//        ]);
+//        $user = auth()->user();
+//        $latitude = $request->latitude;
+//        $longitude = $request->longitude;
+//
+//        // Office coordinates from the database
+//        $office = $user->office;
+//        $officeLatitude = $office->latitude;
+//        $officeLongitude = $office->longitude;
+//        $radius = $office->radius ?? '100';
+//
+//        // Calculate the distance
+//        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+//
+//        // Check if the distance is within 100 meters
+////        if (!($distance <= $radius)) {
+////            return back()->with('error', 'you are '. $distance. ' of distance from office');
+////        }
+//
+//
+//        $previousRecords = AttendanceRecord::where('user_id', $user->id)
+//            ->whereMonth('created_at', today()->month)
+//            ->get();
+//        $count = 0;
+//        foreach ($previousRecords as $previous){
+//            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinute(10)?->format('H:i')){
+//                $count++;
+//            }
+//        }
+//        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
+//        if ($record == null){
+//            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance, 'day_type' => '__']);
+//
+////            dd($request->check_in?->format('H:i'));
+//            if (now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
+//                $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
+//                if ($count >= 2){
+//                    $attendanceRecord->day_type = 'half day';
+//                    $attendanceRecord->duration = $user->office_time;
+//                }
+//            }
+//            if ($request->file('image')){
+//                $file = $request->file('image')->store('public/images');
+//                $attendanceRecord->check_in_image = str_replace('public/', '', $file);
+//            }
+//            $attendanceRecord->save();
+//        }
+//        return redirect('attendance/index')->with('success', 'checked in successfully');
+//    }
+
+
+    public function checkIn(Request $request) {
+        // Validate the incoming request
         $request->validate([
-            'image' => 'required',
-            'latitude' => 'required',
-            'longitude' => 'required',
+            'image' => '',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
         ]);
+
+        // Get the authenticated user
         $user = auth()->user();
+
+        // Capture latitude and longitude from the request
         $latitude = $request->latitude;
         $longitude = $request->longitude;
 
-        // Office coordinates from the database
+        // Fetch the office coordinates and radius from the database
         $office = $user->office;
         $officeLatitude = $office->latitude;
         $officeLongitude = $office->longitude;
-        $radius = $office->radius ?? '100';
+        $radius = $office->radius ?? 100; // Default to 100 meters if no radius is set
 
-        // Calculate the distance
+        // Calculate the distance using Haversine formula
         $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
 
-        // Check if the distance is within 100 meters
-//        if (!($distance <= $radius)) {
-//            return back()->with('error', 'you are '. $distance. ' of distance from office');
+
+
+        // Check if the distance is within the allowed radius
+//        if ($distance > $radius) {
+//            return back()->with('error', 'You are ' . round($distance, 2) . ' meters away from the office.');
 //        }
 
-
+        // Fetch previous attendance records for the current month
         $previousRecords = AttendanceRecord::where('user_id', $user->id)
             ->whereMonth('created_at', today()->month)
             ->get();
+
+        // Initialize late count
         $count = 0;
-        foreach ($previousRecords as $previous){
-            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinute(10)?->format('H:i')){
+
+        // Check for late entries in the previous records
+        foreach ($previousRecords as $previous) {
+            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinutes(10)?->format('H:i')) {
                 $count++;
             }
         }
-        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
-        if ($record == null){
-            $attendanceRecord = AttendanceRecord::create(['user_id' => $user->id, 'check_in' => Carbon::now(), 'duration' => $user->office_time/2, 'check_in_distance' => $distance, 'day_type' => '__']);
 
-//            dd($request->check_in?->format('H:i'));
-            if (now()->format('H:i') > $user->check_in_time->addMinute(10)->format('H:i')){
+        // Fetch today's attendance record
+        $record = AttendanceRecord::whereDate('created_at', Carbon::today())
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($record === null) {
+            // Create a new attendance record
+            $attendanceRecord = AttendanceRecord::create([
+                'user_id' => $user->id,
+                'check_in' => Carbon::now(),
+                'duration' => $user->office_time / 2, // Set initial duration
+                'check_in_distance' => $distance,
+                'day_type' => '__', // Initialize day type
+            ]);
+
+            // Check if the user is late
+            if (now()->format('H:i') > $user->check_in_time->addMinutes(10)->format('H:i')) {
                 $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
-                if ($count >= 2){
+
+                // If late more than twice, mark as half-day
+                if ($count >= 2) {
                     $attendanceRecord->day_type = 'half day';
                     $attendanceRecord->duration = $user->office_time;
                 }
             }
-            if ($request->file('image')){
-                $file = $request->file('image')->store('public/images');
-                $attendanceRecord->check_in_image = str_replace('public/', '', $file);
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                try {
+                    $file = $request->file('image')->store('public/images');
+                    $attendanceRecord->check_in_image = str_replace('public/', '', $file);
+                } catch (\Exception $e) {
+                    Log::error('Image upload failed: ' . $e->getMessage());
+                    return back()->with('error', 'Failed to upload image. Please try again.');
+                }
             }
+
+            // Save the attendance record
             $attendanceRecord->save();
         }
-        return redirect('attendance/index')->with('success', 'checked in successfully');
+
+        // Redirect to attendance index with success message
+        return redirect('attendance/index')->with('success', 'Checked in successfully');
     }
 
 
