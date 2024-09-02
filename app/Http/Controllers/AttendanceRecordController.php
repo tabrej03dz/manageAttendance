@@ -207,7 +207,8 @@ class AttendanceRecordController extends Controller
 //            dd($duration);
             $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time)/2 : $duration, 'check_out_distance' => $distance, 'day_type' => '__']);
         }else{
-            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => ($user->office_time)/2 , 'check_out_distance' => $distance]);
+            $duration = Carbon::now()->diffInMinutes($record->check_in);
+            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $distance]);
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');
