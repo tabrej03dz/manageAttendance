@@ -205,7 +205,7 @@ class AttendanceRecordController extends Controller
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
 //            dd($duration);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $record->day_type == 'half day' ? ($user->office_time)/2 : $duration, 'check_out_distance' => $distance, 'day_type' => '__']);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $distance, 'day_type' => '__']);
         }else{
             $duration = Carbon::now()->diffInMinutes($record->check_in);
             $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $distance]);
