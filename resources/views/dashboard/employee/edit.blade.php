@@ -79,6 +79,14 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label for="designation" class="form-label">Designation</label>
+                                <select name="role" id="" class="form-control">
+                                    <option value="">Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">

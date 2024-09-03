@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController extends Controller
 {
     public function index(){
-        $employees = User::whereDoesntHave('roles', function($query) {
-            $query->where('name', 'super_admin');
-        })->get();
+        $employees = User::all();
         return view('dashboard.employee.index', compact('employees'));
     }
 
@@ -35,6 +33,11 @@ class EmployeeController extends Controller
         //$employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
         $employee->joining_date = $request->joining_date;
         $employee->save();
+        if ($request->role){
+            $employee->assignRole($request->role);
+        }else{
+            $employee->assignRole('employee');
+        }
         return redirect('employee')->with('success', 'Employee Registered successfully');
     }
 
@@ -59,6 +62,10 @@ class EmployeeController extends Controller
             $employee->photo = str_replace('public/', '', $file);
         }
         $employee->joining_date =  $request->joining_date;
+        if ($request->role){
+            $employee->assignRole($request->role);
+        }
+        $employee->save();
         return redirect('employee')->with('success', 'Record Updated successfully');
     }
 

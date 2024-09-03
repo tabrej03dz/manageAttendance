@@ -171,6 +171,7 @@ class AttendanceRecordController extends Controller
                 try {
                     $file = $request->file('image')->store('public/images');
                     $attendanceRecord->check_in_image = str_replace('public/', '', $file);
+                    $attendanceRecord->save();
                 } catch (\Exception $e) {
                     Log::error('Image upload failed: ' . $e->getMessage());
                     return back()->with('error', 'Failed to upload image. Please try again.');
@@ -179,6 +180,10 @@ class AttendanceRecordController extends Controller
 
             // Save the attendance record
             $attendanceRecord->save();
+            if (!$attendanceRecord->check_in_image){
+                $attendanceRecord->delete();
+                return back()->with('error', 'Failed to Check-In! try again');
+            }
         }
 
         // Redirect to attendance index with success message
