@@ -89,18 +89,18 @@
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
             for (var i = 0; i < data.length; i += 4) {
-                // Apply brightness
-                data[i] = data[i] * 1.6; // Red
-                data[i + 1] = data[i + 1] * 1.6; // Green
-                data[i + 2] = data[i + 2] * 1.6; // Blue
+                // Adjust brightness
+                data[i] = data[i] * 1.0; // Red
+                data[i + 1] = data[i + 1] * 1.0; // Green
+                data[i + 2] = data[i + 2] * 1.0; // Blue
 
-                // Apply contrast (lower value)
-                var factor = 0.9; // Decrease the contrast
+                // Adjust contrast (1.1 from CSS)
+                var factor = 1.1; // Increase the contrast
                 data[i] = ((data[i] - 128) * factor) + 128; // Red
                 data[i + 1] = ((data[i + 1] - 128) * factor) + 128; // Green
                 data[i + 2] = ((data[i + 2] - 128) * factor) + 128; // Blue
 
-                // Apply saturation (lower value)
+                // Adjust saturation (1.2 from CSS)
                 var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
                 data[i] = avg + (data[i] - avg) * 1.2; // Red
                 data[i + 1] = avg + (data[i + 1] - avg) * 1.2; // Green
