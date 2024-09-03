@@ -55,6 +55,11 @@
         .beauty-filter {
             filter: brightness(1.6) contrast(1.4) saturate(1.4) sepia(0.2) hue-rotate(10deg) blur(0px);
         }
+
+        /* Apply the same filter styles to canvas */
+        .canvas-beauty-filter {
+            filter: brightness(1.6) contrast(1.4) saturate(1.4) sepia(0.2) hue-rotate(10deg) blur(0px);
+        }
     </style>
 
     <script>
@@ -85,7 +90,7 @@
             context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
             context.restore();
 
-            // Apply the same beauty filter to the canvas as to the video
+            // Apply the same beauty filter to the canvas
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             var data = imageData.data;
             for (var i = 0; i < data.length; i += 4) {
@@ -93,6 +98,17 @@
                 data[i] = data[i] * 1.6; // Red
                 data[i + 1] = data[i + 1] * 1.6; // Green
                 data[i + 2] = data[i + 2] * 1.6; // Blue
+
+                // Apply contrast
+                data[i] = ((data[i] - 128) * 1.4) + 128; // Red
+                data[i + 1] = ((data[i + 1] - 128) * 1.4) + 128; // Green
+                data[i + 2] = ((data[i + 2] - 128) * 1.4) + 128; // Blue
+
+                // Apply saturation
+                var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg + (data[i] - avg) * 1.4; // Red
+                data[i + 1] = avg + (data[i + 1] - avg) * 1.4; // Green
+                data[i + 2] = avg + (data[i + 2] - avg) * 1.4; // Blue
             }
             context.putImageData(imageData, 0, 0);
 
