@@ -18,11 +18,9 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <video id="video" class="w-100 border border-secondary rounded mirror beauty-filter"
-                                    autoplay></video>
+                                <video id="video" class="w-100 border border-secondary rounded mirror beauty-filter" autoplay></video>
                                 <canvas id="canvas" class="d-none"></canvas>
-                                <img id="imagePreview" class="d-none img-fluid border border-secondary rounded mt-3"
-                                    alt="Captured image" />
+                                <img id="imagePreview" class="d-none img-fluid border border-secondary rounded mt-3" alt="Captured image" />
                             </div>
 
                             <div class="d-grid gap-2">
@@ -35,7 +33,6 @@
                                 @csrf
                                 <div class="mb-3 d-none">
                                     <input type="file" id="capturedImage" name="image" class="form-control">
-
                                     <input type="text" name="latitude" id="latitude" placeholder="Latitude">
                                     <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                                 </div>
@@ -60,7 +57,6 @@
         }
     </style>
 
-
     <script>
         navigator.mediaDevices.getUserMedia({
                 video: true
@@ -78,10 +74,27 @@
             var canvas = document.getElementById('canvas');
             var video = document.getElementById('video');
             var imagePreview = document.getElementById('imagePreview');
+            var context = canvas.getContext('2d');
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            // Apply mirror effect manually
+            context.save();
+            context.scale(-1, 1);
+            context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            context.restore();
+
+            // Apply the same beauty filter to the canvas as to the video
+            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            var data = imageData.data;
+            for (var i = 0; i < data.length; i += 4) {
+                // Apply brightness
+                data[i] = data[i] * 1.6; // Red
+                data[i + 1] = data[i + 1] * 1.6; // Green
+                data[i + 2] = data[i + 2] * 1.6; // Blue
+            }
+            context.putImageData(imageData, 0, 0);
 
             var dataURL = canvas.toDataURL('image/png');
 
