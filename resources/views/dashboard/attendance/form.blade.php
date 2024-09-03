@@ -24,7 +24,7 @@
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button id="snap" class="btn btn-primary">Capture</button>
+                                <button id="snap" class="btn btn-primary btn-full">Capture</button>
                             </div>
 
                             <form
@@ -37,7 +37,7 @@
                                     <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                                 </div>
                                 <div class="d-grid">
-                                    <button type="submit" id="upload" class="btn btn-success">Submit</button>
+                                    <button type="submit" id="upload" class="btn btn-success btn-full">Submit</button>
                                 </div>
                             </form>
                         </div>
@@ -50,6 +50,20 @@
     <style>
         .mirror {
             transform: scaleX(-1);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 0.75rem 1.25rem;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .btn-full {
+                width: 100%;
+                padding: 1rem; /* Slightly larger padding on mobile for better touch target */
+                font-size: 1.125rem; /* Larger font size on mobile for better readability */
+            }
         }
     </style>
 

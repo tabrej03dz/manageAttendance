@@ -4,23 +4,23 @@
     <div class="content">
         <div class="container-fluid p-4">
             <!-- Header Section -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Employees</h2>
-                <h2 class="mb-0">{{ $dates->first()->date->format('Y-M') }} Month</h2>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+                <h2 class="mb-2 mb-md-0">Employees</h2>
+                <h2 class="mb-2 mb-md-0">{{ $dates->first()->date->format('Y-M') }} Month</h2>
             </div>
 
             <!-- Filter and Action Buttons -->
             <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
                 <div class="col-12 col-md-6 mb-2">
-                    <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" method="GET" class="d-flex flex-wrap">
+                    <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" method="GET" class="d-flex flex-column flex-md-row">
                         @csrf
-                        <input type="date" name="start" placeholder="Start Date" class="form-control mb-2 mr-2" style="flex: 1; padding: 0.5rem; border-radius: 0.375rem;">
-                        <input type="date" name="end" placeholder="End Date" class="form-control mb-2 mr-2" style="flex: 1; padding: 0.5rem; border-radius: 0.375rem;">
-                        <input type="submit" value="Filter" class="btn btn-success text-white mb-2 mr-2">
+                        <input type="date" name="start" placeholder="Start Date" class="form-control mb-2 mr-md-2" style="flex: 1;">
+                        <input type="date" name="end" placeholder="End Date" class="form-control mb-2 mr-md-2" style="flex: 1;">
+                        <input type="submit" value="Filter" class="btn btn-success text-white mb-2">
                     </form>
                 </div>
-                <div class="col-12 col-md-6 mb-2 text-md-right">
-                    <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary text-white mb-2 mr-2">Check In</a>
+                <div class="col-12 col-md-6 text-center text-md-right">
+                    <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary text-white mb-2 mb-md-0 mr-md-2">Check In</a>
                     <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger text-white mb-2">Check Out</a>
                 </div>
             </div>
@@ -41,7 +41,7 @@
             <!-- Attendance Table -->
             <div class="table-responsive mt-3">
                 <table class="table table-striped table-bordered">
-                    <thead class="thead-dark sticky top-0 z-10 bg-white">
+                    <thead class="thead-dark sticky-top bg-white">
                         <tr>
                             <th>Date</th>
                             <th>Check-in Time</th>
@@ -70,7 +70,7 @@
                                 <td>
                                     @if ($record?->check_in_image)
                                         <a href="{{ asset('storage/' . $record->check_in_image) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $record->check_in_image) }}" alt="Check-in Image" class="img-fluid" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
+                                            <img src="{{ asset('storage/' . $record->check_in_image) }}" alt="Check-in Image" class="img-fluid" style="max-width: 100px; height: auto; object-fit: cover; border-radius: 0.375rem;">
                                         </a>
                                     @endif
                                 </td>
@@ -78,7 +78,7 @@
                                 <td>
                                     @if ($record?->check_out_image)
                                         <a href="{{ asset('storage/' . $record->check_out_image) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $record->check_out_image) }}" alt="Check-out Image" class="img-fluid" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
+                                            <img src="{{ asset('storage/' . $record->check_out_image) }}" alt="Check-out Image" class="img-fluid" style="max-width: 100px; height: auto; object-fit: cover; border-radius: 0.375rem;">
                                         </a>
                                     @endif
                                 </td>
