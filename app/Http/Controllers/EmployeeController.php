@@ -12,7 +12,13 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController extends Controller
 {
     public function index(){
-        $employees = User::all();
+        $employees = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'super_admin');
+        })->get();
+        foreach ($employees as $employee){
+            $employee->assignRole('employee');
+        }
+        dd('employee role assigned successfully');
         return view('dashboard.employee.index', compact('employees'));
     }
 
