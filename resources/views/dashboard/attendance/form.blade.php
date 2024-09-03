@@ -53,7 +53,7 @@
         }
 
         .beauty-filter {
-            filter: brightness(1.6) contrast(1.1) saturate(1.2) sepia(0.2) hue-rotate(10deg) blur(0px);
+            filter: brightness(1.0) contrast(1.1) saturate(1.2) sepia(0.2) hue-rotate(10deg) blur(0px);
         }
     </style>
 
