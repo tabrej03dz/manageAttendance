@@ -53,12 +53,7 @@
         }
 
         .beauty-filter {
-            filter: brightness(1.6) contrast(1.4) saturate(1.4) sepia(0.2) hue-rotate(10deg) blur(0px);
-        }
-
-        /* Apply the same filter styles to canvas */
-        .canvas-beauty-filter {
-            filter: brightness(1.6) contrast(1.4) saturate(1.4) sepia(0.2) hue-rotate(10deg) blur(0px);
+            filter: brightness(1.6) contrast(1.1) saturate(1.2) sepia(0.2) hue-rotate(10deg) blur(0px);
         }
     </style>
 
@@ -99,16 +94,17 @@
                 data[i + 1] = data[i + 1] * 1.6; // Green
                 data[i + 2] = data[i + 2] * 1.6; // Blue
 
-                // Apply contrast
-                data[i] = ((data[i] - 128) * 1.4) + 128; // Red
-                data[i + 1] = ((data[i + 1] - 128) * 1.4) + 128; // Green
-                data[i + 2] = ((data[i + 2] - 128) * 1.4) + 128; // Blue
+                // Apply contrast (lower value)
+                var factor = 0.9; // Decrease the contrast
+                data[i] = ((data[i] - 128) * factor) + 128; // Red
+                data[i + 1] = ((data[i + 1] - 128) * factor) + 128; // Green
+                data[i + 2] = ((data[i + 2] - 128) * factor) + 128; // Blue
 
-                // Apply saturation
+                // Apply saturation (lower value)
                 var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = avg + (data[i] - avg) * 1.4; // Red
-                data[i + 1] = avg + (data[i + 1] - avg) * 1.4; // Green
-                data[i + 2] = avg + (data[i + 2] - avg) * 1.4; // Blue
+                data[i] = avg + (data[i] - avg) * 1.2; // Red
+                data[i + 1] = avg + (data[i + 1] - avg) * 1.2; // Green
+                data[i + 2] = avg + (data[i + 2] - avg) * 1.2; // Blue
             }
             context.putImageData(imageData, 0, 0);
 
