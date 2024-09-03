@@ -7,10 +7,10 @@
                 <div class="col-12 col-md-8 col-lg-6">
                     <h1 class="text-center mb-4">Capture Image from Camera</h1>
 
-                    @if($errors->any())
+                    @if ($errors->any())
                         <ul>
-                            @foreach($errors->all() as $e)
-                                <li class="text-danger">{{$e}}</li>
+                            @foreach ($errors->all() as $e)
+                                <li class="text-danger">{{ $e }}</li>
                             @endforeach
                         </ul>
                     @endif
@@ -18,7 +18,8 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <video id="video" class="w-100 border border-secondary rounded" autoplay></video>
+                                <video id="video" class="w-100 border border-secondary rounded mirror beauty-filter"
+                                    autoplay></video>
                                 <canvas id="canvas" class="d-none"></canvas>
                                 <img id="imagePreview" class="d-none img-fluid border border-secondary rounded mt-3"
                                     alt="Captured image" />
@@ -49,6 +50,17 @@
         </div>
     </div>
 
+    <style>
+        .mirror {
+            transform: scaleX(-1);
+        }
+
+        .beauty-filter {
+            filter: brightness(1.6) contrast(1.4) saturate(1.6) sepia(0.2) hue-rotate(10deg) blur(0px);
+        }
+    </style>
+
+
     <script>
         navigator.mediaDevices.getUserMedia({
                 video: true
@@ -62,7 +74,6 @@
                 console.log("An error occurred: " + err);
             });
 
-
         document.getElementById('snap').addEventListener('click', function() {
             var canvas = document.getElementById('canvas');
             var video = document.getElementById('video');
@@ -72,19 +83,15 @@
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
 
-
             var dataURL = canvas.toDataURL('image/png');
-
 
             video.classList.add('d-none');
             imagePreview.classList.remove('d-none');
             imagePreview.src = dataURL;
 
-
             fetch(dataURL)
                 .then(res => res.blob())
                 .then(blob => {
-
                     var file = new File([blob], 'capturedImage.png', {
                         type: 'image/png'
                     });
@@ -92,12 +99,10 @@
                     var dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
 
-
                     var input = document.getElementById('capturedImage');
                     input.files = dataTransfer.files;
                 });
         });
-
 
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             var input = document.getElementById('capturedImage');
@@ -122,22 +127,4 @@
             }
         }
     </script>
-{{--    <script>--}}
-{{--        // Check if the Geolocation API is available--}}
-{{--        if (navigator.geolocation) {--}}
-{{--            // Get the current position--}}
-{{--            navigator.geolocation.getCurrentPosition(--}}
-{{--                function(position) {--}}
-{{--                    document.getElementById('latitude').value = position.coords.latitude;--}}
-{{--                    document.getElementById('longitude').value = position.coords.longitude;--}}
-{{--                },--}}
-{{--                function(error) {--}}
-{{--                    console.error("Error getting geolocation: ", error.message);--}}
-{{--                },--}}
-
-{{--            );--}}
-{{--        } else {--}}
-{{--            console.error("Geolocation is not supported by this browser.");--}}
-{{--        }--}}
-{{--    </script>--}}
 @endsection

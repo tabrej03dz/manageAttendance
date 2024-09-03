@@ -10,19 +10,19 @@
             </div>
 
             <!-- Filter and Action Buttons -->
-            <div class="d-flex align-items-center mb-4 p-3 bg-light rounded shadow-sm">
-                <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" method="GET" class="d-flex">
-                    @csrf
-                    <input type="date" name="start" placeholder="Start Date" class="form-control mb-2 mr-2"
-                        style="width: auto; padding: 0.5rem; border-radius: 0.375rem;">
-                    <input type="date" name="end" placeholder="End Date" class="form-control mb-2 mr-2"
-                        style="width: auto; padding: 0.5rem; border-radius: 0.375rem;">
-                    <input type="submit" value="Filter" class="btn btn-success text-white mb-2 mr-2">
-                </form>
-                <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary mb-2 mr-2"
-                    style="color: white !important;">Check In</a>
-                <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger mb-2"
-                    style="color: white !important;">Check Out</a>
+            <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+                <div class="col-12 col-md-6 mb-2">
+                    <form action="{{ route('attendance.index', ['user' => $user?->id]) }}" method="GET" class="d-flex flex-wrap">
+                        @csrf
+                        <input type="date" name="start" placeholder="Start Date" class="form-control mb-2 mr-2" style="flex: 1; padding: 0.5rem; border-radius: 0.375rem;">
+                        <input type="date" name="end" placeholder="End Date" class="form-control mb-2 mr-2" style="flex: 1; padding: 0.5rem; border-radius: 0.375rem;">
+                        <input type="submit" value="Filter" class="btn btn-success text-white mb-2 mr-2">
+                    </form>
+                </div>
+                <div class="col-12 col-md-6 mb-2 text-md-right">
+                    <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary text-white mb-2 mr-2">Check In</a>
+                    <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger text-white mb-2">Check Out</a>
+                </div>
             </div>
 
             @role('super_admin')
@@ -30,9 +30,8 @@
                 <div class="mb-4">
                     <div class="row">
                         @foreach ($users as $u)
-                            <div class="col-sm-4 col-md-3 col-lg-2 mb-2">
-                                <a href="{{ route('attendance.index', ['user' => $u?->id]) }}"
-                                    class="btn btn-outline-success w-100 text-truncate">{{ ucfirst($u?->name) }}</a>
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                <a href="{{ route('attendance.index', ['user' => $u?->id]) }}" class="btn btn-outline-success w-100 text-truncate">{{ ucfirst($u?->name) }}</a>
                             </div>
                         @endforeach
                     </div>
@@ -67,14 +66,11 @@
                             <tr class="{{ $d->format('D') == 'Sun' ? 'bg-red-100' : '' }} hover:bg-gray-100">
                                 <td>{{ $d->format('d-[D]') }}</td>
                                 <td>{{ $record?->check_in?->format('h:i:s A') }}</td>
-                                <td>{{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}
-                                </td>
+                                <td>{{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}</td>
                                 <td>
                                     @if ($record?->check_in_image)
                                         <a href="{{ asset('storage/' . $record->check_in_image) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $record->check_in_image) }}"
-                                                alt="Check-in Image" class="img-fluid"
-                                                style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
+                                            <img src="{{ asset('storage/' . $record->check_in_image) }}" alt="Check-in Image" class="img-fluid" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
                                         </a>
                                     @endif
                                 </td>
@@ -82,14 +78,11 @@
                                 <td>
                                     @if ($record?->check_out_image)
                                         <a href="{{ asset('storage/' . $record->check_out_image) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $record->check_out_image) }}"
-                                                alt="Check-out Image" class="img-fluid"
-                                                style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
+                                            <img src="{{ asset('storage/' . $record->check_out_image) }}" alt="Check-out Image" class="img-fluid" style="width: 100px; height: 100px; object-fit: cover; border-radius: 0.375rem;">
                                         </a>
                                     @endif
                                 </td>
-                                <td>{{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}
-                                </td>
+                                <td>{{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}</td>
                                 <td>{{ $record?->day_type }}</td>
                                 <td>{{ $record?->check_in_distance }}</td>
                                 <td>{{ $record?->check_out_distance }}</td>
