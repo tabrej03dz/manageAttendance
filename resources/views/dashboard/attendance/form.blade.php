@@ -18,7 +18,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="mb-3">
-                                <video id="video" class="w-100 border border-secondary rounded mirror beauty-filter" autoplay></video>
+                                <video id="video" class="w-100 border border-secondary rounded mirror" autoplay></video>
                                 <canvas id="canvas" class="d-none"></canvas>
                                 <img id="imagePreview" class="d-none img-fluid border border-secondary rounded mt-3" alt="Captured image" />
                             </div>
@@ -51,10 +51,6 @@
         .mirror {
             transform: scaleX(-1);
         }
-
-        .beauty-filter {
-            filter: brightness(1.0) contrast(1.1) saturate(1.2) sepia(0.2) hue-rotate(10deg) blur(0px);
-        }
     </style>
 
     <script>
@@ -84,29 +80,6 @@
             context.scale(-1, 1);
             context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
             context.restore();
-
-            // Apply the same beauty filter to the canvas
-            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            var data = imageData.data;
-            for (var i = 0; i < data.length; i += 4) {
-                // Adjust brightness
-                data[i] = data[i] * 1.0; // Red
-                data[i + 1] = data[i + 1] * 1.0; // Green
-                data[i + 2] = data[i + 2] * 1.0; // Blue
-
-                // Adjust contrast (1.1 from CSS)
-                var factor = 1.1; // Increase the contrast
-                data[i] = ((data[i] - 128) * factor) + 128; // Red
-                data[i + 1] = ((data[i + 1] - 128) * factor) + 128; // Green
-                data[i + 2] = ((data[i + 2] - 128) * factor) + 128; // Blue
-
-                // Adjust saturation (1.2 from CSS)
-                var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                data[i] = avg + (data[i] - avg) * 1.2; // Red
-                data[i + 1] = avg + (data[i + 1] - avg) * 1.2; // Green
-                data[i + 2] = avg + (data[i + 2] - avg) * 1.2; // Blue
-            }
-            context.putImageData(imageData, 0, 0);
 
             var dataURL = canvas.toDataURL('image/png');
 
