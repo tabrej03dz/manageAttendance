@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController extends Controller
 {
     public function index(){
-        $employees = User::all();
+        $employees = User::role(['admin', 'employee'])->get();
+
         return view('dashboard.employee.index', compact('employees'));
     }
 
