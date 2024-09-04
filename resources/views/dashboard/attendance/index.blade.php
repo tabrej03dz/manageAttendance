@@ -42,10 +42,10 @@
                     </div>
                 </div>
             @endrole
-<<<<<<< HEAD
+
             <!-- Attendance Table -->
             <div class="table-responsive mt-3">
-=======
+
 
             <!-- Attendance Accordion (Mobile View) -->
             <div class="accordion d-md-none" id="attendanceAccordion">
@@ -140,7 +140,6 @@
 
             <!-- Attendance Table (Web View) -->
             <div class="table-responsive mt-3 d-none d-md-block">
->>>>>>> 7fdbbda21214c27d892e5851a95214d327b26ad7
                 <table class="table table-striped table-bordered">
                     <thead class="thead-dark sticky-top bg-white">
                         <tr>
