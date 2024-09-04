@@ -22,9 +22,12 @@
                     </div>
 
                     <!-- Password -->
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label for="password" class="form-label">{{ __('Password') }}</label>
                         <input id="password" type="password" class="form-control bg-dark text-white border-0 @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                        <span class="position-absolute me-3 translate-middle-y" id="toggle-password" style="cursor: pointer; color: black;">
+                            <i class="bi bi-eye"></i>
+                        </span>
                         @error('password')
                             <div class="invalid-feedback d-block">
                                 <strong>{{ $message }}</strong>
@@ -89,5 +92,35 @@
                 font-size: 1.5rem;
             }
         }
+
+        /* Custom styles for eye icon */
+        #toggle-password {
+            top: 75%;
+            right: 0px;
+            transform: translateY(-50%);
+            color: black;
+        }
+
+        #toggle-password i {
+            font-size: 1.25rem;
+        }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const togglePassword = document.querySelector('#toggle-password');
+            const passwordInput = document.querySelector('#password');
+            
+            togglePassword.addEventListener('click', function () {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+            });
+        });
+    </script>
 @endsection
