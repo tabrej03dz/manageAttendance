@@ -20,6 +20,7 @@
                         <input type="date" name="end" placeholder="End Date"
                             class="form-control mb-2 mb-md-0 mr-md-2">
                         <input type="submit" value="Filter" class="btn btn-success text-white mb-2">
+                        <a href="{{route('attendance.index')}}" class="btn btn-info mb-2 ml-2">Clear</a>
                     </form>
                 </div>
                 <div class="col-12 col-md-6 text-center text-md-right">
