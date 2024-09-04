@@ -30,8 +30,10 @@
                         <td><img src="{{asset('storage/'. $employee->photo)}}" alt="" style="width: 100px;"></td>
                         <td>{{$employee->office?->name}}</td>
                         <td>
+                            <div class="btn-group">
                             <a href="{{route('employee.edit', ['employee' => $employee->id])}}" class="btn btn-primary">Edit</a>
                             <a href="{{route('employee.delete', ['employee' => $employee->id])}}" class="btn btn-danger">Delete</a>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

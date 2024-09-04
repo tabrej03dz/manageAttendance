@@ -68,7 +68,7 @@
 
                             <div class="col-md-6">
                                 <label for="check_in_time" class="form-label">Check In Time</label>
-                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{$employee->check_in_time ?? ''}}">
+                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{$employee->check_in_time ? Carbon\Carbon::parse($employee->check_in_time)->format('H:i') : ''}}">
                             </div>
                             <div class="col-md-6">
                                 <label for="office_id" class="form-label">Select Office</label>
@@ -80,18 +80,19 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="designation" class="form-label">Designation</label>
+                                <label for="designation" class="form-label">Role</label>
                                 <select name="role" id="" class="form-control">
                                     <option value="">Role</option>
-                                    <option value="admin">Admin</option>
-                                    <option value="employee">Employee</option>
+                                    <option value="admin" {{$employee->hasRole('admin') ? 'selected' : ''}}>Admin</option>
+                                    <option value="employee" {{$employee->hasRole('employee') ? 'selected' : ''}}>Employee</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="check_out_time" class="form-label">Check Out Time</label>
-                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{$employee->check_out_time ?? ''}}">
+                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{ $employee->check_out_time ? \Carbon\Carbon::parse($employee->check_out_time)->format('H:i') : '' }}">
+
                             </div>
                             <div class="col-md-6">
                                 <label for="password" class="form-label">Password</label>
