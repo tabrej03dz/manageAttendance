@@ -10,7 +10,6 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
-
                     <!-- Email Address -->
                     <div class="mb-3">
                         <label for="email" class="form-label">{{ __('Email Address') }}</label>

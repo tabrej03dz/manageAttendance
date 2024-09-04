@@ -58,6 +58,8 @@
                         </p>
                     </a>
                 </li>
+                @endrole
+                @role('super_admin')
                 <li class="nav-item">
                     <a href="{{route('office.index')}}" class="nav-link">
                         <i class="nav-icon fas fa-building"></i>
@@ -67,6 +69,7 @@
                     </a>
                 </li>
                 @endrole
+
                 <li class="nav-item">
                     <form action="{{route('logout')}}" method="post">
                         @csrf

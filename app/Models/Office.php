@@ -11,6 +11,6 @@ class Office extends Model
     protected $guarded = ['id'];
 
     public function users(){
-        return $this->hasMany(User::class, 'user_id');
+        return $this->hasMany(User::class, 'office_id');
     }
 }

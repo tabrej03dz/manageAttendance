@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 class AttendanceRecordController extends Controller
 {
     public function index(Request $request, User $user = null){
+
         if ($request->start){
             $startOfMonth = Carbon::parse($request->start);
         }else{
@@ -32,9 +33,14 @@ class AttendanceRecordController extends Controller
             $attendanceRecords->orWhereDate('created_at', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
         }
         $attendanceRecords = $attendanceRecords->get();
-        $users = User::whereDoesntHave('roles', function($query) {
-            $query->where('name', 'super_admin');
-        })->get();
+        if (auth()->user()->hasRole('super_admin')){
+
+            $users = User::role(['admin', 'employee'])->get();
+        }else{
+            $office = auth()->user()->office;
+//            dd($office->users);
+            $users = $office->users;
+        }
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user'));
     }
 
@@ -58,9 +64,9 @@ class AttendanceRecordController extends Controller
 //        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
 //
 //        // Check if the distance is within 100 meters
-////        if (!($distance <= $radius)) {
-////            return back()->with('error', 'you are '. $distance. ' of distance from office');
-////        }
+//        if (!($distance <= $radius)) {
+//            return back()->with('error', 'you are '. $distance. ' of distance from office');
+//        }
 //
 //
 //        $previousRecords = AttendanceRecord::where('user_id', $user->id)
@@ -98,8 +104,8 @@ class AttendanceRecordController extends Controller
         // Validate the incoming request
         $request->validate([
             'image' => '',
-            'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'latitude' => '',
+            'longitude' => '',
         ]);
 
         // Get the authenticated user
@@ -116,7 +122,11 @@ class AttendanceRecordController extends Controller
         $radius = $office->radius ?? 100; // Default to 100 meters if no radius is set
 
         // Calculate the distance using Haversine formula
-        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+        if ($latitude == '' || $longitude == ''){
+            $distance = '';
+        }else{
+            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+        }
 
 
 
@@ -180,7 +190,7 @@ class AttendanceRecordController extends Controller
 
             // Save the attendance record
             $attendanceRecord->save();
-            if (!$attendanceRecord->check_in_image){
+            if ($attendanceRecord->check_in_image == null){
                 $attendanceRecord->delete();
                 return back()->with('error', 'Failed to Check-In! try again');
             }
@@ -255,7 +265,12 @@ class AttendanceRecordController extends Controller
             $date = today();
         }
         if (auth()->user()->hasRole('super_admin|admin')){
-            $employees = User::all();
+            if (auth()->user()->hasRole('super_admin')){
+                $employees = User::all();
+            }else{
+                $office = auth()->user()->office;
+                $employees = $office->users;
+            }
         }else{
             $employees = User::where('id', auth()->user()->id)->get();
         }

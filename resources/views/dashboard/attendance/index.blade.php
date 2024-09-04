@@ -8,7 +8,6 @@
                 <h2 class="mb-2 mb-md-0">Employees</h2>
                 <h2 class="mb-2 mb-md-0">{{ $dates->first()->date->format('Y-M') }} Month</h2>
             </div>
-
             <!-- Filter and Action Buttons -->
             <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
                 <div class="col-12 col-md-6 mb-2">
@@ -24,8 +23,7 @@
                     <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger text-white mb-2">Check Out</a>
                 </div>
             </div>
-
-            @role('super_admin')
+            @role('super_admin|admin')
                 <!-- Employee List -->
                 <div class="mb-4">
                     <div class="row">
@@ -37,7 +35,6 @@
                     </div>
                 </div>
             @endrole
-
             <!-- Attendance Table -->
             <div class="table-responsive mt-3">
                 <table class="table table-striped table-bordered">

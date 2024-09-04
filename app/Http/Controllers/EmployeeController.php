@@ -12,26 +12,28 @@ use Illuminate\Support\Facades\Hash;
 class EmployeeController extends Controller
 {
     public function index(){
-        if (auth()->user()->role('super_admin')){
-
+        if (auth()->user()->hasRole('super_admin')){
             $employees = User::role(['admin', 'employee'])->get();
         }else{
             $office = auth()->user()->office;
             $employees = $office->users;
         }
-
         return view('dashboard.employee.index', compact('employees'));
     }
 
     public function create(){
-        $offices = Office::all();
+        if (auth()->user()->hasRole('super_admin')){
+            $offices = Office::all();
+        }else{
+            $offices = Office::where('id', auth()->user()->office_id)->get();
+        }
         return view('dashboard.employee.create', compact('offices'));
     }
 
     public function store(EmployeeRequest $request){
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
-        $employee = User::create($request->except('joining_date') + ['password' => Hash::make('password'), 'office_id' => $request->office_id]);
+        $employee = User::create($request->except('joining_date') + ['office_id' => $request->office_id, 'password' => Hash::make('password'), ]);
         if ($request->file('photo')){
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);

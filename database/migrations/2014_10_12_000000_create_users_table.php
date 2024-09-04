@@ -28,7 +28,7 @@ return new class extends Migration
             $table->time('check_out_time')->nullable();
             $table->integer('office_time')->nullable();
             $table->unsignedBigInteger('office_id')->nullable();
-            $table->foreign('office_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });
