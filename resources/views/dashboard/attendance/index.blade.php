@@ -31,13 +31,14 @@
                 </div>
             </div>
             @role('super_admin|admin')
+
                 <!-- Employee List -->
                 <div class="mb-4">
                     <div class="row">
                         @foreach ($users as $u)
                             <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
                                 <a href="{{ route('attendance.index', ['user' => $u?->id]) }}"
-                                    class="btn btn-outline-success w-100 text-truncate font-weight-bold">{{ ucfirst($u?->name) }}</a>
+                                    class="btn {{$u?->id == $user?->id ? 'btn-success font-weight-bold' : 'btn-outline-success'}}  w-100 text-truncate font-weight-bold">{{ ucfirst($u?->name) }}</a>
                             </div>
                         @endforeach
                     </div>
