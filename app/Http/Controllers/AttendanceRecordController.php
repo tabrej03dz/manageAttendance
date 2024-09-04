@@ -214,7 +214,11 @@ class AttendanceRecordController extends Controller
         $radius = $office->radius ?? '100';
 
         // Calculate the distance
-        $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+        if ($latitude == '' || $longitude == ''){
+            $distance = '';
+        }else {
+            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+        }
 
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
