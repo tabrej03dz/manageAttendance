@@ -14,7 +14,7 @@
 {{--                <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">--}}
 {{--            </div>--}}
             <div class="info">
-                <a href="{{route('userprofile')}}" class="d-block">{{auth()->user()->name}}</a>
+                <a href="{{route('userprofile', ['user' => auth()->user()->id])}}" class="d-block">{{auth()->user()->name}}</a>
             </div>
         </div>
 
@@ -55,6 +55,15 @@
                         <i class="nav-icon fas fa-user-tie"></i>
                         <p>
                             Employee
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{route('leave.index')}}" class="nav-link">
+                        <i class="nav-icon fas fa-user-tie"></i>
+                        <p>
+                            Leave
                         </p>
                     </a>
                 </li>

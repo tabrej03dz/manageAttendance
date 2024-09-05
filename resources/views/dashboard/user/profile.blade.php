@@ -118,13 +118,48 @@
     </div>
 </div>
 
+<div class="container mt-5">
+    <h2 class="mb-4">Leave List</h2>
+    <a href="{{route('leave.create')}}" class="btn btn-primary btn-sm">Request For Leave</a>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Leave Type</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Responses By</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Example row -->
+            @foreach($leaves as $leave)
+
+            <tr>
+                <td>{{$loop->iteration}}</td>
+                <td>{{$leave->start_date}}</td>
+                <td>{{$leave->end_date}}</td>
+                <td>{{$leave->leave_type}}</td>
+                <td>{{$leave->reason}}</td>
+                <td><span class="badge bg-{{$leave->status == 'approved' ? 'success' : 'warning'}}">{{$leave->status}}</span></td>                <td>{{$leave->responsesBy?->name}}</td>
+            </tr>
+            @endforeach
+            <!-- Repeat rows for each leave record -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- Change Password -->
 <div class="card mt-4">
     <div class="card-header">
         <h3 class="card-title">Change Password</h3>
     </div>
     <div class="card-body">
-        <form action="{{route('userPassword')}}" method="POST">
+        <form action="{{route('userPassword', ['user' => $user->id])}}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="currentPassword">Current Password</label>

@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LeaveController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('edit/{employee}', [EmployeeController::class, 'edit'])->name('edit');
         Route::post('update/{employee}', [EmployeeController::class, 'update'])->name('update');
         Route::get('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
+        Route::get('profile/{user}', [HomeController::class, 'profile'])->name('profile');
     });
 
     Route::prefix('office')->name('office.')->group(function(){
@@ -56,6 +58,14 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
 
 
-    Route::get('/userprofile', [HomeController::class, 'profile'])->name('userprofile');
-    Route::post('userPassword', [HomeController::class, 'changePassword'])->name('userPassword');
+    Route::get('/userprofile/{user}', [HomeController::class, 'profile'])->name('userprofile');
+    Route::post('userPassword/{user}', [HomeController::class, 'changePassword'])->name('userPassword');
+
+    Route::prefix('leave')->name('leave.')->group(function(){
+        Route::get('/', [LeaveController::class, 'index'])->name('index');
+        Route::get('create', [LeaveController::class, 'create'])->name('create');
+        Route::post('store', [LeaveController::class, 'store'])->name('store');
+        Route::get('status/{leave}/{status}', [LeaveController::class, 'status'])->name('status');
+    });
+
 });

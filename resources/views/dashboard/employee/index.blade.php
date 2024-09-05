@@ -34,6 +34,9 @@
                                         class="btn btn-primary">Edit</a>
                                     <a href="{{ route('employee.delete', ['employee' => $employee->id]) }}"
                                         class="btn btn-danger">Delete</a>
+
+                                    <a href="{{ route('employee.profile', ['user' => $employee->id]) }}"
+                                       class="btn btn-danger">Profile</a>
                                 </td>
                             </tr>
                         @endforeach

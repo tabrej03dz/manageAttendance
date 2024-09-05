@@ -145,8 +145,14 @@ class AttendanceRecordController extends Controller
 
         // Check for late entries in the previous records
         foreach ($previousRecords as $previous) {
-            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinutes(10)?->format('H:i')) {
+//            if ($previous?->check_in?->format('H:i') > $user->check_in_time?->addMinutes(10)?->format('H:i')) {
+//                $count++;
+//            }
+            if ($previous?->late) {
                 $count++;
+            }
+            if ($previous?->day_type == 'half day'){
+                $count = 0;
             }
         }
 
@@ -166,7 +172,7 @@ class AttendanceRecordController extends Controller
             ]);
 
             // Check if the user is late
-            if (now()->format('H:i') > $user->check_in_time->addMinutes(10)->format('H:i')) {
+            if (now()->format('H:i') > $user->check_in_time->addMinutes(5)->format('H:i')) {
                 $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
 
                 // If late more than twice, mark as half-day
