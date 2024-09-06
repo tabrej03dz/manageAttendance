@@ -29,7 +29,6 @@ return new class extends Migration
             $table->integer('office_time')->nullable();
             $table->unsignedBigInteger('office_id')->nullable();
             $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
-            $table->unsignedBigInteger('team_leader_id')->nullable();
             $table->timestamps();
         });
     }

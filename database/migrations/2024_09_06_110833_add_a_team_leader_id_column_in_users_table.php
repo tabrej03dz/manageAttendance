@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->unsignedBigInteger('team_leader_id')->nullable();
             $table->foreign('team_leader_id')->references('id')->on('users')->onDelete('cascade');
             $table->rememberToken();
         });
