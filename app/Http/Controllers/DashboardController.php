@@ -11,8 +11,7 @@ class DashboardController extends Controller
 {
     public function dashboard(){
 
-        Role::create(['name' => 'team_leader']);
-        dd('team leader role is created successfully');
+
 
         $halfDayRecords = AttendanceRecord::where('check_in', null)->orWhere('check_out', null)->get();
         foreach ($halfDayRecords as $record){
