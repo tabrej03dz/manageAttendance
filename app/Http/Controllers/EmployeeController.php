@@ -24,10 +24,12 @@ class EmployeeController extends Controller
     public function create(){
         if (auth()->user()->hasRole('super_admin')){
             $offices = Office::all();
+            $teamLeaders = User::role('team_leader')->get();
         }else{
             $offices = Office::where('id', auth()->user()->office_id)->get();
+            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
         }
-        return view('dashboard.employee.create', compact('offices'));
+        return view('dashboard.employee.create', compact('offices', 'teamLeaders'));
     }
 
     public function store(EmployeeRequest $request){

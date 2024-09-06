@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\AttendanceRecord;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
     public function dashboard(){
+
+        Role::create(['name' => 'team_leader']);
+        dd('team leader role is created successfully');
 
         $halfDayRecords = AttendanceRecord::where('check_in', null)->orWhere('check_out', null)->get();
         foreach ($halfDayRecords as $record){
