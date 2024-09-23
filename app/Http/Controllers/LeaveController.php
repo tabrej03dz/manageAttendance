@@ -9,7 +9,7 @@ use App\Models\Leave;
 class LeaveController extends Controller
 {
     public function index(){
-        if (auth()->user()->hasRole('super_admin|admin')){
+        if (auth()->user()->hasRole('super_admin|admin|team_leader')){
             $office = auth()->user()->office;
             $leaves = Leave::where('office_id', $office->id)->get();
         }else{
@@ -25,7 +25,7 @@ class LeaveController extends Controller
     public function store(LeaveRequest $request){
         $user = auth()->user();
         Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id]);
-        return redirect('userprofile')->with('success', 'Leave request taken successfully');
+        return redirect('userprofile/'.auth()->user()->id)->with('success', 'Leave request taken successfully');
     }
 
     public function status(Leave $leave, $status){

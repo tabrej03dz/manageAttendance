@@ -58,7 +58,8 @@
                         </p>
                     </a>
                 </li>
-
+                @endrole
+                @role('super_admin|admin|team_leader')
                 <li class="nav-item">
                     <a href="{{route('leave.index')}}" class="nav-link">
                         <i class="nav-icon fas fa-user-tie"></i>

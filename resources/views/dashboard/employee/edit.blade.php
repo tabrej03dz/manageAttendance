@@ -85,6 +85,17 @@
                                     <option value="">Role</option>
                                     <option value="admin" {{$employee->hasRole('admin') ? 'selected' : ''}}>Admin</option>
                                     <option value="employee" {{$employee->hasRole('employee') ? 'selected' : ''}}>Employee</option>
+                                    <option value="team_leader" {{$employee->hasRole('team_leader') ? 'selected' : ''}}>Team Leader</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="team_leader_id" class="form-label">Team Leader</label>
+                                <select name="team_leader_id" class="form-control" id="team_leader_id">
+                                    <option value="">Select Team Leader</option>
+                                    @foreach($teamLeaders as $leader)
+                                        <option value="{{$leader->id}}" {{$leader->id == $employee->team_leader_id ? 'selected' : ''}}>{{$leader->name}}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

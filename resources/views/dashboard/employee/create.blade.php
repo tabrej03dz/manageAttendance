@@ -65,6 +65,7 @@
                                 <select name="role" id="" class="form-control">
                                     <option value="">Role</option>
                                     <option value="admin">Admin</option>
+                                    <option value="team_leader">Team Leader</option>
                                     <option value="employee">Employee</option>
                                 </select>
                             </div>
@@ -96,11 +97,11 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label for="office_id" class="form-label">Team Leader</label>
-                                <select name="office_id" class="form-control" id="office_id">
-                                    <option value="">Select Office</option>
-                                    @foreach($offices as $office)
-                                        <option value="{{$office->id}}">{{$office->name}}</option>
+                                <label for="team_leader_id" class="form-label">Team Leader</label>
+                                <select name="team_leader_id" class="form-control" id="team_leader_id">
+                                    <option value="">Select Team Leader</option>
+                                    @foreach($teamLeaders as $leader)
+                                        <option value="{{$leader->id}}">{{$leader->name}}</option>
                                     @endforeach
                                 </select>
                             </div>

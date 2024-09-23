@@ -13,7 +13,7 @@ class EmployeeController extends Controller
 {
     public function index(){
         if (auth()->user()->hasRole('super_admin')){
-            $employees = User::role(['admin', 'employee'])->get();
+            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
         }else{
             $office = auth()->user()->office;
             $employees = $office->users;
@@ -53,12 +53,18 @@ class EmployeeController extends Controller
     }
 
     public function edit(User $employee){
-        $offices = Office::all();
-        return view('dashboard.employee.edit', compact('employee', 'offices'));
+        if (auth()->user()->hasRole('super_admin')){
+            $offices = Office::all();
+            $teamLeaders = User::role('team_leader')->get();
+        }else{
+            $offices = Office::where('id', auth()->user()->office_id)->get();
+            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
+        }
+        return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
     }
 
     public function update(Request $request, User $employee){
-        $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id]));
+        $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id, 'team_leader_id' => $request->team_leader_id]));
         if ($request->filled('password')){
             $employee->password = Hash::make($request->password);
         }
