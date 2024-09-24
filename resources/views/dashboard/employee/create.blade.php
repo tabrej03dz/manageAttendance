@@ -21,21 +21,21 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="name" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="{{old('email')}}" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="phone" class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" required>
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{old('phone')}}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="address" class="form-label">Full Address</label>
-                                <textarea name="address" class="form-control" id="address" cols="30" rows="2"></textarea>
+                                <textarea name="address" class="form-control" id="address" cols="30" rows="2">{{old('address')}}</textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -45,18 +45,18 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="joining_date" class="form-label">Joining Date</label>
-                                <input type="date" class="form-control" id="joining_date" name="joining_date" >
+                                <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{old('date')}}">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="designation" class="form-label">Designation</label>
-                                <input type="text" class="form-control" id="designation" name="designation" >
+                                <input type="text" class="form-control" id="designation" name="designation" value="{{old('designation')}}">
                             </div>
 
                             <div class="col-md-6">
                                 <label for="responsibility" class="form-label">Responsibility</label>
-                                <textarea name="responsibility" class="form-control" id="responsibility" cols="30" rows="2"></textarea>
+                                <textarea name="responsibility" class="form-control" id="responsibility" cols="30" rows="2">{{ old('responsibility') }}</textarea>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -73,18 +73,18 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="salary" class="form-label">Salary</label>
-                                <input type="number" class="form-control" id="salary" name="salary" step="0.01">
+                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{old('salary')}}">
                             </div>
 
                             <div class="col-md-6">
                                 <label for="check_in_time" class="form-label">Check In Time</label>
-                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" >
+                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{old('check_in_time')}}">
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="check_out_time" class="form-label">Check Out Time</label>
-                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" >
+                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{old('check_out_time')}}">
                             </div>
                             <div class="col-md-6">
                                 <label for="office_id" class="form-label">Office</label>

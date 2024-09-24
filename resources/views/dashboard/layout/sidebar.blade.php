@@ -80,6 +80,17 @@
                 </li>
                 @endrole
 
+                @role('super_admin|admin')
+                <li class="nav-item">
+                    <a href="{{route('off.index')}}" class="nav-link">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p>
+                            Manage Offs
+                        </p>
+                    </a>
+                </li>
+                @endrole
+
                 <li class="nav-item">
                     <form action="{{route('logout')}}" method="post">
                         @csrf

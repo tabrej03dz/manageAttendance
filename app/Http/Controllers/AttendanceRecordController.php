@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
+use App\Models\Leave;
 use App\Models\Office;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class AttendanceRecordController extends Controller
         }else{
             $endOfMonth = Carbon::now()->endOfMonth();
         }
+
         $dates = new Collection();
         $attendanceRecords = AttendanceRecord::query();
         for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
@@ -101,6 +103,7 @@ class AttendanceRecordController extends Controller
 
 
     public function checkIn(Request $request) {
+
         // Validate the incoming request
         $request->validate([
             'image' => '',
@@ -240,7 +243,7 @@ class AttendanceRecordController extends Controller
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
         }
-        return redirect('attendance/index')->with('success', 'checked in successfully');
+        return redirect('attendance/index')->with('success', 'checked out successfully');
     }
 
     public function form($formType){

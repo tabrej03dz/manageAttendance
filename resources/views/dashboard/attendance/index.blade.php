@@ -165,51 +165,102 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @php
+                                $officeDays = 0;
+                                $workingDays = 0;
+                                $leaveDays = 0;
+                                $offDays = 0;
+                            @endphp
+
                             @foreach ($dates as $dateObj)
                                 @php
+
                                     $d = \Carbon\Carbon::parse($dateObj->date);
                                     $record = $attendanceRecords->first(function ($record) use ($d) {
                                         return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
                                     });
                                     $isSunday = $d->format('D') === 'Sun';
+
+
+                                    if($record){
+                                        $workingDays++;
+                                    }
+
+                                    $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
+                                        ->whereDate('end_date', '>=', $d)->where(['user_id' => $user ? $user->id : auth()->user()->id, 'status' => 'approved'])
+                                        ->first();
+                                    if($leave){
+                                        $leaveDays++;
+                                    }
+                                    $off = App\Models\Off::whereDate('date', $d)->where('office_id', auth()->user()->office_id)->first();
+                                    if($off){
+                                        $offDays++;
+                                    }
+                                    if(!$isSunday){
+                                        $officeDays++;
+                                    }
                                 @endphp
-                                <tr
-                                    class="{{ $isSunday ? 'bg-warning' : '' }} hover:bg-warning {{ $record ? ($record->late ? 'bg-danger' : 'bg-success') : '' }}">
-                                    <td>{{ $d->format('d-[D]') }}</td>
-                                    <td>{{ $record?->check_in?->format('h:i:s A') }}</td>
-                                    <td>{{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}
-                                    </td>
-                                    <td>
-                                        @if ($record?->check_in_image)
-                                            <a href="{{ asset('storage/' . $record->check_in_image) }}" target="_blank">
-                                                <img src="{{ asset('storage/' . $record->check_in_image) }}"
-                                                    alt="Check-in Image" class="img-fluid rounded shadow-sm"
-                                                    style="max-width: 70px; height: auto;">
-                                            </a>
-                                        @endif
-                                    </td>
-                                    <td>{{ $record?->check_out?->format('h:i:s A') }}</td>
-                                    <td>
-                                        @if ($record?->check_out_image)
-                                            <a href="{{ asset('storage/' . $record->check_out_image) }}" target="_blank">
-                                                <img src="{{ asset('storage/' . $record->check_out_image) }}"
-                                                    alt="Check-out Image" class="img-fluid rounded shadow-sm"
-                                                    style="max-width: 70px; height: auto;">
-                                            </a>
-                                        @endif
-                                    </td>
-                                    <td>{{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}
-                                    </td>
-                                    <td>{{ $record?->day_type }}</td>
-                                    <td>{{ $record?->check_in_distance }}</td>
-                                    <td>{{ $record?->check_out_distance }}</td>
-                                </tr>
+                                @if($leave)
+                                    <tr>
+                                        <td>{{ $d->format('d-[D]') }}</td>
+                                        <td colspan="2"><strong>Leave Type:</strong></td>
+                                        <td colspan="3">{{$leave->leave_type}}</td>
+                                        <td colspan="2"><strong>Reason:</strong></td>
+                                        <td colspan="3">{{$leave->reason}}</td>
+                                    </tr>
+                                @else
+                                    <tr
+                                        class="{{ $isSunday ? 'bg-info' : '' }}">
+                                        <td>{{ $off ? $d->format('d-[D]').' '. $off?->title.' (OFF)' : $d->format('d-[D]')}}</td>
+                                        <td class="{{$record?->late ? 'text-danger' : ''}}" >{{ $record?->check_in?->format('h:i:s A') }}</td>
+                                        <td class="{{$record?->late ? 'text-danger' : ''}}" >{{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}
+                                        </td>
+                                        <td>
+                                            @if ($record?->check_in_image)
+                                                <a href="{{ asset('storage/' . $record->check_in_image) }}" target="_blank">
+                                                    <img src="{{ asset('storage/' . $record->check_in_image) }}"
+                                                         alt="Check-in Image" class="img-fluid rounded shadow-sm"
+                                                         style="max-width: 70px; height: auto;">
+                                                </a>
+                                            @endif
+                                        </td>
+                                        <td>{{ $record?->check_out?->format('h:i:s A') }}</td>
+                                        <td>
+                                            @if ($record?->check_out_image)
+                                                <a href="{{ asset('storage/' . $record->check_out_image) }}" target="_blank">
+                                                    <img src="{{ asset('storage/' . $record->check_out_image) }}"
+                                                         alt="Check-out Image" class="img-fluid rounded shadow-sm"
+                                                         style="max-width: 70px; height: auto;">
+                                                </a>
+                                            @endif
+                                        </td>
+                                        <td>{{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}
+                                        </td>
+                                        <td>{{ $record?->day_type }}</td>
+                                        <td class="{{$record?->check_in_distance > 100 ? 'text-danger' : ''}}" >{{ $record?->check_in_distance }}</td>
+                                        <td {{$record?->check_out_distance > 100 ? 'text-danger' : ''}}>{{ $record?->check_out_distance }}</td>
+                                    </tr>
+                                @endif
+
                             @endforeach
                         </tbody>
                     </table>
                     </div>
                 </div>
             </div>
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Office Days:</th>
+                        <th>{{$officeDays - $offDays}}</th>
+                        <th>Working Days:</th>
+                        <th>{{$workingDays}}</th>
+                        <th>Leaves:</th>
+                        <th>{{$leaveDays}}</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
         </div>
     </div>

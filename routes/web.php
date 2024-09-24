@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\OffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,15 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('create', [LeaveController::class, 'create'])->name('create');
         Route::post('store', [LeaveController::class, 'store'])->name('store');
         Route::get('status/{leave}/{status}', [LeaveController::class, 'status'])->name('status');
+    });
+
+    Route::prefix('off')->name('off.')->group(function(){
+       Route::get('/', [OffController::class, 'index'])->name('index');
+       Route::get('create', [OffController::class, 'create'])->name('create');
+       Route::post('store', [OffController::class, 'store'])->name('store');
+       Route::get('edit/{off}', [OffController::class, 'edit'])->name('edit');
+       Route::post('update/{off}', [OffController::class, 'update'])->name('update');
+       Route::post('delete/{off}', [OffController::class, 'delete'])->name('delete');
     });
 
 });
