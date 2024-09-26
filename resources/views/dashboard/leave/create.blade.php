@@ -14,6 +14,7 @@
                     <option value="sick">Sick Leave</option>
                     <option value="vacation">Vacation Leave</option>
                     <option value="casual">Casual Leave</option>
+                    <option value="others">Others</option>
                     <!-- Add more leave types as needed -->
                 </select>
             </div>
