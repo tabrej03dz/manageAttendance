@@ -8,6 +8,7 @@
                 <thead class="table-dark">
                 <tr>
                     <th>#</th>
+                    <th>Employee</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Leave Type</th>
@@ -23,6 +24,7 @@
 
                     <tr>
                         <td>{{$loop->iteration}}</td>
+                        <td>{{$leave->user->name}}</td>
                         <td>{{$leave->start_date}}</td>
                         <td>{{$leave->end_date}}</td>
                         <td>{{$leave->leave_type}}</td>
