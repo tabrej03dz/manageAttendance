@@ -103,20 +103,22 @@ class AttendanceRecordController extends Controller
 
 
     public function checkIn(Request $request) {
+//        dd($request->all());
 
         // Validate the incoming request
         $request->validate([
             'image' => '',
-            'latitude' => '',
-            'longitude' => '',
+//            'latitude' => '',
+//            'longitude' => '',
+            'distance' => '',
         ]);
 
         // Get the authenticated user
         $user = auth()->user();
 
         // Capture latitude and longitude from the request
-        $latitude = $request->latitude;
-        $longitude = $request->longitude;
+//        $latitude = $request->latitude;
+//        $longitude = $request->longitude;
 
         // Fetch the office coordinates and radius from the database
         $office = $user->office;
@@ -125,11 +127,11 @@ class AttendanceRecordController extends Controller
         $radius = $office->radius ?? 100; // Default to 100 meters if no radius is set
 
         // Calculate the distance using Haversine formula
-        if ($latitude == '' || $longitude == ''){
-            $distance = '';
-        }else{
-            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
-        }
+//        if ($latitude == '' || $longitude == ''){
+//            $distance = '';
+//        }else{
+//            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+//        }
 
 
 
@@ -170,7 +172,7 @@ class AttendanceRecordController extends Controller
                 'user_id' => $user->id,
                 'check_in' => Carbon::now(),
                 'duration' => $user->office_time / 2, // Set initial duration
-                'check_in_distance' => $distance,
+                'check_in_distance' => $request->distance,
                 'day_type' => '__', // Initialize day type
             ]);
 
@@ -199,10 +201,7 @@ class AttendanceRecordController extends Controller
 
             // Save the attendance record
             $attendanceRecord->save();
-            if ($attendanceRecord->check_in_image == null){
-                $attendanceRecord->delete();
-                return back()->with('error', 'Failed to Check-In! try again');
-            }
+
         }
 
         // Redirect to attendance index with success message
@@ -213,30 +212,30 @@ class AttendanceRecordController extends Controller
     public function checkOut(Request $request){
         $user = auth()->user();
 
-        $latitude = $request->latitude;
-        $longitude = $request->longitude;
+//        $latitude = $request->latitude;
+//        $longitude = $request->longitude;
 
         // Office coordinates from the database
         $office = $user->office;
-        $officeLatitude = $office->latitude;
-        $officeLongitude = $office->longitude;
+//        $officeLatitude = $office->latitude;
+//        $officeLongitude = $office->longitude;
         $radius = $office->radius ?? '100';
 
         // Calculate the distance
-        if ($latitude == '' || $longitude == ''){
-            $distance = '';
-        }else {
-            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
-        }
+//        if ($latitude == '' || $longitude == ''){
+//            $distance = '';
+//        }else {
+//            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
+//        }
 
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', auth()->user()->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
 //            dd($duration);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $distance, 'day_type' => '__']);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__']);
         }else{
             $duration = Carbon::now()->diffInMinutes($record->check_in);
-            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $distance]);
+            $record = AttendanceRecord::create(['user_id' => auth()->user()->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance]);
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');
@@ -251,25 +250,25 @@ class AttendanceRecordController extends Controller
     }
 
 
-    private function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
-    {
-        $earthRadius = 6371000; // Earth radius in meters
-        // Convert latitude and longitude from degrees to radians
-        $latFrom = deg2rad($latitudeFrom);
-        $lonFrom = deg2rad($longitudeFrom);
-        $latTo = deg2rad($latitudeTo);
-        $lonTo = deg2rad($longitudeTo);
-        // Haversine formula
-        $latDelta = $latTo - $latFrom;
-        $lonDelta = $lonTo - $lonFrom;
-        $a = sin($latDelta / 2) * sin($latDelta / 2) +
-            cos($latFrom) * cos($latTo)
-            * sin($lonDelta / 2) * sin($lonDelta / 2);
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        // Distance in meters
-        $distance = $earthRadius * $c;
-        return $distance;
-    }
+//    private function haversineDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo)
+//    {
+//        $earthRadius = 6371000; // Earth radius in meters
+//        // Convert latitude and longitude from degrees to radians
+//        $latFrom = deg2rad($latitudeFrom);
+//        $lonFrom = deg2rad($longitudeFrom);
+//        $latTo = deg2rad($latitudeTo);
+//        $lonTo = deg2rad($longitudeTo);
+//        // Haversine formula
+//        $latDelta = $latTo - $latFrom;
+//        $lonDelta = $lonTo - $lonFrom;
+//        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+//            cos($latFrom) * cos($latTo)
+//            * sin($lonDelta / 2) * sin($lonDelta / 2);
+//        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+//        // Distance in meters
+//        $distance = $earthRadius * $c;
+//        return $distance;
+//    }
 
     public function dayWise(Request $request){
         if ($request->date){

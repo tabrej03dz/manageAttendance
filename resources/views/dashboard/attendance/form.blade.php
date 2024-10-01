@@ -33,8 +33,9 @@
                                 @csrf
                                 <div class="mb-3 d-none">
                                     <input type="file" id="capturedImage" name="image" class="form-control">
-                                    <input type="text" name="latitude" id="latitude" placeholder="Latitude">
-                                    <input type="text" name="longitude" id="longitude" placeholder="Longitude">
+{{--                                    <input type="text" name="latitude" id="latitude" placeholder="Latitude">--}}
+{{--                                    <input type="text" name="longitude" id="longitude" placeholder="Longitude">--}}
+                                    <input type="text" name="distance" id="distance">
                                 </div>
                                 <div class="d-grid">
                                     <button type="submit" id="upload" class="btn btn-success btn-full">Submit</button>
@@ -66,6 +67,10 @@
             }
         }
     </style>
+
+    @php
+        $userOffice = json_encode(auth()->user()->office);
+    @endphp
 
     <script>
         navigator.mediaDevices.getUserMedia({
@@ -126,17 +131,68 @@
     </script>
 
     <script>
+        var userOffice = @json(auth()->user()->office);
         window.onload = function() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
+                    // document.getElementById('latitude').value = position.coords.latitude;
+                    // document.getElementById('longitude').value = position.coords.longitude;
+                    let latitude = position.coords.latitude;
+                    let longitude = position.coords.longitude;
+                    let distance = haversineDistance(userOffice.latitude, userOffice.longitude, latitude, longitude);
+
+                    // document.getElementById('distance').value = distance;
+                    // const apiKey = '41b12ec59af34ece8d9e93f4d49e76f1';
+                    //
+                    //
+                    // let apiUrl = `https://api.opencagedata.com/geocode/v1/json?key=41b12ec59af34ece8d9e93f4d49e76f1&q=${latitude},${longitude}&pretty=1`;
+                    // fetch(apiUrl)
+                    //     .then(response => response.json())
+                    //     .then(data => {
+                    //         console.log(data.results[0].components);
+                    //     })
+                    //     .catch(error => {
+                    //         console.error('Error:', error);
+                    //     });
+
+
                 }, function(error) {
                     console.error("Error getting coordinates: ", error);
                 });
             } else {
                 console.error("Geolocation is not supported by this browser.");
             }
+        }
+    </script>
+
+    <script>
+
+    </script>
+    <script>
+        function haversineDistance(latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) {
+            const earthRadius = 6371000; // Earth radius in meters
+
+            // Convert latitude and longitude from degrees to radians
+            const latFrom = degreesToRadians(latitudeFrom);
+            const lonFrom = degreesToRadians(longitudeFrom);
+            const latTo = degreesToRadians(latitudeTo);
+            const lonTo = degreesToRadians(longitudeTo);
+
+            // Haversine formula
+            const latDelta = latTo - latFrom;
+            const lonDelta = lonTo - lonFrom;
+            const a = Math.sin(latDelta / 2) * Math.sin(latDelta / 2) +
+                Math.cos(latFrom) * Math.cos(latTo) *
+                Math.sin(lonDelta / 2) * Math.sin(lonDelta / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            // Distance in meters
+            const distance = earthRadius * c;
+            return distance;
+        }
+
+        function degreesToRadians(degrees) {
+            return degrees * (Math.PI / 180);
         }
     </script>
 @endsection
