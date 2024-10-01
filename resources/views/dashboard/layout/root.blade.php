@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="{{asset('plugins/summernote/summernote-bs4.css')}}">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
