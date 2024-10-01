@@ -1,5 +1,73 @@
 @extends('dashboard.layout.root')
 @section('content')
+    <!-- CSS for responsive cards -->
+    <style>
+        .responsive-card {
+            width: 100%;
+            /* This ensures the card takes up full width of the column */
+        }
+
+        /* For extra small and small screens: make cards square */
+        @media (max-width: 575.98px),
+        (min-width: 576px) and (max-width: 767.98px) {
+            .responsive-card {
+                aspect-ratio: 1 / 1;
+                /* Ensures square shape */
+                min-height: 140px;
+            }
+        }
+
+        /* For medium and large screens: allow flexible card height */
+        @media (min-width: 768px) {
+            .responsive-card {
+                height: auto;
+                /* Cards will grow based on content */
+            }
+        }
+
+        /* General Navbar Styling */
+        .navbar-dark {
+            padding-bottom: 10px;
+            /* Adds space at the bottom */
+        }
+
+        /* Link Styling */
+        .navbar-dark .nav-link {
+            position: relative;
+            padding: 10px 15px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            z-index: 1;
+            /* Ensures no overlapping */
+        }
+
+        /* Hover & Focus States */
+        .navbar-dark .nav-link:hover,
+        .navbar-dark .nav-link:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.05);
+            border-radius: 10px;
+        }
+
+        /* Icon Styling */
+        .navbar-dark .nav-link i {
+            font-size: 1.75rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Active Icon Effect */
+        .navbar-dark .nav-link.active i {
+            color: #ffffff;
+            transform: translateY(-5px);
+        }
+
+        /* Small text styling */
+        .navbar-dark .nav-link .small {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+    </style>
+
     <div class="container">
         <div class="card">
             <div class="card-body">
@@ -606,19 +674,20 @@
                 </section>
                 <!-- right col -->
 
-                <div class="container" style="margin-bottom:100px;">
+                <div class="container" style="margin-bottom: 100px;">
                     <!-- Header Section -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2 class="fw-bold">Dashboard</h2>
                         <a href="#" class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</a>
                     </div>
-                
+
                     <!-- Dashboard Icons Grid -->
                     <div class="row row-cols-2 row-cols-md-3 g-4">
                         <div class="col">
-                            <a href="{{route('leave.create')}}" class="text-decoration-none text-reset d-block">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                            <a href="{{ route('leave.create') }}" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-calendar-alt text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Leave Request</p>
                                     </div>
@@ -627,8 +696,9 @@
                         </div>
                         <div class="col">
                             <a href="#" class="text-decoration-none text-reset d-block">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-file-alt text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Leave Request Details</p>
                                     </div>
@@ -637,8 +707,9 @@
                         </div>
                         <div class="col">
                             <a href="#" class="text-decoration-none text-reset d-block" style="margin-top: 10px;">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-check-square text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Leave Approval</p>
                                     </div>
@@ -647,8 +718,9 @@
                         </div>
                         <div class="col">
                             <a href="#" class="text-decoration-none text-reset d-block" style="margin-top: 10px;">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-id-card text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Attendance Regularization</p>
                                     </div>
@@ -657,8 +729,9 @@
                         </div>
                         <div class="col">
                             <a href="#" class="text-decoration-none text-reset d-block" style="margin-top: 10px;">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Regularization Approval</p>
                                     </div>
@@ -667,8 +740,9 @@
                         </div>
                         <div class="col">
                             <a href="#" class="text-decoration-none text-reset d-block" style="margin-top: 10px;">
-                                <div class="card shadow border-0 h-100">
-                                    <div class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
                                         <i class="fas fa-list-ul text-danger mb-3" style="font-size: 3rem;"></i>
                                         <p class="mt-3 mb-0">Regularization Listing</p>
                                     </div>
@@ -677,43 +751,37 @@
                         </div>
                     </div>
                 </div>
-                
 
-                <!-- Mobile Bottom Navbar (Bootstrap) -->
-                <nav
-                    class="navbar navbar-light bg-danger fixed-bottom border-top border-secondary d-lg-none shadow-lg rounded-pill mb-2">
-                    <div class="container d-flex justify-content-around py-0">
-                        <!-- Home Link -->
-                        <a href="#"
-                            class="text-white text-decoration-none d-flex flex-column align-items-center active-link">
-                            <div class="bg-danger text-center px-2 py-0 rounded-pill"
-                                style="padding-top: 2px; padding-bottom: 2px;">
-                                <i class="fas fa-home" style="font-size: 1.75rem; transition: transform 0.3s ease;"></i>
-                                <small class="d-block mt-1">Home</small>
-                            </div>
-                        </a>
-                        <!-- Dashboard Link -->
-                        <a href="#"
-                            class="text-white-50 text-decoration-none d-flex flex-column align-items-center">
-                            <div class="bg-transparent text-center px-2 py-0 rounded-pill"
-                                style="padding-top: 2px; padding-bottom: 2px;">
-                                <i class="fas fa-th-large"
-                                    style="font-size: 1.75rem; transition: transform 0.3s ease;"></i>
-                                <small class="d-block mt-1">Dashboard</small>
-                            </div>
-                        </a>
-                        <!-- Profile Link -->
-                        <a href="#"
-                            class="text-white-50 text-decoration-none d-flex flex-column align-items-center">
-                            <div class="bg-transparent text-center px-2 py-0 rounded-pill"
-                                style="padding-top: 2px; padding-bottom: 2px;">
-                                <i class="fas fa-user" style="font-size: 1.75rem; transition: transform 0.3s ease;"></i>
-                                <small class="d-block mt-1">Profile</small>
-                            </div>
-                        </a>
+                <!-- Mobile App Style Bottom Navbar (Bootstrap) -->
+                <nav class="navbar navbar-dark bg-danger fixed-bottom d-lg-none"
+                    style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <div class="container-fluid px-0">
+                        <ul class="nav nav-fill w-100">
+                            <!-- Home Link -->
+                            <li class="nav-item">
+                                <a href="#"
+                                    class="nav-link text-white d-flex flex-column align-items-center py-2 active">
+                                    <i class="fas fa-home mb-1"></i>
+                                    <span class="small">Home</span>
+                                </a>
+                            </li>
+                            <!-- Dashboard Link -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link text-white d-flex flex-column align-items-center py-2">
+                                    <i class="fas fa-th-large mb-1"></i>
+                                    <span class="small">Dashboard</span>
+                                </a>
+                            </li>
+                            <!-- Profile Link -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link text-white d-flex flex-column align-items-center py-2">
+                                    <i class="fas fa-user mb-1"></i>
+                                    <span class="small">Profile</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
-
 
 
             </div>

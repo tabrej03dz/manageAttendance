@@ -145,81 +145,172 @@
 @extends('dashboard.layout.root')
 
 @section('content')
-
-<div class="container">
-    <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border: none; border-radius: 20px; margin: 20px; padding: 40px 20px; text-align: center; background-color: white;"> 
-
-        <!-- Time Display -->
-        <div style="font-size: 48px; font-weight: bold;">09:15 AM</div>
-        <p style="color: gray;">Feb 01, 2024 - Thursday</p>
-
-        <!-- Punch In Button -->
-        <div style="border-radius: 50%; width: 150px; height: 150px; margin: 20px auto; background-color: #f1f1f1; display: flex; justify-content: center; align-items: center;">
-            <i class="fas fa-hand-pointer" style="font-size: 40px; color: #dc3545;"></i>
-        </div>
-        <p>Punch In</p>
-
-        <!-- Log Time Section -->
-        <div class="row text-center" style="margin-top: 20px;">
-            <div class="col">
-                <i class="fas fa-clock" style="font-size: 24px; color: #dc3545;"></i>
-                <p class="mb-0">09:08 AM</p>
-                <small>Punch In</small>
+<div class="container py-4">
+    <div class="card attendance-card">
+        <div class="card-body text-center">
+            <h2 class="display-4 fw-bold mb-0 current-time">09:15 AM</h2>
+            <p class="text-muted current-date">Feb 01, 2024 - Thursday</p>
+            
+            <div class="punch-circle" id="punchCircle">
+                <i class="fas fa-hand-pointer fa-3x text-danger"></i>
             </div>
-            <div class="col">
-                <i class="fas fa-clock" style="font-size: 24px; color: #dc3545;"></i>
-                <p class="mb-0">06:05 PM</p>
-                <small>Punch Out</small>
+            <p class="fs-5 punch-status">Punch In</p>
+            
+            <div class="row text-center mt-4">
+                <div class="col-4">
+                    <i class="fas fa-sign-in-alt text-danger mb-2"></i>
+                    <p class="mb-0 punch-in-time">09:08 AM</p>
+                    <small class="text-muted">Punch In</small>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-sign-out-alt text-danger mb-2"></i>
+                    <p class="mb-0 punch-out-time">--:-- --</p>
+                    <small class="text-muted">Punch Out</small>
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-clock text-danger mb-2"></i>
+                    <p class="mb-0 total-hours">--:--</p>
+                    <small class="text-muted">Total Hours</small>
+                </div>
             </div>
-            <div class="col">
-                <i class="fas fa-clock" style="font-size: 24px; color: #dc3545;"></i>
-                <p class="mb-0">08:13</p>
-                <small>Total Hours</small>
-            </div>
-        </div>
-
-        <div class="text-center" style="margin: 20px;">
-            <div class="btn" id="punchButton" style="background-color: #dc3545; color: white; padding: 15px 30px; display: inline-flex; align-items: center; border-radius: 30px; position: relative; overflow: hidden;">
-                <!-- Arrow inside a perfect circle -->
-                <span id="arrowContainer" class="arrow-container" style="display: inline-flex; justify-content: center; align-items: center; background-color: white; color: #dc3545; width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; position: relative;">
-                    <i id="arrowIcon" class="fas fa-chevron-right" style="font-size: 20px;"></i>
-                </span>
-                Swipe right to Punch in
+            
+            <div class="mt-4">
+                <button id="punchButton" class="btn btn-danger btn-lg w-100 punch-button">
+                    <span class="arrow-container text-danger">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                    <span class="swipe-text">Swipe to Punch In</span>
+                </button>
             </div>
         </div>
-        
     </div>
 </div>
 
 <style>
-    .slide {
-        animation: slide 0.5s forwards; /* Slide on click */
+    .attendance-card {
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(145deg, #ffffff, #fff5f5);
     }
-    
-    @keyframes slide {
-        0% {
-            transform: translateX(0);
-        }
-        100% {
-            transform: translateX(10px); /* Adjust this value for slide distance */
-        }
+    .punch-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #ffe6e6, #ffffff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto;
+        box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .punch-circle:active {
+        box-shadow: inset 5px 5px 10px #d1d1d1, inset -5px -5px 10px #ffffff;
+    }
+    .punch-button {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .arrow-container {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 30px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s ease;
+    }
+    .punch-button.active .arrow-container {
+        transform: translate(200px, -50%);
+    }
+    .punch-button.active .swipe-text {
+        opacity: 0;
     }
 </style>
 
 <script>
-    document.getElementById('punchButton').addEventListener('click', function() {
-        const arrowContainer = document.getElementById('arrowContainer');
-        arrowContainer.classList.add('slide');
+document.addEventListener('DOMContentLoaded', function() {
+    const punchButton = document.getElementById('punchButton');
+    const punchCircle = document.getElementById('punchCircle');
+    const punchStatus = document.querySelector('.punch-status');
+    const punchInTime = document.querySelector('.punch-in-time');
+    const punchOutTime = document.querySelector('.punch-out-time');
+    const totalHours = document.querySelector('.total-hours');
+    const currentTime = document.querySelector('.current-time');
+    const currentDate = document.querySelector('.current-date');
+    
+    let isPunchedIn = false;
+    let startTime, endTime;
 
-        // Optional: Remove the class after animation ends to allow re-clicking
-        arrowContainer.addEventListener('animationend', function() {
-            arrowContainer.classList.remove('slide');
-            arrowContainer.style.transform = 'translateX(0)'; // Reset position
-        }, { once: true });
+    function updateCurrentTime() {
+        const now = new Date();
+        currentTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        currentDate.textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit', weekday: 'long' });
+    }
+
+    setInterval(updateCurrentTime, 1000);
+    updateCurrentTime();
+
+    function handlePunch() {
+        const now = new Date();
+        if (!isPunchedIn) {
+            startTime = now;
+            punchInTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            punchStatus.textContent = 'Punch Out';
+            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch Out';
+            isPunchedIn = true;
+        } else {
+            endTime = now;
+            punchOutTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const diff = Math.abs(endTime - startTime);
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            totalHours.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            punchStatus.textContent = 'Punch In';
+            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch In';
+            isPunchedIn = false;
+        }
+    }
+
+    let startX;
+    let isDragging = false;
+
+    punchButton.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        isDragging = true;
     });
-</script>
 
+    punchButton.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        let diffX = e.touches[0].clientX - startX;
+        if (diffX > 50) {
+            this.classList.add('active');
+        } else {
+            this.classList.remove('active');
+        }
+    });
+
+    punchButton.addEventListener('touchend', function() {
+        isDragging = false;
+        if (this.classList.contains('active')) {
+            handlePunch();
+        }
+        this.classList.remove('active');
+    });
+
+    punchCircle.addEventListener('click', handlePunch);
+});
+</script>
 @endsection
+
 
 
 {{-- @extends('dashboard.layout.root')
