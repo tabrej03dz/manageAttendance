@@ -142,7 +142,7 @@
 @endsection --}}
 
 
-@extends('dashboard.layout.root')
+{{-- @extends('dashboard.layout.root')
 
 @section('content')
 <div class="container py-4">
@@ -189,8 +189,12 @@
 <style>
     .attendance-card {
         border-radius: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        background: linear-gradient(145deg, #ffffff, #fff5f5);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(145deg, #ffffff, #f9d6d6);
+        transition: transform 0.3s ease;
+    }
+    .attendance-card:hover {
+        transform: translateY(-5px);
     }
     .punch-circle {
         width: 120px;
@@ -201,12 +205,15 @@
         justify-content: center;
         align-items: center;
         margin: 20px auto;
-        box-shadow: 5px 5px 10px #d1d1d1, -5px -5px 10px #ffffff;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px #ffffff;
         cursor: pointer;
         transition: all 0.3s ease;
     }
+    .punch-circle:hover {
+        box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3), -8px -8px 20px #ffffff;
+    }
     .punch-circle:active {
-        box-shadow: inset 5px 5px 10px #d1d1d1, inset -5px -5px 10px #ffffff;
+        box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2), inset -5px -5px 10px #ffffff;
     }
     .punch-button {
         position: relative;
@@ -232,6 +239,20 @@
     }
     .punch-button.active .swipe-text {
         opacity: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .attendance-card {
+            padding: 20px;
+        }
+        .punch-circle {
+            width: 100px;
+            height: 100px;
+        }
+        .btn-lg {
+            font-size: 1rem;
+        }
     }
 </style>
 
@@ -309,112 +330,210 @@ document.addEventListener('DOMContentLoaded', function() {
     punchCircle.addEventListener('click', handlePunch);
 });
 </script>
+@endsection --}}
+
+
+
+@extends('dashboard.layout.root')
+
+@section('content')
+<!-- Include Bootstrap CSS and FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+    /* Your existing styles remain unchanged */
+    #calendar {
+        max-width: 100%;
+        margin: 0 auto;
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        background-color: white;
+    }
+
+    .calendar-card {
+        border-radius: 15px;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+    }
+
+    .calendar-header h5 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #000;
+        margin: 0;
+    }
+
+    .date-info {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 15px;
+        justify-content: space-between;
+    }
+
+    .badge {
+        font-size: 1.5rem;
+        padding: 10px;
+        border-radius: 10px;
+        margin-right: 15px;
+    }
+
+    .badge.bg-success {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .badge.bg-warning {
+        background-color: #ff9800;
+        color: white;
+    }
+
+    .badge.bg-danger {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .punch-info {
+        font-weight: bold;
+        display: block;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .total-hours {
+        font-size: 1rem;
+        color: #333;
+        font-weight: bold;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 576px) {
+        .calendar-header h5 {
+            font-size: 1.4rem;
+        }
+
+        .date-info {
+            padding: 10px;
+        }
+
+        .badge {
+            padding: 8px;
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
+<!-- FullCalendar Rendering -->
+<div class="container mt-3">
+    <div id="calendar"></div>
+</div>
+
+<!-- Attendance History Section -->
+<div class="container mt-3">
+    <div class="calendar-card">
+        <div class="calendar-header">
+            <h5>Attendance History</h5>
+            <button class="btn btn-link text-secondary">
+                <i class="bi bi-three-dots-vertical"></i>
+            </button>
+        </div>
+
+        <!-- Date Info Entries -->
+        <div class="date-info">
+            <div class="badge bg-success text-white">06</div>
+            <div>
+                <span class="punch-info">Punch In: 09:08 AM</span> 
+                <span class="punch-info">Punch Out: 05:06 PM</span>
+            </div>
+            <div class="total-hours">Total Hours: 08:13</div>
+        </div>
+
+        <div class="date-info">
+            <div class="badge bg-warning text-white">07</div>
+            <div>
+                <span class="punch-info">Punch In: 09:08 AM</span> 
+                <span class="punch-info">Punch Out: 05:06 PM</span>
+            </div>
+            <div class="total-hours">Total Hours: 08:13</div>
+        </div>
+
+        <div class="date-info">
+            <div class="badge bg-danger text-white">08</div>
+            <div>
+                <span class="punch-info">Punch In: 09:08 AM</span> 
+                <span class="punch-info">Punch Out: 05:06 PM</span>
+            </div>
+            <div class="total-hours">Total Hours: 08:13</div>
+        </div>
+
+        <div class="date-info">
+            <div class="badge bg-success text-white">09</div>
+            <div>
+                <span class="punch-info">Punch In: 09:08 AM</span> 
+                <span class="punch-info">Punch Out: 05:06 PM</span>
+            </div>
+            <div class="total-hours">Total Hours: 08:13</div>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery, FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        // Define holidays
+        var holidays = [
+            { title: 'New Year\'s Day', start: '2024-01-01' },
+            { title: 'Independence Day', start: '2024-07-04' },
+            { title: 'Thanksgiving', start: '2024-11-28' },
+            { title: 'Christmas', start: '2024-12-25' },
+        ];
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: ''
+            },
+            height: 'auto',
+            contentHeight: 'auto',
+            events: holidays, // Add holidays as events
+            eventColor: '#ff5733', // Optional: Set a color for holiday events
+        });
+
+        calendar.render();
+    });
+</script>
+
 @endsection
 
 
 
-{{-- @extends('dashboard.layout.root')
 
-@section('content')
-<!-- Include Bootstrap CSS if not already included in your layout -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="d-flex flex-column justify-content-center align-items-center vh-100">
-    <h1 class="text-uppercase letter-spacing">Slide to Unlock</h1>
-    <input type="range" value="0" class="form-range pullee" id="slider" min="0" max="150" />
-</div>
 
-<script>
-    const inputRange = document.getElementById('slider');
-    const maxValue = 150; // Higher value for smoother dragging
-    const speed = 12; // Animation speed
-    let currValue, rafID;
 
-    // Listen for unlock start
-    inputRange.addEventListener('mousedown', unlockStartHandler, false);
-    inputRange.addEventListener('touchstart', unlockStartHandler, false);
-    inputRange.addEventListener('mouseup', unlockEndHandler, false);
-    inputRange.addEventListener('touchend', unlockEndHandler, false);
-
-    function unlockStartHandler() {
-        window.cancelAnimationFrame(rafID);
-        currValue = +this.value; // Set to desired value
-    }
-
-    function unlockEndHandler() {
-        currValue = +this.value; // Store current value
-        if (currValue >= maxValue) {
-            successHandler();
-        } else {
-            rafID = window.requestAnimationFrame(animateHandler);
-        }
-    }
-
-    function animateHandler() {
-        inputRange.value = currValue; // Update input range
-        if (currValue > -1) {
-            rafID = window.requestAnimationFrame(animateHandler); // Continue animation
-        }
-        currValue -= speed; // Decrement value
-    }
-
-    function successHandler() {
-        alert('Unlocked');
-        inputRange.value = 0; // Reset input range
-    }
-</script>
-
-<style>
-    .pullee {
-        -webkit-appearance: none; /* Remove default styling */
-        appearance: none;
-    }
-
-    .pullee::-webkit-slider-runnable-track {
-        height: 1rem;
-        background: #DDE0E3;
-    }
-
-    .pullee::-moz-range-track {
-        height: 1rem;
-        background: #DDE0E3;
-    }
-
-    .pullee::-ms-track {
-        height: 1rem;
-        background: #DDE0E3;
-    }
-
-    .pullee::-webkit-slider-thumb {
-        -webkit-appearance: none; /* Remove default styling */
-        appearance: none;
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
-        background: #5990DD;
-        cursor: grabbing; /* Change cursor on hover */
-    }
-
-    .pullee::-moz-range-thumb {
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
-        background: #5990DD;
-        cursor: grabbing; /* Change cursor on hover */
-    }
-
-    .pullee::-ms-thumb {
-        width: 1rem;
-        height: 1rem;
-        border-radius: 50%;
-        background: #5990DD;
-        cursor: grabbing; /* Change cursor on hover */
-    }
-
-    .letter-spacing {
-        letter-spacing: 1.25px;
-    }
-</style>
-@endsection --}}
 
 
