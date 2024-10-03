@@ -1,4 +1,4 @@
-{{-- @extends('dashboard.layout.root')
+ @extends('dashboard.layout.root')
 
 @section('content')
     <div class="content">
@@ -33,8 +33,8 @@
                                 @csrf
                                 <div class="mb-3 d-none">
                                     <input type="file" id="capturedImage" name="image" class="form-control">
-{{--                                    <input type="text" name="latitude" id="latitude" placeholder="Latitude">--}}
-{{--                                    <input type="text" name="longitude" id="longitude" placeholder="Longitude">--}}
+                                    <input type="text" name="latitude" id="latitude" placeholder="Latitude">
+                                    <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                                     <input type="text" name="distance" id="distance">
                                 </div>
                                 <div class="d-grid">
@@ -141,7 +141,7 @@
                     let longitude = position.coords.longitude;
                     let distance = haversineDistance(userOffice.latitude, userOffice.longitude, latitude, longitude);
 
-                    // document.getElementById('distance').value = distance;
+                    document.getElementById('distance').value = distance;
                     // const apiKey = '41b12ec59af34ece8d9e93f4d49e76f1';
                     //
                     //
@@ -164,11 +164,7 @@
             }
         }
     </script>
-<<<<<<< HEAD
 
-    <script>
-
-    </script>
     <script>
         function haversineDistance(latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) {
             const earthRadius = 6371000; // Earth radius in meters
@@ -196,397 +192,397 @@
             return degrees * (Math.PI / 180);
         }
     </script>
-=======
-@endsection --}}
 
-
-{{-- @extends('dashboard.layout.root')
-
-@section('content')
-<div class="container py-4">
-    <div class="card attendance-card">
-        <div class="card-body text-center">
-            <h2 class="display-4 fw-bold mb-0 current-time">09:15 AM</h2>
-            <p class="text-muted current-date">Feb 01, 2024 - Thursday</p>
-            
-            <div class="punch-circle" id="punchCircle">
-                <i class="fas fa-hand-pointer fa-3x text-danger"></i>
-            </div>
-            <p class="fs-5 punch-status">Punch In</p>
-            
-            <div class="row text-center mt-4">
-                <div class="col-4">
-                    <i class="fas fa-sign-in-alt text-danger mb-2"></i>
-                    <p class="mb-0 punch-in-time">09:08 AM</p>
-                    <small class="text-muted">Punch In</small>
-                </div>
-                <div class="col-4">
-                    <i class="fas fa-sign-out-alt text-danger mb-2"></i>
-                    <p class="mb-0 punch-out-time">--:-- --</p>
-                    <small class="text-muted">Punch Out</small>
-                </div>
-                <div class="col-4">
-                    <i class="fas fa-clock text-danger mb-2"></i>
-                    <p class="mb-0 total-hours">--:--</p>
-                    <small class="text-muted">Total Hours</small>
-                </div>
-            </div>
-            
-            <div class="mt-4">
-                <button id="punchButton" class="btn btn-danger btn-lg w-100 punch-button">
-                    <span class="arrow-container text-danger">
-                        <i class="fas fa-chevron-right"></i>
-                    </span>
-                    <span class="swipe-text">Swipe to Punch In</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .attendance-card {
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        background: linear-gradient(145deg, #ffffff, #f9d6d6);
-        transition: transform 0.3s ease;
-    }
-    .attendance-card:hover {
-        transform: translateY(-5px);
-    }
-    .punch-circle {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: linear-gradient(145deg, #ffe6e6, #ffffff);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 20px auto;
-        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px #ffffff;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .punch-circle:hover {
-        box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3), -8px -8px 20px #ffffff;
-    }
-    .punch-circle:active {
-        box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2), inset -5px -5px 10px #ffffff;
-    }
-    .punch-button {
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-    .arrow-container {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 30px;
-        height: 30px;
-        background-color: white;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: transform 0.3s ease;
-    }
-    .punch-button.active .arrow-container {
-        transform: translate(200px, -50%);
-    }
-    .punch-button.active .swipe-text {
-        opacity: 0;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .attendance-card {
-            padding: 20px;
-        }
-        .punch-circle {
-            width: 100px;
-            height: 100px;
-        }
-        .btn-lg {
-            font-size: 1rem;
-        }
-    }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const punchButton = document.getElementById('punchButton');
-    const punchCircle = document.getElementById('punchCircle');
-    const punchStatus = document.querySelector('.punch-status');
-    const punchInTime = document.querySelector('.punch-in-time');
-    const punchOutTime = document.querySelector('.punch-out-time');
-    const totalHours = document.querySelector('.total-hours');
-    const currentTime = document.querySelector('.current-time');
-    const currentDate = document.querySelector('.current-date');
-    
-    let isPunchedIn = false;
-    let startTime, endTime;
-
-    function updateCurrentTime() {
-        const now = new Date();
-        currentTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        currentDate.textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit', weekday: 'long' });
-    }
-
-    setInterval(updateCurrentTime, 1000);
-    updateCurrentTime();
-
-    function handlePunch() {
-        const now = new Date();
-        if (!isPunchedIn) {
-            startTime = now;
-            punchInTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            punchStatus.textContent = 'Punch Out';
-            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch Out';
-            isPunchedIn = true;
-        } else {
-            endTime = now;
-            punchOutTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            const diff = Math.abs(endTime - startTime);
-            const hours = Math.floor(diff / 3600000);
-            const minutes = Math.floor((diff % 3600000) / 60000);
-            totalHours.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            punchStatus.textContent = 'Punch In';
-            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch In';
-            isPunchedIn = false;
-        }
-    }
-
-    let startX;
-    let isDragging = false;
-
-    punchButton.addEventListener('touchstart', function(e) {
-        startX = e.touches[0].clientX;
-        isDragging = true;
-    });
-
-    punchButton.addEventListener('touchmove', function(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        let diffX = e.touches[0].clientX - startX;
-        if (diffX > 50) {
-            this.classList.add('active');
-        } else {
-            this.classList.remove('active');
-        }
-    });
-
-    punchButton.addEventListener('touchend', function() {
-        isDragging = false;
-        if (this.classList.contains('active')) {
-            handlePunch();
-        }
-        this.classList.remove('active');
-    });
-
-    punchCircle.addEventListener('click', handlePunch);
-});
-</script>
-@endsection --}}
-
-
-
-@extends('dashboard.layout.root')
-
-@section('content')
-<!-- Include Bootstrap CSS and FullCalendar -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-    /* Your existing styles remain unchanged */
-    #calendar {
-        max-width: 100%;
-        margin: 0 auto;
-        border-radius: 15px;
-        overflow: hidden;
-        border: none;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-        padding: 10px;
-        background-color: white;
-    }
-
-    .calendar-card {
-        border-radius: 15px;
-        background-color: white;
-        padding: 20px;
-        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
-    }
-
-    .calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 15px;
-    }
-
-    .calendar-header h5 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #000;
-        margin: 0;
-    }
-
-    .date-info {
-        display: flex;
-        align-items: center;
-        background-color: white;
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);
-        margin-bottom: 15px;
-        justify-content: space-between;
-    }
-
-    .badge {
-        font-size: 1.5rem;
-        padding: 10px;
-        border-radius: 10px;
-        margin-right: 15px;
-    }
-
-    .badge.bg-success {
-        background-color: #4caf50;
-        color: white;
-    }
-
-    .badge.bg-warning {
-        background-color: #ff9800;
-        color: white;
-    }
-
-    .badge.bg-danger {
-        background-color: #f44336;
-        color: white;
-    }
-
-    .punch-info {
-        font-weight: bold;
-        display: block;
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    .total-hours {
-        font-size: 1rem;
-        color: #333;
-        font-weight: bold;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 576px) {
-        .calendar-header h5 {
-            font-size: 1.4rem;
-        }
-
-        .date-info {
-            padding: 10px;
-        }
-
-        .badge {
-            padding: 8px;
-            font-size: 1.4rem;
-        }
-    }
-</style>
-
-<!-- FullCalendar Rendering -->
-<div class="container mt-3">
-    <div id="calendar"></div>
-</div>
-
-<!-- Attendance History Section -->
-<div class="container mt-3">
-    <div class="calendar-card">
-        <div class="calendar-header">
-            <h5>Attendance History</h5>
-            <button class="btn btn-link text-secondary">
-                <i class="bi bi-three-dots-vertical"></i>
-            </button>
-        </div>
-
-        <!-- Date Info Entries -->
-        <div class="date-info">
-            <div class="badge bg-success text-white">06</div>
-            <div>
-                <span class="punch-info">Punch In: 09:08 AM</span> 
-                <span class="punch-info">Punch Out: 05:06 PM</span>
-            </div>
-            <div class="total-hours">Total Hours: 08:13</div>
-        </div>
-
-        <div class="date-info">
-            <div class="badge bg-warning text-white">07</div>
-            <div>
-                <span class="punch-info">Punch In: 09:08 AM</span> 
-                <span class="punch-info">Punch Out: 05:06 PM</span>
-            </div>
-            <div class="total-hours">Total Hours: 08:13</div>
-        </div>
-
-        <div class="date-info">
-            <div class="badge bg-danger text-white">08</div>
-            <div>
-                <span class="punch-info">Punch In: 09:08 AM</span> 
-                <span class="punch-info">Punch Out: 05:06 PM</span>
-            </div>
-            <div class="total-hours">Total Hours: 08:13</div>
-        </div>
-
-        <div class="date-info">
-            <div class="badge bg-success text-white">09</div>
-            <div>
-                <span class="punch-info">Punch In: 09:08 AM</span> 
-                <span class="punch-info">Punch Out: 05:06 PM</span>
-            </div>
-            <div class="total-hours">Total Hours: 08:13</div>
-        </div>
-    </div>
-</div>
-
-<!-- Include jQuery, FullCalendar JS -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-
-        // Define holidays
-        var holidays = [
-            { title: 'New Year\'s Day', start: '2024-01-01' },
-            { title: 'Independence Day', start: '2024-07-04' },
-            { title: 'Thanksgiving', start: '2024-11-28' },
-            { title: 'Christmas', start: '2024-12-25' },
-        ];
-
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next',
-                center: 'title',
-                right: ''
-            },
-            height: 'auto',
-            contentHeight: 'auto',
-            events: holidays, // Add holidays as events
-            eventColor: '#ff5733', // Optional: Set a color for holiday events
-        });
-
-        calendar.render();
-    });
-</script>
-
->>>>>>> dd3c171f9a1eab4e4c4865c5f7b82e5fd45a02e1
 @endsection
+
+
+{{-- @extends('dashboard.layout.root')--}}
+
+{{--@section('content')--}}
+{{--<div class="container py-4">--}}
+{{--    <div class="card attendance-card">--}}
+{{--        <div class="card-body text-center">--}}
+{{--            <h2 class="display-4 fw-bold mb-0 current-time">09:15 AM</h2>--}}
+{{--            <p class="text-muted current-date">Feb 01, 2024 - Thursday</p>--}}
+
+{{--            <div class="punch-circle" id="punchCircle">--}}
+{{--                <i class="fas fa-hand-pointer fa-3x text-danger"></i>--}}
+{{--            </div>--}}
+{{--            <p class="fs-5 punch-status">Punch In</p>--}}
+
+{{--            <div class="row text-center mt-4">--}}
+{{--                <div class="col-4">--}}
+{{--                    <i class="fas fa-sign-in-alt text-danger mb-2"></i>--}}
+{{--                    <p class="mb-0 punch-in-time">09:08 AM</p>--}}
+{{--                    <small class="text-muted">Punch In</small>--}}
+{{--                </div>--}}
+{{--                <div class="col-4">--}}
+{{--                    <i class="fas fa-sign-out-alt text-danger mb-2"></i>--}}
+{{--                    <p class="mb-0 punch-out-time">--:-- --</p>--}}
+{{--                    <small class="text-muted">Punch Out</small>--}}
+{{--                </div>--}}
+{{--                <div class="col-4">--}}
+{{--                    <i class="fas fa-clock text-danger mb-2"></i>--}}
+{{--                    <p class="mb-0 total-hours">--:--</p>--}}
+{{--                    <small class="text-muted">Total Hours</small>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+
+{{--            <div class="mt-4">--}}
+{{--                <button id="punchButton" class="btn btn-danger btn-lg w-100 punch-button">--}}
+{{--                    <span class="arrow-container text-danger">--}}
+{{--                        <i class="fas fa-chevron-right"></i>--}}
+{{--                    </span>--}}
+{{--                    <span class="swipe-text">Swipe to Punch In</span>--}}
+{{--                </button>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
+
+{{--<style>--}}
+{{--    .attendance-card {--}}
+{{--        border-radius: 20px;--}}
+{{--        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);--}}
+{{--        background: linear-gradient(145deg, #ffffff, #f9d6d6);--}}
+{{--        transition: transform 0.3s ease;--}}
+{{--    }--}}
+{{--    .attendance-card:hover {--}}
+{{--        transform: translateY(-5px);--}}
+{{--    }--}}
+{{--    .punch-circle {--}}
+{{--        width: 120px;--}}
+{{--        height: 120px;--}}
+{{--        border-radius: 50%;--}}
+{{--        background: linear-gradient(145deg, #ffe6e6, #ffffff);--}}
+{{--        display: flex;--}}
+{{--        justify-content: center;--}}
+{{--        align-items: center;--}}
+{{--        margin: 20px auto;--}}
+{{--        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px #ffffff;--}}
+{{--        cursor: pointer;--}}
+{{--        transition: all 0.3s ease;--}}
+{{--    }--}}
+{{--    .punch-circle:hover {--}}
+{{--        box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.3), -8px -8px 20px #ffffff;--}}
+{{--    }--}}
+{{--    .punch-circle:active {--}}
+{{--        box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2), inset -5px -5px 10px #ffffff;--}}
+{{--    }--}}
+{{--    .punch-button {--}}
+{{--        position: relative;--}}
+{{--        overflow: hidden;--}}
+{{--        transition: all 0.3s ease;--}}
+{{--    }--}}
+{{--    .arrow-container {--}}
+{{--        position: absolute;--}}
+{{--        left: 10px;--}}
+{{--        top: 50%;--}}
+{{--        transform: translateY(-50%);--}}
+{{--        width: 30px;--}}
+{{--        height: 30px;--}}
+{{--        background-color: white;--}}
+{{--        border-radius: 50%;--}}
+{{--        display: flex;--}}
+{{--        justify-content: center;--}}
+{{--        align-items: center;--}}
+{{--        transition: transform 0.3s ease;--}}
+{{--    }--}}
+{{--    .punch-button.active .arrow-container {--}}
+{{--        transform: translate(200px, -50%);--}}
+{{--    }--}}
+{{--    .punch-button.active .swipe-text {--}}
+{{--        opacity: 0;--}}
+{{--    }--}}
+
+{{--    /* Responsive Design */--}}
+{{--    @media (max-width: 768px) {--}}
+{{--        .attendance-card {--}}
+{{--            padding: 20px;--}}
+{{--        }--}}
+{{--        .punch-circle {--}}
+{{--            width: 100px;--}}
+{{--            height: 100px;--}}
+{{--        }--}}
+{{--        .btn-lg {--}}
+{{--            font-size: 1rem;--}}
+{{--        }--}}
+{{--    }--}}
+{{--</style>--}}
+
+{{--<script>--}}
+{{--document.addEventListener('DOMContentLoaded', function() {--}}
+{{--    const punchButton = document.getElementById('punchButton');--}}
+{{--    const punchCircle = document.getElementById('punchCircle');--}}
+{{--    const punchStatus = document.querySelector('.punch-status');--}}
+{{--    const punchInTime = document.querySelector('.punch-in-time');--}}
+{{--    const punchOutTime = document.querySelector('.punch-out-time');--}}
+{{--    const totalHours = document.querySelector('.total-hours');--}}
+{{--    const currentTime = document.querySelector('.current-time');--}}
+{{--    const currentDate = document.querySelector('.current-date');--}}
+
+{{--    let isPunchedIn = false;--}}
+{{--    let startTime, endTime;--}}
+
+{{--    function updateCurrentTime() {--}}
+{{--        const now = new Date();--}}
+{{--        currentTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });--}}
+{{--        currentDate.textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit', weekday: 'long' });--}}
+{{--    }--}}
+
+{{--    setInterval(updateCurrentTime, 1000);--}}
+{{--    updateCurrentTime();--}}
+
+{{--    function handlePunch() {--}}
+{{--        const now = new Date();--}}
+{{--        if (!isPunchedIn) {--}}
+{{--            startTime = now;--}}
+{{--            punchInTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });--}}
+{{--            punchStatus.textContent = 'Punch Out';--}}
+{{--            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch Out';--}}
+{{--            isPunchedIn = true;--}}
+{{--        } else {--}}
+{{--            endTime = now;--}}
+{{--            punchOutTime.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });--}}
+{{--            const diff = Math.abs(endTime - startTime);--}}
+{{--            const hours = Math.floor(diff / 3600000);--}}
+{{--            const minutes = Math.floor((diff % 3600000) / 60000);--}}
+{{--            totalHours.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;--}}
+{{--            punchStatus.textContent = 'Punch In';--}}
+{{--            punchButton.querySelector('.swipe-text').textContent = 'Swipe to Punch In';--}}
+{{--            isPunchedIn = false;--}}
+{{--        }--}}
+{{--    }--}}
+
+{{--    let startX;--}}
+{{--    let isDragging = false;--}}
+
+{{--    punchButton.addEventListener('touchstart', function(e) {--}}
+{{--        startX = e.touches[0].clientX;--}}
+{{--        isDragging = true;--}}
+{{--    });--}}
+
+{{--    punchButton.addEventListener('touchmove', function(e) {--}}
+{{--        if (!isDragging) return;--}}
+{{--        e.preventDefault();--}}
+{{--        let diffX = e.touches[0].clientX - startX;--}}
+{{--        if (diffX > 50) {--}}
+{{--            this.classList.add('active');--}}
+{{--        } else {--}}
+{{--            this.classList.remove('active');--}}
+{{--        }--}}
+{{--    });--}}
+
+{{--    punchButton.addEventListener('touchend', function() {--}}
+{{--        isDragging = false;--}}
+{{--        if (this.classList.contains('active')) {--}}
+{{--            handlePunch();--}}
+{{--        }--}}
+{{--        this.classList.remove('active');--}}
+{{--    });--}}
+
+{{--    punchCircle.addEventListener('click', handlePunch);--}}
+{{--});--}}
+{{--</script>--}}
+{{--@endsection --}}
+
+
+
+{{--@extends('dashboard.layout.root')--}}
+
+{{--@section('content')--}}
+{{--<!-- Include Bootstrap CSS and FullCalendar -->--}}
+{{--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">--}}
+{{--<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">--}}
+{{--<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">--}}
+
+{{--<style>--}}
+{{--    /* Your existing styles remain unchanged */--}}
+{{--    #calendar {--}}
+{{--        max-width: 100%;--}}
+{{--        margin: 0 auto;--}}
+{{--        border-radius: 15px;--}}
+{{--        overflow: hidden;--}}
+{{--        border: none;--}}
+{{--        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);--}}
+{{--        padding: 10px;--}}
+{{--        background-color: white;--}}
+{{--    }--}}
+
+{{--    .calendar-card {--}}
+{{--        border-radius: 15px;--}}
+{{--        background-color: white;--}}
+{{--        padding: 20px;--}}
+{{--        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);--}}
+{{--        margin-top: 20px;--}}
+{{--    }--}}
+
+{{--    .calendar-header {--}}
+{{--        display: flex;--}}
+{{--        justify-content: space-between;--}}
+{{--        align-items: center;--}}
+{{--        padding: 10px 15px;--}}
+{{--    }--}}
+
+{{--    .calendar-header h5 {--}}
+{{--        font-size: 1.5rem;--}}
+{{--        font-weight: bold;--}}
+{{--        color: #000;--}}
+{{--        margin: 0;--}}
+{{--    }--}}
+
+{{--    .date-info {--}}
+{{--        display: flex;--}}
+{{--        align-items: center;--}}
+{{--        background-color: white;--}}
+{{--        padding: 15px;--}}
+{{--        border-radius: 10px;--}}
+{{--        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05);--}}
+{{--        margin-bottom: 15px;--}}
+{{--        justify-content: space-between;--}}
+{{--    }--}}
+
+{{--    .badge {--}}
+{{--        font-size: 1.5rem;--}}
+{{--        padding: 10px;--}}
+{{--        border-radius: 10px;--}}
+{{--        margin-right: 15px;--}}
+{{--    }--}}
+
+{{--    .badge.bg-success {--}}
+{{--        background-color: #4caf50;--}}
+{{--        color: white;--}}
+{{--    }--}}
+
+{{--    .badge.bg-warning {--}}
+{{--        background-color: #ff9800;--}}
+{{--        color: white;--}}
+{{--    }--}}
+
+{{--    .badge.bg-danger {--}}
+{{--        background-color: #f44336;--}}
+{{--        color: white;--}}
+{{--    }--}}
+
+{{--    .punch-info {--}}
+{{--        font-weight: bold;--}}
+{{--        display: block;--}}
+{{--        color: #666;--}}
+{{--        font-size: 0.9rem;--}}
+{{--    }--}}
+
+{{--    .total-hours {--}}
+{{--        font-size: 1rem;--}}
+{{--        color: #333;--}}
+{{--        font-weight: bold;--}}
+{{--    }--}}
+
+{{--    /* Responsive Styles */--}}
+{{--    @media (max-width: 576px) {--}}
+{{--        .calendar-header h5 {--}}
+{{--            font-size: 1.4rem;--}}
+{{--        }--}}
+
+{{--        .date-info {--}}
+{{--            padding: 10px;--}}
+{{--        }--}}
+
+{{--        .badge {--}}
+{{--            padding: 8px;--}}
+{{--            font-size: 1.4rem;--}}
+{{--        }--}}
+{{--    }--}}
+{{--</style>--}}
+
+{{--<!-- FullCalendar Rendering -->--}}
+{{--<div class="container mt-3">--}}
+{{--    <div id="calendar"></div>--}}
+{{--</div>--}}
+
+{{--<!-- Attendance History Section -->--}}
+{{--<div class="container mt-3">--}}
+{{--    <div class="calendar-card">--}}
+{{--        <div class="calendar-header">--}}
+{{--            <h5>Attendance History</h5>--}}
+{{--            <button class="btn btn-link text-secondary">--}}
+{{--                <i class="bi bi-three-dots-vertical"></i>--}}
+{{--            </button>--}}
+{{--        </div>--}}
+
+{{--        <!-- Date Info Entries -->--}}
+{{--        <div class="date-info">--}}
+{{--            <div class="badge bg-success text-white">06</div>--}}
+{{--            <div>--}}
+{{--                <span class="punch-info">Punch In: 09:08 AM</span>--}}
+{{--                <span class="punch-info">Punch Out: 05:06 PM</span>--}}
+{{--            </div>--}}
+{{--            <div class="total-hours">Total Hours: 08:13</div>--}}
+{{--        </div>--}}
+
+{{--        <div class="date-info">--}}
+{{--            <div class="badge bg-warning text-white">07</div>--}}
+{{--            <div>--}}
+{{--                <span class="punch-info">Punch In: 09:08 AM</span>--}}
+{{--                <span class="punch-info">Punch Out: 05:06 PM</span>--}}
+{{--            </div>--}}
+{{--            <div class="total-hours">Total Hours: 08:13</div>--}}
+{{--        </div>--}}
+
+{{--        <div class="date-info">--}}
+{{--            <div class="badge bg-danger text-white">08</div>--}}
+{{--            <div>--}}
+{{--                <span class="punch-info">Punch In: 09:08 AM</span>--}}
+{{--                <span class="punch-info">Punch Out: 05:06 PM</span>--}}
+{{--            </div>--}}
+{{--            <div class="total-hours">Total Hours: 08:13</div>--}}
+{{--        </div>--}}
+
+{{--        <div class="date-info">--}}
+{{--            <div class="badge bg-success text-white">09</div>--}}
+{{--            <div>--}}
+{{--                <span class="punch-info">Punch In: 09:08 AM</span>--}}
+{{--                <span class="punch-info">Punch Out: 05:06 PM</span>--}}
+{{--            </div>--}}
+{{--            <div class="total-hours">Total Hours: 08:13</div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+{{--</div>--}}
+
+{{--<!-- Include jQuery, FullCalendar JS -->--}}
+{{--<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>--}}
+{{--<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>--}}
+
+{{--<script>--}}
+{{--    document.addEventListener('DOMContentLoaded', function() {--}}
+{{--        var calendarEl = document.getElementById('calendar');--}}
+
+{{--        // Define holidays--}}
+{{--        var holidays = [--}}
+{{--            { title: 'New Year\'s Day', start: '2024-01-01' },--}}
+{{--            { title: 'Independence Day', start: '2024-07-04' },--}}
+{{--            { title: 'Thanksgiving', start: '2024-11-28' },--}}
+{{--            { title: 'Christmas', start: '2024-12-25' },--}}
+{{--        ];--}}
+
+{{--        var calendar = new FullCalendar.Calendar(calendarEl, {--}}
+{{--            initialView: 'dayGridMonth',--}}
+{{--            headerToolbar: {--}}
+{{--                left: 'prev,next',--}}
+{{--                center: 'title',--}}
+{{--                right: ''--}}
+{{--            },--}}
+{{--            height: 'auto',--}}
+{{--            contentHeight: 'auto',--}}
+{{--            events: holidays, // Add holidays as events--}}
+{{--            eventColor: '#ff5733', // Optional: Set a color for holiday events--}}
+{{--        });--}}
+
+{{--        calendar.render();--}}
+{{--    });--}}
+{{--</script>--}}
+
+
+{{--@endsection--}}
 
 
 

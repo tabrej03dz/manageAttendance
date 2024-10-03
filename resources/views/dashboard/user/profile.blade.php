@@ -25,8 +25,8 @@
                 <div class="col-lg-4 col-md-6 col-12 mb-4">
                     <div class="card card-primary card-outline">
                         <div class="card-body text-center">
-                            <!-- Profile Picture (Optional) -->
-                            <!-- <img src="path_to_profile_picture.jpg" class="profile-user-img img-fluid img-circle mb-3" alt="User profile picture"> -->
+                             Profile Picture (Optional)
+                            <img src="{{asset('storage/'. $user->photo)}}" class="profile-user-img img-fluid img-circle mb-3" alt="User profile picture">
 
                             <h3 class="profile-username">{{$user->name}}</h3>
                             <p class="text-muted">{{$user->designation}}</p>
@@ -115,6 +115,38 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Additional Information</h2>
+    <a href="{{route('info.create')}}" class="btn btn-primary btn-sm">Add Info</a>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Mobile</th>
+                <th>Email</th>
+                <th>Address</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Example row -->
+
+            @foreach($infos as $info)
+
+                <tr>
+                    <td>{{$loop->iteration}}</td>
+                    <td>{{$info->phone}}</td>
+                    <td>{{$info->email}}</td>
+                    <td>{{$info->address}}</td>
+
+                </tr>
+            @endforeach
+            <!-- Repeat rows for each info record -->
+            </tbody>
+        </table>
     </div>
 </div>
 

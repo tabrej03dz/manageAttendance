@@ -78,4 +78,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('delete/{off}', [OffController::class, 'delete'])->name('delete');
     });
 
+    Route::prefix('info')->name('info.')->group(function(){
+       Route::get('create', [\App\Http\Controllers\UserAdditionalInformationController::class, 'create'])->name('create');
+       Route::post('store', [\App\Http\Controllers\UserAdditionalInformationController::class, 'store'])->name('store');
+    });
+
 });
