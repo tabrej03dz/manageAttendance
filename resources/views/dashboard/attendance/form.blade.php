@@ -1,4 +1,4 @@
-{{-- @extends('dashboard.layout.root')
+@extends('dashboard.layout.root')
 
 @section('content')
     <div class="content">
@@ -139,7 +139,7 @@
             }
         }
     </script>
-@endsection --}}
+@endsection
 
 
 {{-- @extends('dashboard.layout.root')
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {{-- //Records --}}
 
-@extends('dashboard.layout.root')
+{{-- @extends('dashboard.layout.root')
 
 @section('content')
 <!-- Include Bootstrap CSS and FullCalendar -->
@@ -549,4 +549,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-
+ --}}
