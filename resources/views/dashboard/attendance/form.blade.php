@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endsection --}}
 
-
+{{-- //Records --}}
 
 @extends('dashboard.layout.root')
 
@@ -343,13 +343,12 @@ document.addEventListener('DOMContentLoaded', function() {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-    /* Your existing styles remain unchanged */
+    /* Calendar Styles */
     #calendar {
         max-width: 100%;
         margin: 0 auto;
         border-radius: 15px;
         overflow: hidden;
-        border: none;
         box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
         padding: 10px;
         background-color: white;
@@ -371,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     .calendar-header h5 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
         font-weight: bold;
         color: #000;
         margin: 0;
@@ -393,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
         padding: 10px;
         border-radius: 10px;
         margin-right: 15px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .badge.bg-success {
@@ -412,7 +412,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     .punch-info {
         font-weight: bold;
-        display: block;
         color: #666;
         font-size: 0.9rem;
     }
@@ -421,6 +420,12 @@ document.addEventListener('DOMContentLoaded', function() {
         font-size: 1rem;
         color: #333;
         font-weight: bold;
+    }
+
+    /* Hover effect for calendar events */
+    .fc-event:hover {
+        background-color: #ff5733 !important;
+        opacity: 0.9;
     }
 
     /* Responsive Styles */
@@ -435,18 +440,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .badge {
             padding: 8px;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
+        }
+
+        .punch-info {
+            font-size: 0.8rem;
+        }
+
+        .total-hours {
+            font-size: 0.9rem;
         }
     }
 </style>
 
 <!-- FullCalendar Rendering -->
-<div class="container mt-3">
+<div class="container pt-3">
     <div id="calendar"></div>
 </div>
 
 <!-- Attendance History Section -->
-<div class="container mt-3">
+<div class="container mt-3 pb-3">
     <div class="calendar-card">
         <div class="calendar-header">
             <h5>Attendance History</h5>
@@ -457,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <!-- Date Info Entries -->
         <div class="date-info">
-            <div class="badge bg-success text-white">06</div>
+            <div class="badge bg-success">06</div>
             <div>
                 <span class="punch-info">Punch In: 09:08 AM</span> 
                 <span class="punch-info">Punch Out: 05:06 PM</span>
@@ -466,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <div class="date-info">
-            <div class="badge bg-warning text-white">07</div>
+            <div class="badge bg-warning">07</div>
             <div>
                 <span class="punch-info">Punch In: 09:08 AM</span> 
                 <span class="punch-info">Punch Out: 05:06 PM</span>
@@ -475,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <div class="date-info">
-            <div class="badge bg-danger text-white">08</div>
+            <div class="badge bg-danger">08</div>
             <div>
                 <span class="punch-info">Punch In: 09:08 AM</span> 
                 <span class="punch-info">Punch Out: 05:06 PM</span>
@@ -484,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <div class="date-info">
-            <div class="badge bg-success text-white">09</div>
+            <div class="badge bg-success">09</div>
             <div>
                 <span class="punch-info">Punch In: 09:08 AM</span> 
                 <span class="punch-info">Punch Out: 05:06 PM</span>
@@ -502,7 +515,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
-        // Define holidays
         var holidays = [
             { title: 'New Year\'s Day', start: '2024-01-01' },
             { title: 'Independence Day', start: '2024-07-04' },
@@ -519,8 +531,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             height: 'auto',
             contentHeight: 'auto',
-            events: holidays, // Add holidays as events
-            eventColor: '#ff5733', // Optional: Set a color for holiday events
+            events: holidays,
+            eventColor: '#ff5733',
         });
 
         calendar.render();
@@ -528,6 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 @endsection
+
 
 
 
