@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LeaveRequest;
+
+use App\Mail\LeaveRequest;
+use App\Mail\LeaveResponse;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Leave;
+use Illuminate\Support\Facades\Mail;
+
 
 class LeaveController extends Controller
 {
@@ -22,14 +27,24 @@ class LeaveController extends Controller
         return view('dashboard.leave.create');
     }
 
-    public function store(LeaveRequest $request){
+    public function store(Request $request)
+    {
         $user = auth()->user();
-        Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id]);
-        return redirect('userprofile/'.auth()->user()->id)->with('success', 'Leave request taken successfully');
+        $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id]);
+
+        $admin = User::where('office_id', $user->office->id)
+            ->whereHas('roles', function($query) {
+                $query->where('name', 'admin');
+            })
+            ->first();
+        Mail::to($admin->email)->send(new LeaveRequest($leave));
+
+        return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
     }
 
     public function status(Leave $leave, $status){
         $leave->update(['status' => $status, 'responses_by' => auth()->user()->id]);
+        Mail::to($leave->user->email)->send(new LeaveResponse($leave));
         return back()->with('success', 'Status updated successfully');
     }
 }
