@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AttendanceRecord;
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\UserAdditionalInformation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,8 @@ class HomeController extends Controller
         $leaves = Leave::where('user_id', $user->id)
             ->whereDate('start_date', '>', today())
             ->get();
-        return view('dashboard.user.profile', compact('leaves', 'user'));
+        $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
+        return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
     }
 
     public function changePassword(Request $request, User $user){
