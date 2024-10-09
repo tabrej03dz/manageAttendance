@@ -37,6 +37,8 @@ class LeaveController extends Controller
                 $query->where('name', 'admin');
             })
             ->first();
+        $superAdmin = User::role('super_admin')->first();
+        Mail::to($superAdmin->email)->send(new LeaveRequest($leave));
         Mail::to($admin->email)->send(new LeaveRequest($leave));
 
         return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
