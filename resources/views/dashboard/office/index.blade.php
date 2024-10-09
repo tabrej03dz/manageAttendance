@@ -31,6 +31,7 @@
                         <td class="py-3 px-6 text-left">{{$office->longitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->radius}}</td>
                         <td class="py-3 px-6 text-left flex space-x-2">
+                            @role('super_admin|admin')
                             <a title="Edit" href="{{route('office.edit', ['office' => $office->id])}}"
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
@@ -39,6 +40,7 @@
                                 class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span>
                             </a>
+                            @endrole
                         </td>
                     </tr>
                     @endforeach

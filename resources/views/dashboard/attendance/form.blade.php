@@ -52,11 +52,19 @@
 
             <!-- Status Info -->
             <div class="flex justify-around w-full mb-8">
+                @if($formType == 'check_in')
                 <div class="text-center">
                     <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
                     <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
                     <small>Check In</small>
                 </div>
+                @else
+                <div class="text-center">
+                    <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
+                    <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
+                    <small>Check out</small>
+                </div>
+                @endif
                 <div class="text-center">
                     <i class="fas fa-clock text-red-500 mb-2 fa-2x"></i>
                     <p class="mb-0 total-hours font-bold text-red-700">--:--</p>
