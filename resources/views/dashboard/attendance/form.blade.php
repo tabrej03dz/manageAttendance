@@ -1,4 +1,4 @@
-@extends('dashboard.layout.root')
+{{-- @extends('dashboard.layout.root')
 
 @section('content')
     <div class="content">
@@ -193,7 +193,7 @@
         }
     </script>
 
-@endsection
+@endsection --}}
 
 
 {{-- Check In & Check Out  --}}
