@@ -1,20 +1,6 @@
 @extends('dashboard.layout.root')
 @section('content')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <style>
         #more-options {
             max-height: 0;
@@ -77,13 +63,13 @@
                                 <span class="material-icons">account_circle</span>
                             </a>
                             <a title="Check-in" href="{{ route('attendance.form', ['form_type' => 'check_in', 'user' => $employee->id]) }}"
-                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">check_in</span>
-                            </a>
-                            <a title="Check-out" href="{{ route('attendance.form', ['form_type' => 'check_out', 'user' => $employee->id]) }}"
-                               class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">check_out</span>
-                            </a>
+                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                 <span class="material-icons">check_circle</span>
+                             </a>                         
+                             <a title="Check-out" href="{{ route('attendance.form', ['form_type' => 'check_out', 'user' => $employee->id]) }}"
+                                class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                 <span class="material-icons">logout</span>
+                             </a>                             
                             @endrole
                         </td>
                     </tr>
