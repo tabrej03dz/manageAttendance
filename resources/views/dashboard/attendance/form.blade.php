@@ -44,7 +44,7 @@
                  id="punchCircle">
                 <video id="video" autoplay></video>
                 <canvas id="canvas" class="hidden"></canvas>
-                <img id="imagePreview" alt="Captured Image" />
+                <img id="imagePreview" alt="" />
                 <div id="cameraIcon" class="text-red-500">
                     <i class="fas fa-camera fa-3x"></i>
                 </div>
