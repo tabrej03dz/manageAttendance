@@ -89,10 +89,10 @@
                 <span class="material-icons text-white text-2xl">home</span>
                 <span class="text-xs text-white mt-1">Home</span>
             </a>
-            <a href="" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">list</span>
-                <span class="text-xs text-white mt-1">My Request</span>
-            </a>
+{{--            <a href="" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">--}}
+{{--                <span class="material-icons text-white text-2xl">list</span>--}}
+{{--                <span class="text-xs text-white mt-1">My Request</span>--}}
+{{--            </a>--}}
             <a href="{{route('attendance.index')}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
                 <span class="material-icons text-white text-2xl">folder</span>
                 <span class="text-xs text-white mt-1">Records</span>

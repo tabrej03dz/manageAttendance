@@ -41,7 +41,7 @@
 
             <!-- Punch Circle -->
             <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
-                id="punchCircle">
+                 id="punchCircle">
                 <video id="video" autoplay></video>
                 <canvas id="canvas" class="hidden"></canvas>
                 <img id="imagePreview" alt="Captured Image" />
@@ -67,7 +67,7 @@
             <!-- Action Buttons -->
             <div class="w-full max-w-xs">
                 <button id="snap"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
                     <i class="fas fa-check mr-2"></i> Capture
                 </button>
 
@@ -83,7 +83,7 @@
                     </div>
                     <div class="d-grid">
                         <button type="submit" id="upload"
-                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">Submit</button>
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">Submit</button>
                     </div>
                 </form>
 
@@ -93,44 +93,17 @@
                 {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
                 {{--                </button> --}}
                 <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
+                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
                     <i class="fas fa-redo mr-2"></i> Reset
                 </a>
             </div>
         </main>
     </div>
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-        <script>
-            navigator.mediaDevices.getUserMedia({
-                    video: true
-                })
-                .then(function(stream) {
-                    var video = document.getElementById('video');
-                    video.srcObject = stream;
-                    video.play();
-                })
-                .catch(function(err) {
-                    console.log("An error occurred: " + err);
-                });
-
-            document.getElementById('snap').addEventListener('click', function() {
-                var canvas = document.getElementById('canvas');
-=======
     <script>
         navigator.mediaDevices.getUserMedia({
-                video: true
-            })
+            video: true
+        })
             .then(function(stream) {
->>>>>>> 916a3f67793f87e9eb53b778d3e39080d482906e
                 var video = document.getElementById('video');
                 video.srcObject = stream;
                 video.play();
@@ -220,34 +193,6 @@
         }
     </script>
 
-<<<<<<< HEAD
-            function degreesToRadians(degrees) {
-                return degrees * (Math.PI / 180);
-            }
-
-
-            const currentTime = document.querySelector('.current-time');
-            const currentDate = document.querySelector('.current-date');
-
-            function updateCurrentTime() {
-                const now = new Date();
-                currentTime.textContent = now.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                currentDate.textContent = now.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: '2-digit',
-                    weekday: 'long'
-                });
-            }
-
-            setInterval(updateCurrentTime, 1000);
-            updateCurrentTime();
-
-        </script>
-=======
     <script>
         function haversineDistance(latitudeFrom, longitudeFrom, latitudeTo, longitudeTo) {
             const earthRadius = 6371000; // Earth radius in meters
@@ -274,7 +219,6 @@
         function degreesToRadians(degrees) {
             return degrees * (Math.PI / 180);
         }
->>>>>>> 916a3f67793f87e9eb53b778d3e39080d482906e
 
 
         const currentTime = document.querySelector('.current-time');
@@ -294,104 +238,7 @@
             });
         }
 
-<<<<<<< HEAD
-
-    <script>
-{{--        document.addEventListener('DOMContentLoaded', function() {--}}
-{{--            const checkInTime = document.querySelector('.check-in-time');--}}
-//             const totalHours = document.querySelector('.total-hours');
-
-{{--            const punchCircle = document.getElementById('punchCircle');--}}
-{{--            const video = document.getElementById('video');--}}
-{{--            const canvas = document.getElementById('canvas');--}}
-{{--            const capturedImage = document.getElementById('capturedImage');--}}
-{{--            const cameraIcon = document.getElementById('cameraIcon');--}}
-{{--            const captureButton = document.getElementById('captureButton');--}}
-{{--            const captureButtonText = document.getElementById('captureButtonText');--}}
-
-{{--            let isImageCaptured = false;--}}
-{{--            let stream = null;--}}
-
-
-
-{{--            function toggleCamera() {--}}
-{{--                if (video.classList.contains('hidden')) {--}}
-{{--                    startCamera();--}}
-{{--                } else {--}}
-{{--                    captureImage();--}}
-{{--                }--}}
-{{--            }--}}
-
-{{--            function startCamera() {--}}
-{{--                navigator.mediaDevices.getUserMedia({--}}
-{{--                        video: true--}}
-{{--                    })--}}
-{{--                    .then(videoStream => {--}}
-{{--                        stream = videoStream;--}}
-{{--                        video.srcObject = stream;--}}
-{{--                        video.classList.remove('hidden');--}}
-{{--                        cameraIcon.classList.add('hidden');--}}
-{{--                        capturedImage.classList.add('hidden');--}}
-{{--                        captureButtonText.textContent = 'Capture Image';--}}
-{{--                    })--}}
-{{--                    .catch(error => {--}}
-{{--                        console.error("Error accessing the camera: ", error);--}}
-{{--                    });--}}
-{{--            }--}}
-
-{{--            function captureImage() {--}}
-{{--                canvas.width = video.videoWidth;--}}
-{{--                canvas.height = video.videoHeight;--}}
-{{--                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);--}}
-{{--                capturedImage.src = canvas.toDataURL('image/png');--}}
-{{--                video.classList.add('hidden');--}}
-{{--                capturedImage.classList.remove('hidden');--}}
-{{--                isImageCaptured = true;--}}
-{{--                checkInTime.textContent = new Date().toLocaleTimeString('en-US', {--}}
-{{--                    hour: '2-digit',--}}
-{{--                    minute: '2-digit'--}}
-{{--                });--}}
-{{--                captureButtonText.textContent = 'Retake Photo';--}}
-
-{{--                // Stop the video stream--}}
-{{--                if (stream) {--}}
-{{--                    stream.getTracks().forEach(track => track.stop());--}}
-{{--                }--}}
-{{--            }--}}
-
-{{--            function submitImage() {--}}
-{{--                if (isImageCaptured) {--}}
-{{--                    alert("Image submitted successfully!");--}}
-{{--                } else {--}}
-{{--                    alert("Please capture an image first.");--}}
-{{--                }--}}
-{{--            }--}}
-
-{{--            function resetCapture() {--}}
-{{--                video.classList.add('hidden');--}}
-{{--                capturedImage.classList.add('hidden');--}}
-{{--                cameraIcon.classList.remove('hidden');--}}
-{{--                isImageCaptured = false;--}}
-{{--                checkInTime.textContent = "--:--";--}}
-{{--                totalHours.textContent = "--:--";--}}
-{{--                captureButtonText.textContent = 'Start Camera';--}}
-
-{{--                // Stop the video stream if it's active--}}
-{{--                if (stream) {--}}
-{{--                    stream.getTracks().forEach(track => track.stop());--}}
-{{--                    stream = null;--}}
-{{--                }--}}
-{{--            }--}}
-
-{{--            captureButton.addEventListener('click', toggleCamera);--}}
-{{--            punchCircle.addEventListener('click', toggleCamera);--}}
-
-{{--            window.submitImage = submitImage;--}}
-{{--            window.resetCapture = resetCapture;--}}
-{{--        });--}}
-=======
         setInterval(updateCurrentTime, 1000);
         updateCurrentTime();
->>>>>>> 916a3f67793f87e9eb53b778d3e39080d482906e
     </script>
 @endsection

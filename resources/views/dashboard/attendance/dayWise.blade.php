@@ -208,7 +208,7 @@
                                         $leave = App\Models\Leave::whereDate('start_date', '<=', $date)
                                         ->whereDate('end_date', '>=', $date)->where(['user_id' => $employee->id, 'status' => 'approved'])
                                         ->first();
-                                        
+
                                 @endphp
                                 <!-- Sample Data Row -->
                                 @if($leave)
@@ -216,7 +216,7 @@
                                         <td class="px-4 py-4 text-sm text-gray-700">
                                             {{$employee->name}}
                                         </td>
-                                        <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="8" >{{ $leave->leave_type.' leave'}}</td>                                        
+                                        <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="8" >{{ $leave->leave_type.' leave'}}</td>
                                     </tr>
                                 @else
                                 <tr class="hover:bg-gray-50">
@@ -234,8 +234,10 @@
                                     @endif
 
                                     <td class="px-4 py-4">
+                                    @if($record)
                                         <img src="{{$record?->check_in_image ? asset('storage/'.$record->check_in_image) : 'https://via.placeholder.com/50'}}" alt="Check-in Image"
                                             class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                                    @endif
                                     </td>
                                     <td class="px-4 py-4 text-sm text-{{Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($employee->check_out_time)->format('H:i:s') ? 'red' : 'green'}}-700">
                                         {{ $record?->check_out?->format('h:i:s A') }}
@@ -243,7 +245,7 @@
                                     <td class="px-4 py-4">
                                         @if($record)
                                         <a href="{{asset('storage/'.$record->check_out_image)}} " target="_blank">
-                                        <img src="{{ asset('storage/'.$record->check_out_image)}}" alt="Check-in Image"
+                                        <img src="{{ $record->check_out_image ? asset('storage/'.$record->check_out_image) : 'https://via.placeholder.com/50'}}" alt="Check-in Image"
                                             class="w-12 h-12 object-cover rounded-lg shadow-sm"></a>
                                         @endif
                                     </td>
@@ -253,7 +255,7 @@
                                             {{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : '' }}
                                         </span>
                                     </td>
-                                    
+
                                     <td class="px-4 py-4">
                                         {{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}
                                     </td>
@@ -274,14 +276,14 @@
                     </div>
 
                     <!-- Pagination (if required) -->
-                    <div class="mt-6 flex justify-between">
-                        <button class="text-sm text-red-600 hover:text-red-800 flex items-center">
-                            <span class="material-icons text-red-600 mr-2">chevron_left</span>Previous
-                        </button>
-                        <button class="text-sm text-red-600 hover:text-red-800 flex items-center">
-                            Next<span class="material-icons text-red-600 ml-2">chevron_right</span>
-                        </button>
-                    </div>
+{{--                    <div class="mt-6 flex justify-between">--}}
+{{--                        <button class="text-sm text-red-600 hover:text-red-800 flex items-center">--}}
+{{--                            <span class="material-icons text-red-600 mr-2">chevron_left</span>Previous--}}
+{{--                        </button>--}}
+{{--                        <button class="text-sm text-red-600 hover:text-red-800 flex items-center">--}}
+{{--                            Next<span class="material-icons text-red-600 ml-2">chevron_right</span>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
                 </div>
             </div>
         </div>
