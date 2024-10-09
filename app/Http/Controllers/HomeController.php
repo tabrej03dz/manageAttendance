@@ -41,6 +41,7 @@ class HomeController extends Controller
         $leaves = Leave::where('user_id', $user->id)
             ->whereDate('start_date', '>', today())
             ->get();
+
         $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
         return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
     }
@@ -67,6 +68,6 @@ class HomeController extends Controller
         $hours = (int)($totalMinutes/60);
         $minutes = $totalMinutes % 60;
 
-        return "$hours : $minutes";
+        return "$hours h, $minutes m";
     }
 }

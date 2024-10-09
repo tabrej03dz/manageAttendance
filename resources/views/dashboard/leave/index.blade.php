@@ -1,50 +1,78 @@
 @extends('dashboard.layout.root')
 
 @section('content')
-    <div class="container mt-5">
-        <h2 class="mb-4">Leave List</h2>
-        <div class="table-responsive">
-            <table class="table table-hover table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Employee</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                        <th>Leave Type</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                        <th>Response By</th>
-                        <th>Action</th>
+
+    <style>
+        #more-options {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .perspective-500 {
+            perspective: 500px;
+        }
+    </style>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Leave List</h1>
+
+            <button
+                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                Create Leave
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg shadow-md">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">#</th>
+                        <th class="py-3 px-6 text-left">Employee</th>
+                        <th class="py-3 px-6 text-left">Start Date</th>
+                        <th class="py-3 px-6 text-left">End Date</th>
+                        <th class="py-3 px-6 text-left">Leave Type</th>
+                        <th class="py-3 px-6 text-left">Reason</th>
+                        <th class="py-3 px-6 text-left">Status</th>
+                        <th class="py-3 px-6 text-left">Response By</th>
+                        <th class="py-3 px-6 text-left">Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Example row -->
-                    @foreach ($leaves as $leave)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $leave->user->name }}</td>
-                            <td>{{ $leave->start_date }}</td>
-                            <td>{{ $leave->end_date }}</td>
-                            <td>{{ $leave->leave_type }}</td>
-                            <td>{{ $leave->reason }}</td>
-
-                            <td><span
-                                    class="badge bg-{{ $leave->status == 'approved' ? 'success' : 'warning' }}">{{ $leave->status }}</span>
-                            </td>
-                            <td>{{ $leave->responsesBy?->name }}</td>
-                            <td>
-                                <a href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'approved']) }}"
-                                    class="btn btn-primary btn-sm">Approve</a>
-                                <a href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'rejected']) }}"
-                                    class="btn btn-warning btn-sm">Reject</a>
-                                {{--                            <a href="#" class="btn btn-danger btn-sm">Delete</a> --}}
-                            </td>
-                        </tr>
+                <tbody class="text-gray-600 text-sm font-light">
+                    @foreach($leaves as $leave)
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->user->name}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->start_date}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->end_date}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->leave_type}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->reason}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->status}}</td>
+                        <td class="py-3 px-6 text-left">{{$leave->responsesBy?->name}}</td>
+                        <td class="py-3 px-6 text-left flex space-x-2">
+                            @if($leave->status != 'approved')
+                            <a title="Approve" href="{{route('leave.status', ['leave' => $leave->id, 'status' => 'approved'])}}"
+                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">check_circle</span>
+                            </a>
+                            @endif
+                            @if($leave->status != 'rejected')
+                            <a title="Reject" href="{{route('leave.status', ['leave' => $leave->id, 'status' => 'rejected'])}}"
+                                class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                <span class="material-icons">cancel</span>
+                            </a>
+                            @endif
+                        </td>
+                    </tr>
                     @endforeach
-                    <!-- Repeat rows for each leave record -->
+                    <!-- Additional rows can go here -->
                 </tbody>
             </table>
         </div>
     </div>
+
+
 @endsection

@@ -78,16 +78,18 @@
         <a href="#" class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</a>
     </div>
 
-     <!-- Check In/Check Out Section -->
-     <div class="container mb-4">
+    <!-- Check In/Check Out Section -->
+    <div class="container mb-4">
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}" class="btn btn-primary w-100">Check In</a>
+                        <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}"
+                            class="btn btn-primary w-100">Check In</a>
                     </div>
                     <div class="col-md-6">
-                        <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}" class="btn btn-danger w-100">Check Out</a>
+                        <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
+                            class="btn btn-danger w-100">Check Out</a>
                     </div>
                 </div>
             </div>
@@ -102,14 +104,15 @@
                     <!-- small box -->
                     <div class="small-box bg-info">
                         <div class="inner">
-                            <h3>150</h3>
+                            <h3>{{ $employees->count() }}</h3>
 
-                            <p>New Orders</p>
+                            <p>All Users</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-bag"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{ route('employee.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -117,14 +120,15 @@
                     <!-- small box -->
                     <div class="small-box bg-success">
                         <div class="inner">
-                            <h3>53<sup style="font-size: 20px">%</sup></h3>
+                            <h3>{{ $offices->count() }}</h3>
 
-                            <p>Bounce Rate</p>
+                            <p>Offices</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-stats-bars"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -158,8 +162,6 @@
                     </div>
                 </div>
             </div>
-
-
 
             <div class="container" style="margin: 10px 0 100px 0;">
 
@@ -252,28 +254,8 @@
                                 </div>
                             </div>
                         </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-chart-line text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Performance Reports</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-dollar-sign text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Salary Records</p>
-                                </div>
-                            </div>
-                        </a>
+
+                        <!-- /.row -->
                     </div>
                 </div>
             </div>

@@ -26,7 +26,15 @@
     <link rel="stylesheet" href="{{asset('plugins/summernote/summernote-bs4.css')}}">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    
+
+
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -67,6 +75,99 @@
 
 
 </div>
+
+
+
+
+
+
+
+ <!-- Mobile Navigation Bar with Hover Effects & Elevated Design -->
+ <nav class="bg-gradient-to-r from-red-600 to-red-500 fixed bottom-0 left-0 right-0 shadow-2xl md:hidden rounded-t-2xl">
+        <div class="flex justify-around py-4">
+            <a href="{{route('home')}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+                <span class="material-icons text-white text-2xl">home</span>
+                <span class="text-xs text-white mt-1">Home</span>
+            </a>
+            <a href="" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+                <span class="material-icons text-white text-2xl">list</span>
+                <span class="text-xs text-white mt-1">My Request</span>
+            </a>
+            <a href="{{route('attendance.index')}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+                <span class="material-icons text-white text-2xl">folder</span>
+                <span class="text-xs text-white mt-1">Records</span>
+            </a>
+            <a href="{{route('attendance.day-wise')}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+                <span class="material-icons text-white text-2xl">access_time</span>
+                <span class="text-xs text-white mt-1">Attendance</span>
+            </a>
+            <a href="{{route('userprofile', ['user' => auth()->user()->id])}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+                <span class="material-icons text-white text-2xl">account_circle</span>
+                <span class="text-xs text-white mt-1">Account</span>
+            </a>
+            @role('super_admin|admin')
+            <a href="#" id="see-more"
+                class="group flex flex-col items-center transform hover:scale-105 transition duration-300 cursor-pointer">
+                <span class="material-icons text-white text-2xl">more_horiz</span>
+                <span class="text-xs text-white mt-1">See More</span>
+            </a>
+            @endrole
+        </div>
+        <!-- Additional Options with Icons and Border -->
+        <div id="more-options" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
+            <div
+                class="flex border-2 border-white justify-around bg-gradient-to-r from-red-600 to-red-500 shadow-md rounded-t-2xl py-2 mt-2">
+                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                    <span class="material-icons text-white text-lg">logout</span>
+                    <span class="text-xs">Leave</span>
+                </a>
+                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                    <span class="material-icons text-white text-lg">work</span>
+                    <span class="text-xs">Office</span>
+                </a>
+                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                    <span class="material-icons text-white text-lg">manage_accounts</span>
+                    <span class="text-xs">Manage Office</span>
+                </a>
+                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                    <span class="material-icons text-white text-lg">people</span>
+                    <span class="text-xs">Employees</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        document.getElementById('see-more').addEventListener('click', function() {
+            const moreOptions = document.getElementById('more-options');
+            const isOpen = moreOptions.style.maxHeight; // Check current state
+
+            if (!isOpen || isOpen === '0px') {
+                moreOptions.style.maxHeight = moreOptions.scrollHeight + 'px'; // Set to full height
+            } else {
+                moreOptions.style.maxHeight = '0'; // Collapse
+            }
+        });
+        // Initialize datepickers
+        flatpickr("#from-date-mobile", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#to-date-mobile", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#from-date-web", {
+            dateFormat: "Y-m-d",
+        });
+        flatpickr("#to-date-web", {
+            dateFormat: "Y-m-d",
+        });
+    </script>
+
+
+
+
+
+
 
 
 <!-- Control Sidebar -->
