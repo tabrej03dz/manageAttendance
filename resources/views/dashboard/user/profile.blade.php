@@ -25,9 +25,9 @@
                     <div class="col-lg-4 col-md-6 col-12 mb-4">
                         <div class="card card-primary card-outline">
                             <div class="card-body text-center">
-                                Profile Picture (Optional)
-                                <img src="{{ asset('storage/' . $user->photo) }}"
-                                    class="profile-user-img img-fluid img-circle mb-3" alt="User profile picture">
+{{--                                Profile Picture (Optional)--}}
+{{--                                <img src="{{ asset('storage/' . $user->photo) }}"--}}
+{{--                                    class="profile-user-img img-fluid img-circle mb-3" alt="User profile picture">--}}
 
                                 <h3 class="profile-username">{{ $user->name }}</h3>
                                 <p class="text-muted">{{ $user->designation }}</p>
