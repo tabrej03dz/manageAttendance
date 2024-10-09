@@ -32,9 +32,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('attendance')->name('attendance.')->group(function(){
         Route::get('index/{user?}', [AttendanceRecordController::class, 'index'])->name('index');
-        Route::post('check_in', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
-        Route::post('check_out', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
-        Route::get('form/{form_type}', [AttendanceRecordController::class, 'form'])->name('form');
+        Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
+        Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
+        Route::get('form/{form_type}/{user?}', [AttendanceRecordController::class, 'form'])->name('form');
         Route::get('day-wise', [AttendanceRecordController::class, 'dayWise'])->name('day-wise');
     });
 
@@ -44,7 +44,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('store', [EmployeeController::class, 'store'])->name('store');
         Route::get('edit/{employee}', [EmployeeController::class, 'edit'])->name('edit');
         Route::post('update/{employee}', [EmployeeController::class, 'update'])->name('update');
-        Route::get('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
+        Route::post('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
         Route::get('profile/{user}', [HomeController::class, 'profile'])->name('profile');
     });
 
@@ -67,6 +67,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('create', [LeaveController::class, 'create'])->name('create');
         Route::post('store', [LeaveController::class, 'store'])->name('store');
         Route::get('status/{leave}/{status}', [LeaveController::class, 'status'])->name('status');
+        Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
     });
 
     Route::prefix('off')->name('off.')->group(function(){

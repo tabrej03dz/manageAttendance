@@ -47,4 +47,9 @@ class LeaveController extends Controller
         Mail::to($leave->user->email)->send(new LeaveResponse($leave));
         return back()->with('success', 'Status updated successfully');
     }
+
+    public function show($id){
+        $leave = Leave::find($id);
+        return view('dashboard.leave.show', compact('leave'));
+    }
 }

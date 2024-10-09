@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
+use App\Models\Office;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -14,6 +16,8 @@ class DashboardController extends Controller
         foreach ($halfDayRecords as $record){
             $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);
         }
-        return view('dashboard.dashboard');
+        $employees = User::all();
+        $offices = Office::all();
+        return view('dashboard.dashboard', compact('offices'))->with('employees', $employees);
     }
 }

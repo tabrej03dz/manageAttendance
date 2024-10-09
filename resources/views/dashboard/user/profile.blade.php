@@ -216,4 +216,138 @@
         </form>
     </div>
 </div>
+
+
+
+
+
+
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <div class="pb-24">
+        <div class="bg-gray-100 min-h-screen">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:max-w-md mx-auto">
+                    <div class="p-6">
+                        <div class="flex flex-col items-center">
+                            <img src="https://via.placeholder.com/100" alt="Profile Avatar"
+                                class="w-24 h-24 rounded-full mb-4">
+                            <p class="text-gray-600 text-sm mb-4">Employee ID: 123456</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-icons text-gray-600">person</span>
+                                    <span class="text-gray-800 font-medium">John Doe</span>
+                                </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-icons text-gray-600">work</span>
+                                    <span class="text-gray-800">Software Engineer</span>
+                                </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-icons text-gray-600">email</span>
+                                    <span class="text-gray-800">john.doe@example.com</span>
+                                </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="material-icons text-gray-600">phone</span>
+                                    <span class="text-gray-800">+91 1234567873</span>
+                                </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xl font-bold text-gray-600">₹</span>
+                                    <span class="text-gray-800">75,000 per month</span>
+                                </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gray-100">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:max-w-md mx-auto">
+                    <div class="p-6">
+                        <!-- Change Password Section -->
+                        <h2 class="text-lg font-semibold text-gray-700 mb-4">Change Password</h2>
+
+                        <!-- Current Password Field -->
+                        <div class="mb-4">
+                            <label for="current-password" class="block text-gray-700 font-semibold mb-2">Current
+                                Password</label>
+                            <input type="password" id="current-password" name="current-password"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                placeholder="Enter your current password">
+                        </div>
+
+                        <!-- New Password Field -->
+                        <div class="mb-4">
+                            <label for="new-password" class="block text-gray-700 font-semibold mb-2">New Password</label>
+                            <input type="password" id="new-password" name="new-password"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                placeholder="Enter your new password">
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="mb-4">
+                            <label for="confirm-password" class="block text-gray-700 font-semibold mb-2">Confirm New
+                                Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                placeholder="Confirm your new password">
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="flex items-center justify-between border-b py-2"></div>
+
+                        <!-- Update Password Button -->
+                        <button
+                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                            Update Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button
+            class="mt-6 w-3/4 mx-auto flex justify-center items-center bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+            <!-- Icon on the left -->
+            <span class="material-icons text-white text-lg mr-2">exit_to_app</span>
+            LogOut
+        </button>
+
+    </div>
+
 @endsection

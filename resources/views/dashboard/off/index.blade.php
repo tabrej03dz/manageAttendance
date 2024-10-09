@@ -1,42 +1,51 @@
 @extends('dashboard.layout.root')
 @section('content')
-    <div class="content">
-        <div class="container-fluid">
-            <h2 class="mb-4 d-inline-block">Employees</h2>
 
-            <a href="{{ route('off.create') }}" class="btn btn-primary ml-2 mb-2 mb-sm-0">Create</a>
+    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Manage Offs</h1>
 
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Action</th>
+            <a href="{{route('off.create')}}"
+                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                Create Off
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg shadow-md">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                        <th class="py-3 px-6 text-left">#</th>
+                        <th class="py-3 px-6 text-left">Title</th>
+                        <th class="py-3 px-6 text-left">Date</th>
+                        <th class="py-3 px-6 text-left">Description</th>
+                        <th class="py-3 px-6 text-left">Action</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    @foreach ($offs as $off)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $off->title }}</td>
-                            <td>{{ $off->date }}</td>
-                            <td>{{ $off->description }}</td>
-                            <td>
-                                <a href="{{ route('off.edit', ['off' => $off->id]) }}"
-                                   class="btn btn-primary">Edit</a>
-                                <a href="{{ route('off.delete', ['off' => $off->id]) }}"
-                                   class="btn btn-danger">Delete</a>
-                            </td>
-                        </tr>
+                </thead>
+                <tbody class="text-gray-600 text-sm font-light">
+                    @foreach($offs as $off)
+                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
+                        <td class="py-3 px-6 text-left">{{$off->title}}</td>
+                        <td class="py-3 px-6 text-left">{{$off->date}}</td>
+                        <td class="py-3 px-6 text-left">{{$off->description}}</td>
+                        <td class="py-3 px-6 text-left flex space-x-2">
+                            <a title="Edit" href="{{route('off.edit', ['off' => $off->id])}}"
+                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                                <span class="material-icons">edit</span>
+                            </a>
+                            <a title="Delete" href="{{route('off.delete', ['off' => $off->id])}}"
+                                class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                <span class="material-icons">delete</span>
+                            </a>
+                        </td>
+                    </tr>
                     @endforeach
-                    <!-- Add more rows as needed -->
-                    </tbody>
-                </table>
-            </div>
-
+                    <!-- Additional rows can go here -->
+                </tbody>
+            </table>
         </div>
     </div>
-@endsection
+
+    
+@endsection 
