@@ -69,7 +69,8 @@
                              <a title="Check-out" href="{{ route('attendance.form', ['form_type' => 'check_out', 'user' => $employee->id]) }}"
                                 class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                  <span class="material-icons">logout</span>
-                             </a>                             
+                             </a>           
+                                               
                             @endrole
                         </td>
                     </tr>
