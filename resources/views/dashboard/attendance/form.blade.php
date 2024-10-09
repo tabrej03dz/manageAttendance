@@ -352,32 +352,6 @@
         </main>
     </div>
 
-    <!-- Mobile Navigation Bar with Hover Effects & Elevated Design -->
-    <nav class="bg-gradient-to-r from-red-600 to-red-500 fixed bottom-0 left-0 right-0 shadow-2xl md:hidden rounded-t-2xl">
-        <div class="flex justify-around py-4">
-            <a href="#" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">home</span>
-                <span class="text-xs text-white mt-1">Home</span>
-            </a>
-            <a href="#" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">list</span>
-                <span class="text-xs text-white mt-1">My Request</span>
-            </a>
-            <a href="#" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">folder</span>
-                <span class="text-xs text-white mt-1">Records</span>
-            </a>
-            <a href="#" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">access_time</span>
-                <span class="text-xs text-white mt-1">Attendance</span>
-            </a>
-            <a href="#" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
-                <span class="material-icons text-white text-2xl">account_circle</span>
-                <span class="text-xs text-white mt-1">Account</span>
-            </a>
-        </div>
-    </nav>
-
 
 
 
@@ -505,18 +479,39 @@
             function degreesToRadians(degrees) {
                 return degrees * (Math.PI / 180);
             }
+
+
+            const currentTime = document.querySelector('.current-time');
+            const currentDate = document.querySelector('.current-date');
+
+            function updateCurrentTime() {
+                const now = new Date();
+                currentTime.textContent = now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                currentDate.textContent = now.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    weekday: 'long'
+                });
+            }
+
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime();
+
         </script>
 
 
 
 
 
-{{--    <script>--}}
+    <script>
 {{--        document.addEventListener('DOMContentLoaded', function() {--}}
 {{--            const checkInTime = document.querySelector('.check-in-time');--}}
-{{--            const totalHours = document.querySelector('.total-hours');--}}
-{{--            const currentTime = document.querySelector('.current-time');--}}
-{{--            const currentDate = document.querySelector('.current-date');--}}
+//             const totalHours = document.querySelector('.total-hours');
+
 {{--            const punchCircle = document.getElementById('punchCircle');--}}
 {{--            const video = document.getElementById('video');--}}
 {{--            const canvas = document.getElementById('canvas');--}}
@@ -528,22 +523,7 @@
 {{--            let isImageCaptured = false;--}}
 {{--            let stream = null;--}}
 
-{{--            function updateCurrentTime() {--}}
-{{--                const now = new Date();--}}
-{{--                currentTime.textContent = now.toLocaleTimeString('en-US', {--}}
-{{--                    hour: '2-digit',--}}
-{{--                    minute: '2-digit'--}}
-{{--                });--}}
-{{--                currentDate.textContent = now.toLocaleDateString('en-US', {--}}
-{{--                    year: 'numeric',--}}
-{{--                    month: 'short',--}}
-{{--                    day: '2-digit',--}}
-{{--                    weekday: 'long'--}}
-{{--                });--}}
-{{--            }--}}
 
-{{--            setInterval(updateCurrentTime, 1000);--}}
-{{--            updateCurrentTime();--}}
 
 {{--            function toggleCamera() {--}}
 {{--                if (video.classList.contains('hidden')) {--}}
@@ -620,7 +600,7 @@
 {{--            window.submitImage = submitImage;--}}
 {{--            window.resetCapture = resetCapture;--}}
 {{--        });--}}
-{{--    </script>--}}
+    </script>
 @endsection
 
 
