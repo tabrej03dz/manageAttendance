@@ -48,4 +48,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Office::class, 'office_id');
     }
+
+    public function members(){
+        return $this->hasMany(User::class, 'team_leader_id');
+    }
+
+    public function leaves(){
+        return $this->hasMany(Leave::class, 'user_id');
+    }
 }

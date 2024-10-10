@@ -16,6 +16,38 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <form action="{{route('leave.index')}}">
+        <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+            <!-- Employee Selection -->
+
+            <div class="mb-4">
+                <label for="filter by status" class="block mb-1 text-sm font-medium text-gray-700">Filter By Status:</label>
+                <select id="filter by status" name="status"
+                        class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select an employee</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="approved">Approved</option>
+                </select>
+            </div>
+
+            <!-- Web View (enhanced) -->
+            <div class="hidden md:block">
+                <div class="flex items-end space-x-4">
+                    <div class="flex-grow flex space-x-4">
+
+                    </div>
+                    <div class="flex space-x-2">
+                        <button
+                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">Filter</button>
+                        <a href="{{route('leave.index')}}"
+                           class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out">Clear</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Leave List</h1>

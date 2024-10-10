@@ -81,6 +81,25 @@
         </form>
     </div>
 
+    @php
+        $user = auth()->user();
+        if ($user->hasRole('super_admin')){
+            $employeeIds = $employees->pluck('id');
+            $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)->whereDate('check_in', today())->get();
+             $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
+                                        ->whereDate('end_date', '>=', today())->whereIn('user_id', $employeeIds)->where('status', 'approved')
+                                        ->get();
+        }
+        if ($user->hasRole('admin')){
+            $employees = $user->office->users;
+            $employeeIds = $employees->pluck('id');
+            $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)->whereDate('check_in', today())->get();
+            $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
+                                        ->whereDate('end_date', '>=', today())->whereIn('user_id', $employeeIds)->where('status', 'approved')
+                                        ->get();
+        }
+    @endphp
+
     <!-- Check In/Check Out Section -->
     <div class="container mb-4">
         <div class="card shadow-sm">
@@ -102,6 +121,7 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
+            @role('super_admin|admin')
             <div class="row">
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
@@ -119,6 +139,7 @@
                     </div>
                 </div>
                 <!-- ./col -->
+                @role('super_admin')
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
                     <div class="small-box bg-success">
@@ -135,18 +156,19 @@
                     </div>
                 </div>
                 <!-- ./col -->
+                @endrole
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3>44</h3>
+                            <h3>{{$todayCheckIn->count()}}</h3>
 
-                            <p>User Registrations</p>
+                            <p>Check In Today</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-person-add"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{route('attendance.day-wise')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -154,9 +176,9 @@
                     <!-- small box -->
                     <div class="small-box bg-danger">
                         <div class="inner">
-                            <h3>65</h3>
+                            <h3>{{$leaves->count()}}</h3>
 
-                            <p>Unique Visitors</p>
+                            <p>Users on leave</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-pie-graph"></i>
@@ -165,103 +187,173 @@
                     </div>
                 </div>
             </div>
+            @endrole
 
-            <div class="container" style="margin: 10px 0 100px 0;">
+                <div class="row">
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>{{ $data['days'] - ($data['sundays'] + $data['offs']) }}</h3>
 
-                <div class="row row-cols-2 row-cols-md-3 g-4">
-                    <div class="col">
-                        <a href="{{route('leave.create')}}" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-calendar-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Leave Requests</p>
-                                </div>
+                                <p>Office Days</p>
                             </div>
-                        </a>
+                            <div class="icon">
+                                <i class="ion ion-bag"></i>
+                            </div>
+                            <a href="{{ route('employee.index') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
                     </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-file-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Leave Details</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-check-square text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Approve Leave</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-id-card text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Attendance Records</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Edit Records</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">User Profiles</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <!-- New Cards -->
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Work Hours</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Employee Profiles</p>
-                                </div>
-                            </div>
-                        </a>
+                    <!-- ./col -->
 
-                        <!-- /.row -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ $data['records'] }}</h3>
+
+                                <p>Working Days</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{{ route('attendance.index') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <!-- ./col -->
+
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3>{{$data['sundays']}}</h3>
+
+                                <p>Sunday</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-person-add"></i>
+                            </div>
+                            <a href="{{route('attendance.index')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3>{{$data['offs']}}</h3>
+
+                                <p>Offs of the month</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-pie-graph"></i>
+                            </div>
+                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container" style="margin: 10px 0 100px 0;">
+
+                    <div class="row row-cols-2 row-cols-md-3 g-4">
+                        <div class="col">
+                            <a href="{{route('leave.create')}}" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-calendar-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Leave Requests</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{{route('leave.index')}}" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-file-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Leaves</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <form action="{{route('leave.index')}}">
+                                <input type="hidden" value="approved" name="status">
+                            <button type="submit" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-check-square text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Approve Leave</p>
+                                    </div>
+                                </div>
+                            </button>
+                            </form>
+                        </div>
+                        <div class="col">
+                            <a href="{{route('attendance.day-wise')}}" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-id-card text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Attendance Records</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Edit Records</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">User Profiles</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <!-- New Cards -->
+                        <div class="col">
+                            <a href="#" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Work Hours</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="#" class="text-decoration-none text-reset d-block">
+                                <div class="card shadow border-0 h-100 responsive-card">
+                                    <div
+                                        class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
+                                        <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i>
+                                        <p class="mt-3 mb-0">Employee Profiles</p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- /.row -->
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-@endsection
+        </section>
+    @endsection
