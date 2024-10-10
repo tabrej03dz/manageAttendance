@@ -41,10 +41,10 @@
 
             <!-- Punch Circle -->
             <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
-                 id="punchCircle">
+                id="punchCircle">
                 <video id="video" autoplay></video>
                 <canvas id="canvas" class="hidden"></canvas>
-                <img id="imagePreview" alt="" />
+                <img id="imagePreview" />
                 <div id="cameraIcon" class="text-red-500">
                     <i class="fas fa-camera fa-3x"></i>
                 </div>
@@ -52,18 +52,18 @@
 
             <!-- Status Info -->
             <div class="flex justify-around w-full mb-8">
-                @if($formType == 'check_in')
-                <div class="text-center">
-                    <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
-                    <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                    <small>Check In</small>
-                </div>
+                @if ($formType == 'check_in')
+                    <div class="text-center">
+                        <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
+                        <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
+                        <small>Check In</small>
+                    </div>
                 @else
-                <div class="text-center">
-                    <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
-                    <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                    <small>Check out</small>
-                </div>
+                    <div class="text-center">
+                        <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
+                        <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
+                        <small>Check out</small>
+                    </div>
                 @endif
                 <div class="text-center">
                     <i class="fas fa-clock text-red-500 mb-2 fa-2x"></i>
@@ -75,10 +75,10 @@
             <!-- Action Buttons -->
             <div class="w-full max-w-xs">
                 <button id="snap"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
-                    <i class="fas fa-check mr-2"></i> Capture
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                    <i class="fas fa-camera mr-2"></i>
+                    Capture
                 </button>
-
                 <form
                     action="{{ $formType == 'check_in' ? route('attendance.check_in', ['user' => $user ?? null]) : route('attendance.check_out', ['user' => $user ?? null]) }}"
                     method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
@@ -91,7 +91,8 @@
                     </div>
                     <div class="d-grid">
                         <button type="submit" id="upload"
-                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">Submit</button>
+                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                            <i class="fas fa-check mr-2"></i>Submit</button>
                     </div>
                 </form>
 
@@ -101,16 +102,17 @@
                 {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
                 {{--                </button> --}}
                 <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
                     <i class="fas fa-redo mr-2"></i> Reset
                 </a>
             </div>
         </main>
     </div>
     <script>
+        // Get video stream from the camera
         navigator.mediaDevices.getUserMedia({
-            video: true
-        })
+                video: true
+            })
             .then(function(stream) {
                 var video = document.getElementById('video');
                 video.srcObject = stream;
@@ -120,28 +122,39 @@
                 console.log("An error occurred: " + err);
             });
 
+        // Capture the image on button click
         document.getElementById('snap').addEventListener('click', function() {
             var canvas = document.getElementById('canvas');
             var video = document.getElementById('video');
             var imagePreview = document.getElementById('imagePreview');
             var context = canvas.getContext('2d');
 
+            // Set canvas dimensions equal to video dimensions
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            // Apply mirror effect manually
+            // Save the mirrored image
             context.save();
-            context.scale(-1, 1);
+            context.scale(-1, 1); // Flip horizontally (mirror effect)
             context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
             context.restore();
 
-            var dataURL = canvas.toDataURL('image/png');
+            // Get the data URL of the mirrored image from the canvas
+            var mirroredDataURL = canvas.toDataURL('image/png');
 
-            video.classList.add('d-none');
-            imagePreview.classList.remove('d-none');
-            imagePreview.src = dataURL;
+            // Now display the normal image
+            // Reset the canvas for normal capture
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height); // Normal orientation
+            var normalDataURL = canvas.toDataURL('image/png');
 
-            fetch(dataURL)
+            // Hide the video element and show the image preview
+            video.classList.add('hidden');
+            imagePreview.classList.remove('hidden');
+            imagePreview.src = normalDataURL; // Set the preview to normal orientation
+
+            // Convert the captured mirrored image data URL to a file for submission
+            fetch(mirroredDataURL)
                 .then(res => res.blob())
                 .then(blob => {
                     var file = new File([blob], 'capturedImage.png', {
@@ -156,6 +169,7 @@
                 });
         });
 
+        // Ensure image is captured before form submission
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             var input = document.getElementById('capturedImage');
             if (input.files.length === 0) {
@@ -164,6 +178,7 @@
             }
         });
     </script>
+
 
     <script>
         var userOffice = @json(auth()->user()->office);

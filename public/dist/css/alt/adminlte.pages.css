@@ -5,7 +5,8 @@
  *   Website: AdminLTE.io <http://adminlte.io>
  *   License: Open source - MIT <http://opensource.org/licenses/MIT>
  */
-.close, .mailbox-attachment-close {
+.close,
+.mailbox-attachment-close {
   float: right;
   font-size: 1.5rem;
   font-weight: 700;
@@ -15,27 +16,33 @@
   opacity: .5;
 }
 
-.close:hover, .mailbox-attachment-close:hover {
+.close:hover,
+.mailbox-attachment-close:hover {
   color: #000;
   text-decoration: none;
 }
 
-.close:not(:disabled):not(.disabled):hover, .mailbox-attachment-close:not(:disabled):not(.disabled):hover, .close:not(:disabled):not(.disabled):focus, .mailbox-attachment-close:not(:disabled):not(.disabled):focus {
+.close:not(:disabled):not(.disabled):hover,
+.mailbox-attachment-close:not(:disabled):not(.disabled):hover,
+.close:not(:disabled):not(.disabled):focus,
+.mailbox-attachment-close:not(:disabled):not(.disabled):focus {
   opacity: .75;
 }
 
-button.close, button.mailbox-attachment-close {
+button.close,
+button.mailbox-attachment-close {
   padding: 0;
   background-color: transparent;
   border: 0;
   appearance: none;
 }
 
-a.close.disabled, a.disabled.mailbox-attachment-close {
+a.close.disabled,
+a.disabled.mailbox-attachment-close {
   pointer-events: none;
 }
 
-.mailbox-messages > .table {
+.mailbox-messages>.table {
   margin: 0;
 }
 
@@ -105,7 +112,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   font-size: 12px;
 }
 
-.mailbox-attachment-size > span {
+.mailbox-attachment-size>span {
   display: inline-block;
   padding-top: 0.75rem;
 }
@@ -122,7 +129,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   padding: 0;
 }
 
-.mailbox-attachment-icon.has-img > img {
+.mailbox-attachment-icon.has-img>img {
   height: auto;
   max-width: 100%;
 }
@@ -172,7 +179,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   z-index: 10;
 }
 
-.lockscreen-image > img {
+.lockscreen-image>img {
   border-radius: 50%;
   height: 70px;
   width: 70px;
@@ -225,6 +232,7 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
 }
 
 @media (max-width: 576px) {
+
   .login-box,
   .register-box {
     margin-top: .5rem;
@@ -250,8 +258,8 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   box-shadow: none;
 }
 
-.login-card-body .input-group .form-control:focus ~ .input-group-append .input-group-text,
-.register-card-body .input-group .form-control:focus ~ .input-group-append .input-group-text {
+.login-card-body .input-group .form-control:focus~.input-group-append .input-group-text,
+.register-card-body .input-group .form-control:focus~.input-group-append .input-group-text {
   border-color: #80bdff;
 }
 
@@ -260,8 +268,8 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   box-shadow: none;
 }
 
-.login-card-body .input-group .form-control.is-valid ~ .input-group-append .input-group-text,
-.register-card-body .input-group .form-control.is-valid ~ .input-group-append .input-group-text {
+.login-card-body .input-group .form-control.is-valid~.input-group-append .input-group-text,
+.register-card-body .input-group .form-control.is-valid~.input-group-append .input-group-text {
   border-color: #28a745;
 }
 
@@ -270,8 +278,8 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   box-shadow: none;
 }
 
-.login-card-body .input-group .form-control.is-invalid ~ .input-group-append .input-group-text,
-.register-card-body .input-group .form-control.is-invalid ~ .input-group-append .input-group-text {
+.login-card-body .input-group .form-control.is-invalid~.input-group-append .input-group-text,
+.register-card-body .input-group .form-control.is-invalid~.input-group-append .input-group-text {
   border-color: #dc3545;
 }
 
@@ -307,37 +315,37 @@ a.close.disabled, a.disabled.mailbox-attachment-close {
   }
 }
 
-.error-page > .headline {
+.error-page>.headline {
   float: left;
   font-size: 100px;
   font-weight: 300;
 }
 
 @media (max-width: 767.98px) {
-  .error-page > .headline {
+  .error-page>.headline {
     float: none;
     text-align: center;
   }
 }
 
-.error-page > .error-content {
+.error-page>.error-content {
   display: block;
   margin-left: 190px;
 }
 
 @media (max-width: 767.98px) {
-  .error-page > .error-content {
+  .error-page>.error-content {
     margin-left: 0;
   }
 }
 
-.error-page > .error-content > h3 {
+.error-page>.error-content>h3 {
   font-size: 25px;
   font-weight: 300;
 }
 
 @media (max-width: 767.98px) {
-  .error-page > .error-content > h3 {
+  .error-page>.error-content>h3 {
     text-align: center;
   }
 }
