@@ -108,9 +108,8 @@
         </main>
     </div>
     <script>
-        navigator.mediaDevices.getUserMedia({
-                video: true
-            })
+        // Get video stream from the camera
+        navigator.mediaDevices.getUserMedia({ video: true })
             .then(function(stream) {
                 var video = document.getElementById('video');
                 video.srcObject = stream;
@@ -119,43 +118,47 @@
             .catch(function(err) {
                 console.log("An error occurred: " + err);
             });
-
+    
+        // Capture the image on button click
         document.getElementById('snap').addEventListener('click', function() {
             var canvas = document.getElementById('canvas');
             var video = document.getElementById('video');
             var imagePreview = document.getElementById('imagePreview');
             var context = canvas.getContext('2d');
-
+    
+            // Set canvas dimensions equal to video dimensions
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            // Apply mirror effect manually
+    
+            // Apply mirror effect to the captured image
             context.save();
-            context.scale(-1, 1);
+            context.scale(-1, 1); // Flip horizontally (mirror effect)
             context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
             context.restore();
-
+    
+            // Get the data URL of the image from the canvas
             var dataURL = canvas.toDataURL('image/png');
-
-            video.classList.add('d-none');
-            imagePreview.classList.remove('d-none');
-            imagePreview.src = dataURL;
-
+    
+            // Hide the video element and show the image preview
+            video.classList.add('hidden');
+            imagePreview.classList.remove('hidden');
+            imagePreview.src = dataURL; // Set the mirrored image as preview
+    
+            // Convert the captured image data URL to a file for submission
             fetch(dataURL)
                 .then(res => res.blob())
                 .then(blob => {
-                    var file = new File([blob], 'capturedImage.png', {
-                        type: 'image/png'
-                    });
-
+                    var file = new File([blob], 'capturedImage.png', { type: 'image/png' });
+    
                     var dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
-
+    
                     var input = document.getElementById('capturedImage');
-                    input.files = dataTransfer.files;
+                    input.files = dataTransfer.files; // Set the file in the form input
                 });
         });
-
+    
+        // Ensure image is captured before form submission
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             var input = document.getElementById('capturedImage');
             if (input.files.length === 0) {
@@ -164,6 +167,7 @@
             }
         });
     </script>
+    
 
     <script>
         var userOffice = @json(auth()->user()->office);
