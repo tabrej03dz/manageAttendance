@@ -174,7 +174,7 @@
                                     </th>
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                        Check-in Image
+                                        Check-out Image
                                     </th>
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
@@ -235,8 +235,10 @@
 
                                     <td class="px-4 py-4">
                                     @if($record)
+                                    <a href="{{$record?->check_in_image ? asset('storage/'.$record->check_in_image) : 'https://via.placeholder.com/50'}}" target="_blank">
                                         <img src="{{$record?->check_in_image ? asset('storage/'.$record->check_in_image) : 'https://via.placeholder.com/50'}}" alt="Check-in Image"
                                             class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                                    </a>
                                     @endif
                                     </td>
                                     <td class="px-4 py-4 text-sm text-{{Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($employee->check_out_time)->format('H:i:s') ? 'red' : 'green'}}-700">

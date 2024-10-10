@@ -75,7 +75,10 @@
                 style="width: 40px; height: 40px;">
             <h4 class="fw-bold mb-0 ml-2" style="font-size: 1.2rem;">{{auth()->user()->name}}</h4>
         </div>
-        <a href="#" class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</a>
+        <form action="{{route('logout')}}" method="post">
+            @csrf
+        <button type="submit"  class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</button>
+        </form>
     </div>
 
     <!-- Check In/Check Out Section -->
@@ -167,7 +170,7 @@
 
                 <div class="row row-cols-2 row-cols-md-3 g-4">
                     <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
+                        <a href="{{route('leave.create')}}" class="text-decoration-none text-reset d-block">
                             <div class="card shadow border-0 h-100 responsive-card">
                                 <div
                                     class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
