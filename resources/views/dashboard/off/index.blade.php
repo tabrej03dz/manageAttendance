@@ -19,7 +19,9 @@
                         <th class="py-3 px-6 text-left">Title</th>
                         <th class="py-3 px-6 text-left">Date</th>
                         <th class="py-3 px-6 text-left">Description</th>
+                        @role('super_admin|admin')
                         <th class="py-3 px-6 text-left">Action</th>
+                        @endrole
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -29,6 +31,7 @@
                         <td class="py-3 px-6 text-left">{{$off->title}}</td>
                         <td class="py-3 px-6 text-left">{{$off->date}}</td>
                         <td class="py-3 px-6 text-left">{{$off->description}}</td>
+                        @role('super_admin|admin')
                         <td class="py-3 px-6 text-left flex space-x-2">
                             <a title="Edit" href="{{route('off.edit', ['off' => $off->id])}}"
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
@@ -39,6 +42,7 @@
                                 <span class="material-icons">delete</span>
                             </a>
                         </td>
+                        @endrole
                     </tr>
                     @endforeach
                     <!-- Additional rows can go here -->
@@ -47,5 +51,5 @@
         </div>
     </div>
 
-    
-@endsection 
+
+@endsection

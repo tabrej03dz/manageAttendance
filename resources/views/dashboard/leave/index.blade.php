@@ -70,7 +70,9 @@
                         <th class="py-3 px-6 text-left">Reason</th>
                         <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Response By</th>
+                        @role('super_admin|admin|team_leader')
                         <th class="py-3 px-6 text-left">Action</th>
+                        @endrole
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -84,6 +86,7 @@
                         <td class="py-3 px-6 text-left">{{$leave->reason}}</td>
                         <td class="py-3 px-6 text-left">{{$leave->status}}</td>
                         <td class="py-3 px-6 text-left">{{$leave->responsesBy?->name}}</td>
+                        @role('super_admin|admin|team_leader')
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @if($leave->status != 'approved')
                             <a title="Approve" href="{{route('leave.status', ['leave' => $leave->id, 'status' => 'approved'])}}"
@@ -98,6 +101,7 @@
                             </a>
                             @endif
                         </td>
+                        @endrole
                     </tr>
                     @endforeach
                     <!-- Additional rows can go here -->
