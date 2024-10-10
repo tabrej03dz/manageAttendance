@@ -68,7 +68,8 @@
         <p><strong>Cause:</strong> {{ $leaveRequest->reason }}</p>
     </div>
     <div class="email-footer">
-        <a href="{{ url('leave/show/'.$leaveRequest->id) }}">View Leave Request</a>
+        <a href="{{ url('leave/status/'.$leaveRequest->id.'/'.'approved') }}">Approve</a>
+        <a href="{{ url('leave/status/'.$leaveRequest->id.'/'.'rejected') }}">Reject</a>
     </div>
 </div>
 </body>
