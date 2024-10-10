@@ -133,22 +133,28 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            // Apply mirror effect to the captured image
+            // Save the mirrored image
             context.save();
             context.scale(-1, 1); // Flip horizontally (mirror effect)
             context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
             context.restore();
 
-            // Get the data URL of the image from the canvas
-            var dataURL = canvas.toDataURL('image/png');
+            // Get the data URL of the mirrored image from the canvas
+            var mirroredDataURL = canvas.toDataURL('image/png');
+
+            // Now display the normal image
+            // Reset the canvas for normal capture
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height); // Normal orientation
+            var normalDataURL = canvas.toDataURL('image/png');
 
             // Hide the video element and show the image preview
             video.classList.add('hidden');
             imagePreview.classList.remove('hidden');
-            imagePreview.src = dataURL; // Set the mirrored image as preview
+            imagePreview.src = normalDataURL; // Set the preview to normal orientation
 
-            // Convert the captured image data URL to a file for submission
-            fetch(dataURL)
+            // Convert the captured mirrored image data URL to a file for submission
+            fetch(mirroredDataURL)
                 .then(res => res.blob())
                 .then(blob => {
                     var file = new File([blob], 'capturedImage.png', {
@@ -159,7 +165,7 @@
                     dataTransfer.items.add(file);
 
                     var input = document.getElementById('capturedImage');
-                    input.files = dataTransfer.files; // Set the file in the form input
+                    input.files = dataTransfer.files;
                 });
         });
 
