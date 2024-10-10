@@ -41,10 +41,10 @@
 
             <!-- Punch Circle -->
             <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
-                 id="punchCircle">
+                id="punchCircle">
                 <video id="video" autoplay></video>
                 <canvas id="canvas" class="hidden"></canvas>
-                <img id="imagePreview" alt="" />
+                <img id="imagePreview" />
                 <div id="cameraIcon" class="text-red-500">
                     <i class="fas fa-camera fa-3x"></i>
                 </div>
@@ -67,7 +67,7 @@
             <!-- Action Buttons -->
             <div class="w-full max-w-xs">
                 <button id="snap"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
                     <i class="fas fa-check mr-2"></i> Capture
                 </button>
 
@@ -83,7 +83,7 @@
                     </div>
                     <div class="d-grid">
                         <button type="submit" id="upload"
-                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">Submit</button>
+                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">Submit</button>
                     </div>
                 </form>
 
@@ -93,7 +93,7 @@
                 {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
                 {{--                </button> --}}
                 <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
+                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
                     <i class="fas fa-redo mr-2"></i> Reset
                 </a>
             </div>
@@ -101,8 +101,8 @@
     </div>
     <script>
         navigator.mediaDevices.getUserMedia({
-            video: true
-        })
+                video: true
+            })
             .then(function(stream) {
                 var video = document.getElementById('video');
                 video.srcObject = stream;
