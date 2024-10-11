@@ -300,4 +300,14 @@ class AttendanceRecordController extends Controller
 //        dd($employees);
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));
     }
+
+    public function addNote(Request $request, AttendanceRecord $record){
+        $request->validate([
+            'note' => 'required',
+        ]);
+        $record->note = $request->note;
+        $record->noted_by = auth()->user()->id;
+        $record->save();
+        return back()->with('success', 'Note Added successfully');
+    }
 }

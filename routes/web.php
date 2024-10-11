@@ -36,6 +36,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('form/{form_type}/{user?}', [AttendanceRecordController::class, 'form'])->name('form');
         Route::get('day-wise', [AttendanceRecordController::class, 'dayWise'])->name('day-wise');
+        Route::post('note/{record}', [AttendanceRecordController::class, 'addNote'])->name('note');
     });
 
     Route::prefix('employee')->name('employee.')->group(function (){

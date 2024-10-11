@@ -37,10 +37,13 @@
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
                             </a>
-                            <a title="Delete" href="{{route('off.delete', ['off' => $off->id])}}"
+                            <form action="{{route('off.delete', ['off' => $off->id])}}" method="post">
+                                @csrf
+                            <button title="Delete" type="submit"
                                 class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span>
-                            </a>
+                            </button>
+                            </form>
                         </td>
                         @endrole
                     </tr>

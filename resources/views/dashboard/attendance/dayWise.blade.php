@@ -229,6 +229,7 @@
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}-700">
                                                 {{ round($record?->check_out_distance) }} m</td>
+
                                         </tr>
                                     @endif
                                 @endforeach

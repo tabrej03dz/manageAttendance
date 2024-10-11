@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OffNotification;
 use App\Models\Off;
 use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Jobs\SendOffNotification;
 
 class OffController extends Controller
 {
@@ -30,8 +33,13 @@ class OffController extends Controller
             'office_id' => 'sometimes',
         ]);
 
-        $status = Off::create($request->all() + ['office_id' => $request->office_id ?? auth()->user()->office_id]);
-        if ($status) {
+        $off = Off::create($request->all() + ['office_id' => $request->office_id ?? auth()->user()->office_id]);
+
+        if ($off) {
+            foreach ($off->office->users as $user){
+                dispatch(new SendOffNotification($user, $off));
+//                Mail::to($user->email)->send(new OffNotification($off));
+            }
             request()->session()->flash('success', 'Off Created successfully');
         }else{
             request()->session()->flash('error', 'Failed, Try again!');
@@ -71,5 +79,6 @@ class OffController extends Controller
         }else{
             \request()->session()->flash('error', 'Failed, Try again!');
         }
+        return back();
     }
 }
