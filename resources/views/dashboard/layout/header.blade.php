@@ -1,7 +1,7 @@
 
 
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light hidden md:flex">
 
         <ul class="navbar-nav">
             <li class="nav-item">
