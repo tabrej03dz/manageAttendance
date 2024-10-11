@@ -250,7 +250,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">person</span>
-                                    <span class="text-gray-800 font-medium">John Doe</span>
+                                    <span class="text-gray-800 font-medium">{{$user->name}}</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -259,7 +259,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">work</span>
-                                    <span class="text-gray-800">Software Engineer</span>
+                                    <span class="text-gray-800">{{$user->designation}}</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -268,7 +268,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">email</span>
-                                    <span class="text-gray-800">john.doe@example.com</span>
+                                    <span class="text-gray-800">{{$user->email}}</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -277,27 +277,27 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">phone</span>
-                                    <span class="text-gray-800">+91 1234567873</span>
+                                    <span class="text-gray-800">{{$user->phone}}</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
                                 </button>
                             </div>
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xl font-bold text-gray-600">₹</span>
-                                    <span class="text-gray-800">75,000 per month</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
+{{--                            <div class="flex items-center justify-between border-b py-2">--}}
+{{--                                <div class="flex items-center space-x-2">--}}
+{{--                                    <span class="text-xl font-bold text-gray-600">₹</span>--}}
+{{--                                    <span class="text-gray-800">75,000 per month</span>--}}
+{{--                                </div>--}}
+{{--                                <button>--}}
+{{--                                    <span class="material-icons">edit</span>--}}
+{{--                                </button>--}}
+{{--                            </div>--}}
                         </div>
 
-                        <button
-                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                            Update
-                        </button>
+{{--                        <button--}}
+{{--                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">--}}
+{{--                            Update--}}
+{{--                        </button>--}}
                     </div>
                 </div>
             </div>
@@ -316,7 +316,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="text-sm font-bold text-gray-600">Secondary Email</span>
-                                    <input class="text-gray-800 border border-black" name="email1" value="{{$user->email1}}"/>
+                                    <input type="email" class="text-gray-800 border border-black" name="email1" value="{{$user->email1}}"/>
                                 </div>
                             </div>
                         </div>
