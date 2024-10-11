@@ -1,17 +1,69 @@
-<!-- Header Section -->
-<div class="flex justify-between items-center p-4 shadow-lg rounded bg-white md:hidden">
+<!--Mobile View Header Section -->
+<header class="flex justify-between items-center py-3 px-4 shadow-lg rounded bg-white relative md:hidden">
+    <!-- Logo Section -->
     <div class="flex items-center">
-        <!-- Smaller Placeholder Avatar -->
-        <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://via.placeholder.com/40' }}"
-            alt="Avatar" class="rounded-full mr-2" style="width: 40px; height: 40px;">
-        <h4 class="font-bold mb-0 ml-2 text-lg">{{ auth()->user()->name }}</h4>
+        <img src="{{ asset('asset/img/logo.png') }}" alt="Logo" class="w-12 h-12 mr-4">
     </div>
-    <form action="{{ route('logout') }}" method="post">
-        @csrf
-        <button type="submit"
-            class="btn btn-outline-danger text-sm text-red-500 border border-red-500 rounded px-2 py-1">LOGOUT</button>
-    </form>
-</div>
+
+    <!-- User Info Section -->
+    <div class="flex items-center relative">
+        <!-- Avatar with Dropdown Trigger -->
+        <div class="relative">
+            @php
+                // Get user's name and split it into parts
+$userName = auth()->user()->name;
+$nameParts = explode(' ', $userName);
+$firstLetter = strtoupper($nameParts[0][0] ?? '');
+$lastLetter = strtoupper($nameParts[1][0] ?? '');
+            @endphp
+
+            @if (auth()->user()->photo)
+                <img src="{{ asset('storage/' . auth()->user()->photo) }}" alt="User Avatar"
+                    class="rounded-full cursor-pointer w-10 h-10 mr-2 hover:opacity-90 transition-opacity"
+                    aria-haspopup="true" aria-expanded="false"
+                    onclick="document.getElementById('profileDropdown').classList.toggle('hidden')">
+            @else
+                <div class="flex items-center justify-center bg-gray-300 rounded-full w-10 h-10 mr-2 cursor-pointer hover:opacity-90 transition-opacity"
+                    aria-haspopup="true" aria-expanded="false"
+                    onclick="document.getElementById('profileDropdown').classList.toggle('hidden')">
+                    <span class="font-bold text-white">{{ $firstLetter }}{{ $lastLetter }}</span>
+                </div>
+            @endif
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div id="profileDropdown"
+            class="hidden absolute right-0 mt-56 w-48 bg-white shadow-lg rounded-lg z-10 transition-all duration-300 ease-out">
+            <ul class="py-2 text-gray-700">
+                <li class="px-4 py-2 font-bold text-center border-b">{{ $userName }}</li> <!-- User's name -->
+                <li>
+                    <a href=""
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">
+                        <i class="fas fa-user-circle mr-2"></i>
+                        Profile
+                    </a>
+                </li>                
+                <li>
+                    <a href=""
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">
+                        <i class="fas fa-cog mr-2"></i>
+                        Settings
+                    </a>
+                </li>                
+                <li>
+                    <form action="" method="post">
+                        @csrf
+                        <button type="submit"
+                            class="w-full text-left flex items-center px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Logout
+                        </button>
+                    </form>
+                </li>                
+            </ul>
+        </div>
+    </div>
+</header>
 
 
 <!-- Navbar -->
@@ -130,5 +182,22 @@
     {{--        </ul> --}}
 </nav>
 <!-- /.navbar -->
+
+<script>
+    // Close dropdown if clicked outside
+    window.onclick = function(event) {
+        const dropdown = document.getElementById('profileDropdown');
+        if (!event.target.closest('.relative') && !dropdown.classList.contains('hidden')) {
+            dropdown.classList.add('hidden');
+        }
+    }
+
+    // Accessibility: Allow closing the dropdown with the Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.getElementById('profileDropdown').classList.add('hidden');
+        }
+    });
+</script>
 
 @include('dashboard.layout.sidebar')
