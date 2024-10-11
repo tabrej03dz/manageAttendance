@@ -29,84 +29,86 @@
         }
     </style>
 
-    <div class="min-h-screen bg-red-50 flex flex-col pb-20">
-        <!-- Main Content -->
-        <main class="flex-grow flex flex-col items-center justify-center p-4">
-            <!-- Time Display -->
-            <div class="text-center mb-8">
-                <h1 class="text-sm current-date">Oct 05, 2024 - Saturday</h1>
-                <h2 class="text-5xl font-bold mb-2 current-time">11:28 AM</h2>
-                <p>Current Time</p>
-            </div>
-
-            <!-- Punch Circle -->
-            <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
-                id="punchCircle">
-                <video id="video" autoplay></video>
-                <canvas id="canvas" class="hidden"></canvas>
-                <img id="imagePreview" />
-                <div id="cameraIcon" class="text-red-500">
-                    <i class="fas fa-camera fa-3x"></i>
+    <div class="pt-2 pb-16">
+        <div class="min-h-screen bg-red-50 flex flex-col mx-2 shadow-2xl rounded-lg">
+            <!-- Main Content -->
+            <main class="flex-grow flex flex-col items-center justify-center p-4">
+                <!-- Time Display -->
+                <div class="text-center mb-8">
+                    <h1 class="text-sm current-date">Oct 05, 2024 - Saturday</h1>
+                    <h2 class="text-5xl font-bold mb-2 current-time">11:28 AM</h2>
+                    <p>Current Time</p>
                 </div>
-            </div>
 
-            <!-- Status Info -->
-            <div class="flex justify-around w-full mb-8">
-                @if ($formType == 'check_in')
-                    <div class="text-center">
-                        <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
-                        <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                        <small>Check In</small>
+                <!-- Punch Circle -->
+                <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
+                    id="punchCircle">
+                    <video id="video" autoplay></video>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    <img id="imagePreview" />
+                    <div id="cameraIcon" class="text-red-500">
+                        <i class="fas fa-camera fa-3x"></i>
                     </div>
-                @else
-                    <div class="text-center">
-                        <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
-                        <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                        <small>Check out</small>
-                    </div>
-                @endif
-                <div class="text-center">
-                    <i class="fas fa-clock text-red-500 mb-2 fa-2x"></i>
-                    <p class="mb-0 total-hours font-bold text-red-700">--:--</p>
-                    <small>Total Hours</small>
                 </div>
-            </div>
 
-            <!-- Action Buttons -->
-            <div class="w-full max-w-xs">
-                <button id="snap"
-                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
-                    <i class="fas fa-camera mr-2"></i>
-                    Capture
-                </button>
-                <form
-                    action="{{ $formType == 'check_in' ? route('attendance.check_in', ['user' => $user ?? null]) : route('attendance.check_out', ['user' => $user ?? null]) }}"
-                    method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
-                    @csrf
-                    <div class="mb-3 d-none">
-                        <input type="file" id="capturedImage" name="image" class="form-control">
-                        <input type="text" name="latitude" id="latitude" placeholder="Latitude">
-                        <input type="text" name="longitude" id="longitude" placeholder="Longitude">
-                        <input type="text" name="distance" id="distance">
+                <!-- Status Info -->
+                <div class="flex justify-around w-full mb-8">
+                    @if ($formType == 'check_in')
+                        <div class="text-center">
+                            <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
+                            <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
+                            <small>Check In</small>
+                        </div>
+                    @else
+                        <div class="text-center">
+                            <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
+                            <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
+                            <small>Check out</small>
+                        </div>
+                    @endif
+                    <div class="text-center">
+                        <i class="fas fa-clock text-red-500 mb-2 fa-2x"></i>
+                        <p class="mb-0 total-hours font-bold text-red-700">--:--</p>
+                        <small>Total Hours</small>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" id="upload"
-                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
-                            <i class="fas fa-check mr-2"></i>Submit</button>
-                    </div>
-                </form>
+                </div>
 
-                {{--                <button id="submitButton" --}}
-                {{--                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center" --}}
-                {{--                    onclick="submitImage()"> --}}
-                {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
-                {{--                </button> --}}
-                <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
-                    <i class="fas fa-redo mr-2"></i> Reset
-                </a>
-            </div>
-        </main>
+                <!-- Action Buttons -->
+                <div class="w-full max-w-xs">
+                    <button id="snap"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                        <i class="fas fa-camera mr-2"></i>
+                        Capture
+                    </button>
+                    <form
+                        action="{{ $formType == 'check_in' ? route('attendance.check_in', ['user' => $user ?? null]) : route('attendance.check_out', ['user' => $user ?? null]) }}"
+                        method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
+                        @csrf
+                        <div class="mb-3 d-none">
+                            <input type="file" id="capturedImage" name="image" class="form-control">
+                            <input type="text" name="latitude" id="latitude" placeholder="Latitude">
+                            <input type="text" name="longitude" id="longitude" placeholder="Longitude">
+                            <input type="text" name="distance" id="distance">
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" id="upload"
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                                <i class="fas fa-check mr-2"></i>Submit</button>
+                        </div>
+                    </form>
+
+                    {{--                <button id="submitButton" --}}
+                    {{--                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center" --}}
+                    {{--                    onclick="submitImage()"> --}}
+                    {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
+                    {{--                </button> --}}
+                    <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
+                        <i class="fas fa-redo mr-2"></i> Reset
+                    </a>
+                </div>
+            </main>
+        </div>
     </div>
     <script>
         // Get video stream from the camera

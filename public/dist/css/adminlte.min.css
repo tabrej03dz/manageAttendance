@@ -13568,18 +13568,18 @@ body.sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini) .main-header::bef
 
 .sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active,
 .sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
-    background-color: #007bff;
+    background-color: #dc2626;
     color: #fff
 }
 
 .sidebar-dark-primary .nav-sidebar.nav-legacy>.nav-item>.nav-link.active,
 .sidebar-light-primary .nav-sidebar.nav-legacy>.nav-item>.nav-link.active {
-    border-color: #007bff
+    border-color: #dc2626
 }
 
 .sidebar-dark-secondary .nav-sidebar>.nav-item>.nav-link.active,
 .sidebar-light-secondary .nav-sidebar>.nav-item>.nav-link.active {
-    background-color: #6c757d;
+    background-color: #dc2626;
     color: #fff
 }
 
@@ -15111,7 +15111,7 @@ body.text-sm .control-sidebar {
 }
 
 .nav-pills .nav-link:not(.active):hover {
-    color: #007bff
+    color: #ef4444
 }
 
 .nav-pills .nav-item.dropdown.show .nav-link:hover {
