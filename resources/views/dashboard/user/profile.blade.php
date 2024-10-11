@@ -302,11 +302,41 @@
                 </div>
             </div>
         </div>
+        <div class="bg-gray-100 min-h-screen">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
+                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post">
+    @csrf
+                    <div class="p-6">
+
+
+                        <div class="space-y-4">
+
+                            <div class="flex items-center justify-between border-b py-2">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm font-bold text-gray-600">Secondary Email</span>
+                                    <input class="text-gray-800 border border-black" name="email1" value="{{$user->email1}}"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                            Update
+                        </button>
+                    </div>
+        </form>
+                </div>
+            </div>
+        </div>
+
+
 
         <div class="bg-gray-100">
             <div class="container mx-auto px-4">
                 <!-- Full width on web, max width on mobile -->
-                <form action="{{ route('userPassword', ['user' => $user->id]) }}" method="POST">
+                <form action="                <form action="{{ route('userPassword', ['user' => $user->id]) }}" method="POST">
                     @csrf
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
                         <div class="p-6">

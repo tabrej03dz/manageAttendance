@@ -70,4 +70,10 @@ class HomeController extends Controller
 
         return "$hours h, $minutes m";
     }
+
+    public function updateProfile(Request $request, User $user){
+        $status = $user->update( $request->all());
+        return back()->with('success', 'updated successfully');
+
+    }
 }

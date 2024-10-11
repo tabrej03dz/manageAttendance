@@ -30,6 +30,6 @@ class SendOffNotification implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->user->email)->send(new OffNotification($this->off));
+        Mail::to($this->user->email1)->send(new OffNotification($this->off));
     }
 }

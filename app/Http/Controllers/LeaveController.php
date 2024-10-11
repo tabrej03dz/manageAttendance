@@ -81,7 +81,7 @@ class LeaveController extends Controller
 
     public function status(Leave $leave, $status){
         $leave->update(['status' => $status, 'responses_by' => auth()->user()->id]);
-        Mail::to($leave->user->email)->send(new LeaveResponse($leave));
+        Mail::to($leave->user->email1)->send(new LeaveResponse($leave));
         return back()->with('success', 'Status updated successfully');
     }
 
