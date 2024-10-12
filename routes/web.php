@@ -7,6 +7,7 @@ use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OffController;
+use App\Http\Controllers\PolicyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,17 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('edit/{off}', [OffController::class, 'edit'])->name('edit');
        Route::post('update/{off}', [OffController::class, 'update'])->name('update');
        Route::post('delete/{off}', [OffController::class, 'delete'])->name('delete');
+    });
+
+    Route::prefix('policy')->name('policy.')->group(function(){
+        Route::get('/', [PolicyController::class, 'index'])->name('index');
+        Route::get('create', [PolicyController::class, 'create'])->name('create');
+        Route::post('store', [PolicyController::class, 'store'])->name('store');
+        Route::get('edit/{policy}', [PolicyController::class, 'edit'])->name('edit');
+        Route::post('update/{policy}', [PolicyController::class, 'update'])->name('update');
+        Route::post('delete/{policy}', [PolicyController::class, 'delete'])->name('delete');
+        Route::get('read/{policy?}', [PolicyController::class, 'read'])->name('read');
+        Route::get('accept/{policy}', [PolicyController::class, 'accept'])->name('accept');
     });
 
     Route::prefix('info')->name('info.')->group(function(){

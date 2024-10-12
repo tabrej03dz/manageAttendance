@@ -64,6 +64,12 @@
                 </li>
                 @endrole
                 <li class="nav-item">
+                    <a href="{{ route('policy.index') }}" class="nav-link {{ request()->routeIs('policy.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p>Policy</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button type="submit" class="nav-link">

@@ -75,6 +75,9 @@
                 alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
             <h4 class="fw-bold mb-0 ml-2" style="font-size: 1.2rem;">{{ auth()->user()->name }}</h4>
         </div>
+        @if(auth()->user()->is_accepted == '0')
+        <a href="{{route('policy.read')}}" class="btn btn-outline-danger btn-sm text-decoration-none">Read Policy</a>
+        @endif
         <form action="{{ route('logout') }}" method="post">
             @csrf
             <button type="submit" class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</button>

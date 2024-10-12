@@ -13,4 +13,8 @@ class Office extends Model
     public function users(){
         return $this->hasMany(User::class, 'office_id');
     }
+
+    public function policy(){
+        return $this->hasOne(Policy::class, 'office_id');
+    }
 }
