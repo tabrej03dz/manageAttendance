@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <p>Is Office will close</p>
+                                <p>will the office be closed?</p>
                                 <input type="checkbox" class="" value="1" id="is_off" name="is_off">
                                 <label for="is_off" class="form-label">Yes</label>
                             </div>
