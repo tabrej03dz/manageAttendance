@@ -31,6 +31,7 @@ class OffController extends Controller
             'date' => 'required|date',
             'description' => '',
             'office_id' => 'sometimes',
+            'is_off' => 'in:1',
         ]);
 
         $off = Off::create($request->all() + ['office_id' => $request->office_id ?? auth()->user()->office_id]);

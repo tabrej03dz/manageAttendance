@@ -29,6 +29,7 @@
                                     <label for="date" class="form-label">Date</label>
                                     <input type="date" class="form-control" id="date" name="date" required>
                                 </div>
+
                             </div>
                             <div class="row mb-3">
                                 @if ($offices)
@@ -47,7 +48,11 @@
                                     <textarea name="description" class="form-control" id="description" cols="30" rows="2"></textarea>
                                 </div>
                             </div>
-
+                            <div class="col-md-6">
+                                <p>Is Office will close</p>
+                                <input type="checkbox" class="" value="1" id="is_off" name="is_off">
+                                <label for="is_off" class="form-label">Yes</label>
+                            </div>
                             <div class="row mb-3">
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-danger btn-lg">Submit</button>

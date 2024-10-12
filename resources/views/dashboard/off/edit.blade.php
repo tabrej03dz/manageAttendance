@@ -52,6 +52,12 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6">
+                                <p>Is Office will close</p>
+                                <input type="checkbox" class="" value="1" id="is_off" name="is_off" {{$off->is_off == 1 ? 'checked' : ''}}>
+                                <label for="is_off" class="form-label">Yes</label>
+                            </div>
+
                             <div class="row mb-3">
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-danger btn-lg">Submit</button>
