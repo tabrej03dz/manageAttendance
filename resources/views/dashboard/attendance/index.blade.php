@@ -473,7 +473,7 @@
                                             $leaveDays++;
                                         }
                                         $off = App\Models\Off::whereDate('date', $d)
-                                            ->where('office_id', auth()->user()->office_id)
+                                            ->where('office_id', auth()->user()->office_id)->where('is_off', 1)
                                             ->first();
                                         if ($off) {
                                             $offDays++;

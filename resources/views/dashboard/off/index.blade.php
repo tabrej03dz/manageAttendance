@@ -18,6 +18,7 @@
                         <th class="py-3 px-6 text-left">#</th>
                         <th class="py-3 px-6 text-left">Title</th>
                         <th class="py-3 px-6 text-left">Date</th>
+                        <th class="py-3 px-6 text-left">Is Off</th>
                         <th class="py-3 px-6 text-left">Description</th>
                         @role('super_admin|admin')
                         <th class="py-3 px-6 text-left">Action</th>
@@ -30,6 +31,7 @@
                         <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
                         <td class="py-3 px-6 text-left">{{$off->title}}</td>
                         <td class="py-3 px-6 text-left">{{$off->date}}</td>
+                        <td class="py-3 px-6 text-left">{{$off->is_off == 1 ? 'Yes' : 'No'}}</td>
                         <td class="py-3 px-6 text-left">{{$off->description}}</td>
                         @role('super_admin|admin')
                         <td class="py-3 px-6 text-left flex space-x-2">
