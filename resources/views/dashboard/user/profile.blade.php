@@ -250,7 +250,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">person</span>
-                                    <span class="text-gray-800 font-medium">{{$user->name}}</span>
+                                    <span class="text-gray-800 font-medium">John Doe</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -259,7 +259,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">work</span>
-                                    <span class="text-gray-800">{{$user->designation}}</span>
+                                    <span class="text-gray-800">Software Engineer</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -268,7 +268,7 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">email</span>
-                                    <span class="text-gray-800">{{$user->email}}</span>
+                                    <span class="text-gray-800">john.doe@example.com</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
@@ -277,66 +277,67 @@
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
                                     <span class="material-icons text-gray-600">phone</span>
-                                    <span class="text-gray-800">{{$user->phone}}</span>
+                                    <span class="text-gray-800">+91 1234567873</span>
                                 </div>
                                 <button>
                                     <span class="material-icons">edit</span>
                                 </button>
                             </div>
-{{--                            <div class="flex items-center justify-between border-b py-2">--}}
-{{--                                <div class="flex items-center space-x-2">--}}
-{{--                                    <span class="text-xl font-bold text-gray-600">₹</span>--}}
-{{--                                    <span class="text-gray-800">75,000 per month</span>--}}
-{{--                                </div>--}}
-{{--                                <button>--}}
-{{--                                    <span class="material-icons">edit</span>--}}
-{{--                                </button>--}}
-{{--                            </div>--}}
-                        </div>
-
-{{--                        <button--}}
-{{--                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">--}}
-{{--                            Update--}}
-{{--                        </button>--}}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bg-gray-100 min-h-screen">
-            <div class="container mx-auto px-4 py-8">
-                <!-- Full width on web, max width on mobile -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
-                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post">
-    @csrf
-                    <div class="p-6">
-
-
-                        <div class="space-y-4">
-
                             <div class="flex items-center justify-between border-b py-2">
                                 <div class="flex items-center space-x-2">
-                                    <span class="text-sm font-bold text-gray-600">Secondary Email</span>
-                                    <input type="email" class="text-gray-800 border border-black" name="email1" value="{{$user->email1}}"/>
+                                    <span class="text-xl font-bold text-gray-600">₹</span>
+                                    <span class="text-gray-800">75,000 per month</span>
                                 </div>
+                                <button>
+                                    <span class="material-icons">edit</span>
+                                </button>
                             </div>
                         </div>
 
-                        <button type="submit"
+                        <button
                             class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
                             Update
                         </button>
                     </div>
-        </form>
                 </div>
             </div>
         </div>
-
+        <div class="bg-gray-100 flex items-center justify-center">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
+                <div class="bg-white rounded-lg shadow-lg">
+                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
+                        @csrf
+                        <div class="p-6">
+        
+                            <div class="space-y-6">
+        
+                                <div class="flex items-center border-b pb-4">
+                                    <label for="email1" class="w-full text-center text-lg font-bold text-gray-600">Secondary Email</label>    
+                                </div>
+                                <div>
+                                    <input placeholder="Enter your secondary email" id="email1" name="email1" value="{{ $user->email1 }}" 
+                                        class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300" />
+                                    </div>
+                            </div>
+        
+                            <button type="submit"
+                                class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                Update
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
 
 
         <div class="bg-gray-100">
             <div class="container mx-auto px-4">
                 <!-- Full width on web, max width on mobile -->
-                <form action="                <form action="{{ route('userPassword', ['user' => $user->id]) }}" method="POST">
+                <form action="                <form action="{{ route('userPassword', ['user' => $user->id]) }}"
+                    method="POST">
                     @csrf
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
                         <div class="p-6">
