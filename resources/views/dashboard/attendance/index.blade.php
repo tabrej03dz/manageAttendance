@@ -374,13 +374,13 @@
                     <div class="flex-grow flex space-x-4">
                         <div class="flex-1">
                             <label for="from-date-web" class="block mb-1 text-sm font-medium text-gray-700">From:</label>
-                            <input type="text" id="from-date-web" name="start" value="{{ $monthStart }}"
+                            <input type="date" id="from-date-web" name="start" value="{{ $monthStart }}"
                                 class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Select From Date">
                         </div>
                         <div class="flex-1">
                             <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">To:</label>
-                            <input type="text" id="to-date-web" name="end" value="{{ $endOfMonth }}"
+                            <input type="date" id="to-date-web" name="end" value="{{ $endOfMonth }}"
                                 class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Select To Date">
                         </div>

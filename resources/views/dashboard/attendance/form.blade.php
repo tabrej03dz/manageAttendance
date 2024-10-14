@@ -76,7 +76,7 @@
                 <!-- Action Buttons -->
                 <div class="w-full max-w-xs">
                     <button id="snap"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
                         <i class="fas fa-camera mr-2"></i>
                         Capture
                     </button>
@@ -90,6 +90,8 @@
                             <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             <input type="text" name="distance" id="distance">
                         </div>
+                        <textarea class="form-control mb-2" name="note" id="" cols="30" rows="3" placeholder="write a note"></textarea>
+
                         <div class="d-grid">
                             <button type="submit" id="upload"
                                 class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">

@@ -254,10 +254,12 @@
                                                                     onclick="togglePopup(event)">
                                                                     Close
                                                                 </button>
+                                                                @role('super_admin|admin')
                                                                 <button type="submit"
                                                                     class="bg-yellow-500 text-white px-4 py-2 ml-2 rounded-md hover:bg-yellow-600 transition">
                                                                     Save
                                                                 </button>
+                                                                @endrole
                                                             </div>
                                                         </div>
                                                     </form>

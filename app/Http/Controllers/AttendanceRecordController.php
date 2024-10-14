@@ -183,6 +183,7 @@ class AttendanceRecordController extends Controller
                 'duration' => $user->office_time / 2, // Set initial duration
                 'check_in_distance' => $request->distance,
                 'day_type' => '__', // Initialize day type
+                'check_in_note' => $request->note ?? null,
             ]);
 
             // Check if the user is late
@@ -243,10 +244,10 @@ class AttendanceRecordController extends Controller
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
 //            dd($duration);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__']);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_note' => $request->note]);
         }else{
             $duration = $user->office_time / 2;
-            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance]);
+            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_note' => $request->note]);
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');

@@ -73,6 +73,7 @@
                                              <th>Leaves</th>
                                              <th>Late Count</th>
                                              <th>Late in time</th>
+                                             <th>Gone Before Time</th>
                                          </tr>
                                          </thead>
                                          <!-- Table Body -->
@@ -93,6 +94,7 @@
                                                      $offDays = 0;
                                                      $lateCount = 0;
                                                      $lateTime = 0;
+                                                     $goneBeforeTime = 0;
                                                  @endphp
                                                  @foreach ($dates as $dateObj)
                                                      @php
@@ -108,6 +110,9 @@
                                                              if ($record->late) {
                                                                  $lateCount++;
                                                                  $lateTime += $record->late;
+                                                             }
+                                                             if (Carbon\Carbon::parse($record?->check_out)->format('H:i:s') < Carbon\Carbon::parse($user->check_out_time)->format('H:i:s')){
+                                                                 $goneBeforeTime += Carbon\Carbon::parse($record?->check_out)->diffInMinutes(Carbon\Carbon::parse($user->check_out_time));
                                                              }
                                                          }
 
@@ -144,6 +149,7 @@
                                                  <td>{{ $leaveDays }}</td>
                                                  <td>{{ $lateCount }}</td>
                                                  <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($lateTime) : 'N/A' }}</td>
+                                                 <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($goneBeforeTime) : 'N/A' }}</td>
                                              </tr>
                                          @endforeach
                                          </tbody>
