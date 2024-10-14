@@ -42,16 +42,16 @@
                      </div>
 
                      <!-- Attendance Table -->
-                     <div class="table-responsive text-xs">
+                     <div class="table-responsive mt-3" style="max-height: 75vh; overflow-y: auto;">
 
                          <!-- Attendance Table (Web View) -->
                          <div class="table-responsive text-xs">
                              <!-- Attendance Table (Web View) -->
                              <div class="table-responsive mt-3 d-md-block">
-                                 <div class="relative overflow-auto max-h-[75vh]"> <!-- Scrollable container with a height limit -->
-                                     <table class="table table-bordered table-hover align-middle text-center">
+                                <div class="table-responsive mt-3" style="max-height: 75vh; overflow-y: auto;">
+                                    <table class="table table-bordered table-hover align-middle text-center">
                                          <!-- Fixed Header -->
-                                         <thead class="bg-primary text-white sticky top-0 z-10">
+                                         <thead class="bg-primary text-white sticky-top">
                                          <tr>
                                              <th class="sticky left-0 bg-primary" style="z-index: 20;">Employees</th> <!-- Sticky first column -->
                                              <th>Dates</th>
