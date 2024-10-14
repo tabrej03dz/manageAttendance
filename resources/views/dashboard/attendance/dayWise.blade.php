@@ -98,7 +98,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- Include Flatpickr CSS for the date picker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-
+<div class="pb-10">
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <!-- Mobile View -->
         <div class="md:hidden space-y-4">
@@ -269,6 +269,7 @@
             </div>
         </div>
     </div>
+</div>
 
 
     <!-- Initialize Flatpickr for date inputs -->
