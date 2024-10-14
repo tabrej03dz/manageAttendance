@@ -45,14 +45,15 @@
                      <div class="table-responsive text-xs">
 
                          <!-- Attendance Table (Web View) -->
-                         <div class="table-responsive mt-3 d-md-block">
-                             <div class="relative overflow-auto max-h-[75vh]">
-                                 <!-- Scrollable container with a height limit -->
-                                 <table class="table table-bordered table-hover align-middle text-center">
-                                     <!-- Fixed Header -->
-                                     <thead class="bg-primary text-white sticky top-0 z-10">
+                         <div class="table-responsive text-xs">
+                             <!-- Attendance Table (Web View) -->
+                             <div class="table-responsive mt-3 d-md-block">
+                                 <div class="relative overflow-auto max-h-[75vh]"> <!-- Scrollable container with a height limit -->
+                                     <table class="table table-bordered table-hover align-middle text-center">
+                                         <!-- Fixed Header -->
+                                         <thead class="bg-primary text-white sticky top-0 z-10">
                                          <tr>
-                                             <th>Employees</th>
+                                             <th class="sticky left-0 bg-primary" style="z-index: 20;">Employees</th> <!-- Sticky first column -->
                                              <th>Dates</th>
                                              @php
                                                  $officeDays = 0;
@@ -72,12 +73,12 @@
                                              <th>Leaves</th>
                                              <th>Late Count</th>
                                          </tr>
-                                     </thead>
-                                     <!-- Table Body -->
-                                     <tbody>
+                                         </thead>
+                                         <!-- Table Body -->
+                                         <tbody>
                                          @foreach ($users as $user)
-                                             <tr class="">
-                                                 <td class="fw-bold">{{ $user->name }}</td>
+                                             <tr>
+                                                 <td class="fw-bold sticky left-0 bg-light" style="z-index: 10;">{{ $user->name }}</td> <!-- Sticky first column -->
                                                  <td>
                                                      <div class="d-flex flex-column">
                                                          <span class="badge bg-success">Check-in</span>
@@ -97,8 +98,7 @@
                                                          $record = $attendanceRecords
                                                              ->where('user_id', $user->id)
                                                              ->first(function ($record) use ($d) {
-                                                                 return $record->created_at->format('Y-m-d') ===
-                                                                     $d->format('Y-m-d');
+                                                                 return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
                                                              });
 
                                                          if ($record) {
@@ -129,11 +129,9 @@
                                                      @else
                                                          <td>
                                                              <div class="d-flex flex-column">
-                                                                 <span
-                                                                     class="badge bg-light text-dark">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
+                                                                 <span class="badge bg-light text-dark">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
                                                                  <hr class="my-1">
-                                                                 <span
-                                                                     class="badge bg-light text-dark">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
+                                                                 <span class="badge bg-light text-dark">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
                                                              </div>
                                                          </td>
                                                      @endif
@@ -144,11 +142,11 @@
                                                  <td>{{ $lateCount }}</td>
                                              </tr>
                                          @endforeach
-                                     </tbody>
-                                 </table>
+                                         </tbody>
+                                     </table>
+                                 </div>
                              </div>
                          </div>
-
 
                      </div>
                  </div>
