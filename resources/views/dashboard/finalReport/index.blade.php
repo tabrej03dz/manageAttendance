@@ -48,7 +48,7 @@
                          <div class="table-responsive text-xs">
                              <!-- Attendance Table (Web View) -->
                              <div class="table-responsive mt-3 d-md-block">
-                                <div class="table-responsive mt-3" style="max-height: 75vh; overflow-y: auto;">
+                                <div class="table-responsive mt-3" style="max-height: 100vh; overflow-y: auto;">
                                     <table class="table table-bordered table-hover align-middle text-center">
                                          <!-- Fixed Header -->
                                          <thead class="bg-primary text-white sticky-top">
@@ -72,6 +72,7 @@
                                              <th>Working Days</th>
                                              <th>Leaves</th>
                                              <th>Late Count</th>
+                                             <th>Late in time</th>
                                          </tr>
                                          </thead>
                                          <!-- Table Body -->
@@ -91,6 +92,7 @@
                                                      $leaveDays = 0;
                                                      $offDays = 0;
                                                      $lateCount = 0;
+                                                     $lateTime = 0;
                                                  @endphp
                                                  @foreach ($dates as $dateObj)
                                                      @php
@@ -105,6 +107,7 @@
                                                              $workingDays++;
                                                              if ($record->late) {
                                                                  $lateCount++;
+                                                                 $lateTime += $record->late;
                                                              }
                                                          }
 
@@ -129,9 +132,9 @@
                                                      @else
                                                          <td>
                                                              <div class="d-flex flex-column">
-                                                                 <span class="badge bg-light text-dark">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
+                                                                 <span class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}!important;">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
                                                                  <hr class="my-1">
-                                                                 <span class="badge bg-light text-dark">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
+                                                                 <span class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($user->check_out_time)->format('H:i:s') ? 'green' : 'red' }}!important;">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
                                                              </div>
                                                          </td>
                                                      @endif
@@ -140,6 +143,7 @@
                                                  <td>{{ $workingDays }}</td>
                                                  <td>{{ $leaveDays }}</td>
                                                  <td>{{ $lateCount }}</td>
+                                                 <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($lateTime) : 'N/A' }}</td>
                                              </tr>
                                          @endforeach
                                          </tbody>

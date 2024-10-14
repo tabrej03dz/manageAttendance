@@ -500,7 +500,7 @@
                                                 {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}
                                             </td>
 
-                                            <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($employee->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
+                                            <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($record?->user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
                                                 {{ $record?->check_in?->format('h:i:s A') }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : 'N/A' }}
@@ -511,7 +511,7 @@
                                                         alt="Check-in" class="w-10 h-10 rounded-full">
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($employee->check_out_time)->format('H:i:s') ? 'green' : 'red' }}-700">
+                                            <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($record?->user->check_out_time)->format('H:i:s') ? 'green' : 'red' }}-700">
                                                 {{ $record?->check_out?->format('h:i:s A') }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if ($record)
