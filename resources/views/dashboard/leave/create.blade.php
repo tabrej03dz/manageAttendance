@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="pt-10">
+    <div class="pt-10 pb-20">
         <!-- Card Container with border -->
         <div class="w-full max-w-screen-lg mx-auto p-6 bg-white rounded-lg shadow-lg border border-red-500">
             <div class="mb-6 text-center">
