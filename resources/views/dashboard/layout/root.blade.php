@@ -86,7 +86,7 @@
 
     <!-- Mobile Navigation Bar with Hover Effects & Elevated Design -->
     <nav
-        class="bg-gradient-to-r from-red-600 to-red-500 fixed bottom-0 left-0 right-0 shadow-2xl md:hidden rounded-t-2xl">
+        class="bg-gradient-to-r from-red-600 to-red-500 fixed bottom-0 left-0 right-0 shadow-2xl md:hidden rounded-t-2xl z-50">
         <div class="flex justify-around py-2">
             <a href="{{ route('home') }}"
                 class="group flex flex-col items-center transform hover:scale-105 transition duration-300">

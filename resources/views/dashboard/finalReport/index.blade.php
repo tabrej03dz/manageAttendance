@@ -46,103 +46,109 @@
 
                          <!-- Attendance Table (Web View) -->
                          <div class="table-responsive mt-3 d-md-block">
-                             <table class="table table-bordered table-hover align-middle text-center">
-                                 <thead class="bg-primary text-white">
-                                     <tr>
-                                         <th>Employees</th>
-                                         <th>Dates</th>
-                                         @php
-                                             $officeDays = 0;
-                                         @endphp
-                                         @foreach ($dates as $dateObj)
+                             <div class="relative overflow-auto max-h-[75vh]">
+                                 <!-- Scrollable container with a height limit -->
+                                 <table class="table table-bordered table-hover align-middle text-center">
+                                     <!-- Fixed Header -->
+                                     <thead class="bg-primary text-white sticky top-0 z-10">
+                                         <tr>
+                                             <th>Employees</th>
+                                             <th>Dates</th>
                                              @php
-                                                 $d = \Carbon\Carbon::parse($dateObj->date);
-                                                 $isSunday = $d->format('D') === 'Sun';
-                                                 if (!$isSunday) {
-                                                     $officeDays++;
-                                                 }
-                                             @endphp
-                                             <th>{{ $d->format('d-[D]') }}</th>
-                                         @endforeach
-                                         <th>Office Days</th>
-                                         <th>Working Days</th>
-                                         <th>Leaves</th>
-                                         <th>Late Count</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody>
-                                     @foreach ($users as $user)
-                                         <tr class="">
-                                             <td class="fw-bold">{{ $user->name }}</td>
-                                             <td>
-                                                 <div class="d-flex flex-column">
-                                                     <span class="badge bg-success">Check-in</span>
-                                                     <hr class="my-1">
-                                                     <span class="badge bg-danger">Check-out</span>
-                                                 </div>
-                                             </td>
-                                             @php
-                                                 $workingDays = 0;
-                                                 $leaveDays = 0;
-                                                 $offDays = 0;
-                                                 $lateCount = 0;
+                                                 $officeDays = 0;
                                              @endphp
                                              @foreach ($dates as $dateObj)
                                                  @php
                                                      $d = \Carbon\Carbon::parse($dateObj->date);
-                                                     $record = $attendanceRecords
-                                                         ->where('user_id', $user->id)
-                                                         ->first(function ($record) use ($d) {
-                                                             return $record->created_at->format('Y-m-d') ===
-                                                                 $d->format('Y-m-d');
-                                                         });
-
-                                                     if ($record) {
-                                                         $workingDays++;
-                                                         if ($record->late) {
-                                                             $lateCount++;
-                                                         }
-                                                     }
-
-                                                     $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
-                                                         ->whereDate('end_date', '>=', $d)
-                                                         ->where(['user_id' => $user->id, 'status' => 'approved'])
-                                                         ->first();
-                                                     if ($leave) {
-                                                         $leaveDays++;
-                                                     }
-                                                     $off = App\Models\Off::whereDate('date', $d)
-                                                         ->where('office_id', $user->office_id)
-                                                         ->first();
-                                                     if ($off) {
-                                                         $offDays++;
+                                                     $isSunday = $d->format('D') === 'Sun';
+                                                     if (!$isSunday) {
+                                                         $officeDays++;
                                                      }
                                                  @endphp
-                                                 @if ($leave)
-                                                     <td class="bg-warning text-dark">Leave</td>
-                                                 @elseif ($off)
-                                                     <td class="bg-info text-dark">{{ $off->title }}</td>
-                                                 @else
-                                                     <td>
-                                                         <div class="d-flex flex-column">
-                                                             <span
-                                                                 class="badge bg-light text-dark">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
-                                                             <hr class="my-1">
-                                                             <span
-                                                                 class="badge bg-light text-dark">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
-                                                         </div>
-                                                     </td>
-                                                 @endif
+                                                 <th>{{ $d->format('d-[D]') }}</th>
                                              @endforeach
-                                             <td class="fw-bold">{{ $officeDays - $offDays }}</td>
-                                             <td>{{ $workingDays }}</td>
-                                             <td>{{ $leaveDays }}</td>
-                                             <td>{{ $lateCount }}</td>
+                                             <th>Office Days</th>
+                                             <th>Working Days</th>
+                                             <th>Leaves</th>
+                                             <th>Late Count</th>
                                          </tr>
-                                     @endforeach
-                                 </tbody>
-                             </table>
+                                     </thead>
+                                     <!-- Table Body -->
+                                     <tbody>
+                                         @foreach ($users as $user)
+                                             <tr class="">
+                                                 <td class="fw-bold">{{ $user->name }}</td>
+                                                 <td>
+                                                     <div class="d-flex flex-column">
+                                                         <span class="badge bg-success">Check-in</span>
+                                                         <hr class="my-1">
+                                                         <span class="badge bg-danger">Check-out</span>
+                                                     </div>
+                                                 </td>
+                                                 @php
+                                                     $workingDays = 0;
+                                                     $leaveDays = 0;
+                                                     $offDays = 0;
+                                                     $lateCount = 0;
+                                                 @endphp
+                                                 @foreach ($dates as $dateObj)
+                                                     @php
+                                                         $d = \Carbon\Carbon::parse($dateObj->date);
+                                                         $record = $attendanceRecords
+                                                             ->where('user_id', $user->id)
+                                                             ->first(function ($record) use ($d) {
+                                                                 return $record->created_at->format('Y-m-d') ===
+                                                                     $d->format('Y-m-d');
+                                                             });
+
+                                                         if ($record) {
+                                                             $workingDays++;
+                                                             if ($record->late) {
+                                                                 $lateCount++;
+                                                             }
+                                                         }
+
+                                                         $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
+                                                             ->whereDate('end_date', '>=', $d)
+                                                             ->where(['user_id' => $user->id, 'status' => 'approved'])
+                                                             ->first();
+                                                         if ($leave) {
+                                                             $leaveDays++;
+                                                         }
+                                                         $off = App\Models\Off::whereDate('date', $d)
+                                                             ->where('office_id', $user->office_id)
+                                                             ->first();
+                                                         if ($off) {
+                                                             $offDays++;
+                                                         }
+                                                     @endphp
+                                                     @if ($leave)
+                                                         <td class="bg-warning text-dark">Leave</td>
+                                                     @elseif ($off)
+                                                         <td class="bg-info text-dark">{{ $off->title }}</td>
+                                                     @else
+                                                         <td>
+                                                             <div class="d-flex flex-column">
+                                                                 <span
+                                                                     class="badge bg-light text-dark">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}</span>
+                                                                 <hr class="my-1">
+                                                                 <span
+                                                                     class="badge bg-light text-dark">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}</span>
+                                                             </div>
+                                                         </td>
+                                                     @endif
+                                                 @endforeach
+                                                 <td class="fw-bold">{{ $officeDays - $offDays }}</td>
+                                                 <td>{{ $workingDays }}</td>
+                                                 <td>{{ $leaveDays }}</td>
+                                                 <td>{{ $lateCount }}</td>
+                                             </tr>
+                                         @endforeach
+                                     </tbody>
+                                 </table>
+                             </div>
                          </div>
+
 
                      </div>
                  </div>
