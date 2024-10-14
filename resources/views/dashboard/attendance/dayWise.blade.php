@@ -230,6 +230,7 @@
                                                 class="px-4 py-4 text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}-700">
                                                 {{ round($record?->check_out_distance) }} m</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
+                                                @if($record)
                                                 <!-- Trigger Button -->
                                                 <a title="Note" href="#"
                                                     class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 flex justify-center items-center"
@@ -240,24 +241,28 @@
                                                 <!-- Popup Form -->
                                                 <div id="popupForm"
                                                     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-                                                    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-                                                        <h3 class="text-lg font-semibold mb-4">Add Note</h3>
-                                                        <textarea rows="4"
-                                                            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                                            placeholder="Write your note here..."></textarea>
-                                                        <div class="flex justify-end mt-4">
-                                                            <button
-                                                                class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
-                                                                onclick="togglePopup(event)">
-                                                                Close
-                                                            </button>
-                                                            <button
-                                                                class="bg-yellow-500 text-white px-4 py-2 ml-2 rounded-md hover:bg-yellow-600 transition">
-                                                                Save
-                                                            </button>
+                                                    <form action="{{route('attendance.note', ['record' => $record->id])}}" method="post">
+                                                    @csrf
+                                                        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                                                            <h3 class="text-lg font-semibold mb-4">Add Note</h3>
+                                                            <textarea rows="4" name="note"
+                                                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                                                placeholder="Write your note here...">{{$record->note}}</textarea>
+                                                            <div class="flex justify-end mt-4">
+                                                                <button
+                                                                    class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+                                                                    onclick="togglePopup(event)">
+                                                                    Close
+                                                                </button>
+                                                                <button type="submit"
+                                                                    class="bg-yellow-500 text-white px-4 py-2 ml-2 rounded-md hover:bg-yellow-600 transition">
+                                                                    Save
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </form>
                                                 </div>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endif
