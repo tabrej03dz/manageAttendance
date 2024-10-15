@@ -213,6 +213,12 @@ class AttendanceRecordController extends Controller
             $attendanceRecord->save();
 
         }
+        if ($attendanceRecord->late){
+            $type = 'check_in_note';
+            $time = HomeController::getTime($attendanceRecord->late);
+            $message = 'You are '.$time.' late, Write here why you have been late..';
+            return view('dashboard.attendance.noteForm', compact('type', 'message', 'attendanceRecord'));
+        }
 
         // Redirect to attendance index with success message
         return redirect('attendance/day-wise')->with('success', 'Checked in successfully');
@@ -253,6 +259,16 @@ class AttendanceRecordController extends Controller
             $file = $request->file('image')->store('public/images');
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
+        }
+        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
+            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
+            $userCheckOutTime = Carbon::parse($user->check_out_time);
+            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+            $before = HomeController::getTime($time);
+            $message = 'You are checking out before '.$before.' write here the reasons';
+            $type = 'check_out_note';
+            $attendanceRecord = $record;
+            return view('dashboard.attendance.noteForm', compact('type', 'message', 'attendanceRecord'));
         }
         return redirect('attendance/day-wise')->with('success', 'checked out successfully');
     }
@@ -313,5 +329,30 @@ class AttendanceRecordController extends Controller
         $record->noted_by = auth()->user()->id;
         $record->save();
         return back()->with('success', 'Note Added successfully');
+    }
+
+    public function userNote(Request $request,AttendanceRecord $record, $type){
+        $request->validate([
+            'note' => 'required',
+        ]);
+        if ($type == 'check_in_note'){
+            $record->check_in_note = $request->note;
+        }else{
+            $record->check_out_note = $request->note;
+        }
+        $record->save();
+        return redirect('attendance/day-wise');
+    }
+
+    public function userNoteResponse(AttendanceRecord $record, $type, $status){
+        if ($type == 'check_in_note'){
+            $record->check_in_note_status = $status;
+            $record->check_in_note_response_by = auth()->user()->id;
+        }else{
+            $record->check_out_note_status = $status;
+            $record->check_out_note_response_by = auth()->user()->id;
+        }
+        $record->save();
+        return back();
     }
 }

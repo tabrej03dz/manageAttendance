@@ -19,4 +19,17 @@ class AttendanceRecord extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function notedBy(){
+        return $this->belongsTo(User::class, 'noted_by');
+    }
+
+    public function checkInNoteResponsesBy(){
+        return $this->belongsTo(User::class, 'check_in_note_response_by');
+    }
+
+    public function checkOutNoteResponseBy(){
+        return $this->belongsTo(User::class, 'check_out_note_response_by');
+    }
+
 }

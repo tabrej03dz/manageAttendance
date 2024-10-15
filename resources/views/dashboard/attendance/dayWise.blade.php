@@ -156,7 +156,7 @@
                         <table class="min-w-full bg-white rounded-lg shadow-sm">
                             <thead>
                                 <tr class="bg-gray-100 border-b">
-                                    @foreach (['Name', 'Check-In', 'Check-in Image', 'Check-out Time', 'Check-out Image', 'Late', 'Working Hours', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
+                                    @foreach (['Name', 'Check-In', 'Check-in Image','Check-in Note', 'Check-out Time', 'Check-out Image', 'Check-out Note', 'Late', 'Working Hours', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
                                         <th
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                             {{ $header }}
@@ -199,6 +199,27 @@
                                                     </a>
                                                 @endif
                                             </td>
+
+                                            <td
+                                                class="px-4 py-4 text-sm text-grey-700">
+                                                @if($record?->check_in_note)
+                                                {{$record?->check_in_note}}
+                                                @if($record->check_in_note_status != 'approved')
+                                                    <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
+                                                        class="bg-green-500 text-white font-semibold p-2 rounded-full shadow hover:bg-green-600 transition duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                                        <span class="material-icons">check_circle</span>
+                                                    </a>
+                                                @endif
+                                                @if($record->check_in_note_status != 'rejected')
+                                                    <a title="Reject" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
+                                                        class="bg-red-500 text-white font-semibold p-2 rounded-full shadow hover:bg-red-600 transition duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                                        <span class="material-icons">cancel</span>
+                                                    </a>
+                                                @endif
+
+                                                @endif
+
+                                            </td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($employee->check_out_time)->format('H:i:s') ? 'green' : 'red' }}-700">
                                                 {{ $record?->check_out?->format('h:i:s A') }}
@@ -212,9 +233,26 @@
                                                             class="w-12 h-12 object-cover rounded-lg shadow-sm"></a>
                                                 @endif
                                             </td>
+                                            <td>
+                                                @if($record?->check_out_note)
+                                                {{$record?->check_out_note}}
+                                                @if($record->check_out_note_status != 'approved')
+                                                <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
+                                                    class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                                    <span class="material-icons">check_circle</span>
+                                                </a>
+                                                @endif
+                                                @if($record->check_out_note_status != 'rejected')
+                                                <a title="Reject" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'rejected']) }}"
+                                                    class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                                    <span class="material-icons">cancel</span>
+                                                </a>
+                                                @endif
+                                                @endif
+                                            </td>
                                             <td class="px-4 py-4">
                                                 <span
-                                                    class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full {{ $record?->late ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-600' }}">
+                                                    class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full {{ $record?->late ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-600' }}">
                                                     {{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : 'On Time' }}
                                                 </span>
 

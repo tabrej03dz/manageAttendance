@@ -90,7 +90,6 @@
                             <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             <input type="text" name="distance" id="distance">
                         </div>
-                        <textarea class="form-control mb-2" name="note" id="" cols="30" rows="3" placeholder="write a note"></textarea>
 
                         <div class="d-grid">
                             <button type="submit" id="upload"

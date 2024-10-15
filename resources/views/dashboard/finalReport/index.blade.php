@@ -95,6 +95,7 @@
                                                      $lateCount = 0;
                                                      $lateTime = 0;
                                                      $goneBeforeTime = 0;
+                                                     $goneBeforeTimeCount = 0;
                                                  @endphp
                                                  @foreach ($dates as $dateObj)
                                                      @php
@@ -111,12 +112,14 @@
                                                                  $lateCount++;
                                                                  $lateTime += $record->late;
                                                              }
-                                                             if (Carbon\Carbon::parse($record?->check_out)->format('H:i:s') < Carbon\Carbon::parse($user->check_out_time)->format('H:i:s')){
-                                                                 $checkOutTime = Carbon\Carbon::parse($record?->check_out)->format('H:i:s');
-                                                                 $userCheckOutTime = Carbon\Carbon::parse($user->check_out_time);
-                                                                 $goneBeforeTime += Carbon\Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+                                                             if (Carbon\Carbon::parse($record?->check_out)->format('H:i') < Carbon\Carbon::parse($user->check_out_time)->format('H:i')) {
+                                                             $goneBeforeTimeCount++;
+                                                                $checkOutTime = Carbon\Carbon::parse($record?->check_out)->format('H:i'); // Convert datetime to time (H:i:s)
+                                                                $userCheckOutTime = Carbon\Carbon::parse($user->check_out_time); // Already a time
 
-                                                             }
+                                                                $goneBeforeTime += Carbon\Carbon::createFromFormat('H:i', $checkOutTime)->diffInMinutes($userCheckOutTime);
+                                                            }
+
                                                          }
 
                                                          $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
@@ -153,6 +156,7 @@
                                                  <td>{{ $lateCount }}</td>
                                                  <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($lateTime) : 'N/A' }}</td>
                                                  <td>{{ $goneBeforeTime ? App\Http\Controllers\HomeController::getTime($goneBeforeTime) : 'N/A' }}</td>
+                                                 <td>{{ $goneBeforeTimeCount }}</td>
                                              </tr>
                                          @endforeach
                                          </tbody>
