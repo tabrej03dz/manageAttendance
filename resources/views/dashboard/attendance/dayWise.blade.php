@@ -156,7 +156,7 @@
                         <table class="min-w-full bg-white rounded-lg shadow-sm">
                             <thead>
                                 <tr class="bg-gray-100 border-b">
-                                    @foreach (['Name', 'Check-In', 'Check-in Image', 'Check-out Time', 'Check-out Image', 'Late', 'Working Hours', 'Day Type', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
+                                    @foreach (['Name', 'Check-In', 'Check-in Image', 'Check-out Time', 'Check-out Image', 'Late', 'Working Hours', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
                                         <th
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                             {{ $header }}
@@ -222,7 +222,6 @@
                                             <td class="px-4 py-4">
                                                 {{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : 'N/A' }}
                                             </td>
-                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $record?->day_type }}</td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ $record?->check_in_distance > 100 ? 'red' : 'gray' }}-700">
                                                 {{ round($record?->check_in_distance) }} m</td>
