@@ -204,6 +204,7 @@
                                                 class="px-4 py-4 text-sm text-grey-700">
                                                 @if($record?->check_in_note)
                                                 {{$record?->check_in_note}}
+                                                @role('admin|super_admin|team_leader')
                                                 @if($record->check_in_note_status != 'approved')
                                                     <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
                                                         class="bg-green-500 text-white font-semibold p-2 rounded-full shadow hover:bg-green-600 transition duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
@@ -216,7 +217,7 @@
                                                         <span class="material-icons">cancel</span>
                                                     </a>
                                                 @endif
-
+                                                @endrole
                                                 @endif
 
                                             </td>
@@ -236,6 +237,7 @@
                                             <td>
                                                 @if($record?->check_out_note)
                                                 {{$record?->check_out_note}}
+                                                @role('admin|super_admin|team_leader')
                                                 @if($record->check_out_note_status != 'approved')
                                                 <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
                                                     class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
@@ -248,6 +250,7 @@
                                                     <span class="material-icons">cancel</span>
                                                 </a>
                                                 @endif
+                                                @endrole
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4">
