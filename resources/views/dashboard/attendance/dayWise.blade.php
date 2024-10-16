@@ -156,7 +156,7 @@
                         <table class="min-w-full bg-white rounded-lg shadow-sm">
                             <thead>
                                 <tr class="bg-gray-100 border-b">
-                                    @foreach (['Name', 'Check-In', 'Check-in Image','Check-in Note', 'Check-out Time', 'Check-out Image', 'Check-out Note', 'Late', 'Working Hours', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
+                                    @foreach (['Name', 'Check-In', 'Check-in Image','Check-in Note', 'Check-out Time', 'Check-out Image', 'Check-out Note', 'Working Hours', 'Check-in Distance', 'Check-out Distance', 'Add Note'] as $header)
                                         <th
                                             class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                             {{ $header }}
@@ -268,13 +268,6 @@
                                                 @endif
                                                 @endrole
                                                 @endif
-                                            </td>
-                                            <td class="px-4 py-4">
-                                                <span
-                                                    class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full                                                     class="px-2 w-20 inline-flex justify-center text-xs leading-5 font-semibold rounded-full {{ $record?->late ? 'bg-red-100 text-red-800' : 'bg-gray-200 text-gray-600' }}">
-                                                    {{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : 'On Time' }}
-                                                </span>
-
                                             </td>
                                             <td class="px-4 py-4">
                                                 {{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : 'N/A' }}
