@@ -213,18 +213,25 @@
                                                     @endif
                                                 </span>
                                                 @role('admin|super_admin|team_leader')
-                                                @if($record->check_in_note_status != 'approved')
-                                                    <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
-                                                        class="bg-green-500 text-white font-semibold p-2 rounded-full shadow hover:bg-green-600 transition duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                                        <span class="material-icons">check_circle</span>
-                                                    </a>
-                                                @endif
-                                                @if($record->check_in_note_status != 'rejected')
-                                                    <a title="Reject" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
-                                                        class="bg-red-500 text-white font-semibold p-2 rounded-full shadow hover:bg-red-600 transition duration-300 ease-in-out flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                                                        <span class="material-icons">cancel</span>
-                                                    </a>
-                                                @endif
+                                                <div class="mt-2 flex space-x-2">
+                                                    @if($record->check_in_note_status != 'approved')
+                                                        <a title="Approve"
+                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
+                                                        class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                            <i class="fas fa-check-circle"></i>
+                                                           
+                                                        </a>
+                                                    @endif
+                                                    
+                                                    @if($record->check_in_note_status != 'rejected')
+                                                        <a title="Reject"
+                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
+                                                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                            <i class="fas fa-times-circle"></i>
+                                                        
+                                                        </a>
+                                                    @endif
+                                                </div>
                                                 @endrole
                                                 @endif
 
@@ -243,8 +250,10 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if($record?->check_out_note)
-                                                <span title="{{$record?->check_out_note_status}}" class="badge bg-light text-dark" >{{$record?->check_out_note}}
+                                            @if($record?->check_out_note)
+                                                <span title="{{ $record?->check_out_note_status }}" class="badge bg-light text-dark">
+                                                    {{ $record?->check_out_note }}
+                                                    
                                                     @if($record?->check_out_note && $record->check_out_note_status == 'rejected')
                                                         <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                     @elseif($record?->check_out_note && $record->check_out_note_status == 'approved')
@@ -253,21 +262,29 @@
                                                         <i class="text-warning" style="margin-left: 5px;">P</i>
                                                     @endif
                                                 </span>
+                                                
                                                 @role('admin|super_admin|team_leader')
-                                                @if($record->check_out_note_status != 'approved')
-                                                <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
-                                                    class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                                    <span class="material-icons">check_circle</span>
-                                                </a>
-                                                @endif
-                                                @if($record->check_out_note_status != 'rejected')
-                                                <a title="Reject" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'rejected']) }}"
-                                                    class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                                                    <span class="material-icons">cancel</span>
-                                                </a>
-                                                @endif
+                                                <div class="mt-2 flex space-x-2">
+                                                    @if($record->check_out_note_status != 'approved')
+                                                        <a title="Approve"
+                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
+                                                        class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                            <i class="fas fa-check-circle"></i>
+                                                           
+                                                        </a>
+                                                    @endif
+                                                    
+                                                    @if($record->check_out_note_status != 'rejected')
+                                                        <a title="Reject"
+                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'rejected']) }}"
+                                                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                            <i class="fas fa-times-circle"></i>
+                                                        
+                                                        </a>
+                                                    @endif
+                                                </div>
                                                 @endrole
-                                                @endif
+                                            @endif
                                             </td>
                                             <td class="px-4 py-4">
                                                 {{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : 'N/A' }}
