@@ -203,7 +203,15 @@
                                             <td
                                                 class="px-4 py-4 text-sm text-grey-700">
                                                 @if($record?->check_in_note)
-                                                {{$record?->check_in_note}}
+                                                <span title="{{$record?->check_in_note_status}}" class="badge bg-light text-dark" >{{$record?->check_out_note}}
+                                                    @if($record->check_in_note && $record->check_out_nin_status == 'rejected')
+                                                        <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
+                                                    @elseif($record->check_in_note && $record->check_in_note_status == 'approved')
+                                                        <i class="fas fa-check text-success" style="margin-left: 5px;"></i>
+                                                    @elseif($record->check_in_note && $record->check_in_note_status == 'pending')
+                                                        <i class="text-warning" style="margin-left: 5px;">P</i>
+                                                    @endif
+                                                </span>
                                                 @role('admin|super_admin|team_leader')
                                                 @if($record->check_in_note_status != 'approved')
                                                     <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
@@ -236,7 +244,15 @@
                                             </td>
                                             <td>
                                                 @if($record?->check_out_note)
-                                                {{$record?->check_out_note}}
+                                                <span title="{{$record?->check_out_note_status}}" class="badge bg-light text-dark" >{{$record?->check_out_note}}
+                                                    @if($record?->check_out_note && $record->check_out_note_status == 'rejected')
+                                                        <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
+                                                    @elseif($record?->check_out_note && $record->check_out_note_status == 'approved')
+                                                        <i class="fas fa-check text-success" style="margin-left: 5px;"></i>
+                                                    @elseif($record?->check_out_note && $record->check_out_note_status == 'pending')
+                                                        <i class="text-warning" style="margin-left: 5px;">P</i>
+                                                    @endif
+                                                </span>
                                                 @role('admin|super_admin|team_leader')
                                                 @if($record->check_out_note_status != 'approved')
                                                 <a title="Approve" href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
