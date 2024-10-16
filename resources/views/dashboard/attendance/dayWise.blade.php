@@ -297,13 +297,14 @@
                                                 {{ round($record?->check_out_distance) }} m</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if($record)
+                                                @role('super_admin|admin|team_leader')
                                                 <!-- Trigger Button -->
                                                 <a title="Note" href="#"
                                                     class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 flex justify-center items-center"
                                                     onclick="togglePopup(event)">
                                                     <span class="material-icons">note</span>
                                                 </a>
-
+                                                @endrole
                                                 <!-- Popup Form -->
                                                 <div id="popupForm"
                                                     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
