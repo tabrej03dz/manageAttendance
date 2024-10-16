@@ -39,10 +39,9 @@ class FinalReportController extends Controller
             $users = User::all();
         }elseif(auth()->user()->hasRole('admin')){
             $office = auth()->user()->office;
-//            dd($office->users);
             $users = $office->users;
         }else{
-            $users = auth()->user();
+            $users = User::where('id', auth()->user()->id)->get();
         }
         return view('dashboard.finalReport.index', compact('dates', 'attendanceRecords', 'users', 'monthStart', 'endOfMonth'));
     }
