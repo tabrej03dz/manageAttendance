@@ -63,6 +63,9 @@
                     </a>
                 </li>
                 @endrole
+
+
+                @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{ route('policy.index') }}" class="nav-link {{ request()->routeIs('policy.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
@@ -70,14 +73,13 @@
                     </a>
                 </li>
 
-                @role('super_admin|admin')
+                @endrole
                 <li class="nav-item">
                     <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
                         <p>Reports</p>
                     </a>
                 </li>
-                @endrole
 
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
