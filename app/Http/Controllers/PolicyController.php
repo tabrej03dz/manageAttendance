@@ -79,7 +79,8 @@ class PolicyController extends Controller
         if ($policy == null){
             $policy = auth()->user()->office->policy;
         }
-        return view('dashboard.policy.read', compact('policy'));
+        $employee = auth()->user();
+        return view('dashboard.policy.read', compact('policy', 'employee'));
     }
 
     public function accept(Policy $policy){

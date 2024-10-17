@@ -70,6 +70,7 @@
                                              @endforeach
                                              <th>Office Days</th>
                                              <th>Working Days</th>
+                                             <th>Half Days</th>
                                              <th>Leaves</th>
                                              <th>Late Count</th>
                                              <th>Late in time</th>
@@ -96,6 +97,7 @@
                                                      $lateTime = 0;
                                                      $goneBeforeTime = 0;
                                                      $goneBeforeTimeCount = 0;
+                                                     $halfDayCount = 0;
                                                  @endphp
                                                  @foreach ($dates as $dateObj)
                                                      @php
@@ -107,7 +109,11 @@
                                                              });
 
                                                          if ($record) {
+                                                             if($record->check_in && $record->check_out){
                                                              $workingDays++;
+                                                             }else{
+                                                                 $halfDayCount++;
+                                                             }
                                                              if ($record->late) {
                                                                  $lateCount++;
                                                                  $lateTime += $record->late;
@@ -168,6 +174,7 @@
                                                  @endforeach
                                                  <td class="fw-bold">{{ $officeDays - $offDays }}</td>
                                                  <td>{{ $workingDays }}</td>
+                                                 <td>{{ $halfDayCount }}</td>
                                                  <td>{{ $leaveDays }}</td>
                                                  <td>{{ $lateCount }}</td>
                                                  <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($lateTime) : 'N/A' }}</td>

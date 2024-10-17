@@ -19,14 +19,14 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <i class="nav-icon fas fa-clipboard"></i>
                         <p>Records</p>
                     </a>
                 </li>
                 @role('admin|super_admin')
                 <li class="nav-item">
                     <a href="{{ route('attendance.day-wise') }}" class="nav-link {{ request()->routeIs('attendance.day-wise') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <i class="nav-icon fas fa-edit"></i>
                         <p>Attendance</p>
                     </a>
                 </li>
@@ -34,7 +34,7 @@
                 @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{ route('employee.index') }}" class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-tie"></i>
+                        <i class="nav-icon fas fa-users"></i>
                         <p>Employee</p>
                     </a>
                 </li>
@@ -42,7 +42,7 @@
                 @role('super_admin|admin|team_leader')
                 <li class="nav-item">
                     <a href="{{ route('leave.index') }}" class="nav-link {{ request()->routeIs('leave.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user-tie"></i>
+                        <i class="nav-icon fas fa-quote-left"></i>
                         <p>Leave</p>
                     </a>
                 </li>
@@ -50,7 +50,7 @@
                 @role('super_admin')
                 <li class="nav-item">
                     <a href="{{ route('office.index') }}" class="nav-link {{ request()->routeIs('office.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-building"></i>
+                        <i class="nav-icon fas fa-industry"></i>
                         <p>Office</p>
                     </a>
                 </li>
@@ -58,7 +58,7 @@
                 @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{ route('off.index') }}" class="nav-link {{ request()->routeIs('off.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-building"></i>
+                        <i class="nav-icon fas fa-calendar-alt"></i>
                         <p>Manage Offs</p>
                     </a>
                 </li>
@@ -68,7 +68,7 @@
                 @role('super_admin|admin')
                 <li class="nav-item">
                     <a href="{{ route('policy.index') }}" class="nav-link {{ request()->routeIs('policy.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-building"></i>
+                        <i class="nav-icon fas fa-pencil-alt"></i>
                         <p>Policy</p>
                     </a>
                 </li>
@@ -76,7 +76,7 @@
                 @endrole
                 <li class="nav-item">
                     <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-building"></i>
+                        <i class="nav-icon fas fa-signal"></i>
                         <p>Reports</p>
                     </a>
                 </li>
