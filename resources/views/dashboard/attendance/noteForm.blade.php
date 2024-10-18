@@ -55,10 +55,10 @@
                         </div>
                     </form>
 
-                    <a href="{{route('attendance.day-wise')}}"
-                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
-                        <i class="fas fa-redo mr-2"></i> Skip
-                    </a>
+{{--                    <a href="{{route('attendance.day-wise')}}"--}}
+{{--                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">--}}
+{{--                        <i class="fas fa-redo mr-2"></i> Skip--}}
+{{--                    </a>--}}
                 </div>
             </main>
         </div>
