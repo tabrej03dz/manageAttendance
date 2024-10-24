@@ -82,6 +82,13 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('employee.attendance') }}" class="nav-link {{ request()->routeIs('employee.attendance') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Mark Attendance</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button type="submit" class="nav-link">

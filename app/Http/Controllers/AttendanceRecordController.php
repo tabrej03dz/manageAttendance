@@ -42,14 +42,15 @@ class AttendanceRecordController extends Controller
             $attendanceRecords->orWhereDate('created_at', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
         }
         $attendanceRecords = $attendanceRecords->get();
-        if (auth()->user()->hasRole('super_admin')){
-
-            $users = User::role(['admin', 'employee'])->get();
-        }else{
-            $office = auth()->user()->office;
-//            dd($office->users);
-            $users = $office->users;
-        }
+//        if (auth()->user()->hasRole('super_admin')){
+//
+//            $users = User::role(['admin', 'employee'])->get();
+//        }else{
+//            $office = auth()->user()->office;
+////            dd($office->users);
+//            $users = $office->users;
+//        }
+        $users = HomeController::employeeList();
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'monthStart', 'endOfMonth'));
     }
 
@@ -114,10 +115,10 @@ class AttendanceRecordController extends Controller
 
         // Validate the incoming request
         $request->validate([
-            'image' => '',
-//            'latitude' => '',
-//            'longitude' => '',
-            'distance' => '',
+            'image' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'distance' => 'required',
         ]);
 
         // Get the authenticated user
@@ -184,6 +185,8 @@ class AttendanceRecordController extends Controller
                 'check_in_distance' => $request->distance,
                 'day_type' => '__', // Initialize day type
                 'check_in_note' => $request->note ?? null,
+                'check_in_latitude' => $request->latitude,
+                'check_in_longitude' => $request->longitude,
             ]);
 
             // Check if the user is late
@@ -250,10 +253,10 @@ class AttendanceRecordController extends Controller
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
 //            dd($duration);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__']);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude]);
         }else{
             $duration = $user->office_time / 2;
-            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance]);
+            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude]);
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');
@@ -307,16 +310,17 @@ class AttendanceRecordController extends Controller
         }else{
             $date = today();
         }
-        if (auth()->user()->hasRole('super_admin|admin')){
-            if (auth()->user()->hasRole('super_admin')){
-                $employees = User::all();
-            }else{
-                $office = auth()->user()->office;
-                $employees = $office->users;
-            }
-        }else{
-            $employees = User::where('id', auth()->user()->id)->get();
-        }
+//        if (auth()->user()->hasRole('super_admin|admin')){
+//            if (auth()->user()->hasRole('super_admin')){
+//                $employees = User::all();
+//            }else{
+//                $office = auth()->user()->office;
+//                $employees = $office->users;
+//            }
+//        }else{
+//            $employees = User::where('id', auth()->user()->id)->get();
+//        }
+        $employees = HomeController::employeeList();
 //        dd($employees);
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));
     }

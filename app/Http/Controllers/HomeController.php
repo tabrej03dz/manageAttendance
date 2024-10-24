@@ -76,4 +76,70 @@ class HomeController extends Controller
         return back()->with('success', 'updated successfully');
 
     }
+
+    static function employeeList(){
+        $user = auth()->user();
+        if ($user->hasRole('super_admin|admin')){
+            if ($user->hasRole('super_admin')){
+                $employees = User::all();
+            }else{
+                $office = $user->office;
+                $employees = $office->users;
+            }
+        }else{
+            if ($user->hasRole('team_leader')){
+                $employees = $user->members;
+                $record = User::where('id', $user->id)->first();
+                $employees->push($record);
+
+            }else{
+                $employees = User::where('id', $user->id)->get();
+            }
+        }
+        return $employees;
+    }
+
+    static function latitudeInDMS($decimal) {
+        // Determine if the latitude is in the Northern or Southern Hemisphere
+        $hemisphere = $decimal >= 0 ? 'N' : 'S';
+
+        // Convert the absolute value to handle negative latitudes
+        $decimal = abs($decimal);
+
+        // Get the degrees
+        $degrees = intval($decimal);
+
+        // Get the remaining decimal and convert to minutes
+        $minutesDecimal = ($decimal - $degrees) * 60;
+        $minutes = intval($minutesDecimal);
+
+        // Convert the remaining decimal from minutes to seconds
+        $seconds = ($minutesDecimal - $minutes) * 60;
+
+        // Return the formatted DMS string with hemisphere
+        return sprintf("%d°%d'%0.1f\"%s", $degrees, $minutes, $seconds, $hemisphere);
+    }
+
+    static function longitudeInDMS($decimal) {
+        // Determine if the longitude is in the Eastern or Western Hemisphere
+        $hemisphere = $decimal >= 0 ? 'E' : 'W';
+
+        // Convert the absolute value to handle negative longitudes
+        $decimal = abs($decimal);
+
+        // Get the degrees
+        $degrees = intval($decimal);
+
+        // Get the remaining decimal and convert to minutes
+        $minutesDecimal = ($decimal - $degrees) * 60;
+        $minutes = intval($minutesDecimal);
+
+        // Convert the remaining decimal from minutes to seconds
+        $seconds = ($minutesDecimal - $minutes) * 60;
+
+        // Return the formatted DMS string with hemisphere
+        return sprintf("%d°%d'%0.1f\"%s", $degrees, $minutes, $seconds, $hemisphere);
+    }
+
+
 }

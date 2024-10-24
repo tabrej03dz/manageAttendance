@@ -188,8 +188,8 @@
         window.onload = function() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    // document.getElementById('latitude').value = position.coords.latitude;
-                    // document.getElementById('longitude').value = position.coords.longitude;
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
                     let latitude = position.coords.latitude;
                     let longitude = position.coords.longitude;
                     let distance = haversineDistance(userOffice.latitude, userOffice.longitude, latitude,

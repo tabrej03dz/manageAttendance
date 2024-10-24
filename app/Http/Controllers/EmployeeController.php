@@ -96,4 +96,9 @@ class EmployeeController extends Controller
         $employee->delete();
         return back()->with('success', 'Record Deleted Successfully');
     }
+
+    public function employeeAttendance(){
+        $employees = HomeController::employeeList();
+        return view('dashboard.employee.list', compact('employees'));
+    }
 }

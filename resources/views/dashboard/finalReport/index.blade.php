@@ -149,7 +149,7 @@
                                                      @else
                                                          <td>
                                                              <div class="d-flex flex-column">
-                                                                 <span class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}!important;">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}
+                                                                 <span title="{{$record?->check_in_note}}" class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}!important;">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}
                                                                      @if($record?->check_in_note && $record->check_in_note_status == 'rejected')
                                                                          <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                                      @elseif($record?->check_in_note && $record->check_in_note_status == 'approved')
@@ -159,7 +159,7 @@
                                                                      @endif
                                                                  </span>
                                                                  <hr class="my-1">
-                                                                 <span class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($user->check_out_time)->format('H:i:s') ? 'green' : 'red' }}!important;">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}
+                                                                 <span title="{{$record?->check_out_note}}" class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($user->check_out_time)->format('H:i:s') ? 'green' : 'red' }}!important;">{{ $record?->check_out?->format('h:i:s A') ?? '-' }}
                                                                      @if($record?->check_out_note && $record->check_out_note_status == 'rejected')
                                                                          <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                                      @elseif($record?->check_in_note && $record->check_out_note_status == 'approved')

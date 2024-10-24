@@ -50,6 +50,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('update/{employee}', [EmployeeController::class, 'update'])->name('update');
         Route::post('delete/{employee}', [EmployeeController::class, 'delete'])->name('delete');
         Route::get('profile/{user}', [HomeController::class, 'profile'])->name('profile');
+        Route::get('attendance', [EmployeeController::class, 'employeeAttendance'])->name('attendance');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');

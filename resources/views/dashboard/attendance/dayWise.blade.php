@@ -203,36 +203,36 @@
                                             <td
                                                 class="px-4 py-4 text-sm text-grey-700">
                                                 @if($record?->check_in_note)
-                                                <span title="{{$record?->check_in_note_status}}" class="badge bg-light text-dark" >{{$record?->check_in_note}}
-                                                    @if($record->check_in_note && $record->check_in_note_status == 'rejected')
-                                                        <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
-                                                    @elseif($record->check_in_note && $record->check_in_note_status == 'approved')
-                                                        <i class="fas fa-check text-success" style="margin-left: 5px;"></i>
-                                                    @elseif($record->check_in_note && $record->check_in_note_status == 'pending')
-                                                        <i class="text-warning" style="margin-left: 5px;">P</i>
-                                                    @endif
-                                                </span>
-                                                @role('admin|super_admin|team_leader')
-                                                <div class="mt-2 flex space-x-2">
-                                                    @if($record->check_in_note_status != 'approved')
-                                                        <a title="Approve"
-                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
-                                                        class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
-                                                            <i class="fas fa-check-circle"></i>
-                                                           
-                                                        </a>
-                                                    @endif
-                                                    
-                                                    @if($record->check_in_note_status != 'rejected')
-                                                        <a title="Reject"
-                                                        href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
-                                                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
-                                                            <i class="fas fa-times-circle"></i>
-                                                        
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                                @endrole
+                                                    <span title="{{$record?->check_in_note_status}}" class="badge bg-light text-dark" >{{$record?->check_in_note}}
+                                                        @if($record->check_in_note && $record->check_in_note_status == 'rejected')
+                                                            <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
+                                                        @elseif($record->check_in_note && $record->check_in_note_status == 'approved')
+                                                            <i class="fas fa-check text-success" style="margin-left: 5px;"></i>
+                                                        @elseif($record->check_in_note && $record->check_in_note_status == 'pending')
+                                                            <i class="text-warning" style="margin-left: 5px;">P</i>
+                                                        @endif
+                                                    </span>
+                                                    @role('admin|super_admin|team_leader')
+                                                    <div class="mt-2 flex space-x-2">
+                                                        @if($record->check_in_note_status != 'approved')
+                                                            <a title="Approve"
+                                                            href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
+                                                            class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                                <i class="fas fa-check-circle"></i>
+
+                                                            </a>
+                                                        @endif
+
+                                                        @if($record->check_in_note_status != 'rejected')
+                                                            <a title="Reject"
+                                                            href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
+                                                            class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                                <i class="fas fa-times-circle"></i>
+
+                                                            </a>
+                                                        @endif
+                                                    </div>
+                                                    @endrole
                                                 @endif
 
                                             </td>
@@ -253,7 +253,7 @@
                                             @if($record?->check_out_note)
                                                 <span title="{{ $record?->check_out_note_status }}" class="badge bg-light text-dark">
                                                     {{ $record?->check_out_note }}
-                                                    
+
                                                     @if($record?->check_out_note && $record->check_out_note_status == 'rejected')
                                                         <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                     @elseif($record?->check_out_note && $record->check_out_note_status == 'approved')
@@ -262,7 +262,7 @@
                                                         <i class="text-warning" style="margin-left: 5px;">P</i>
                                                     @endif
                                                 </span>
-                                                
+
                                                 @role('admin|super_admin|team_leader')
                                                 <div class="mt-2 flex space-x-2">
                                                     @if($record->check_out_note_status != 'approved')
@@ -270,16 +270,16 @@
                                                         href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
                                                         class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
                                                             <i class="fas fa-check-circle"></i>
-                                                           
+
                                                         </a>
                                                     @endif
-                                                    
+
                                                     @if($record->check_out_note_status != 'rejected')
                                                         <a title="Reject"
                                                         href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'rejected']) }}"
                                                         class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
                                                             <i class="fas fa-times-circle"></i>
-                                                        
+
                                                         </a>
                                                     @endif
                                                 </div>
@@ -291,9 +291,28 @@
                                             </td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ $record?->check_in_distance > 100 ? 'red' : 'gray' }}-700">
-                                                {{ round($record?->check_in_distance) }} m</td>
+                                                @php
+                                                    if ($record?->check_in_latitude && $record->check_in_longitude){
+                                                        $latitude = App\Http\Controllers\HomeController::latitudeInDMS($record->check_in_latitude);
+                                                        $longitude = App\Http\Controllers\HomeController::longitudeInDMS($record->check_in_longitude);
+                                                    }
+
+                                                    if ($record?->check_out_latitude && $record->check_out_longitude){
+                                                        $latitude = App\Http\Controllers\HomeController::latitudeInDMS($record->check_out_latitude);
+                                                        $longitude = App\Http\Controllers\HomeController::longitudeInDMS($record->check_out_longitude);
+                                                    }
+
+                                                @endphp
+                                                @if ($record?->check_in_latitude && $record->check_out_longitude)
+                                                <a href="{{'https://www.google.com/maps/place/'.$latitude.'+'.$longitude.'/@26.5009863,80.2863604,17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                {{ round($record?->check_in_distance) }} m
+                                                </a>
+                                                @else
+                                                {{ round($record?->check_in_distance) }} m
+                                                @endif
+                                            </td>
                                             <td
-                                                class="px-4 py-4 text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}-700">
+                                                class="px-4 py-4 text-sm text-                                                class="px-4 py-4 text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}-700">
                                                 {{ round($record?->check_out_distance) }} m</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if($record)
