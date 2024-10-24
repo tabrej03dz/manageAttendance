@@ -60,6 +60,7 @@
 
 
         @php
+        $user = auth()->user();
             if ($user->hasRole('admin')){
                  // Importing Carbon to keep it consistent
 
