@@ -31,6 +31,7 @@
                         <th class="py-3 px-6 text-left">Phone</th>
                         <th class="py-3 px-6 text-left">Image</th>
                         <th class="py-3 px-6 text-left">Office</th>
+                        <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Action</th>
                     </tr>
                 </thead>
@@ -45,6 +46,16 @@
                             <img src="https://via.placeholder.com/50" alt="Charlie Brown" class="rounded-full w-12 h-12">
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office->name}}</td>
+                        <td class="py-3 px-6 text-left">
+                            <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
+                                @if($employee->status == '1')
+                                    bg-green-100 text-green-800">Active
+                                @else
+                                    bg-red-100 text-red-800">Inactive
+                                @endif
+
+                            </a>
+                        </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')
                             <a title="Edit" href="{{ route('employee.edit', ['employee' => $employee->id]) }}"

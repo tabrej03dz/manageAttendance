@@ -22,6 +22,8 @@ class OfficeController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'radius' => '',
+            'number_of_employees' => 'required',
+            'price_per_employee' => 'required',
         ]);
 
         Office::create($request->all());
@@ -38,6 +40,8 @@ class OfficeController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'radius' => '',
+            'number_of_employees' => 'required',
+            'price_per_employee' => 'required',
         ]);
 
         $office->update($request->all());
@@ -48,5 +52,20 @@ class OfficeController extends Controller
     public function delete(Office $office){
         $office->delete();
         return back()->with('success', 'Deleted successfully');
+    }
+
+    public function status(Office $office){
+        if ($office->status == 'active'){
+            $office->status = 'inactive';
+        }else{
+            $office->status = 'active';
+        }
+        $response = $office->save();
+        if ($response){
+            request()->session()->flash('success', 'Status changed successfully');
+        }else{
+            \request()->session()->flash('error', 'Error, Try again!');
+        }
+        return back();
     }
 }

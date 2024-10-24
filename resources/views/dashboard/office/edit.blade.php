@@ -31,6 +31,14 @@
                                 <input type="text" class="form-control" id="radius" name="radius"
                                     value="{{ $office->radius }}">
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="number_of_employees" class="form-label">Number of Employee</label>
+                                <input type="number" value="{{$office->number_of_employees}}" class="form-control" id="number_of_employees" name="number_of_employees">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="price_per_employee" class="form-label">Price Per Employee</label>
+                                <input type="number" value="{{$office->price_per_employee}}" class="form-control" id="price_per_employee" name="price_per_employee">
+                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Update</button>
                             </div>

@@ -19,6 +19,7 @@
                         <th class="py-3 px-6 text-left">Latitude</th>
                         <th class="py-3 px-6 text-left">Longitude</th>
                         <th class="py-3 px-6 text-left">Radius</th>
+                        <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Action</th>
                     </tr>
                 </thead>
@@ -30,6 +31,16 @@
                         <td class="py-3 px-6 text-left">{{$office->latitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->longitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->radius}}</td>
+                        <td class="py-3 px-6 text-left">
+                            <a href="{{route('office.status', ['office' => $office->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
+                                @if($office->status == 'active')
+                                    bg-green-100 text-green-800
+                                @else
+                                    bg-red-100 text-red-800
+                                @endif
+                                ">{{ucfirst($office->status)}}
+                            </a>
+                        </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')
                             <a title="Edit" href="{{route('office.edit', ['office' => $office->id])}}"

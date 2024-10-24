@@ -46,12 +46,23 @@
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="photo" class="form-label">Photo</label>
+                                <label for="photo" class="form-label">Employee's Photo</label>
                                 <input type="file" class="form-control" id="photo" name="photo">
                             </div>
                             <div class="col-md-6">
-                                <label for="joining_date" class="form-label">Joining Date</label>
-                                <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{ old('joining_date') }}">
+                                <label for="aadhar_attachment" class="form-label">Aadhar Attachment</label>
+                                <input type="file" class="form-control" id="aadhar_attachment" name="aadhar_attachment" value="{{ old('aadhar_attachment') }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="pan_attachment" class="form-label">Pan Attachment</label>
+                                <input type="file" class="form-control" id="pan_attachment" name="pan_attachment">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="other_attachment" class="form-label">Other Attachment</label>
+                                <input type="file" class="form-control" id="other_attachment" name="other_attachment" value="{{ old('other_attachment') }}">
                             </div>
                         </div>
 

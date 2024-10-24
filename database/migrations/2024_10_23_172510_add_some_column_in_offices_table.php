@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('offices', function (Blueprint $table) {
             $table->integer('number_of_employees')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->decimal('price_per_employee')->nullable();
+            $table->decimal('price_per_employee', 8, 2)->nullable();
         });
     }
 

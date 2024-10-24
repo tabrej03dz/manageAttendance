@@ -101,4 +101,19 @@ class EmployeeController extends Controller
         $employees = HomeController::employeeList();
         return view('dashboard.employee.list', compact('employees'));
     }
+
+    public function status(User $employee){
+        if ($employee->status == '1'){
+            $employee->status = '0';
+        }else{
+            $employee->status = '1';
+        }
+        $response = $employee->save();
+        if ($response){
+            request()->session()->flash('success', 'Status changed successfully');
+        }else{
+            \request()->session()->flash('error', 'Error, Try again!');
+        }
+        return back();
+    }
 }
