@@ -34,7 +34,19 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-
+    <style>
+        @keyframes scroll {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        .animate-scroll {
+            animation: scroll 10s linear infinite;
+        }
+    </style>
 
 </head>
 
@@ -47,9 +59,33 @@
         @include('dashboard.layout.header')
 
 
+        @php
+            if ($user->hasRole('admin')){
+                 // Importing Carbon to keep it consistent
+
+                // Fetch the current month's payment for the user's office
+                $payment = App\Models\Payment::where('office_id', $user->office->id)
+                    ->whereMonth('date', Carbon\Carbon::now()->month)
+                    ->whereYear('date', Carbon\Carbon::now()->year)
+                    ->first();
+
+                // If no payment exists, create a new payment record for this office
+                if ($payment == null) {
+                    $payment = App\Models\Payment::create([
+                        'office_id' => $user->office->id,
+                        'amount' => ($user->office->number_of_employees * $user->office->price_per_employee),
+                        'date' => Carbon\Carbon::now()->firstOfMonth(),  // Create payment for the first day of the month
+                    ]);
+                }
+            }
+        @endphp
+
+            <!-- Check if payment amount is greater than the paid amount -->
+
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
+
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -68,7 +104,14 @@
                     </button>
                 </div>
             @endif
+                @if($user->hasRole('admin') && $payment->amount > $payment->paid_amount)
+                    <div class="overflow-hidden whitespace-nowrap border-3">
+                        <div class="inline-block animate-scroll text-danger">
+                            Payment of {{ $payment->amount - $payment->paid_amount }} rs is due for the month of {{ $payment->date->format('F') }}.
 
+                        </div>
+                    </div>
+                @endif
             @yield('content')
         </div>
 
