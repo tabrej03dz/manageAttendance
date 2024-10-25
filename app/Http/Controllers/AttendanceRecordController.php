@@ -111,9 +111,6 @@ class AttendanceRecordController extends Controller
 
 
     public function checkIn(Request $request, User $user = null) {
-//        dd($request->all());
-
-        // Validate the incoming request
         $request->validate([
             'image' => 'required',
             'latitude' => 'required',
@@ -229,6 +226,12 @@ class AttendanceRecordController extends Controller
 
 
     public function checkOut(Request $request, User $user = null){
+        $request->validate([
+            'image' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'distance' => 'required',
+        ]);
         if ($user == null){
             $user = auth()->user();
         }

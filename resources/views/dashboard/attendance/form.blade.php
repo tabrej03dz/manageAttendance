@@ -29,8 +29,20 @@
         }
     </style>
 
+
+
     <div class="pt-2 pb-16">
         <div class="min-h-screen bg-red-50 flex flex-col mx-2 shadow-2xl rounded-lg">
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li class="text-sm">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Main Content -->
             <main class="flex-grow flex flex-col items-center justify-center p-4">
                 <!-- Time Display -->
@@ -111,6 +123,8 @@
             </main>
         </div>
     </div>
+
+
     <script>
         // Get video stream from the camera
         navigator.mediaDevices.getUserMedia({
@@ -196,18 +210,7 @@
                         longitude);
 
                     document.getElementById('distance').value = distance;
-                    // const apiKey = '41b12ec59af34ece8d9e93f4d49e76f1';
-                    //
-                    //
-                    // let apiUrl = https://api.opencagedata.com/geocode/v1/json?key=41b12ec59af34ece8d9e93f4d49e76f1&q=${latitude},${longitude}&pretty=1;
-                    // fetch(apiUrl)
-                    //     .then(response => response.json())
-                    //     .then(data => {
-                    //         console.log(data.results[0].components);
-                    //     })
-                    //     .catch(error => {
-                    //         console.error('Error:', error);
-                    //     });
+
 
 
                 }, function(error) {
