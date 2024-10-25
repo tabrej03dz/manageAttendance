@@ -40,6 +40,8 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('note/{record}', [AttendanceRecordController::class, 'addNote'])->name('note');
         Route::post('user/note/{record}/{type}', [AttendanceRecordController::class, 'userNote'])->name('user.note');
         Route::get('user/note/response/{record}/{type}/{status}', [AttendanceRecordController::class, 'userNoteResponse'])->name('user.note.response');
+
+        Route::get('reason/form/{type}/{message}/{record}', [AttendanceRecordController::class, 'reasonFormLoad'])->name('reason.form');
     });
 
     Route::prefix('employee')->name('employee.')->group(function (){

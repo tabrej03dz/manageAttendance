@@ -43,8 +43,8 @@
                 <!-- Action Buttons -->
                 <div class="w-full max-w-xs">
                     <form
-                        action="{{route('attendance.user.note', ['record' => $attendanceRecord->id, 'type' => $type])}}"
-                        method="POST" enctype="multipart/form-data"  class="mt-3">
+                        action="{{route('attendance.user.note', ['record' => $record->id, 'type' => $type])}}"
+                        method="post"  class="mt-3">
                         @csrf
                         <textarea class="form-control mb-2" name="note" id="" cols="30" rows="3" placeholder="write a note"></textarea>
 

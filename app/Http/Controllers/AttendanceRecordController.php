@@ -211,17 +211,20 @@ class AttendanceRecordController extends Controller
 
             // Save the attendance record
             $attendanceRecord->save();
+            $message = 'Checked in successfully';
 
-        }
-        if ($attendanceRecord->late){
-            $type = 'check_in_note';
-            $time = HomeController::getTime($attendanceRecord->late);
-            $message = 'You are '.$time.' late, Write here why you have been late..';
-            return view('dashboard.attendance.noteForm', compact('type', 'message', 'attendanceRecord'));
-        }
+            if ($attendanceRecord->late){
+                $type = 'check_in_note';
+                $time = HomeController::getTime($attendanceRecord->late);
+                $message = 'You are '.$time.' late, Write here why you have been late..';
+                return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $attendanceRecord]);
+            }
 
+        }else{
+            $message = 'Today you has checked in already';
+        }
         // Redirect to attendance index with success message
-        return redirect('attendance/day-wise')->with('success', 'Checked in successfully');
+        return redirect('attendance/day-wise')->with('success', $message);
     }
 
 
@@ -235,27 +238,12 @@ class AttendanceRecordController extends Controller
         if ($user == null){
             $user = auth()->user();
         }
-
-//        $latitude = $request->latitude;
-//        $longitude = $request->longitude;
-
         // Office coordinates from the database
         $office = $user->office;
-//        $officeLatitude = $office->latitude;
-//        $officeLongitude = $office->longitude;
         $radius = $office->radius ?? '100';
-
-        // Calculate the distance
-//        if ($latitude == '' || $longitude == ''){
-//            $distance = '';
-//        }else {
-//            $distance = $this->haversineDistance($latitude, $longitude, $officeLatitude, $officeLongitude);
-//        }
-
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
-//            dd($duration);
             $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude]);
         }else{
             $duration = $user->office_time / 2;
@@ -273,8 +261,9 @@ class AttendanceRecordController extends Controller
             $before = HomeController::getTime($time);
             $message = 'You are checking out before '.$before.' write here the reasons';
             $type = 'check_out_note';
-            $attendanceRecord = $record;
-            return view('dashboard.attendance.noteForm', compact('type', 'message', 'attendanceRecord'));
+
+//            return view('dashboard.attendance.noteForm', compact('type', 'message', 'attendanceRecord'));
+            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
         }
         return redirect('attendance/day-wise')->with('success', 'checked out successfully');
     }
@@ -340,7 +329,7 @@ class AttendanceRecordController extends Controller
 
     public function userNote(Request $request,AttendanceRecord $record, $type){
         $request->validate([
-            'note' => 'required|min:8',
+            'note' => 'required',
         ]);
         if ($type == 'check_in_note'){
             $record->check_in_note = $request->note;
@@ -348,6 +337,7 @@ class AttendanceRecordController extends Controller
             $record->check_out_note = $request->note;
         }
         $record->save();
+
         return redirect('attendance/day-wise');
     }
 
@@ -361,5 +351,9 @@ class AttendanceRecordController extends Controller
         }
         $record->save();
         return back();
+    }
+
+    public function reasonFormLoad($type, $message, AttendanceRecord $record){
+        return view('dashboard.attendance.noteForm', compact('type', 'message', 'record'));
     }
 }

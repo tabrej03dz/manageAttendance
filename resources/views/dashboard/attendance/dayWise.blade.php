@@ -304,7 +304,7 @@
 
                                                 @endphp
                                                 @if ($record?->check_in_latitude && $record->check_in_longitude)
-                                                <a href="{{'https://www.google.com/maps/place/'.$check_in_latitude.'+'.$check_in_longitude.'/@26.5009863,80.2863604,17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                <a href="{{'https://www.google.com/maps/place/'.$check_in_latitude.'+'.$check_in_longitude.'/@'.$record->check_in_latitude.','.$record->check_out_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
                                                 {{ round($record?->check_in_distance) }} m
                                                 </a>
                                                 @else
@@ -314,7 +314,7 @@
                                             <td
                                                 class="px-4 py-4 text-sm text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}">
                                                 @if($record?->check_out_latitude && $record->check_out_longitude)
-                                                <a href="{{'https://www.google.com/maps/place/'.$check_out_latitude.'+'.$check_out_longitude.'/@26.5009863,80.2863604,17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                <a href="{{'https://www.google.com/maps/place/'.$check_out_latitude.'+'.$check_out_longitude.'/@'.$record->check_out_latitude.','.$record->check_out_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
                                                 {{ round($record?->check_out_distance) }} m
                                                 </a>
                                                 @else

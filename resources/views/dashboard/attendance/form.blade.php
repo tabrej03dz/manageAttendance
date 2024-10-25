@@ -124,7 +124,6 @@
         </div>
     </div>
 
-
     <script>
         // Get video stream from the camera
         navigator.mediaDevices.getUserMedia({
@@ -185,7 +184,6 @@
                     input.files = dataTransfer.files;
                 });
         });
-
         // Ensure image is captured before form submission
         document.getElementById('uploadForm').addEventListener('submit', function(e) {
             var input = document.getElementById('capturedImage');
@@ -195,29 +193,24 @@
             }
         });
     </script>
-
-
     <script>
         var userOffice = @json(auth()->user()->office);
         window.onload = function() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
+                    console.log(position);
                     document.getElementById('latitude').value = position.coords.latitude;
                     document.getElementById('longitude').value = position.coords.longitude;
                     let latitude = position.coords.latitude;
                     let longitude = position.coords.longitude;
                     let distance = haversineDistance(userOffice.latitude, userOffice.longitude, latitude,
                         longitude);
-
                     document.getElementById('distance').value = distance;
-
-
-
                 }, function(error) {
-                    console.error("Error getting coordinates: ", error);
+                    alert.error("Error getting coordinates: ", error);
                 });
             } else {
-                console.error("Geolocation is not supported by this browser.");
+                alert.error("Geolocation is not supported by this browser.");
             }
         }
     </script>
