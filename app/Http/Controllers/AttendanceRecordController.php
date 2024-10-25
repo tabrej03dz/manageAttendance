@@ -340,7 +340,7 @@ class AttendanceRecordController extends Controller
 
     public function userNote(Request $request,AttendanceRecord $record, $type){
         $request->validate([
-            'note' => 'required',
+            'note' => 'required|min:8',
         ]);
         if ($type == 'check_in_note'){
             $record->check_in_note = $request->note;
