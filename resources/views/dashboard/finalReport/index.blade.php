@@ -57,12 +57,15 @@
                                              <th>Dates</th>
                                              @php
                                                  $officeDays = 0;
+                                                 $sundayCount = 0;
                                              @endphp
                                              @foreach ($dates as $dateObj)
                                                  @php
                                                      $d = \Carbon\Carbon::parse($dateObj->date);
                                                      $isSunday = $d->format('D') === 'Sun';
-                                                     if (!$isSunday) {
+                                                     if ($isSunday) {
+                                                         $sundayCount++;
+                                                     }else{
                                                          $officeDays++;
                                                      }
                                                  @endphp
@@ -75,6 +78,10 @@
                                              <th>Late Count</th>
                                              <th>Late in time</th>
                                              <th>Gone Before Time</th>
+                                             <th>Gone Before Time Count</th>
+                                             @if(auth()->user()->hasRole('admin|super_admin'))
+                                             <th>Basic Salary</th>
+                                             @endif
                                          </tr>
                                          </thead>
                                          <!-- Table Body -->
@@ -180,6 +187,15 @@
                                                  <td>{{ $lateTime ? App\Http\Controllers\HomeController::getTime($lateTime) : 'N/A' }}</td>
                                                  <td>{{ $goneBeforeTime ? App\Http\Controllers\HomeController::getTime($goneBeforeTime) : 'N/A' }}</td>
                                                  <td>{{ $goneBeforeTimeCount }}</td>
+                                                 @if(($d < \Carbon\Carbon::today()) && auth()->user()->hasRole('admin|super_admin'))
+                                                     @php
+                                                         $oneDaySalary = $user->salary / 30;
+                                                         //$salary = $user->salary - (($leaveDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2) + ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary))
+                                                        //$salary = (($workingDays * $oneDaySalry) + (($halfDayCount * $oneDaySalary)/2)) - ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary);
+                                                        $salary = (($workingDays * $oneDaySalary) + ($offDays * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2));
+                                                     @endphp
+                                                     <td>{{ $salary }}</td>
+                                                 @endif
                                              </tr>
                                          @endforeach
                                          </tbody>
