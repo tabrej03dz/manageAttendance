@@ -193,6 +193,7 @@
                                                          //$salary = $user->salary - (($leaveDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2) + ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary))
                                                         //$salary = (($workingDays * $oneDaySalry) + (($halfDayCount * $oneDaySalary)/2)) - ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary);
                                                         $salary = (($workingDays * $oneDaySalary) + ($offDays * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2));
+
                                                      @endphp
                                                      <td>{{ $salary }}</td>
                                                  @endif
