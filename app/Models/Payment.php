@@ -13,4 +13,8 @@ class Payment extends Model
     protected $casts = [
         'date' => 'date',
     ];
+
+    public function office(){
+        return $this->belongsTo(Office::class, 'office_id');
+    }
 }

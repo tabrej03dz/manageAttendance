@@ -168,19 +168,19 @@
         <div id="more-options" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
             <div
                 class="flex border-2 border-white justify-around bg-gradient-to-r from-red-600 to-red-500 shadow-md rounded-t-2xl py-2 mt-2">
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{route('leave.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">logout</span>
                     <span class="text-xs">Leave</span>
                 </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{route('office.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">work</span>
                     <span class="text-xs">Office</span>
                 </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{route('off.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">manage_accounts</span>
-                    <span class="text-xs">Manage Office</span>
+                    <span class="text-xs">Manage Off</span>
                 </a>
-                <a href="#" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{route('employee.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">people</span>
                     <span class="text-xs">Employees</span>
                 </a>

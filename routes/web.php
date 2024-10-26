@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OffController;
 use App\Http\Controllers\PolicyController;
+use \App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,13 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('update/{office}', [OfficeController::class, 'update'])->name('update');
        Route::get('delete/{office}', [OfficeController::class, 'delete'])->name('delete');
        Route::get('status/{office}', [OfficeController::class, 'status'])->name('status');
+       Route::get('detail/{office}', [OfficeController::class, 'detail'])->name('detail');
+    });
+
+    Route::prefix('payment')->name('payment.')->group(function(){
+       Route::get('paymentForm/{payment}', [PaymentController::class, 'paymentForm'])->name('paymentForm');
+       Route::post('add/{payment}', [PaymentController::class, 'addPayment'])->name('add');
+       Route::get('advance/{office}', [PaymentController::class, 'advance'])->name('advance');
     });
 
 

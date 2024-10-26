@@ -31,6 +31,16 @@
 
     <div class="pt-2 pb-16">
         <div class="min-h-screen bg-red-50 flex flex-col mx-2 shadow-2xl rounded-lg">
+
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach($errors->all() as $error)
+                            <li class="text-sm">{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <!-- Main Content -->
             <main class="flex-grow flex flex-col items-center justify-center p-4">
                 <!-- Time Display -->
@@ -46,7 +56,7 @@
                         action="{{route('attendance.user.note', ['record' => $record->id, 'type' => $type])}}"
                         method="post"  class="mt-3">
                         @csrf
-                        <textarea class="form-control mb-2" name="note" id="" cols="30" rows="3" placeholder="write a note"></textarea>
+                        <textarea class="form-control mb-2" name="note" id="" cols="30" rows="3" placeholder="write a note">{{old('note')}}</textarea>
 
                         <div class="d-grid">
                             <button type="submit" id="upload"

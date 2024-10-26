@@ -51,6 +51,11 @@
                                 class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span>
                             </a>
+
+                            <a title="Details" href="{{route('office.detail', ['office' => $office->id])}}"
+                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">add</span>
+                            </a>
                             @endrole
                         </td>
                     </tr>
@@ -59,6 +64,4 @@
             </table>
         </div>
     </div>
-
-
 @endsection

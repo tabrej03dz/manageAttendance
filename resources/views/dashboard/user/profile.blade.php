@@ -239,88 +239,48 @@
             <div class="container mx-auto px-4 py-8">
                 <!-- Full width on web, max width on mobile -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
-                    <div class="p-6">
-                        <div class="flex flex-col items-center">
-                            <img src="https://via.placeholder.com/100" alt="Profile Avatar"
-                                class="w-24 h-24 rounded-full mb-4">
-                            <p class="text-gray-600 text-sm mb-4">Employee ID: 123456</p>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="material-icons text-gray-600">person</span>
-                                    <span class="text-gray-800 font-medium">John Doe</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="material-icons text-gray-600">work</span>
-                                    <span class="text-gray-800">Software Engineer</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="material-icons text-gray-600">email</span>
-                                    <span class="text-gray-800">john.doe@example.com</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="material-icons text-gray-600">phone</span>
-                                    <span class="text-gray-800">+91 1234567873</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
-                            <div class="flex items-center justify-between border-b py-2">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-xl font-bold text-gray-600">₹</span>
-                                    <span class="text-gray-800">75,000 per month</span>
-                                </div>
-                                <button>
-                                    <span class="material-icons">edit</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button
-                            class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                            Update
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="bg-gray-100 flex items-center justify-center">
-            <div class="container mx-auto px-4 py-8">
-                <!-- Full width on web, max width on mobile -->
-                <div class="bg-white rounded-lg shadow-lg">
-                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
-                        @csrf
+                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post">
+                    @csrf
                         <div class="p-6">
-        
-                            <div class="space-y-6">
-        
-                                <div class="flex items-center border-b pb-4">
-                                    <label for="email1" class="w-full text-center text-lg font-bold text-gray-600">Secondary Email</label>    
-                                </div>
-                                <div>
-                                    <input placeholder="Enter your secondary email" id="email1" name="email1" value="{{ $user->email1 }}" 
-                                        class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300" />
-                                    </div>
+                            <div class="flex flex-col items-center">
+                                <img src="https://via.placeholder.com/100" alt="Profile Avatar"
+                                    class="w-24 h-24 rounded-full mb-4">
+                                <input type="file" class="text-gray-600 text-sm mb-4"  name="photo"/>
                             </div>
-        
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">person</span>
+                                        <input type="text" class="text-gray-800 font-medium" value="{{$user->name}}" name="name" disabled/>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">work</span>
+                                        <input type="text" class="text-gray-800" value="{{$user->designation}}" name="'designation" disabled/>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">email</span>
+                                        <input type="email" class="text-gray-800" value="{{$user->email}}" name="email" disabled/>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">phone</span>
+                                        <input type="text" class="text-gray-800" value="{{$user->phone}}" name="phone" disabled>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xl font-bold text-gray-600">₹</span>
+                                        <input type="text" class="text-gray-800" value="{{$user->salary}}" name="salary" disabled/>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button type="submit"
                                 class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
                                 Update
@@ -330,7 +290,35 @@
                 </div>
             </div>
         </div>
-        
+        <div class="bg-gray-100 flex items-center justify-center">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
+                <div class="bg-white rounded-lg shadow-lg">
+                    <form action="                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
+                        @csrf
+                        <div class="p-6">
+
+                            <div class="space-y-6">
+
+                                <div class="flex items-center border-b pb-4">
+                                    <label for="email1" class="w-full text-center text-lg font-bold text-gray-600">Secondary Email</label>
+                                </div>
+                                <div>
+                                    <input placeholder="Enter your secondary email" id="email1" name="email1" value="{{ $user->email1 }}"
+                                        class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300" />
+                                    </div>
+                            </div>
+
+                            <button type="submit"
+                                class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                Update
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
 
         <div class="bg-gray-100">

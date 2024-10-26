@@ -68,4 +68,9 @@ class OfficeController extends Controller
         }
         return back();
     }
+
+    public function detail(Office $office){
+        $payments = $office->payments;
+        return view('dashboard.office.detail', compact('payments', 'office'));
+    }
 }

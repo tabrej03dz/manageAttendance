@@ -56,7 +56,7 @@
                     </a>
                 </li>
                 <li>
-                    <form action="" method="post">
+                    <form action="{{route('logout')}}" method="post">
                         @csrf
                         <button type="submit"
                             class="w-full text-left flex items-center px-4 py-2 text-red-500 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">

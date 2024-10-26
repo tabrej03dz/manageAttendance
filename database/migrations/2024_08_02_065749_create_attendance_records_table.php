@@ -21,8 +21,8 @@ return new class extends Migration
             $table->dateTime('check_out')->nullable();
             $table->string('check_out_image')->nullable();
             $table->enum('day_type', ['half day', 'full_day','leave', 'holiday', '__'])->default('__');
-            $table->decimal('check_in_distance', 6,2)->nullable();
-            $table->decimal('check_out_distance', 6,2)->nullable();
+            $table->decimal('check_in_distance', 10,2)->nullable();
+            $table->decimal('check_out_distance', 10,2)->nullable();
             $table->integer('late')->nullable();
             $table->timestamps();
         });
