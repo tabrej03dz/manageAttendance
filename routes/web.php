@@ -71,6 +71,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     });
 
     Route::prefix('payment')->name('payment.')->group(function(){
+        Route::get('/', [PaymentController::class, 'index'])->name('index');
        Route::get('paymentForm/{payment}', [PaymentController::class, 'paymentForm'])->name('paymentForm');
        Route::post('add/{payment}', [PaymentController::class, 'addPayment'])->name('add');
        Route::get('advance/{office}', [PaymentController::class, 'advance'])->name('advance');

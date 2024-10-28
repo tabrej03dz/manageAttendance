@@ -9,6 +9,12 @@ use App\Models\Payment;
 
 class PaymentController extends Controller
 {
+    public function index(){
+        $payments = Payment::whereColumn('amount', '>', 'paid_amount')->get();
+
+        return view('dashboard.payment.index', compact('payments'));
+    }
+
     public function paymentForm(Payment $payment){
         return view('dashboard.payment.form', compact('payment'));
     }

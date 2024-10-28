@@ -3,15 +3,9 @@
 @section('content')
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-xl font-bold">Office Details</h1>
-
-            <a href="{{ route('payment.advance', ['office' => $office]) }}"
-               class="bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                Create Advance Payment
-            </a>
+            <h1 class="text-2xl font-bold">Due Payments</h1>
         </div>
 
-        <h1 class="text-2xl font-bold">Payment History</h1>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white rounded-lg shadow-md">
                 <thead>
@@ -20,6 +14,7 @@
                     <th class="py-3 px-6 text-left">Amount</th>
                     <th class="py-3 px-6 text-left">Paid Amount</th>
                     <th class="py-3 px-6 text-left">Due</th>
+                    <th class="py-3 px-6 text-left">Office</th>
                     <th class="py-3 px-6 text-left">Action</th>
                 </tr>
                 </thead>
@@ -30,6 +25,7 @@
                         <td class="py-3 px-6 text-left">{{$payment->amount}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->paid_amount}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->date->format('F-Y')}}</td>
+                        <td class="py-3 px-6 text-left">{{$payment->office->name}}</td>
 
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')

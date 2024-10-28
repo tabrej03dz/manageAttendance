@@ -32,4 +32,12 @@ class AttendanceRecord extends Model
         return $this->belongsTo(User::class, 'check_out_note_response_by');
     }
 
+    public function checkInBy(){
+        return $this->belongsTo(User::class, 'check_in_by');
+    }
+
+    public function checkOutBy(){
+        return $this->belongsTo(User::class, 'check_out_by');
+    }
+
 }

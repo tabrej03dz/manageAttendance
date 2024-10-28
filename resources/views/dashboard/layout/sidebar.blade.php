@@ -89,6 +89,13 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{ route('payment.index') }}" class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Payment</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
                         <button type="submit" class="nav-link">
