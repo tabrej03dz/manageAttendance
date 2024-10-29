@@ -71,7 +71,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm rounded" style="padding: 15px;">
         <div class="d-flex align-items-center">
             <!-- Smaller Placeholder Avatar -->
-            <img src="{{ auth()->user()->photo ? asstet('storage/' . auth()->user()->photo) : 'https://via.placeholder.com/40' }}"
+            <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://via.placeholder.com/40' }}"
                 alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
             <h4 class="fw-bold mb-0 ml-2" style="font-size: 1.2rem;">{{ auth()->user()->name }}</h4>
         </div>
