@@ -243,7 +243,7 @@
                     @csrf
                         <div class="p-6">
                             <div class="flex flex-col items-center">
-                                <img src="https://via.placeholder.com/100" alt="Profile Avatar"
+                                <img src="{{$user->photo ? asset('storage/'. $user->photo) : 'https://via.placeholder.com/100'}}" alt="Profile Avatar"
                                     class="w-24 h-24 rounded-full mb-4">
                                 <input type="file" class="text-gray-600 text-sm mb-4"  name="photo"/>
                             </div>

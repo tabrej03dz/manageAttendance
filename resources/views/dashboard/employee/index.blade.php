@@ -43,7 +43,7 @@
                         <td class="py-3 px-6 text-left">{{$employee->email}}</td>
                         <td class="py-3 px-6 text-left">{{$employee->phone}}</td>
                         <td class="py-3 px-6 text-left">
-                            <img src="https://via.placeholder.com/50" alt="Charlie Brown" class="rounded-full w-12 h-12">
+                            <img src="{{$employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/50'}}" alt="{{$employee->name}}" class="rounded-full w-12 h-12">
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office->name}}</td>
                         <td class="py-3 px-6 text-left">
