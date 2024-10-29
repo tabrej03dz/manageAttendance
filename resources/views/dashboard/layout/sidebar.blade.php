@@ -81,6 +81,8 @@
                     </a>
                 </li>
 
+                @role('super_admin|admin')
+
                 <li class="nav-item">
                     <a href="{{ route('employee.attendance') }}" class="nav-link {{ request()->routeIs('employee.attendance') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-signal"></i>
@@ -94,6 +96,7 @@
                         <p>Payment</p>
                     </a>
                 </li>
+                @endrole
 
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
