@@ -239,7 +239,7 @@
             <div class="container mx-auto px-4 py-8">
                 <!-- Full width on web, max width on mobile -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
-                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post">
+                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post" enctype="multipart/form-data">
                     @csrf
                         <div class="p-6">
                             <div class="flex flex-col items-center">

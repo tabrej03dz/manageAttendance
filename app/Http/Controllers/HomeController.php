@@ -73,6 +73,11 @@ class HomeController extends Controller
 
     public function updateProfile(Request $request, User $user){
         $status = $user->update( $request->all());
+        if($request->file('photo')){
+            $file = $request->file('photo')->store('public/images');
+            $user->photo = str_replace('public/', '', $file);
+            $user->save();
+        }
         return back()->with('success', 'updated successfully');
 
     }
