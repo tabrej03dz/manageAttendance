@@ -98,6 +98,20 @@
                 </li>
                 @endrole
 
+{{--                <li class="nav-item">--}}
+{{--                    <a href="{{ route('expense.index') }}" class="nav-link {{ request()->routeIs('expense.index') ? 'active' : '' }}">--}}
+{{--                        <i class="nav-icon fas fa-signal"></i>--}}
+{{--                        <p>Expenses</p>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
+
+                <li class="nav-item">
+                    <a href="{{ route('visit.index') }}" class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Visits</p>
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf

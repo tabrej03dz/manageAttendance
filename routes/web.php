@@ -9,6 +9,7 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\OffController;
 use App\Http\Controllers\PolicyController;
 use \App\Http\Controllers\PaymentController;
+use App\Http\Controllers\VisitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +118,15 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('info')->name('info.')->group(function(){
        Route::get('create', [\App\Http\Controllers\UserAdditionalInformationController::class, 'create'])->name('create');
        Route::post('store', [\App\Http\Controllers\UserAdditionalInformationController::class, 'store'])->name('store');
+    });
+
+    Route::prefix('visit')->name('visit.')->group(function(){
+       Route::get('/', [VisitController::class, 'index'])->name('index');
+       Route::get('create', [VisitController::class, 'create'])->name('create');
+       Route::post('store', [VisitController::class, 'store'])->name('store');
+       Route::get('edit/{visit}', [VisitController::class, 'edit'])->name('edit');
+       Route::post('update/{visit}', [VisitController::class, 'update'])->name('update');
+       Route::get('delete/{visit}', [VisitController::class, 'delete'])->name('delete');
     });
 
 });
