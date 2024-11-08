@@ -234,6 +234,14 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    @if($errors->any())
+
+    <ul>
+        @foreach($errors->all() as $error)
+            <li>{{$error}}</li>
+        @endforeach
+
+    @endif
     <div class="pb-24">
         <div class="bg-gray-100 min-h-screen">
             <div class="container mx-auto px-4 py-8">
@@ -336,7 +344,7 @@
                             <div class="mb-4">
                                 <label for="current-password" class="block text-gray-700 font-semibold mb-2">Current
                                     Password</label>
-                                <input type="password" id="current-password" name="currentPassword"
+                                <input type="password" id="current-password" name="current_password"
                                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
                                     placeholder="Enter your current password">
                             </div>
@@ -345,7 +353,7 @@
                             <div class="mb-4">
                                 <label for="new-password" class="block text-gray-700 font-semibold mb-2">New
                                     Password</label>
-                                <input type="password" id="newPassword" name="new-password"
+                                <input type="password" id="newPassword" name="new_password"
                                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
                                     placeholder="Enter your new password">
                             </div>
@@ -354,7 +362,7 @@
                             <div class="mb-4">
                                 <label for="confirm-password" class="block text-gray-700 font-semibold mb-2">Confirm New
                                     Password</label>
-                                <input type="password" id="confirm-password" name="confirmPassword"
+                                <input type="password" id="confirm-password" name="confirm_password"
                                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
                                     placeholder="Confirm your new password">
                             </div>

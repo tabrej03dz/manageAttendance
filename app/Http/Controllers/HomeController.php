@@ -56,7 +56,6 @@ class HomeController extends Controller
         if (Hash::check($request->current_password, $user->password)) {
             $user->password = Hash::make($request->new_password);
             $user->save();
-
             return back()->with('success', 'Password updated successfully');
         } else {
             return back()->with('error', 'Current password does not match');
