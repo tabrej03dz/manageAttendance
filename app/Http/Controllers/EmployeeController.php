@@ -33,6 +33,7 @@ class EmployeeController extends Controller
     }
 
     public function store(EmployeeRequest $request){
+
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
         $employee = User::create($request->except('joining_date') + ['office_id' => $request->office_id, 'password' => Hash::make('password'), ]);

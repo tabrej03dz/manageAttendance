@@ -101,12 +101,18 @@ class AttendanceRecordController extends Controller
             $attendanceRecord->save();
             $message = 'Checked in successfully';
 
+            if (!$request->latitude || !$request->longitude){
+                return view('dashboard.settingInstruction');
+            }
+
             if ($attendanceRecord->late){
                 $type = 'check_in_note';
                 $time = HomeController::getTime($attendanceRecord->late);
                 $message = 'You are '.$time.' late, Write here why you have been late..';
                 return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $attendanceRecord]);
             }
+
+
 
         }else{
             $message = 'Today you has checked in already';
@@ -137,6 +143,9 @@ class AttendanceRecordController extends Controller
             $file = $request->file('image')->store('public/images');
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
+        }
+        if (!$request->latitude || !$request->longitude){
+            return view('dashboard.settingInstruction');
         }
         if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
             $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');

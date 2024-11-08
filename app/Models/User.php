@@ -57,4 +57,8 @@ class User extends Authenticatable
     public function leaves(){
         return $this->hasMany(Leave::class, 'user_id');
     }
+
+    public function visits(){
+        return $this->hasMany(Visit::class, 'user_id');
+    }
 }

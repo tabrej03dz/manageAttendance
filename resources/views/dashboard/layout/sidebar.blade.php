@@ -105,12 +105,40 @@
 {{--                    </a>--}}
 {{--                </li>--}}
 
+                @can('show visit')
                 <li class="nav-item">
                     <a href="{{ route('visit.index') }}" class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-signal"></i>
                         <p>Visits</p>
                     </a>
                 </li>
+                @endcan
+
+
+                <p>coming soon features</p>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Expenses</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Salary</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>last month payout</p>
+                    </a>
+                </li>
+
+
 
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
