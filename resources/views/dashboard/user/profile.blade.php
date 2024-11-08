@@ -381,12 +381,14 @@
             </div>
         </div>
 
-        <button
+    <form action="{{route('logout')}}" method="post">
+    @csrf
+        <button type="submit"
             class="mt-6 w-3/4 mx-auto flex justify-center items-center bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
             <!-- Icon on the left -->
             <span class="material-icons text-white text-lg mr-2">exit_to_app</span>
             LogOut
         </button>
-
+    </form>
     </div>
 @endsection

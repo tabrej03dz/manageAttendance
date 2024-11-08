@@ -320,53 +320,53 @@
                             </div>
                         </a>
                     </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Edit Records</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">User Profiles</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <!-- New Cards -->
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Work Hours</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="text-decoration-none text-reset d-block">
-                            <div class="card shadow border-0 h-100 responsive-card">
-                                <div
-                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">
-                                    <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i>
-                                    <p class="mt-3 mb-0">Employee Profiles</p>
-                                </div>
-                            </div>
-                        </a>
+{{--                    <div class="col">--}}
+{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
+{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
+{{--                                <div--}}
+{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
+{{--                                    <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>--}}
+{{--                                    <p class="mt-3 mb-0">Edit Records</p>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+{{--                    <div class="col">--}}
+{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
+{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
+{{--                                <div--}}
+{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
+{{--                                    <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i>--}}
+{{--                                    <p class="mt-3 mb-0">User Profiles</p>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+{{--                    <!-- New Cards -->--}}
+{{--                    <div class="col">--}}
+{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
+{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
+{{--                                <div--}}
+{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
+{{--                                    <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i>--}}
+{{--                                    <p class="mt-3 mb-0">Work Hours</p>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+{{--                    <div class="col">--}}
+{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
+{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
+{{--                                <div--}}
+{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
+{{--                                    <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i>--}}
+{{--                                    <p class="mt-3 mb-0">Employee Profiles</p>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                        </a>--}}
 
-                        <!-- /.row -->
-                    </div>
+{{--                        <!-- /.row -->--}}
+{{--                    </div>--}}
                 </div>
             </div>
         </div>
