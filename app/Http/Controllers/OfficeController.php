@@ -8,7 +8,11 @@ use Illuminate\Http\Request;
 class OfficeController extends Controller
 {
     public function index(){
-        $offices = Office::all();
+        if (auth()->user()->hasRole('admin')){
+            $offices = Office::where('id', auth()->user()->office_id)->get();
+        }else{
+            $offices = Office::all();
+        }
         return view('dashboard.office.index', compact('offices'));
     }
 

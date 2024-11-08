@@ -160,9 +160,9 @@ class AttendanceRecordController extends Controller
     }
 
     public function form($formType, User $user = null){
-        if (auth()->user()->is_accepted == '0'){
-            return back()->with('error', 'You don\'t have accepted policy, Please read policies!');
-        }
+//        if (auth()->user()->is_accepted == '0'){
+//            return back()->with('error', 'You don\'t have accepted policy, Please read policies!');
+//        }
         return view('dashboard.attendance.form', compact('formType', 'user'));
     }
 
