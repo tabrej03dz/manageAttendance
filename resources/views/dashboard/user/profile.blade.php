@@ -294,7 +294,7 @@
             <div class="container mx-auto px-4 py-8">
                 <!-- Full width on web, max width on mobile -->
                 <div class="bg-white rounded-lg shadow-lg">
-                    <form action="                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
+                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
                         @csrf
                         <div class="p-6">
 
@@ -324,7 +324,7 @@
         <div class="bg-gray-100">
             <div class="container mx-auto px-4">
                 <!-- Full width on web, max width on mobile -->
-                <form action="                <form action="{{ route('userPassword', ['user' => $user->id]) }}"
+                <form action="{{ route('userPassword', ['user' => $user->id]) }}"
                     method="POST">
                     @csrf
                     <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
