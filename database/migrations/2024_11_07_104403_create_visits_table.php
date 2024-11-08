@@ -21,7 +21,10 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 10, 8)->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->
+            $table->string('status')->default('pending');
+            $table->enum('expense_paid', ['0', '1'])->default('0');
+            $table->unsignedBigInteger('paid_by')->nullable();
+            $table->foreign('paid_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->timestamps();
         });
     }
