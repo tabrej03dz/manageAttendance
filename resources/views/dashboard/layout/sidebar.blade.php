@@ -96,6 +96,13 @@
                         <p>Payment</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('salary.index') }}" class="nav-link {{ request()->routeIs('salary.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Salary</p>
+                    </a>
+                </li>
                 @endrole
 
 {{--                <li class="nav-item">--}}

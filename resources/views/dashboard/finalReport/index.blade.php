@@ -12,12 +12,10 @@
                          <form action="{{ route('reports.index') }}" method="GET"
                              class="d-flex flex-column flex-md-row align-items-stretch">
                              @csrf
-                             <input type="date" name="start" placeholder="Start Date"
-                                 class="form-control mb-2 mb-md-0 mr-md-2">
-                             <input type="date" name="end" placeholder="End Date"
+                             <input type="month" name="month" value="{{$month}}" placeholder="Start Date"
                                  class="form-control mb-2 mb-md-0 mr-md-2">
                              <input type="submit" value="Filter" class="btn btn-success text-white mb-2">
-                             <a href="{{ route('attendance.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
+                             <a href="{{ route('reports.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
                          </form>
                      </div>
                      <div class="col-12 col-md-6 text-center text-md-right">
@@ -32,7 +30,7 @@
 
              </div>
 
-             <div id="contentToPrint">
+             <div id="">
 
                  <div class="container">
                      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
@@ -49,7 +47,7 @@
                              <!-- Attendance Table (Web View) -->
                              <div class="table-responsive mt-3 d-md-block">
                                 <div class="table-responsive mt-3" style="max-height: 100vh; overflow-y: auto;">
-                                    <table class="table table-bordered table-hover align-middle text-center">
+                                    <table id="contentToPrint" class="table table-bordered table-hover align-middle text-center">
                                          <!-- Fixed Header -->
                                          <thead class="bg-primary text-white sticky-top">
                                          <tr>
@@ -230,9 +228,9 @@
              html2canvas(element).then(canvas => {
                  var imgData = canvas.toDataURL('image/png');
 
-                 var pdf = new jsPDF('p', 'mm', 'a4');
+                 var pdf = new jsPDF('p', 'mm', 'a0');
                  var pageHeight = pdf.internal.pageSize.getHeight();
-                 var imgWidth = 210; // A4 width in mm
+                 var imgWidth = 841; // A4 width in mm
                  var imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                  var heightLeft = imgHeight;
@@ -254,4 +252,31 @@
              });
          }
      </script>
+
+{{--     <script>--}}
+{{--         function printDivAsPDF() {--}}
+{{--             const { jsPDF } = window.jspdf;--}}
+
+{{--             // Get the div element--}}
+{{--             const element = document.getElementById('contentToPrint');--}}
+
+{{--             // Use html2canvas with high scale to capture the full width--}}
+{{--             html2canvas(element, { scale: 2 }).then(canvas => {--}}
+{{--                 const imgData = canvas.toDataURL('image/png');--}}
+
+{{--                 // Calculate width and height based on the element's actual dimensions--}}
+{{--                 const pdfWidth = canvas.width / 6.9; // Adjust this value as needed--}}
+{{--                 const pdfHeight = canvas.height / 6.9;--}}
+
+{{--                 const pdf = new jsPDF('landscape', 'mm', [pdfWidth, pdfHeight]);--}}
+
+{{--                 // Add image to PDF--}}
+{{--                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);--}}
+
+{{--                 // Save the PDF--}}
+{{--                 pdf.save('{{ $dates->first()->date->format('M-Y') }}.pdf');--}}
+{{--             });--}}
+{{--         }--}}
+{{--     </script>--}}
+
  @endsection

@@ -127,6 +127,13 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('edit/{visit}', [VisitController::class, 'edit'])->name('edit');
        Route::post('update/{visit}', [VisitController::class, 'update'])->name('update');
        Route::get('delete/{visit}', [VisitController::class, 'delete'])->name('delete');
+       Route::get('status/{visit}/{status}', [VisitController::class, 'status'])->name('status');
+       Route::get('paid/{visit}', [VisitController::class, 'pay'])->name('paid');
+    });
+
+    Route::prefix('salary')->name('salary.')->group(function(){
+       Route::get('/', [\App\Http\Controllers\SalaryController::class, 'index'])->name('index');
+       Route::get('status/{salary}', [\App\Http\Controllers\SalaryController::class, 'status'])->name('status');
     });
 
 });

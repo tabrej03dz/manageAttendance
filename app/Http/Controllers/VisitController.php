@@ -10,7 +10,7 @@ class VisitController extends Controller
     public function index(){
 
         $visits = Visit::all();
-        return view('dashboard.visit.index');
+        return view('dashboard.visit.index', compact('visits'));
     }
 
     public function create(){
