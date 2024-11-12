@@ -137,4 +137,12 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('pay/{salary}', [\App\Http\Controllers\SalaryController::class, 'paidAmount'])->name('pay');
     });
 
+    Route::get('/foo', function () {
+        $exitCode = Artisan::call('storage:link');
+        if ($exitCode === 0) {
+            return 'Success';
+        } else {
+            return 'Failed'; // You can customize this message as needed
+        }
+    });
 });
