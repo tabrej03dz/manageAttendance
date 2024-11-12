@@ -15,10 +15,10 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Employees</h1>
 
-{{--            <a href="{{route('employee.create')}}"--}}
-{{--                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">--}}
-{{--                Create--}}
-{{--            </a>--}}
+            <a href="{{route('employee.create')}}"
+                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                Create
+            </a>
         </div>
 
         <div class="overflow-x-auto">
