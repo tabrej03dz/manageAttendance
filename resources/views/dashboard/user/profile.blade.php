@@ -332,7 +332,7 @@
 
                             <!-- Update Button -->
                             <button type="submit"
-                                class="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition duration-300">
+                                class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
                                 Update
                             </button>
                         </div>
