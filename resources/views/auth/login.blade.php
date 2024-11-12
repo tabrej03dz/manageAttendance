@@ -13,8 +13,8 @@
                     <!-- Email Address -->
                     <div class="mb-3">
                         <label for="phone" class="form-label">{{ __('Phone') }}</label>
-                        <input id="phone" type="number" class="form-control bg-dark text-white border-0 @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="phone" autofocus>
-                        @error('email')
+                        <input id="phone" type="text" class="form-control bg-dark text-white border-0 @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}"  autocomplete="phone" autofocus>
+                        @error('phone')
                             <div class="invalid-feedback d-block">
                                 <strong>{{ $message }}</strong>
                             </div>
