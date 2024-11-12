@@ -20,7 +20,7 @@ class OffController extends Controller
         if (auth()->user()->hasRole('super_admin')){
             $offices = Office::all();
         }else{
-            $offices = null;
+            $offices = Office::where('id', auth()->user()->office_id)->get();
         }
         return view('dashboard.off.create', compact('offices'));
     }
