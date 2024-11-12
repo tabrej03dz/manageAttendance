@@ -85,6 +85,7 @@
     </div>
 
     @php
+        use Carbon\Carbon;
         $user = auth()->user();
         if ($user->hasRole('super_admin')) {
             $employeeIds = $employees->pluck('id');
@@ -132,8 +133,9 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
-            @role('super_admin|admin')
                 <div class="row">
+                    @role('super_admin|admin')
+
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
                         <div class="small-box bg-info">
@@ -167,6 +169,9 @@
                             </div>
                         </div>
                         <!-- ./col -->
+
+
+
                     @endrole
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
@@ -198,10 +203,9 @@
                             <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
-                </div>
-            @endrole
 
-            <div class="row">
+                @endrole
+
                 <div class="col-lg-3 col-6">
                     <!-- small box -->
                     <div class="small-box bg-info">
@@ -264,6 +268,26 @@
                             <i class="ion ion-pie-graph"></i>
                         </div>
                         <a href="{{route('off.index')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                @php
+                    $lastMonthPayouts = App\Models\Salary::whereMonth('month', Carbon::now()->subMonth()->month)
+                                                         ->whereYear('month', Carbon::now()->subMonth()->year)
+                                                         ->get();
+                @endphp
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $lastMonthPayouts->sum('paid_amount') }}</h3>
+
+                            <p>Last Month Payout</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
             </div>

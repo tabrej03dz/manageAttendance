@@ -65,7 +65,7 @@
                                                 <th>Day wise Salary</th>
                                                 <th>Hour wise Salary</th>
                                                 <th>Status</th>
-                                                <th>Mark as paid</th>
+                                                <th>Paid Amount</th>
                                         </tr>
                                         </thead>
                                         <!-- Table Body -->
@@ -155,12 +155,16 @@
                                                         <td>{{ round($userSalary->hour_wise_salary) }}</td>
                                                         <td>{{ $userSalary->status }}</td>
                                                         <td>
-                                                            @if($userSalary->status == 'paid')
-                                                                <a href="#" class="btn btn-success btn-sm"><i class="fas fa-check"></i></a>
-                                                            @else
-                                                                <a href="{{route('salary.status', ['salary' => $userSalary->id])}}" class="btn btn-primary btn-sm">Mark as Paid</a>
-                                                            @endif
+                                                            <form action="{{ route('salary.pay', ['salary' => $userSalary->id]) }}" method="post" class="form-inline">
+                                                                @csrf
+                                                                <div class="form-group">
+                                                                    <input type="number" name="paid_amount" class="form-control mr-2" placeholder="Paid Amount" value="{{ $userSalary->paid_amount ?? '' }}">
+                                                                </div>
+                                                                <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                                            </form>
+
                                                         </td>
+
                                                     @else
                                                         <td>Salary not generated yet</td>
                                                     @endif

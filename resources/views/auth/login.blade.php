@@ -12,8 +12,8 @@
                     @csrf
                     <!-- Email Address -->
                     <div class="mb-3">
-                        <label for="email" class="form-label">{{ __('Email Address') }}</label>
-                        <input id="email" type="email" class="form-control bg-dark text-white border-0 @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                        <label for="phone" class="form-label">{{ __('Phone') }}</label>
+                        <input id="phone" type="number" class="form-control bg-dark text-white border-0 @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="phone" autofocus>
                         @error('email')
                             <div class="invalid-feedback d-block">
                                 <strong>{{ $message }}</strong>

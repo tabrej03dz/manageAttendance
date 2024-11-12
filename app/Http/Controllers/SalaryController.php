@@ -42,4 +42,10 @@ class SalaryController extends Controller
         return back()->with('success', 'Mark as paid successfully');
     }
 
+    public function paidAmount(Request $request, Salary $salary){
+        $request->validate(['paid_amount' => 'required|numeric']);
+        $salary->update(['paid_amount' => $request->paid_amount, 'status' => 'paid']);
+        return back()->with('success', 'Paid amount saved successfully');
+    }
+
 }

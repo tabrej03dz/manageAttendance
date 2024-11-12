@@ -105,14 +105,14 @@
                     </button>
                 </div>
             @endif
-{{--                @if($user->hasRole('admin') && $payment->amount > $payment->paid_amount)--}}
-{{--                    <div class="overflow-hidden whitespace-nowrap border-3">--}}
-{{--                        <div class="inline-block animate-scroll text-danger">--}}
-{{--                            Payment of {{ $payment->amount - $payment->paid_amount }} rs is due for the month of {{ $payment->date->format('F') }}.--}}
+                @if($user->hasRole('admin') && $payment->amount > $payment->paid_amount)
+                    <div class="overflow-hidden whitespace-nowrap border-3">
+                        <div class="inline-block animate-scroll text-danger">
+                            Payment of {{ $payment->amount - $payment->paid_amount }} rs is due for the month of {{ $payment->date->format('F') }}.
 
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                @endif--}}
+                        </div>
+                    </div>
+                @endif
             @yield('content')
         </div>
 

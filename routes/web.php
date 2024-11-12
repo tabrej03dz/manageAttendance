@@ -134,6 +134,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('salary')->name('salary.')->group(function(){
        Route::get('/', [\App\Http\Controllers\SalaryController::class, 'index'])->name('index');
        Route::get('status/{salary}', [\App\Http\Controllers\SalaryController::class, 'status'])->name('status');
+       Route::post('pay/{salary}', [\App\Http\Controllers\SalaryController::class, 'paidAmount'])->name('pay');
     });
 
 });
