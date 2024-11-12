@@ -247,50 +247,85 @@
             <div class="container mx-auto px-4 py-8">
                 <!-- Full width on web, max width on mobile -->
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
-                    <form action="{{route('profile.update', ['user' => $user->id])}}" method="post" enctype="multipart/form-data">
-                    @csrf
+                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post" enctype="multipart/form-data">
+                        @csrf
                         <div class="p-6">
+                            <!-- Profile Picture -->
                             <div class="flex flex-col items-center">
-                                <img src="{{$user->photo ? asset('storage/'. $user->photo) : 'https://via.placeholder.com/100'}}" alt="Profile Avatar"
+                                <img src="{{ $user->photo ? asset('storage/'. $user->photo) : 'https://via.placeholder.com/100' }}" alt="Profile Avatar"
                                     class="w-24 h-24 rounded-full mb-4">
-                                <input type="file" class="text-gray-600 text-sm mb-4"  name="photo"/>
+                                <input type="file" class="text-gray-600 text-sm mb-4" name="photo" />
                             </div>
-
+        
+                            <!-- Personal Details Section -->
                             <div class="space-y-4">
                                 <div class="flex items-center justify-between border-b py-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="material-icons text-gray-600">person</span>
-                                        <input type="text" class="text-gray-800 font-medium" value="{{$user->name}}" name="name" disabled/>
+                                        <input type="text" class="text-gray-800 font-medium" value="{{ $user->name }}" name="name" disabled />
                                     </div>
                                 </div>
+        
+                                <!-- Designation Field -->
                                 <div class="flex items-center justify-between border-b py-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="material-icons text-gray-600">work</span>
-                                        <input type="text" class="text-gray-800" value="{{$user->designation}}" name="'designation" disabled/>
+                                        <input type="text" class="text-gray-800" value="{{ $user->designation }}" name="designation" disabled />
                                     </div>
                                 </div>
+        
+                                <!-- Email Field -->
                                 <div class="flex items-center justify-between border-b py-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="material-icons text-gray-600">email</span>
-                                        <input type="email" class="text-gray-800" value="{{$user->email}}" name="email" disabled/>
+                                        <input type="email" class="text-gray-800" value="{{ $user->email }}" name="email" disabled />
                                     </div>
                                 </div>
+        
+                                <!-- Phone Number Field -->
                                 <div class="flex items-center justify-between border-b py-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="material-icons text-gray-600">phone</span>
-                                        <input type="text" class="text-gray-800" value="{{$user->phone}}" name="phone" disabled>
+                                        <input type="text" class="text-gray-800" value="{{ $user->phone }}" name="phone" disabled />
                                     </div>
                                 </div>
+        
+                                <!-- Salary Field -->
                                 <div class="flex items-center justify-between border-b py-2">
                                     <div class="flex items-center space-x-2">
                                         <span class="text-xl font-bold text-gray-600">₹</span>
-                                        <input type="text" class="text-gray-800" value="{{$user->salary}}" name="salary" disabled/>
+                                        <input type="text" class="text-gray-800" value="{{ $user->salary }}" name="salary" disabled />
+                                    </div>
+                                </div>
+        
+                                <!-- Pancard Field -->
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">credit_card</span>
+                                        <input type="text" class="text-gray-800" placeholder="Enter Pancard Number" name="pancard" />
+                                    </div>
+                                </div>
+        
+                                <!-- Aadharcard Field -->
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">account_balance</span>
+                                        <input type="text" class="text-gray-800" placeholder="Enter Aadharcard Number" name="aadharcard" />
+                                    </div>
+                                </div>
+        
+                                <!-- Address Field -->
+                                <div class="flex items-center justify-between border-b py-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-gray-600">home</span>
+                                        <input type="text" class="text-gray-800" placeholder="Enter Address" name="address" />
                                     </div>
                                 </div>
                             </div>
-
+        
+                            <!-- Update Button -->
                             <button type="submit"
-                                class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                class="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg shadow hover:bg-blue-700 transition duration-300">
                                 Update
                             </button>
                         </div>
@@ -298,6 +333,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="bg-gray-100 flex items-center justify-center">
             <div class="container mx-auto px-4 py-8">
                 <!-- Full width on web, max width on mobile -->

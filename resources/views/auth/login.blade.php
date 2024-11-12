@@ -13,7 +13,9 @@
                     <!-- Email Address -->
                     <div class="mb-3">
                         <label for="username" class="form-label">{{ __('Enter Email or Phone Number') }}</label>
-                        <input id="username" type="text" class="form-control bg-dark text-white border-0 @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="phone" autofocus>
+                        <input id="username" type="text"
+                            class="form-control bg-dark text-white border-0 @error('username') is-invalid @enderror"
+                            name="username" value="{{ old('username') }}" required autocomplete="phone" autofocus>
                         @error('username')
                             <div class="invalid-feedback d-block">
                                 <strong>{{ $message }}</strong>
@@ -24,8 +26,11 @@
                     <!-- Password -->
                     <div class="mb-3 position-relative">
                         <label for="password" class="form-label">{{ __('Password') }}</label>
-                        <input id="password" type="password" class="form-control bg-dark text-white border-0 @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-                        <span class="position-absolute me-3 translate-middle-y" id="toggle-password" style="cursor: pointer; color: black;">
+                        <input id="password" type="password"
+                            class="form-control bg-dark text-white border-0 @error('password') is-invalid @enderror"
+                            name="password" required autocomplete="current-password">
+                        <span class="position-absolute me-3 translate-middle-y" id="toggle-password"
+                            style="cursor: pointer; color: black;">
                             <i class="bi bi-eye"></i>
                         </span>
                         @error('password')
@@ -37,7 +42,8 @@
 
                     <!-- Remember Me -->
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember"
+                            {{ old('remember') ? 'checked' : '' }}>
                         <label class="form-check-label text-light" for="remember">
                             {{ __('Remember Me') }}
                         </label>
@@ -63,27 +69,25 @@
 
 
                         @if (Route::has('register'))
-
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-
+                            <a class="nav-link text-center" href="{{ route('register') }}">{{ __('Register') }}</a>
                         @endif
                     @else
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            {{ Auth::user()->name }}
+                        </a>
 
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ route('logout') }}"
+                                onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                {{ __('Logout') }}
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </div>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        </div>
 
                     @endguest
                 </form>
@@ -137,17 +141,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const togglePassword = document.querySelector('#toggle-password');
             const passwordInput = document.querySelector('#password');
 
-            togglePassword.addEventListener('click', function () {
+            togglePassword.addEventListener('click', function() {
                 // Toggle the type attribute
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
 
                 // Toggle the eye icon
-                this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+                this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' :
+                    '<i class="bi bi-eye-slash"></i>';
             });
         });
     </script>
