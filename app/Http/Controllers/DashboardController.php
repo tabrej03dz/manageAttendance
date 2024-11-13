@@ -39,6 +39,8 @@ class DashboardController extends Controller
     }
 
     public function dashboard(){
+        Role::create(['name', 'owner']);
+        dd('Role Created successfully');
         $halfDayRecords = AttendanceRecord::where('check_in', null)->orWhere('check_out', null)->get();
         foreach ($halfDayRecords as $record){
             $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);

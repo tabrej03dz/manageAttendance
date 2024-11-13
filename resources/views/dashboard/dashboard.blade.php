@@ -152,7 +152,7 @@
                         </div>
                     </div>
                     <!-- ./col -->
-                    @role('super_admin|admin')
+                    @role('super_admin|owner')
                         <div class="col-lg-3 col-6">
                             <!-- small box -->
                             <div class="small-box bg-success">
