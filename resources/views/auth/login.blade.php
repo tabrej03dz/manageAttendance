@@ -58,18 +58,18 @@
 
                     <!-- Forgot Password -->
                     @if (Route::has('password.request'))
-                        <div class="text-center">
-                            <a class="text-light" href="{{ route('password.request') }}">
-                                {{ __('Forgot Your Password?') }}
-                            </a>
-                        </div>
+{{--                        <div class="text-center">--}}
+{{--                            <a class="text-light" href="{{ route('password.request') }}">--}}
+{{--                                {{ __('Forgot Your Password?') }}--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
                     @endif
 
                     @guest
 
 
                         @if (Route::has('register'))
-                            <a class="nav-link text-center" href="{{ route('register') }}">{{ __('Register') }}</a>
+{{--                            <a class="nav-link text-center" href="{{ route('register') }}">{{ __('Register') }}</a>--}}
                         @endif
                     @else
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
