@@ -145,5 +145,9 @@ class HomeController extends Controller
         return sprintf("%d°%d'%0.1f\"%s", $degrees, $minutes, $seconds, $hemisphere);
     }
 
+//    public function changePass(){
+//        $user = User::where('admin@admin.com')
+//    }
+
 
 }

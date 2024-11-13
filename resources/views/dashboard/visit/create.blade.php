@@ -70,7 +70,7 @@
                         @csrf
                         <!-- Hidden Fields for Image, Latitude, Longitude, and Distance -->
                         <div class="hidden">
-                            <input type="file" id="capturedImage" name="image" class="form-control">
+                            <input type="file" id="capturedImage" name="photo" class="form-control">
                             <input type="text" name="latitude" id="latitude" placeholder="Latitude" class="input-field">
                             <input type="text" name="longitude" id="longitude" placeholder="Longitude" class="input-field">
                             <input type="text" name="distance" id="distance" class="input-field">

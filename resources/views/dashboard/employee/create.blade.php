@@ -24,12 +24,12 @@
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Full Name</label>
+                                <label for="name" class="form-label">Full Name*</label>
                                 <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" >
                             </div>
                         </div>
 
@@ -80,22 +80,22 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="role" class="form-label">Role</label>
-                                <select name="role" id="role" class="form-control" required>
+                                <select name="role" id="role" class="form-control">
                                     <option value="">Select Role</option>
                                     <option value="admin">Admin</option>
                                     <option value="team_leader">Team Leader</option>
-                                    <option value="employee">Employee</option>
+                                    <option value="employee" selected >Employee</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="salary" class="form-label">Salary</label>
-                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{ old('salary') }}" required>
+                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{ old('salary') }}" >
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="check_in_time" class="form-label">Check In Time</label>
+                                <label for="check_in_time" class="form-label">Check In Time*</label>
                                 <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{ old('check_in_time') }}" required>
                             </div>
                             <div class="col-md-6">
@@ -107,7 +107,7 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="office_id" class="form-label">Office</label>
-                                <select name="office_id" class="form-control" id="office_id" required>
+                                <select name="office_id" class="form-control" id="office_id" >
                                     <option value="">Select Office</option>
                                     @foreach($offices as $office)
                                         <option value="{{ $office->id }}">{{ $office->name }}</option>

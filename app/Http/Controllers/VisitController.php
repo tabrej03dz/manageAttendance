@@ -8,8 +8,14 @@ use Illuminate\Http\Request;
 class VisitController extends Controller
 {
     public function index(){
-
-        $visits = Visit::all();
+        if (auth()->user()->hasRole('super_admin')){
+            $visits = Visit::all();
+        }elseif(auth()->user()->hasRole('admin')){
+            $userIds = auth()->user()->office->users()->pluck('id');
+            $visits = Visit::whereIn('user_id', $userIds)->get();
+        }else{
+            $visits = auth()->user()->visits;
+        }
         return view('dashboard.visit.index', compact('visits'));
     }
 
@@ -27,19 +33,47 @@ class VisitController extends Controller
             'latitude' => '',
             'longitude' => '',
         ]);
-        $photo = $request->file('photo')->store('visits', 'public');
-        $expenseAttachment = $request->file('expense_attachment')->store('expenses', 'public');
-        $status = Visit::create([
+//        dd($request->all());
+
+        $visit = Visit::create([
             'address' => $request->address,
             'expense' => $request->expense ?? null,
             'description' => $request->description,
-            'photo' => str_replace('public/', '', $photo),
-            'expense_attachment' => str_replace('public/', '', $expenseAttachment),
+            'user_id' => auth()->user()->id,
             'latitude' => $request->latitude ?? null,
             'longitude' => $request->longitude ?? null,
         ]);
-        if ($status){
-            request()->session()->flash('success', 'Visit created successfully');
+        if ($request->hasFile('photo')){
+            $photo = $request->file('photo')->store('visits', 'public');
+            $visit->photo = str_replace('public/', '', $photo);
         }
+        if ($request->hasFile('expense_attachment')){
+            $expenseAttachment = $request->file('expense_attachment')->store('expenses', 'public');
+            $visit->expense_attachment = str_replace('public/', '', $expenseAttachment);
+
+        }
+        $visit->save();
+        return redirect('visit')->with('success');
+    }
+
+    public function status(Visit $visit){
+        if ($visit->status == 'approved'){
+            $visit->update(['status' => 'rejected']);
+        }
+        else{
+            $visit->update(['status' => 'approved']);
+        }
+        return back()->with('success', 'status changed successfully');
+    }
+
+    public function pay(Visit $visit){
+        $status = $visit->update(['expense_paid' => '1', 'paid_by' => auth()->user()->id]);
+
+        if ($status){
+            request()->session()->flash('success', 'Mark as Paid successfully');
+        }else{
+            request()->session()->flash('error', 'Failed, Try again!');
+        }
+        return back();
     }
 }

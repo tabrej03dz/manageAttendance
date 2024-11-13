@@ -61,4 +61,8 @@ class User extends Authenticatable
     public function visits(){
         return $this->hasMany(Visit::class, 'user_id');
     }
+
+    public function offices(){
+        return $this->hasMany(Office::class, 'owner_id');
+    }
 }

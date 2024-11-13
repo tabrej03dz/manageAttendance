@@ -10,6 +10,7 @@ use App\Http\Controllers\OffController;
 use App\Http\Controllers\PolicyController;
 use \App\Http\Controllers\PaymentController;
 use App\Http\Controllers\VisitController;
+use \App\Http\Controllers\OwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,8 @@ use App\Http\Controllers\VisitController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+//Route::get('change-pass', [HomeController::class, 'changePass'])->name('change-pass');
 
 Auth::routes();
 
@@ -56,6 +59,16 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('profile/{user}', [HomeController::class, 'profile'])->name('profile');
         Route::get('attendance', [EmployeeController::class, 'employeeAttendance'])->name('attendance');
         Route::get('status/{employee}', [EmployeeController::class, 'status'])->name('status');
+    });
+
+    Route::prefix('owner')->name('owner.')->group(function(){
+       Route::get('/', [OwnerController::class, 'index'])->name('index');
+       Route::get('create', [OwnerController::class, 'create'])->name('create');
+        Route::post('store', [OwnerController::class, 'store'])->name('store');
+        Route::get('edit/{owner}', [OwnerController::class, 'edit'])->name('edit');
+        Route::post('update/{owner}', [OwnerController::class, 'update'])->name('update');
+        Route::post('delete/{owner}', [OwnerController::class, 'delete'])->name('delete');
+        Route::post('plan/{owner}', [\App\Http\Controllers\PlanController::class, 'ownerPlan'])->name('plan');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');

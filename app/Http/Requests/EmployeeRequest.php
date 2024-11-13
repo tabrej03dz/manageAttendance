@@ -23,9 +23,9 @@ class EmployeeRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email' => 'required|unique:users',
+            'email' => 'email',
             'phone' => 'required|min:10',
-            'address' => 'required',
+            'address' => '',
             'photo' => '',
             'joining_date' => '',
             'designation' => '',

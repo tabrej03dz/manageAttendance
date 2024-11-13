@@ -10,7 +10,12 @@ use App\Models\Payment;
 class PaymentController extends Controller
 {
     public function index(){
-        $payments = Payment::whereColumn('amount', '>', 'paid_amount')->get();
+        if (auth()->user()->hasRole('super_admin')){
+            $payments = Payment::whereColumn('amount', '>', 'paid_amount')->get();
+        }else{
+            $officeId = auth()->user()->office_id;
+            $payments = Payment::whereColumn('amount', '>', 'paid_amount')->where('office_id', $officeId)->get();
+        }
 
         return view('dashboard.payment.index', compact('payments'));
     }

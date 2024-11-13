@@ -15,7 +15,9 @@
                     <th class="py-3 px-6 text-left">Paid Amount</th>
                     <th class="py-3 px-6 text-left">Due</th>
                     <th class="py-3 px-6 text-left">Office</th>
+                    @role('super_admin')
                     <th class="py-3 px-6 text-left">Action</th>
+                    @endrole
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -26,9 +28,8 @@
                         <td class="py-3 px-6 text-left">{{$payment->paid_amount}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->date->format('F-Y')}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->office->name}}</td>
-
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
+                            @role('super_admin')
                             <a title="Add Payment" href="{{route('payment.paymentForm', ['payment' => $payment->id])}}"
                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">add</span>

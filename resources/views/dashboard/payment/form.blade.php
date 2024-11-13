@@ -14,8 +14,8 @@
                         <div class="card-body">
 
                             <div class="form-group mb-3">
-                                <label for="amount" class="form-label">Price Per Employee</label>
-                                <input type="number" value="{{old('amount')}}" class="form-control" id="amount" name="amount">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="number" value="{{old('amount')}}" class="form-control" placeholder="Amount" id="amount" name="amount">
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Submit</button>

@@ -23,6 +23,16 @@
                         <p>Records</p>
                     </a>
                 </li>
+
+                @role('super_admin')
+                <li class="nav-item">
+                    <a href="{{ route('owner.index') }}" class="nav-link {{ request()->routeIs('owner.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-clipboard"></i>
+                        <p>Owners</p>
+                    </a>
+                </li>
+                @endrole
+
                 @role('admin|super_admin')
                 <li class="nav-item">
                     <a href="{{ route('attendance.day-wise') }}" class="nav-link {{ request()->routeIs('attendance.day-wise') ? 'active' : '' }}">

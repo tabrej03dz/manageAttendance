@@ -22,4 +22,8 @@ class Office extends Model
     public function payments(){
         return $this->hasMany(Payment::class, 'office_id');
     }
+
+    public function owner(){
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 }
