@@ -65,4 +65,8 @@ class User extends Authenticatable
     public function offices(){
         return $this->hasMany(Office::class, 'owner_id');
     }
+
+    public function plans(){
+        return $this->hasMany(Plan::class, 'user_id');
+    }
 }

@@ -44,7 +44,11 @@ class DashboardController extends Controller
             $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);
         }
         $employees = User::all();
-        $offices = Office::all();
+        if (auth()->user()->hasRole('owner')){
+            $offices = auth()->user()->offices;
+        }else{
+            $offices = Office::all();
+        }
 
         $data = $this->currentMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
 

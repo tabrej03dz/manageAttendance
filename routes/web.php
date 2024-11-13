@@ -64,11 +64,18 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('owner')->name('owner.')->group(function(){
        Route::get('/', [OwnerController::class, 'index'])->name('index');
        Route::get('create', [OwnerController::class, 'create'])->name('create');
-        Route::post('store', [OwnerController::class, 'store'])->name('store');
-        Route::get('edit/{owner}', [OwnerController::class, 'edit'])->name('edit');
-        Route::post('update/{owner}', [OwnerController::class, 'update'])->name('update');
-        Route::post('delete/{owner}', [OwnerController::class, 'delete'])->name('delete');
-        Route::post('plan/{owner}', [\App\Http\Controllers\PlanController::class, 'ownerPlan'])->name('plan');
+       Route::post('store', [OwnerController::class, 'store'])->name('store');
+       Route::get('edit/{owner}', [OwnerController::class, 'edit'])->name('edit');
+       Route::post('update/{owner}', [OwnerController::class, 'update'])->name('update');
+       Route::post('delete/{owner}', [OwnerController::class, 'delete'])->name('delete');
+       Route::get('status/{owner}', [OwnerController::class, 'status'])->name('status');
+       Route::get('plan/{owner}', [\App\Http\Controllers\PlanController::class, 'ownerPlan'])->name('plan');
+    });
+
+    Route::prefix('plan')->name('plan.')->group(function (){
+        Route::get('edit/{plan}', [\App\Http\Controllers\PlanController::class, 'edit'])->name('edit');
+        Route::post('update/{plan}', [\App\Http\Controllers\PlanController::class, 'update'])->name('update');
+        Route::get('status/{plan}', [\App\Http\Controllers\PlanController::class, 'status'])->name('status');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');

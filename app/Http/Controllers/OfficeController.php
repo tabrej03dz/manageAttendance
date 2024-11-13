@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Office;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OfficeController extends Controller
 {
     public function index(){
-        if (auth()->user()->hasRole('admin')){
-            $offices = Office::where('id', auth()->user()->office_id)->get();
+        if (auth()->user()->hasRole('owner')){
+            $offices = auth()->user()->offices;
         }else{
             $offices = Office::all();
         }
@@ -17,7 +18,12 @@ class OfficeController extends Controller
     }
 
     public function create(){
-        return view('dashboard.office.create');
+        if (auth()->user()->hasRole('super_admin')){
+            $owners = User::role('owner')->get();
+        }else{
+            $owners = null;
+        }
+        return view('dashboard.office.create', compact('owners'));
     }
 
     public function store(Request $request){
@@ -29,7 +35,6 @@ class OfficeController extends Controller
             'number_of_employees' => 'required',
             'price_per_employee' => 'required',
         ]);
-
         Office::create($request->all());
         return redirect('office')->with('success', 'Office Created successfully');
     }

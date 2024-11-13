@@ -36,6 +36,20 @@
                                 <label for="price_per_employee" class="form-label">Price Per Employee</label>
                                 <input type="number" value="59" class="form-control" id="price_per_employee" name="price_per_employee">
                             </div>
+
+                            @if($owners)
+                            <div class="form-group mb-3">
+                                <label for="price_per_employee" class="form-label">Owner</label>
+                                <select name="owner_id" id="" class="form-control">
+                                    <option value="">--Select Owner--</option>
+                                    @foreach($owners as $owner)
+                                        <option value="{{$owner->id}}" class="">{{$owner->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @else
+                                <input type="number" value="{{auth()->user()->id}}" class="form-control" id="owner_id" name="owner_id" hidden>
+                            @endif
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Submit</button>
                             </div>

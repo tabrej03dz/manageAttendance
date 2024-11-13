@@ -43,12 +43,16 @@
                 @foreach($plans as $plan)
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
-                        <td class="py-3 px-6 text-left">{{$plan->name}}</td>
-                        <td class="py-3 px-6 text-left">{{$plan->email}}</td>
-                        <td class="py-3 px-6 text-left">{{$lan->phone}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->user?->name}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->number_of_offices}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->number_of_employees}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->price}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->duration}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->start_date}}</td>
+                        <td class="py-3 px-6 text-left">{{$plan->expiry_date}}</td>
 
                         <td class="py-3 px-6 text-left">
-                            <a href="#" class="px-2 py-1 rounded-full text-xs font-semibold
+                            <a href="{{route('plan.status', ['plan' => $plan->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($plan->status == '1')
                                     bg-green-100 text-green-800">Active
                                 @else
@@ -59,21 +63,21 @@
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')
-                            <a title="Edit" href="{{ route('plan.edit', ['plan' => $plan->id]) }}"
-                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
-                                <span class="material-icons">edit</span>
-                            </a>
-                            <form action="{{ route('plan.delete', ['plan' => $plan->id]) }}" method="post">
-                                @csrf
-                                <button title="Delete" type="submit"
-                                        class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                                    <span class="material-icons">delete</span>
-                                </button>
-                            </form>
-                            <a title="Plans" href="{{ route('plan.plan', ['plan' => $plan->id]) }}"
-                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">details</span>
-                            </a>
+{{--                            <a title="Edit" href="{{ route('plan.edit', ['plan' => $plan->id]) }}"--}}
+{{--                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">--}}
+{{--                                <span class="material-icons">edit</span>--}}
+{{--                            </a>--}}
+{{--                            <form action="{{ route('plan.delete', ['plan' => $plan->id]) }}" method="post">--}}
+{{--                                @csrf--}}
+{{--                                <button title="Delete" type="submit"--}}
+{{--                                        class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">--}}
+{{--                                    <span class="material-icons">delete</span>--}}
+{{--                                </button>--}}
+{{--                            </form>--}}
+{{--                            <a title="Plans" href="{{ route('plan.plan', ['plan' => $plan->id]) }}"--}}
+{{--                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">--}}
+{{--                                <span class="material-icons">details</span>--}}
+{{--                            </a>--}}
 
                             @endrole
                         </td>
