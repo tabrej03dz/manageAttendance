@@ -24,90 +24,129 @@
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Full Name*</label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+                                <label for="name" class="form-label" data-bs-toggle="tooltip" title="Please enter your full name.">
+                                    Full Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Enter your full name" required>
                             </div>
+
                             <div class="col-md-6">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" >
+                                <label for="email" class="form-label" data-bs-toggle="tooltip" title="Please enter your email address.">
+                                    Email
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address">
                             </div>
+
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="phone" class="form-label">Phone</label>
-                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required>
+                                <label for="phone" class="form-label" data-bs-toggle="tooltip" title="Please enter your phone number.">
+                                    Phone <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required placeholder="Please enter your phone number">
                             </div>
+
                             <div class="col-md-6">
-                                <label for="address" class="form-label">Full Address</label>
-                                <textarea name="address" class="form-control" id="address" rows="2">{{ old('address') }}</textarea>
+                                <label for="address" class="form-label" data-bs-toggle="tooltip" title="Please enter your full address.">
+                                    Full Address
+                                </label>
+                                <textarea name="address" class="form-control" id="address" rows="2" placeholder="Enter your full address">{{ old('address') }}</textarea>
                             </div>
+
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="photo" class="form-label">Employee's Photo</label>
+                                <label for="photo" class="form-label" data-bs-toggle="tooltip" title="Upload employee's photo.">
+                                    Employee's Photo
+                                </label>
                                 <input type="file" class="form-control" id="photo" name="photo">
                             </div>
                             <div class="col-md-6">
-                                <label for="aadhar_attachment" class="form-label">Aadhar Attachment</label>
-                                <input type="file" class="form-control" id="aadhar_attachment" name="aadhar_attachment" value="{{ old('aadhar_attachment') }}">
+                                <label for="aadhar_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach Aadhar document.">
+                                    Aadhar Attachment
+                                </label>
+                                <input type="file" class="form-control" id="aadhar_attachment" name="aadhar_attachment">
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="pan_attachment" class="form-label">Pan Attachment</label>
+                                <label for="pan_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach Pan document.">
+                                    Pan Attachment
+                                </label>
                                 <input type="file" class="form-control" id="pan_attachment" name="pan_attachment">
                             </div>
                             <div class="col-md-6">
-                                <label for="other_attachment" class="form-label">Other Attachment</label>
-                                <input type="file" class="form-control" id="other_attachment" name="other_attachment" value="{{ old('other_attachment') }}">
+                                <label for="other_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach any other relevant document.">
+                                    Other Attachment
+                                </label>
+                                <input type="file" class="form-control" id="other_attachment" name="other_attachment">
                             </div>
+                        </div>
+
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="designation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's designation.">
+                                    Designation
+                                </label>
+                                <input type="text" class="form-control" id="designation" name="designation" value="{{ old('designation') }}" placeholder="Enter designation">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="responsibility" class="form-label" data-bs-toggle="tooltip" title="Describe the employee's responsibilities.">
+                                    Responsibility
+                                </label>
+                                <textarea name="responsibility" class="form-control" id="responsibility" rows="2" placeholder="Enter responsibilities">{{ old('responsibility') }}</textarea>
+                            </div>
+
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="designation" class="form-label">Designation</label>
-                                <input type="text" class="form-control" id="designation" name="designation" value="{{ old('designation') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="responsibility" class="form-label">Responsibility</label>
-                                <textarea name="responsibility" class="form-control" id="responsibility" rows="2">{{ old('responsibility') }}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="role" class="form-label">Role</label>
+                                <label for="role" class="form-label" data-bs-toggle="tooltip" title="Select the employee's role in the organization.">
+                                    Role
+                                </label>
                                 <select name="role" id="role" class="form-control">
-                                    <option value="">Select Role</option>
+                                    <option value="" disabled selected>Select Role</option>
                                     <option value="admin">Admin</option>
                                     <option value="team_leader">Team Leader</option>
                                     <option value="employee" selected >Employee</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="salary" class="form-label">Salary</label>
-                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{ old('salary') }}" >
+                                <label for="salary" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's monthly salary.">
+                                    Salary
+                                </label>
+                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{ old('salary') }}" placeholder="Enter salary">
                             </div>
                         </div>
 
+
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="check_in_time" class="form-label">Check In Time*</label>
+                                <label for="check_in_time" class="form-label" data-bs-toggle="tooltip" title="Select the employee's check-in time.">
+                                    Check In Time <span class="text-danger">*</span>
+                                </label>
                                 <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{ old('check_in_time') }}" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="check_out_time" class="form-label">Check Out Time</label>
+                                <label for="check_out_time" class="form-label" data-bs-toggle="tooltip" title="Select the employee's check-out time.">
+                                    Check Out Time <span class="text-danger">*</span>
+                                </label>
                                 <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{ old('check_out_time') }}" required>
                             </div>
                         </div>
 
+
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="office_id" class="form-label">Office</label>
-                                <select name="office_id" class="form-control" id="office_id" >
+                                <label for="office_id" class="form-label" data-bs-toggle="tooltip" title="Select the office where the employee works.">
+                                    Office <span class="text-danger">*</span>
+                                </label>
+                                <select name="office_id" class="form-control" id="office_id" required>
                                     <option value="">Select Office</option>
                                     @foreach($offices as $office)
                                         <option value="{{ $office->id }}">{{ $office->name }}</option>
@@ -115,8 +154,10 @@
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="team_leader_id" class="form-label">Team Leader</label>
-                                <select name="team_leader_id" class="form-control" id="team_leader_id">
+                                <label for="team_leader_id" class="form-label" data-bs-toggle="tooltip" title="Select the team leader for this employee.">
+                                    Team Leader
+                                </label>
+                                <select name="team_leader_id" class="form-control" id="team_leader_id" >
                                     <option value="">Select Team Leader</option>
                                     @foreach($teamLeaders as $leader)
                                         <option value="{{ $leader->id }}">{{ $leader->name }}</option>
@@ -125,8 +166,9 @@
                             </div>
                         </div>
 
+
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-danger btn-lg">Register</button>
+                            <button type="submit" class="btn btn-danger btn-lg w-100">Register</button>
                         </div>
                     </form>
                 </div>
