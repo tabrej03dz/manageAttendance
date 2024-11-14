@@ -45,7 +45,7 @@
                         <td class="py-3 px-6 text-left">
                             <img src="{{$employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/50'}}" alt="{{$employee->name}}" class="rounded-full w-12 h-12">
                         </td>
-                        <td class="py-3 px-6 text-left">{{$employee->office->name}}</td>
+                        <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
                         <td class="py-3 px-6 text-left">
                             <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($employee->status == '1')
