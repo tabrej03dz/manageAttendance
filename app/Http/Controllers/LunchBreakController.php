@@ -25,4 +25,18 @@ class LunchBreakController extends Controller
         }
         return back()->with('success', 'Break start successfully');
     }
+
+    public function stop(Request $request, LunchBreak $break){
+        $status = $break->update([
+            'end_time' => Carbon::now()->format('h:i'),
+            'end_latitude' => $request->latitude,
+            'end;_longitude' => $request->longitude,
+        ]);
+        if ($status){
+            request()->session()->flash('success', 'Break end successfully');
+        }else{
+            request()->session()->flash('error', 'Failed, Try again!');
+        }
+        return back();
+    }
 }

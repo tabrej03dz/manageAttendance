@@ -127,7 +127,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    @if($todayAttendanceRecord)
+                    @if($todayAttendanceRecord && $break?->start_time == null)
                     <form action="{{route('break.start')}}" method="POST">
                         @csrf
                         <input type="text" name="latitude" id="break_latitude" hidden>
@@ -135,11 +135,11 @@
                         <input type="submit" value="Take Break" class="btn btn-primary">
                     </form>
                     @elseif($todayAttendanceRecord && $break)
-                        <form action="{{route('break.start')}}" method="POST">
+                        <form action="{{route('break.stop', ['break' => $break->id])}}" method="POST">
                             @csrf
                             <input type="text" name="latitude" id="break_latitude" hidden>
                             <input type="text" name="longitude" id="break_longitude" hidden>
-                            <input type="submit" value="Take Break" class="btn btn-primary">
+                            <input type="submit" value="Stop Break" class="btn btn-primary">
                         </form>
                     @endif
                     <script>

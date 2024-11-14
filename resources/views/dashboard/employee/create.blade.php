@@ -2,7 +2,7 @@
 
 @section('content')
     @if($errors->any())
-        <div class="alert alert-danger mb-4">
+        <div class="text-danger mb-4">
             <ul class="mb-0">
                 @foreach($errors->all() as $e)
                     <li>{{ $e }}</li>
@@ -35,6 +35,9 @@
                                     Email
                                 </label>
                                 <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="Enter your email address">
+                                @if ($errors->has('email'))
+                                    <p class="text-danger">{{ $errors->first('email')}}</p>
+                                @endif
                             </div>
 
                         </div>

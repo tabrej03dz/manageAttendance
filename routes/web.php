@@ -81,7 +81,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('break')->name('break.')->group(function(){
         Route::post('start', [LunchBreakController::class, 'start'])->name('start');
-        Route::post('stop', [LunchBreakController::class, 'stop'])->name('stop');
+        Route::post('stop/{break}', [LunchBreakController::class, 'stop'])->name('stop');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');

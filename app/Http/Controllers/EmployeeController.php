@@ -32,24 +32,43 @@ class EmployeeController extends Controller
         return view('dashboard.employee.create', compact('offices', 'teamLeaders'));
     }
 
-    public function store(EmployeeRequest $request){
+    public function store(EmployeeRequest $request)
+    {
+        // Check if the email already exists
+        $existingEmployee = User::where('email', $request->email)->first();
+        if ($existingEmployee) {
+            return back()->withErrors(['email' => 'Email already exists.'])->withInput();
+        }
 
+        // Parse check-in and check-out times
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
-        $employee = User::create($request->except('joining_date') + ['office_id' => $request->office_id, 'password' => Hash::make('password'), ]);
-        if ($request->file('photo')){
+
+        // Create the employee record
+        $employee = User::create($request->except('joining_date') + [
+                'office_id' => $request->office_id,
+                'password' => Hash::make('password'),
+            ]);
+
+        // Handle photo upload
+        if ($request->file('photo')) {
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
+
+        // Calculate office time and save the joining date
         $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
-        //$employee->joining_date = Carbon::createFromFormat('d-M-Y', $request->joining_date)->format('Y-m-d');
         $employee->joining_date = $request->joining_date;
         $employee->save();
-        if ($request->role){
+
+        // Assign role to employee
+        if ($request->role) {
             $employee->assignRole($request->role);
-        }else{
+        } else {
             $employee->assignRole('employee');
         }
+
+        // Redirect with success message
         return redirect('employee')->with('success', 'Employee Registered successfully');
     }
 
