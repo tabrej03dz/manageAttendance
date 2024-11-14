@@ -40,4 +40,8 @@ class AttendanceRecord extends Model
         return $this->belongsTo(User::class, 'check_out_by');
     }
 
+    public function breaks(){
+        return $this->hasMany(LunchBreak::class, 'attendance_record_id');
+    }
+
 }

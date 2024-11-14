@@ -163,6 +163,11 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('pay/{salary}', [\App\Http\Controllers\SalaryController::class, 'paidAmount'])->name('pay');
     });
 
+    Route::prefix('recycle')->name('recycle.')->group(function(){
+        Route::get('/', [\App\Http\Controllers\RecycleController::class, 'index'])->name('index');
+        Route::get('user/delete/{user}', [\App\Http\Controllers\RecycleController::class, 'userDelete'])->name('user.delete');
+    });
+
     Route::get('/foo', function () {
         $exitCode = Artisan::call('storage:link');
         if ($exitCode === 0) {

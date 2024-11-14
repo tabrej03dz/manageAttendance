@@ -30,7 +30,7 @@ class LunchBreakController extends Controller
         $status = $break->update([
             'end_time' => Carbon::now()->format('h:i'),
             'end_latitude' => $request->latitude,
-            'end;_longitude' => $request->longitude,
+            'end_longitude' => $request->longitude,
         ]);
         if ($status){
             request()->session()->flash('success', 'Break end successfully');

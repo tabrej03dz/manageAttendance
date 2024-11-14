@@ -127,20 +127,25 @@
                     </div>
                 </div>
                 <div class="row">
-                    @if($todayAttendanceRecord && $break?->start_time == null)
-                    <form action="{{route('break.start')}}" method="POST">
-                        @csrf
-                        <input type="text" name="latitude" id="break_latitude" hidden>
-                        <input type="text" name="longitude" id="break_longitude" hidden>
-                        <input type="submit" value="Take Break" class="btn btn-primary">
-                    </form>
-                    @elseif($todayAttendanceRecord && $break)
-                        <form action="{{route('break.stop', ['break' => $break->id])}}" method="POST">
-                            @csrf
-                            <input type="text" name="latitude" id="break_latitude" hidden>
-                            <input type="text" name="longitude" id="break_longitude" hidden>
-                            <input type="submit" value="Stop Break" class="btn btn-primary">
-                        </form>
+                    @if($todayAttendanceRecord)
+                        @if($break && $break->end_time == null)
+                            <!-- Show Stop Break Form if a break is in progress -->
+                        <p>You are on break</p>
+                            <form action="{{ route('break.stop', ['break' => $break->id]) }}" method="POST">
+                                @csrf
+                                <input type="text" name="latitude" id="break_latitude" hidden>
+                                <input type="text" name="longitude" id="break_longitude" hidden>
+                                <input type="submit" value="Stop Break" class="btn btn-primary">
+                            </form>
+                        @else
+                            <!-- Show Take Break Form if no break is currently in progress -->
+                            <form action="{{ route('break.start') }}" method="POST">
+                                @csrf
+                                <input type="text" name="latitude" id="break_latitude" hidden>
+                                <input type="text" name="longitude" id="break_longitude" hidden>
+                                <input type="submit" value="Take Break" class="btn btn-primary">
+                            </form>
+                        @endif
                     @endif
                     <script>
                         window.onload = function() {
