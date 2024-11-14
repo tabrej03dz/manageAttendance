@@ -130,12 +130,14 @@
                     </a>
                 </li>
 
+                @role('super_admin')
                 <li class="nav-item">
                     <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-signal"></i>
                         <p>Recycle</p>
                     </a>
                 </li>
+                @endrole
 
 
 

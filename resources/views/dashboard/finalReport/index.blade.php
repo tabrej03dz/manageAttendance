@@ -235,12 +235,19 @@
                                                                                  </tr>
                                                                              </thead>
                                                                              <tbody>
+                                                                             @foreach($breaks as $break)
+
                                                                                  <tr>
-                                                                                     <td>-</td>
-                                                                                     <td>-</td>
-                                                                                     <td>-</td>
+                                                                                     <td>{{$break->start_time}}</td>
+                                                                                     <td>{{$break->start_time}}</td>
+                                                                                     @php
+                                                                                         $start_time = \Carbon\Carbon::parse($break->start_time);
+                                                                                         $end_time = \Carbon\Carbon::parse($break->end_time);
+                                                                                     @endphp
+                                                                                     <td>{{$start_time->diffInMinutes($end_time)}}</td>
                                                                                  </tr>
-                                                                                 <!-- Add more rows as needed -->
+                                                                             @endforeach
+                                                                             <!-- Add more rows as needed -->
                                                                              </tbody>
                                                                          </table>
                                                                      </div>
