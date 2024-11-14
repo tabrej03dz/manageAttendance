@@ -76,6 +76,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('edit/{plan}', [\App\Http\Controllers\PlanController::class, 'edit'])->name('edit');
         Route::post('update/{plan}', [\App\Http\Controllers\PlanController::class, 'update'])->name('update');
         Route::get('status/{plan}', [\App\Http\Controllers\PlanController::class, 'status'])->name('status');
+        Route::post('delete/{plan}', [\App\Http\Controllers\PlanController::class, 'delete'])->name('delete');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');

@@ -136,8 +136,9 @@ class AttendanceRecordController extends Controller
             $duration = Carbon::now()->diffInMinutes($record->check_in);
             $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
         }else{
-            $duration = $user->office_time / 2;
-            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+//            $duration = $user->office_time / 2;
+//            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+            return back()->with('error', 'Error, You can\'t check-out without check-in');
         }
         if ($request->file('image')){
             $file = $request->file('image')->store('public/images');

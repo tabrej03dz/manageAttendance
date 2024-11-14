@@ -63,17 +63,17 @@
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')
-{{--                            <a title="Edit" href="{{ route('plan.edit', ['plan' => $plan->id]) }}"--}}
-{{--                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">--}}
-{{--                                <span class="material-icons">edit</span>--}}
-{{--                            </a>--}}
-{{--                            <form action="{{ route('plan.delete', ['plan' => $plan->id]) }}" method="post">--}}
-{{--                                @csrf--}}
-{{--                                <button title="Delete" type="submit"--}}
-{{--                                        class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">--}}
-{{--                                    <span class="material-icons">delete</span>--}}
-{{--                                </button>--}}
-{{--                            </form>--}}
+                            <a title="Edit" href="{{ route('plan.edit', ['plan' => $plan->id]) }}"
+                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                                <span class="material-icons">edit</span>
+                            </a>
+                            <form action="{{ route('plan.delete', ['plan' => $plan->id]) }}" method="post">
+                                @csrf
+                                <button title="Delete" type="submit"
+                                        class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </form>
 {{--                            <a title="Plans" href="{{ route('plan.plan', ['plan' => $plan->id]) }}"--}}
 {{--                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">--}}
 {{--                                <span class="material-icons">details</span>--}}
