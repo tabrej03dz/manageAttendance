@@ -406,10 +406,12 @@
                             </div>
 
                             <!-- Update Button -->
-                            <button type="submit"
-                                class="mt-6 w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                                Update
-                            </button>
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    Update
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -454,16 +456,14 @@
                                     class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
                             </div>
 
+                            <!-- Submit Button -->
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    Update
+                                </button>
+                            </div>
                         </div>
-
-                        <!-- Submit Button -->
-                        <div class="mt-8">
-                            <button type="submit"
-                                class="w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                                Update
-                            </button>
-                        </div>
-
                     </form>
                 </div>
 
@@ -495,16 +495,14 @@
                                     class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
                             </div>
 
+                            <!-- Submit Button -->
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    Update
+                                </button>
+                            </div>
                         </div>
-
-                        <!-- Submit Button -->
-                        <div class="mt-8">
-                            <button type="submit"
-                                class="w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                                Update
-                            </button>
-                        </div>
-
                     </form>
                 </div>
             </div>
@@ -555,16 +553,15 @@
                             <!-- Divider -->
                             <div class="flex items-center justify-between border-b py-2"></div>
 
-                        </div>
+                            <!-- Update Password Button -->
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    Update Password
+                                </button>
+                            </div>
 
-                        <!-- Update Password Button -->
-                        <div class="mt-6">
-                            <button type="submit"
-                                class="w-full bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                                Update Password
-                            </button>
                         </div>
-
                     </div>
                 </form>
             </div>
