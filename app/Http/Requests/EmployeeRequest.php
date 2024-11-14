@@ -23,7 +23,7 @@ class EmployeeRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email' => 'email',
+            'email' => '',
             'phone' => 'required|min:10',
             'address' => '',
             'photo' => '',
