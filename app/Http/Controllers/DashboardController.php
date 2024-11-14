@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
+use App\Models\LunchBreak;
 use App\Models\Off;
 use App\Models\Office;
 use App\Models\User;
@@ -41,20 +42,30 @@ class DashboardController extends Controller
     public function dashboard(){
 //        Role::create(['name' => 'owner']);
 //        dd('Role Created successfully');
+        $user = auth()->user();
         $halfDayRecords = AttendanceRecord::where('check_in', null)->orWhere('check_out', null)->get();
         foreach ($halfDayRecords as $record){
             $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);
         }
         $employees = User::all();
         if (auth()->user()->hasRole('owner')){
-            $offices = auth()->user()->offices;
+            $offices = $user->offices;
         }else{
             $offices = Office::all();
         }
 
+        $todayAttendanceRecord = AttendanceRecord::where('user_id', $user->id)->whereDate('created_at', Carbon::today())->first();
+        if ($todayAttendanceRecord){
+            $break = LunchBreak::where('attendance_record_id', $todayAttendanceRecord->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+        }else{
+            $break = null;
+        }
+
         $data = $this->currentMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
 
-        return view('dashboard.dashboard', compact('offices', 'data'))->with('employees', $employees);
+        return view('dashboard.dashboard', compact('offices', 'data', 'todayAttendanceRecord', 'break'))->with('employees', $employees);
     }
 
 
