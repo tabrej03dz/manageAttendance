@@ -133,7 +133,7 @@
                 <li class="nav-item">
                     <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-signal"></i>
-                        <p>Visits</p>
+                        <p>Recycle</p>
                     </a>
                 </li>
 

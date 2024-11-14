@@ -261,6 +261,7 @@
                                                     $end_time = \Carbon\Carbon::parse($break->end_time);
                                                 @endphp
                                                 <li>{{ $start_time->diffInMinutes($end_time) }}</li>
+                                                <hr>
                                             @endforeach
                                             </ul>
                                             </td>
