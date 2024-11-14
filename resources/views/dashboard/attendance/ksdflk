@@ -1,0 +1,11 @@
+<!-- Wrapper div to control hover effect on inner content -->
+   <div class="group relative inline-block">
+    <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+        Show
+
+    <!-- Employee Break Details div, shown only on hover -->
+    <div class="bg-white p-6 rounded-lg shadow-lg w-80 absolute top-full mt-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block">
+        
+    </div>
+</div>
+
