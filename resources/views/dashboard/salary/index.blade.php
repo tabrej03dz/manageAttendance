@@ -132,44 +132,46 @@
                                                 @endforeach
 
 
-                                                @if(($d < \Carbon\Carbon::today()) && auth()->user()->hasRole('admin|super_admin'))
-                                                    @php
-
+                                                @if(($d < \Carbon\Carbon::today()) && auth()->user()->hasRole('admin|super_admin') && $user->salary > 0)
+                                                @php
                                                     $userSalary = App\Models\Salary::where('user_id', $user->id)->where('month', $d)->first();
-                                                    if (!$userSalary){
+                                                    if (!$userSalary) {
                                                         $oneDaySalary = $user->salary / 30;
-                                                        $oneHourSalary = $oneDaySalary/ ($user->office_time/60);
-                                                        //$salary = $user->salary - (($leaveDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2) + ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary))
-                                                       //$salary = (($workingDays * $oneDaySalry) + (($halfDayCount * $oneDaySalary)/2)) - ((($lateTime + $goneBeforeTime)/$user->office_time) * $oneDaySalary);
-                                                       $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) +  ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary)/2));
-                                                        $durationSalary = (($workingDuration/60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
-                                                    $userSalary = App\Models\Salary::create(['user_id' => $user->id, 'month' => $d, 'day_wise_salary' => $salary, 'hour_wise_salary' => $durationSalary, 'status' => 'unpaid']);
+                                                        $oneHourSalary = $oneDaySalary / ($user->office_time / 60);
 
+                                                        // Calculate salaries
+                                                        $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2));
+                                                        $durationSalary = (($workingDuration / 60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
+
+                                                        // Create the salary record
+                                                        $userSalary = App\Models\Salary::create([
+                                                            'user_id' => $user->id,
+                                                            'month' => $d,
+                                                            'day_wise_salary' => $salary,
+                                                            'hour_wise_salary' => $durationSalary,
+                                                            'status' => 'unpaid'
+                                                        ]);
                                                     }
+                                                @endphp
 
-                                                    @endphp
-
-
-                                                    @if($userSalary)
-                                                        <td>{{ round($userSalary->day_wise_salary) }}</td>
-                                                        <td>{{ round($userSalary->hour_wise_salary) }}</td>
-                                                        <td>{{ $userSalary->status }}</td>
-                                                        <td>
-                                                            <form action="{{ route('salary.pay', ['salary' => $userSalary->id]) }}" method="post" class="form-inline">
-                                                                @csrf
-                                                                <div class="form-group">
-                                                                    <input type="number" name="paid_amount" class="form-control mr-2" placeholder="Paid Amount" value="{{ $userSalary->paid_amount ?? '' }}">
-                                                                </div>
-                                                                <button type="submit" class="btn btn-success btn-sm">Save</button>
-                                                            </form>
-
-                                                        </td>
-
-                                                    @else
-                                                        <td>Salary not generated yet</td>
-                                                    @endif
-
+                                                @if($userSalary)
+                                                    <td>{{ round($userSalary->day_wise_salary) }}</td>
+                                                    <td>{{ round($userSalary->hour_wise_salary) }}</td>
+                                                    <td>{{ $userSalary->status }}</td>
+                                                    <td>
+                                                        <form action="{{ route('salary.pay', ['salary' => $userSalary->id]) }}" method="post" class="form-inline">
+                                                            @csrf
+                                                            <div class="form-group">
+                                                                <input type="number" name="paid_amount" class="form-control mr-2" placeholder="Paid Amount" value="{{ $userSalary->paid_amount ?? '' }}">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                                        </form>
+                                                    </td>
+                                                @else
+                                                    <td>Salary not generated yet</td>
                                                 @endif
+                                            @endif
+
 
 
                                             </tr>
