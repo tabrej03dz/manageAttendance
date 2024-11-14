@@ -45,8 +45,22 @@
                         <td class="py-3 px-6 text-left">
                             <img src="{{$visit->photo ? asset('storage/'. $visit->photo) : 'https://via.placeholder.com/50'}}" alt="{{$visit->user->name}}" class="rounded-full w-12 h-12">
                         </td>
-                        <td class="py-3 px-6 text-left">{{$visit->address}}</td>
+                        @php
+                            if ($visit->latitude && $visit->longitude){
+                                $visit_latitude = App\Http\Controllers\HomeController::latitudeInDMS($visit->latitude);
+                                $visit_longitude = App\Http\Controllers\HomeController::longitudeInDMS($visit->longitude);
+                            }
 
+                        @endphp
+                        <td class="py-3 px-6 text-left">
+                            @if($visit->latitude && $visit->longitude)
+                            <a target="_blank" href="{{'https://www.google.com/maps/place/'.$visit_latitude.'+'.$visit_longitude.'/@'.$visit->latitude.','.$visit->longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}">
+                            {{$visit->address}}
+                            </a>
+                            @else
+                                {{$visit->address}}
+                            @endif
+                        </td>
                         <td class="py-3 px-6 text-left">{{$visit->expense}}</td>
                         <td class="py-3 px-6 text-left">
                             <img src="{{asset('storage/'. $visit->expense_attachment)}}" alt="">

@@ -126,6 +126,37 @@
                             class="btn btn-danger w-100">Check Out</a>
                     </div>
                 </div>
+                <div class="row">
+                    @if($todayAttendanceRecord)
+                    <form action="{{route('break.start')}}" method="POST">
+                        @csrf
+                        <input type="text" name="latitude" id="break_latitude" hidden>
+                        <input type="text" name="longitude" id="break_longitude" hidden>
+                        <input type="submit" value="Take Break" class="btn btn-primary">
+                    </form>
+                    @elseif($todayAttendanceRecord && $break)
+                        <form action="{{route('break.start')}}" method="POST">
+                            @csrf
+                            <input type="text" name="latitude" id="break_latitude" hidden>
+                            <input type="text" name="longitude" id="break_longitude" hidden>
+                            <input type="submit" value="Take Break" class="btn btn-primary">
+                        </form>
+                    @endif
+                    <script>
+                        window.onload = function() {
+                            if (navigator.geolocation) {
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                    document.getElementById("break_latitude").value = position.coords.latitude;
+                                    document.getElementById("break_longitude").value = position.coords.longitude;
+                                }, function(error) {
+                                    alert("Unable to retrieve your location.");
+                                });
+                            } else {
+                                alert("Geolocation is not supported by this browser.");
+                            }
+                        };
+                    </script>
+                </div>
             </div>
         </div>
     </div>
