@@ -1,6 +1,12 @@
  @extends('dashboard.layout.root')
 
  @section('content')
+
+     <style>
+         .break:hover .position-absolute {
+             display: block !important;
+         }
+     </style>
      <div class="pb-20">
          <div class="content">
              <div class="container-fluid p-4">
@@ -152,7 +158,7 @@
                                                      @elseif ($off)
                                                          <td class="bg-info text-dark">{{ $off->title }}</td>
                                                      @else
-                                                         <td>
+                                                         <td class="break">
                                                              <div class="d-flex flex-column">
                                                                  <span title="{{$record?->check_in_note}}" class="badge bg-light text-dark" style="color: {{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}!important;">{{ $record?->check_in?->format('h:i:s A') ?? '-' }}
                                                                      @if($record?->check_in_note && $record->check_in_note_status == 'rejected')
@@ -174,6 +180,15 @@
                                                                      @endif
                                                                  </span>
                                                              </div>
+                                                             @php
+                                                                 $breaks = $record?->breaks;
+                                                             @endphp
+                                                             @if($breaks)
+                                                                     <!-- Employee Break Details div, shown only on hover -->
+                                                                     <div class="bg-green p-3 rounded shadow-lg w-25 position-absolute top-100 mt-2 translate-middle-x d-none">
+                                                                         <!-- Content goes here -->
+                                                                     </div>
+                                                             @endif
                                                          </td>
                                                      @endif
                                                  @endforeach

@@ -129,6 +129,9 @@
                                     <th
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                         Check-out By</th>
+                                    <th
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                    Breaks</th>
 
                                 </tr>
                             </thead>
@@ -186,6 +189,7 @@
 
                                         </tr>
                                     @else
+
                                         <!-- Sample Data Row -->
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-4 py-4 text-sm text-gray-700">
@@ -245,6 +249,23 @@
                                                 {{ $record?->checkInBy?->name }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $record?->checkOutBy?->name }}</td>
+                                            @php
+                                                $breaks = $record?->breaks
+                                            @endphp
+                                        @if($breaks)
+                                            <td class="px-4 py-4 text-sm text-gray-700">
+                                            <ul>
+                                            @foreach($record?->breaks as $break)
+                                                @php
+                                                    $start_time = \Carbon\Carbon::parse($break->start_time);
+                                                    $end_time = \Carbon\Carbon::parse($break->end_time);
+                                                @endphp
+                                                <li>{{ $start_time->diffInMinutes($end_time) }}</li>
+                                            @endforeach
+                                            </ul>
+                                            </td>
+                                        @endif
+
                                         </tr>
                                     @endif
                                 @endforeach
