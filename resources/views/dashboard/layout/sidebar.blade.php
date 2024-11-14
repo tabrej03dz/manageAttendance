@@ -145,6 +145,10 @@
                 </li>
 
 
+
+
+                @role('super_admin')
+
                 <li class="nav-item">
                     <a href="{{ route('recycle.index') }}"
                         class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
@@ -152,6 +156,7 @@
                         <p>Recycle</p>
                     </a>
                 </li>
+                @endrole
 
 
 
