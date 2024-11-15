@@ -47,7 +47,7 @@
                                 <label for="phone" class="form-label" data-bs-toggle="tooltip" title="Please enter your phone number.">
                                     Phone <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" required placeholder="Please enter your phone number">
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Please enter your phone number" required>
                             </div>
 
                             <div class="col-md-6">
@@ -133,13 +133,20 @@
                                 <label for="check_in_time" class="form-label" data-bs-toggle="tooltip" title="Select the employee's check-in time.">
                                     Check In Time <span class="text-danger">*</span>
                                 </label>
-                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{ old('check_in_time') }}" required>
+                                <input type="time" class="form-control" id="check_in_time" name="check_in_time" value="{{ old('check_in_time') }}" >
                             </div>
                             <div class="col-md-6">
                                 <label for="check_out_time" class="form-label" data-bs-toggle="tooltip" title="Select the employee's check-out time.">
                                     Check Out Time <span class="text-danger">*</span>
                                 </label>
-                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{ old('check_out_time') }}" required>
+                                <input type="time" class="form-control" id="check_out_time" name="check_out_time" value="{{ old('check_out_time') }}" >
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="break" class="form-label" data-bs-toggle="tooltip" title="Break time">
+                                    Break duration in a day (min) <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control" id="break" name="break" value="{{ old('break') }}">
                             </div>
                         </div>
 

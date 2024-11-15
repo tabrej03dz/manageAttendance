@@ -10,4 +10,8 @@ class LunchBreak extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function attendanceRecord(){
+        return $this->belongsTo(AttendanceRecord::class, 'attendance_record_id');
+    }
 }

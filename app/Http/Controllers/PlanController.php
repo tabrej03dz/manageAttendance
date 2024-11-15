@@ -32,6 +32,7 @@ class PlanController extends Controller
             'number_of_employees' => $request->number_of_employees,
             'duration' => $request->number_of_employees,
             'start_date' => $request->start_date ?? Carbon::today(),
+            'price' => $request->price,
             'expiry_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($package->duration)->toDateString(),
         ]);
         if ($status){

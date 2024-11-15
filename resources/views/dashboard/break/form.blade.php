@@ -31,33 +31,6 @@
 
 
 
-    <div class="container p-5">
-        <div id="alert-container" style="display: none;">
-            <div class="alert alert-danger alert-dismissible fade show p-4" role="alert">
-                <div class="flex justify-content-between">
-                    <h5 class="alert-heading text-lg">Settings Guidance!</h5>
-                    <button type="button" class="btn-close btn btn-success" data-bs-dismiss="alert" aria-label="Close">X</button>
-                </div>
-                <p>To get the best experience, please review your location setting of your browser. Make sure to enable location.</p>
-                <hr>
-                <a href="{{route('setting.instruction')}}" >See More</a>
-
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
     <div class="pt-2 pb-16">
         <div class="min-h-screen bg-red-50 flex flex-col mx-2 shadow-2xl rounded-lg">
             @if($errors->any())
@@ -81,7 +54,7 @@
 
                 <!-- Punch Circle -->
                 <div class="punch-circle w-48 h-48 rounded-full bg-white mx-auto mb-8 flex items-center justify-center cursor-pointer transition-all duration-300 hover:shadow-lg"
-                    id="punchCircle">
+                     id="punchCircle">
                     <video id="video" autoplay></video>
                     <canvas id="canvas" class="hidden"></canvas>
                     <img id="imagePreview" />
@@ -92,24 +65,20 @@
 
                 <!-- Status Info -->
                 <div class="flex justify-around w-full mb-8">
-                    @if ($formType == 'check_in')
+                    @if ($break)
                         <div class="text-center">
                             <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
                             <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                            <small>Check In</small>
+                            <small>stop</small>
                         </div>
                     @else
                         <div class="text-center">
                             <i class="fas fa-sign-in-alt text-red-500 mb-2 fa-2x"></i>
                             <p class="mb-0 check-in-time font-bold text-red-700">--:--</p>
-                            <small>Check out</small>
+                            <small>break</small>
                         </div>
                     @endif
-                    <div class="text-center">
-                        <i class="fas fa-clock text-red-500 mb-2 fa-2x"></i>
-                        <p class="mb-0 total-hours font-bold text-red-700">--:--</p>
-                        <small>Total Hours</small>
-                    </div>
+
                 </div>
 
                 <!-- Action Buttons -->
@@ -120,7 +89,7 @@
                         Capture
                     </button>
                     <form
-                        action="{{ $formType == 'check_in' ? route('attendance.check_in', ['user' => $user ?? null]) : route('attendance.check_out', ['user' => $user ?? null]) }}"
+                        action="{{ $break ? route('break.stop', ['break' => $break->id]) : route('break.start') }}"
                         method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
                         @csrf
                         <div class="mb-3 d-none">
@@ -129,10 +98,11 @@
                             <input type="text" name="longitude" id="longitude" placeholder="Longitude">
                             <input type="text" name="distance" id="distance">
                         </div>
+                        <textarea name="reason" id="" cols="30" rows="5" class="form-control" placeholder="Write here reason to take break, Optional!"></textarea>
 
                         <div class="d-grid">
                             <button type="submit" id="upload"
-                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
+                                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full mb-3 flex items-center justify-center">
                                 <i class="fas fa-check mr-2"></i>Submit</button>
                         </div>
                     </form>
@@ -142,8 +112,8 @@
                     {{--                    onclick="submitImage()"> --}}
                     {{--                    <i class="fas fa-check mr-2"></i> Submit --}}
                     {{--                </button> --}}
-                    <a href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
+                    <a href="{{ $break ? route('break.form', ['break' => $break]) : route('break.form') }}"
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 md:py-3 md:px-4 rounded-full w-full flex items-center justify-center">
                         <i class="fas fa-redo mr-2"></i> Reset
                     </a>
                 </div>
@@ -154,8 +124,8 @@
     <script>
         // Get video stream from the camera
         navigator.mediaDevices.getUserMedia({
-                video: true
-            })
+            video: true
+        })
             .then(function(stream) {
                 var video = document.getElementById('video');
                 video.srcObject = stream;
@@ -290,34 +260,4 @@
         setInterval(updateCurrentTime, 1000);
         updateCurrentTime();
     </script>
-
-
-// alert script
-    <script>
-        // Check location permission
-        if ('permissions' in navigator) {
-            navigator.permissions.query({ name: 'geolocation' }).then(function(permissionStatus) {
-                if (permissionStatus.state === 'denied') {
-                    document.getElementById('alert-container').style.display = 'block';
-                }
-            }).catch(function(error) {
-                console.error('Error checking location permission:', error);
-            });
-        } else {
-            // Fallback for browsers without Permissions API
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    // Location is allowed
-                },
-                function(error) {
-                    if (error.code === error.PERMISSION_DENIED) {
-                        document.getElementById('alert-container').style.display = 'block';
-                    }
-                }
-            );
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
 @endsection

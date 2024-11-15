@@ -132,9 +132,22 @@
 
                 @role('super_admin')
                 <li class="nav-item">
-                    <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
+                    <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-signal"></i>
                         <p>Recycle</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('break.index') }}" class="nav-link {{ request()->routeIs('break.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Breaks</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('manual.entry.form') }}" class="nav-link {{ request()->routeIs('manual.entry.form') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-signal"></i>
+                        <p>Manual Entry</p>
                     </a>
                 </li>
                 @endrole

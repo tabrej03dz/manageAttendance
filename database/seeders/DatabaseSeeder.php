@@ -31,8 +31,24 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'admin']);
         Role::create(['name' => 'team_leader']);
         Role::create(['name' => 'employee']);
+        Role::create(['name' => 'employee']);
+        Role::create(['name' => 'owner']);
 
+        Permission::create(['name' => 'show dashboard']);
         Permission::create(['name' => 'show records']);
+        Permission::create(['name' => 'show records of employees']);
+        Permission::create(['name' => 'show owners']);
+        Permission::create(['name' => 'create owners']);
+        Permission::create(['name' => 'edit owners']);
+        Permission::create(['name' => 'show owner\'s plans']);
+        Permission::create(['name' => 'edit plan']);
+        Permission::create(['name' => 'delete plan']);
+        Permission::create(['name' => 'create plan']);
+        Permission::create(['name' => 'show attendance']);
+        Permission::create(['name' => 'add note']);
+        Permission::create(['name' => 'show employees']);
+        Permission::create(['name' => 'create employee']);
+        Permission::create(['name' => 'create employee']);
         Permission::create(['name' => 'check-in']);
         Permission::create(['name' => 'check-out']);
         Permission::create(['name' => 'show employee']);

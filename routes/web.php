@@ -47,7 +47,13 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('user/note/response/{record}/{type}/{status}', [AttendanceRecordController::class, 'userNoteResponse'])->name('user.note.response');
 
         Route::get('reason/form/{type}/{message}/{record}', [AttendanceRecordController::class, 'reasonFormLoad'])->name('reason.form');
+
+        Route::post('store', [AttendanceRecordController::class, 'store'])->name('store');
     });
+
+    Route::get('setting/instruction', function (){
+        return view('dashboard.settingInstruction');
+    })->name('setting.instruction');
 
     Route::prefix('employee')->name('employee.')->group(function (){
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
@@ -80,8 +86,10 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     });
 
     Route::prefix('break')->name('break.')->group(function(){
+        Route::get('/', [LunchBreakController::class, 'index'])->name('index');
         Route::post('start', [LunchBreakController::class, 'start'])->name('start');
         Route::post('stop/{break}', [LunchBreakController::class, 'stop'])->name('stop');
+        Route::get('form/{break?}', [LunchBreakController::class, 'form'])->name('form');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');
@@ -167,6 +175,8 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('/', [\App\Http\Controllers\RecycleController::class, 'index'])->name('index');
         Route::get('user/delete/{user}', [\App\Http\Controllers\RecycleController::class, 'userDelete'])->name('user.delete');
     });
+
+    Route::get('manual/entry/form', [AttendanceRecordController::class, 'manualEntryForm'])->name('manual.entry.form');
 
     Route::get('/foo', function () {
         $exitCode = Artisan::call('storage:link');

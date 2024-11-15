@@ -13,29 +13,30 @@
     </style>
 
 
-    <form action="{{ route('leave.index') }}">
-        <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-            <!-- Employee Selection -->
-            <label for="filter by status" class="block mb-1 text-sm font-medium text-gray-700">Filter By Status:</label>
+    <form action="{{ route('leave.index') }}" class="flex flex-wrap items-center gap-4 bg-gray-100 p-4 rounded-lg shadow-md">
+        <!-- Filter By Status -->
+        <label for="filter_by_status" class="text-sm font-medium text-gray-700">Filter By Status:</label>
+        <select id="filter_by_status" name="status"
+                class="border-gray-300 rounded-md shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">Select Status</option>
+            <option value="pending">Pending</option>
+            <option value="rejected">Rejected</option>
+            <option value="approved">Approved</option>
+        </select>
 
-            <!-- Select element taking full width -->
-            <select id="filter by status" name="status"
-                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2">
-                <option value="">Select an employee</option>
-                <option value="pending">Pending</option>
-                <option value="rejected">Rejected</option>
-                <option value="approved">Approved</option>
-            </select>
+        <!-- Filter Button -->
+        <button
+            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">
+            Filter
+        </button>
 
-            <!-- Button container -->
-            <div class="flex flex-col space-y-2">
-                <button
-                    class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full">Filter</button>
-                <a href="{{ route('leave.index') }}"
-                    class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full text-center flex items-center justify-center">Clear</a>
-            </div>
-        </div>
+        <!-- Clear Button -->
+        <a href="{{ route('leave.index') }}"
+           class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out">
+            Clear
+        </a>
     </form>
+
 
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">

@@ -101,9 +101,9 @@ class AttendanceRecordController extends Controller
             $attendanceRecord->save();
             $message = 'Checked in successfully';
 
-            if (!$request->latitude || !$request->longitude){
-                return view('dashboard.settingInstruction');
-            }
+//            if (!$request->latitude || !$request->longitude){
+//                return view('dashboard.settingInstruction');
+//            }
 
             if ($attendanceRecord->late){
                 $type = 'check_in_note';
@@ -145,9 +145,9 @@ class AttendanceRecordController extends Controller
             $record->check_out_image = str_replace('public/', '', $file);
             $record->save();
         }
-        if (!$request->latitude || !$request->longitude){
-            return view('dashboard.settingInstruction');
-        }
+//        if (!$request->latitude || !$request->longitude){
+//            return view('dashboard.settingInstruction');
+//        }
         if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
             $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
             $userCheckOutTime = Carbon::parse($user->check_out_time);
@@ -214,5 +214,28 @@ class AttendanceRecordController extends Controller
 
     public function reasonFormLoad($type, $message, AttendanceRecord $record){
         return view('dashboard.attendance.noteForm', compact('type', 'message', 'record'));
+    }
+
+    public function manualEntryForm(){
+        $employees = HomeController::employeeList();
+        return view('dashboard.attendance.manualEntryForm', compact('employees'));
+    }
+
+    public function store(Request $request){
+        $request->validate([
+            'employee_id' => 'required',
+            'date' => 'required',
+            'check_in' => 'required',
+            'check_out' => 'required',
+        ]);
+
+
+        AttendanceRecord::create([
+            'user_id' => $request->employee_id,
+            'check_in' => $request->date.' '.$request->check_in,
+            'check_out' => $request->date.' '.$request->check_out,
+        ]);
+
+        return back()->with('success', 'Attendance record created successfully');
     }
 }

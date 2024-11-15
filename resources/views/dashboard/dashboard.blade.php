@@ -129,22 +129,11 @@
                 <div class="row">
                     @if($todayAttendanceRecord)
                         @if($break && $break->end_time == null)
-                            <!-- Show Stop Break Form if a break is in progress -->
-                        <p>You are on break</p>
-                            <form action="{{ route('break.stop', ['break' => $break->id]) }}" method="POST">
-                                @csrf
-                                <input type="text" name="latitude" id="break_latitude" hidden>
-                                <input type="text" name="longitude" id="break_longitude" hidden>
-                                <input type="submit" value="Stop Break" class="btn btn-primary">
-                            </form>
+                            <a href="{{ route('break.form', ['break' => $break->id]) }}" class="btn btn-primary">Stop Break</a>
                         @else
-                            <!-- Show Take Break Form if no break is currently in progress -->
-                            <form action="{{ route('break.start') }}" method="POST">
-                                @csrf
-                                <input type="text" name="latitude" id="break_latitude" hidden>
-                                <input type="text" name="longitude" id="break_longitude" hidden>
-                                <input type="submit" value="Take Break" class="btn btn-primary">
-                            </form>
+                            <a href="{{ route('break.form') }}" class="btn btn-primary">Take Break</a>
+
+
                         @endif
                     @endif
                     <script>
