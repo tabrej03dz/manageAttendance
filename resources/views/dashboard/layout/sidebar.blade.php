@@ -24,7 +24,7 @@
                         <p>Records</p>
                     </a>
                 </li>
-                
+
 
                 @role('super_admin')
                 <li class="nav-item">
@@ -32,7 +32,7 @@
                         <i class="nav-icon fas fa-user"></i>
                         <p>Owners</p>
                     </a>
-                </li>                
+                </li>
                 @endrole
 
                 @role('admin|super_admin')
@@ -150,14 +150,14 @@
                 @role('super_admin')
 
                 <li class="nav-item">
-<<<<<<< HEAD
+
                     <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-signal"></i>
-=======
+                        <i class="nav-icon fas fa-signal"></i></a>
+
                     <a href="{{ route('recycle.index') }}"
                         class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-recycle"></i>
->>>>>>> 546d552ef9fff54e6fc0e280c6a52e9fca6102a8
+
                         <p>Recycle</p>
                     </a>
                 </li>
