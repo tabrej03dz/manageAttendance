@@ -35,7 +35,7 @@
                         <td class="py-3 px-6 text-left">
                             <img src="{{$employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/50'}}" alt="{{$employee->name}}" class="rounded-full w-12 h-12">
                         </td>
-                        <td class="py-3 px-6 text-left">{{$employee->office->name}}</td>
+                        <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @role('super_admin|admin')
                             <a title="Check-in" href="{{ route('attendance.form', ['form_type' => 'check_in', 'user' => $employee->id]) }}"

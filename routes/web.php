@@ -178,6 +178,11 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::get('manual/entry/form', [AttendanceRecordController::class, 'manualEntryForm'])->name('manual.entry.form');
 
+    Route::prefix('permission')->name('permission.')->group(function(){
+       Route::get('/', [\App\Http\Controllers\PermissionController::class, 'index'])->name('index');
+       Route::post('give', [\App\Http\Controllers\PermissionController::class, 'givePermission'])->name('give');
+    });
+
     Route::get('/foo', function () {
         $exitCode = Artisan::call('storage:link');
         if ($exitCode === 0) {
