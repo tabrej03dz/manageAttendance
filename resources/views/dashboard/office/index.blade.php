@@ -19,6 +19,7 @@
                         <th class="py-3 px-6 text-left">Latitude</th>
                         <th class="py-3 px-6 text-left">Longitude</th>
                         <th class="py-3 px-6 text-left">Radius</th>
+                        <th class="py-3 px-6 text-left">Under Radius Required</th>
                         <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Action</th>
                     </tr>
@@ -31,6 +32,7 @@
                         <td class="py-3 px-6 text-left">{{$office->latitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->longitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->radius}}</td>
+                        <td class="py-3 px-6 text-left">{{$office->under_radius_required == '1' ? 'yes' : 'no'}}</td>
                         <td class="py-3 px-6 text-left">
                             <a href="{{route('office.status', ['office' => $office->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($office->status == 'active')

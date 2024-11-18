@@ -39,6 +39,11 @@
                                 <label for="price_per_employee" class="form-label">Price Per Employee</label>
                                 <input type="number" value="{{$office->price_per_employee}}" class="form-control" id="price_per_employee" name="price_per_employee">
                             </div>
+                            <div class="col-md-6">
+                                <p>Under Radius Required?</p>
+                                <input type="checkbox" class="" value="1" id="under_radius_required" {{$office->under_radius_required == '1' ? 'checked' : ''}} name="under_radius_required">
+                                <label for="under_radius_required" class="form-label">Yes</label>
+                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Update</button>
                             </div>

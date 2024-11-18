@@ -44,6 +44,7 @@ class OfficeController extends Controller
     }
 
     public function update(Request $request, Office $office){
+//        dd($request->all());
         $request->validate([
             'name' => 'required',
             'latitude' => 'required',
