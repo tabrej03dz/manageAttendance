@@ -12,6 +12,7 @@ use \App\Http\Controllers\PaymentController;
 use App\Http\Controllers\VisitController;
 use \App\Http\Controllers\OwnerController;
 use \App\Http\Controllers\LunchBreakController;
+use \App\Http\Controllers\AdvancePaymentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -181,6 +182,16 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('permission')->name('permission.')->group(function(){
        Route::get('/', [\App\Http\Controllers\PermissionController::class, 'index'])->name('index');
        Route::post('give', [\App\Http\Controllers\PermissionController::class, 'givePermission'])->name('give');
+    });
+
+    Route::prefix('advance')->name('advance.')->group(function(){
+        Route::get('/', [AdvancePaymentController::class, 'index'])->name('index');
+        Route::get('create/{user?}', [AdvancePaymentController::class, 'create'])->name('create');
+        Route::post('store', [AdvancePaymentController::class, 'store'])->name('store');
+    });
+
+    Route::prefix('role')->name('role.')->group(function(){
+
     });
 
     Route::get('/foo', function () {

@@ -107,7 +107,7 @@
                     @endcan
 
 
-                @can('mark attendance of employee')
+                @can('mark attendance of employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.attendance') }}"
                             class="nav-link {{ request()->routeIs('employee.attendance') ? 'active' : '' }}">
@@ -138,13 +138,21 @@
                     </li>
                     @endcan
 
+                    @role('super_admin|admin')
+                    <li class="nav-item">
+                        <a href="{{ route('advance.index') }}" class="nav-link {{ request()->routeIs('advance.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-signal"></i>
+                            <p>Advance Payment</p>
+                        </a>
+                    </li>
 
-                {{--                <li class="nav-item"> --}}
-                {{--                    <a href="{{ route('expense.index') }}" class="nav-link {{ request()->routeIs('expense.index') ? 'active' : '' }}"> --}}
-                {{--                        <i class="nav-icon fas fa-signal"></i> --}}
-                {{--                        <p>Expenses</p> --}}
-                {{--                    </a> --}}
-                {{--                </li> --}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">--}}
+{{--                            <i class="nav-icon fas fa-signal"></i>--}}
+{{--                            <p>Role</p>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+                    @endrole
 
 
                     @can('show visits')

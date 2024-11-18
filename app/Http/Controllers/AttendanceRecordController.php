@@ -62,8 +62,15 @@ class AttendanceRecordController extends Controller
             'longitude' => '',
             'distance' => '',
         ]);
+
         if ($user == null){
             $user = auth()->user();
+        }
+
+        if ($user->office->under_radius_required == '1'){
+            if ($request->distance > $user->office->radius){
+                return back()->with('error', 'You are '.round($request->distance).'m of distance from the office, You should be under '. $user->office->radius);
+            }
         }
         // Fetch today's attendance record
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())

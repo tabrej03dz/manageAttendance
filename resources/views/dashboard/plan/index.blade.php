@@ -49,8 +49,7 @@
                         <td class="py-3 px-6 text-left">{{$plan->price}}</td>
                         <td class="py-3 px-6 text-left">{{$plan->duration}}</td>
                         <td class="py-3 px-6 text-left">{{$plan->start_date}}</td>
-                        <td class="py-3 px-6 text-left">{{$plan->expiry_date}}</td>
-
+                        <td class="py-3 px-6 text-left">{{$plan->end_date}}</td>
                         <td class="py-3 px-6 text-left">
                             <a href="{{route('plan.status', ['plan' => $plan->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($plan->status == '1')

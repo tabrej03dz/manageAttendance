@@ -27,13 +27,17 @@ class PlanController extends Controller
             'start_date' => '',
         ]);
 
+//        dd($request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($plan->duration)->toDateString());
+
         $status = $plan->update([
             'number_of_offices' => $request->number_of_offices,
             'number_of_employees' => $request->number_of_employees,
             'duration' => $request->number_of_employees,
             'start_date' => $request->start_date ?? Carbon::today(),
+            'end_date' => $request->start_date
+                ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString()
+                : Carbon::today()->addDays($plan->duration)->toDateString(),
             'price' => $request->price,
-            'expiry_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($package->duration)->toDateString(),
         ]);
         if ($status){
             request()->session()->flash('success', 'Plan updated successfully');

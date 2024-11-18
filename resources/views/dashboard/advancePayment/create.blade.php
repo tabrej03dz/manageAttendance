@@ -19,35 +19,39 @@
                         <h2 class="mb-0 py-3">Edit Plan</h2>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('plan.update', ['plan' => $plan->id]) }}" method="POST" >
+                        <form action="{{ route('advance.store') }}" method="POST" >
                             @csrf
                             <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <label for="number_of_offices" class="form-label">Number Of office/Shop*</label>
-                                    <input type="number" class="form-control" id="number_of_offices" name="number_of_offices" value="{{ $plan->number_of_offices }}" placeholder="Ex-5" required>
+                                    <label for="title" class="form-label">Title*</label>
+                                    <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}" placeholder="Ex-5" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="number_of_employees" class="form-label">Number Of Employee/Worker*</label>
-                                    <input type="number" class="form-control" id="number_of_employees" name="number_of_employees" value="{{ $plan->number_of_employees }}" placeholder="Ex-10" required>
+                                    <label for="amount" class="form-label">Amount*</label>
+                                    <input type="number" class="form-control" id="amount" name="amount" value="{{ old('amount')  }}" placeholder="Ex-399" required>
                                 </div>
                             </div>
 
                             <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="price" class="form-label">Price*</label>
-                                    <input type="number" class="form-control" id="price" name="price" value="{{ $plan->price }}" placeholder="Ex-399" required>
+
+
+                                <div class="col-12">
+                                    <label for="price" class="form-label">Employee*</label>
+                                    <select name="user_id" id="" class="form-control" required>
+                                        <option value="">Select Employee</option>
+                                        @foreach($employees as $employee)
+                                            <option value="{{$employee->id}}">{{$employee->name}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="duration" class="form-label">Duration (in days)*</label>
-                                    <input type="number" class="form-control" id="duration" name="duration" value="{{ $plan->duration }}" placeholder="Ex-90" required>
+
+                                <div class="col-12">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea name="description" class="form-control" id="" cols="30" rows="3">{{old('title')}}</textarea>
                                 </div>
+
                             </div>
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <label for="start_date" class="form-label">Plan start Date </label>
-                                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ $plan->start_date }}" placeholder="Ex-5">
-                                </div>
-                            </div>
+
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-danger btn-lg">Update</button>
                             </div>

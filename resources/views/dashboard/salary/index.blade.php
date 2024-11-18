@@ -47,21 +47,23 @@
                                         <thead class="bg-primary text-white sticky-top">
                                         <tr>
                                             <th class="sticky left-0 bg-primary" style="z-index: 20;">Employees</th> <!-- Sticky first column -->
+                                            <th>Advance Payment</th>
+
                                             @php
                                                 $officeDays = 0;
                                                 $sundayCount = 0;
                                             @endphp
-                                            @foreach ($dates as $dateObj)
-                                                @php
-                                                    $d = \Carbon\Carbon::parse($dateObj->date);
-                                                    $isSunday = $d->format('D') === 'Sun';
-                                                    if ($isSunday) {
-                                                        $sundayCount++;
-                                                    }else{
-                                                        $officeDays++;
-                                                    }
-                                                @endphp
-                                            @endforeach
+{{--                                            @foreach ($dates as $dateObj)--}}
+{{--                                                @php--}}
+{{--                                                    $d = \Carbon\Carbon::parse($dateObj->date);--}}
+{{--                                                    $isSunday = $d->format('D') === 'Sun';--}}
+{{--                                                    if ($isSunday) {--}}
+{{--                                                        $sundayCount++;--}}
+{{--                                                    }else{--}}
+{{--                                                        $officeDays++;--}}
+{{--                                                    }--}}
+{{--                                                @endphp--}}
+{{--                                            @endforeach--}}
                                                 <th>Day wise Salary</th>
                                                 <th>Hour wise Salary</th>
                                                 <th>Status</th>
@@ -73,6 +75,10 @@
                                         @foreach ($users as $user)
                                             <tr>
                                                 <td class="fw-bold sticky left-0 bg-light" style="z-index: 10;">{{ $user->name }}</td> <!-- Sticky first column -->
+                                                @php
+                                                    $advancePayment = $advancePayments->where('user_id', $user->id)->sum('amount');
+                                                @endphp
+                                                <td>{{$advancePayment}}</td>
                                                 @php
                                                     $workingDays = 0;
                                                     $leaveDays = 0;
@@ -171,8 +177,6 @@
                                                     <td>Salary not generated yet</td>
                                                 @endif
                                             @endif
-
-
 
                                             </tr>
                                         @endforeach

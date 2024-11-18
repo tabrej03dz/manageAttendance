@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdvancePayment;
 use App\Models\AttendanceRecord;
 use App\Models\Salary;
 use Carbon\Carbon;
@@ -34,7 +35,10 @@ class SalaryController extends Controller
 
         $users = HomeController::employeeList();
 
-        return view('dashboard.salary.index', compact('dates', 'attendanceRecords', 'users', 'month'));
+        $parseMonthYear = Carbon::parse($month);
+        $advancePayments = AdvancePayment::whereMonth('date', $parseMonthYear->month)->whereYear('date',$parseMonthYear->year)->get();
+//        dd($advancePayments);
+        return view('dashboard.salary.index', compact('dates', 'attendanceRecords', 'users', 'month', 'advancePayments'));
     }
 
     public function status(Salary $salary){

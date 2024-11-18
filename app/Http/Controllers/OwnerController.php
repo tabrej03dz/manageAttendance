@@ -52,7 +52,7 @@ class OwnerController extends Controller
                 'duration' => $request->number_of_employees,
                 'start_date' => $request->start_date ?? Carbon::today(),
                 'price' => $request->price,
-                'expiry_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($package->duration)->toDateString(),
+                'end_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($package->duration)->toDateString(),
                 'user_id' => $owner->id,
             ]);
             request()->session()->flash('success', 'Owner Creates successfully');
