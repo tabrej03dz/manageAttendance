@@ -38,11 +38,17 @@
                             </div>
                             <div class="col-md-6">
                                 <p>Under Radius Required?</p>
-                                <input type="checkbox" class="" value="1" id="under_radius_required"  name="under_radius_required">
-                                <label for="under_radius_required" class="form-label">Yes</label>
+                                <div>
+                                    <input type="radio" class="" value="1" id="under_radius_required_yes" name="under_radius_required">
+                                    <label for="under_radius_required_yes" class="form-label">Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" class="" value="0" id="under_radius_required_no" name="under_radius_required" checked>
+                                    <label for="under_radius_required_no" class="form-label">No</label>
+                                </div>
                             </div>
 
-                            @if($owners)
+                        @if($owners)
                             <div class="form-group mb-3">
                                 <label for="price_per_employee" class="form-label">Owner</label>
                                 <select name="owner_id" id="" class="form-control">

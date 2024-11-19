@@ -118,6 +118,10 @@ class EmployeeController extends Controller
     }
 
     public function employeeAttendance(){
+        $user = auth()->user();
+        if ($user->hasRole('super_admin')){
+            $employees = User::all();
+        }
         $employees = HomeController::employeeList();
         return view('dashboard.employee.list', compact('employees'));
     }

@@ -1,6 +1,13 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    @endif
     <div class="py-12">
         <div class="content">
             <div class="container-fluid">
@@ -41,8 +48,14 @@
                             </div>
                             <div class="col-md-6">
                                 <p>Under Radius Required?</p>
-                                <input type="checkbox" class="" value="1" id="under_radius_required" {{$office->under_radius_required == '1' ? 'checked' : ''}} name="under_radius_required">
-                                <label for="under_radius_required" class="form-label">Yes</label>
+                                <div>
+                                    <input type="radio" class="" value="1" id="under_radius_required_yes" name="under_radius_required" @if($office->under_radius_required == '1') checked @endif>
+                                    <label for="under_radius_required_yes" class="form-label">Yes</label>
+                                </div>
+                                <div>
+                                    <input type="radio" class="" value="0" id="under_radius_required_no" name="under_radius_required" @if($office->under_radius_required == '0') checked @endif>
+                                    <label for="under_radius_required_no" class="form-label">No</label>
+                                </div>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Update</button>

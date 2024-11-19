@@ -191,7 +191,10 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     });
 
     Route::prefix('role')->name('role.')->group(function(){
-
+        Route::get('/', [\App\Http\Controllers\RoleController::class, 'index'])->name('index');
+        Route::get('create', [\App\Http\Controllers\RoleController::class, 'create'])->name('create');
+        Route::post('store', [\App\Http\Controllers\RoleController::class, 'store'])->name('store');
+        Route::get('delete', [\App\Http\Controllers\RoleController::class, 'delete'])->name('delete');
     });
 
     Route::get('/foo', function () {

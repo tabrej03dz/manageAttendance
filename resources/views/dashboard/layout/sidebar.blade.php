@@ -146,12 +146,12 @@
                         </a>
                     </li>
 
-{{--                    <li class="nav-item">--}}
-{{--                        <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">--}}
-{{--                            <i class="nav-icon fas fa-signal"></i>--}}
-{{--                            <p>Role</p>--}}
-{{--                        </a>--}}
-{{--                    </li>--}}
+                    <li class="nav-item">
+                        <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-signal"></i>
+                            <p>Role</p>
+                        </a>
+                    </li>
                     @endrole
 
 

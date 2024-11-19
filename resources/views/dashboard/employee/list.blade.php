@@ -37,7 +37,7 @@
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
+                            @can('check-in attendance of employees|check-out attendance of employees')
                             <a title="Check-in" href="{{ route('attendance.form', ['form_type' => 'check_in', 'user' => $employee->id]) }}"
                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">check_circle</span>
@@ -46,7 +46,7 @@
                                class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">logout</span>
                             </a>
-                            @endrole
+                            @endcan
                         </td>
                     </tr>
                 @endforeach
