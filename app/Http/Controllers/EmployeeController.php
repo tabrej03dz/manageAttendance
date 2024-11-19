@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
+use App\Models\AttendanceRecord;
 use App\Models\Office;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
 
 class EmployeeController extends Controller
 {
@@ -140,5 +142,19 @@ class EmployeeController extends Controller
             \request()->session()->flash('error', 'Error, Try again!');
         }
         return back();
+    }
+
+    public function permission(User $user){
+        $permissions = $user->permissions;
+        return view('dashboard.employee.permission', compact('permissions', 'user'));
+    }
+
+    public function permissionRemove(Permission $permission, User $user){
+        if ($user->hasPermissionTo($permission)) { // Check if the user has the permission
+            $user->revokePermissionTo($permission); // Remove the permission from the user
+            return back()->with('success', 'Permission removed from the user successfully.');
+        }
+
+        return response()->with('error', 'User does not have this permission.');
     }
 }

@@ -66,6 +66,8 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('profile/{user}', [HomeController::class, 'profile'])->name('profile');
         Route::get('attendance', [EmployeeController::class, 'employeeAttendance'])->name('attendance');
         Route::get('status/{employee}', [EmployeeController::class, 'status'])->name('status');
+        Route::get('permission/{user}', [EmployeeController::class, 'permission'])->name('permission');
+        Route::get('permissionRemove/{permission}/{user}', [EmployeeController::class, 'permissionRemove'])->name('permissionRemove');
     });
 
     Route::prefix('owner')->name('owner.')->group(function(){
@@ -88,9 +90,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('break')->name('break.')->group(function(){
         Route::get('/', [LunchBreakController::class, 'index'])->name('index');
-        Route::post('start', [LunchBreakController::class, 'start'])->name('start');
-        Route::post('stop/{break}', [LunchBreakController::class, 'stop'])->name('stop');
-        Route::get('form/{break?}', [LunchBreakController::class, 'form'])->name('form');
+        Route::post('start/{employee?}', [LunchBreakController::class, 'start'])->name('start');
+        Route::post('stop/{break}/{employee?}', [LunchBreakController::class, 'stop'])->name('stop');
+        Route::get('form/{employee?}/{break?}', [LunchBreakController::class, 'form'])->name('form');
     });
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');
@@ -190,11 +192,14 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('store', [AdvancePaymentController::class, 'store'])->name('store');
     });
 
+
     Route::prefix('role')->name('role.')->group(function(){
         Route::get('/', [\App\Http\Controllers\RoleController::class, 'index'])->name('index');
         Route::get('create', [\App\Http\Controllers\RoleController::class, 'create'])->name('create');
         Route::post('store', [\App\Http\Controllers\RoleController::class, 'store'])->name('store');
-        Route::get('delete', [\App\Http\Controllers\RoleController::class, 'delete'])->name('delete');
+        Route::get('delete/{role}', [\App\Http\Controllers\RoleController::class, 'delete'])->name('delete');
+        Route::get('permission/{role}', [\App\Http\Controllers\RoleController::class, 'permission'])->name('permission');
+        Route::get('permissionRemove/{permission}/{role}', [\App\Http\Controllers\RoleController::class, 'permissionRemove'])->name('permissionRemove');
     });
 
     Route::get('/foo', function () {

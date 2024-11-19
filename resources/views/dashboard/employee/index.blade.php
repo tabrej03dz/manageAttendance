@@ -74,6 +74,11 @@
                                 <span class="material-icons">account_circle</span>
                             </a>
 
+                            <a title="Profile" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
+                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">account_circle</span>
+                            </a>
+
                             @endrole
                         </td>
                     </tr>

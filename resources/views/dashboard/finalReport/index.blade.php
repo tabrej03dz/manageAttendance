@@ -236,10 +236,9 @@
                                                                              </thead>
                                                                              <tbody>
                                                                              @foreach($breaks as $break)
-
                                                                                  <tr>
                                                                                      <td>{{$break->start_time}}</td>
-                                                                                     <td>{{$break->start_time}}</td>
+                                                                                     <td>{{$break->end_time}}</td>
                                                                                      @php
                                                                                          $start_time = \Carbon\Carbon::parse($break->start_time);
                                                                                          $end_time = \Carbon\Carbon::parse($break->end_time);

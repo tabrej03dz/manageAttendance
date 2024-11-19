@@ -38,10 +38,16 @@
 {{--                            </a>--}}
 {{--                        </td>--}}
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            <a title="Details" href="{{route('role.delete', ['role' => $role->id])}}"
-                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">Delete</span>
+                            <a title="delete" href="{{ route('role.delete', ['role' => $role->id]) }}"
+                               class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                                <span class="material-icons">delete</span> <!-- Correct icon name -->
                             </a>
+
+                            <a title="permissions" href="{{ route('role.permission', ['role' => $role->id]) }}"
+                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">manage_accounts</span> <!-- Example of a valid Material Icon -->
+                            </a>
+
                         </td>
                     </tr>
                 @endforeach

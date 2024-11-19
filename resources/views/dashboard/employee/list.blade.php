@@ -49,6 +49,24 @@
                                 <span class="material-icons">logout</span>
                             </a>
                             @endcan
+
+                            @php
+                                $todayAttendanceRecord = App\Models\AttendanceRecord::where('user_id', $employee->id)->whereDate('created_at', Carbon\Carbon::today())->first();
+                                if ($todayAttendanceRecord){
+                                    $break = App\Models\LunchBreak::where('attendance_record_id', $todayAttendanceRecord->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->first();
+                                }else{
+                                    $break = null;
+                                }
+                            @endphp
+                                @if($todayAttendanceRecord)
+                                    @if($break && $break->end_time == null)
+                                        <a href="{{ route('break.form', ['employee' => $employee->id, 'break' => $break->id]) }}" class="btn btn-primary">Stop Break</a>
+                                    @else
+                                        <a href="{{ route('break.form', ['employee' => $employee?->id]) }}" class="btn btn-primary">Take Break</a>
+                                    @endif
+                                @endif
                         </td>
                     </tr>
                 @endforeach

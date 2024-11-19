@@ -12,9 +12,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-between items-center mb-4 space-x-4">
             <h1 class="text-2xl font-bold">Breaks</h1>
+            <div class="flex items-center space-x-2">
+                <form action="{{ route('break.index') }}" method="get" class="flex items-center space-x-2">
+                    @csrf
+                    <input type="date" name="date" class="form-control">
+                    <input type="submit" value="Filter" class="btn btn-success">
+                </form>
+                <a href="{{ route('break.index') }}" class="btn btn-secondary">Clear</a>
+            </div>
         </div>
+
 
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white rounded-lg shadow-md border border-gray-300">
@@ -47,7 +56,7 @@
                                 <tbody>
                                 @php
                                     $breaks = \App\Models\LunchBreak::where('user_id', $user->id)
-                                        ->whereDate('created_at', \Carbon\Carbon::today())
+                                        ->whereDate('created_at', $date)
                                         ->get();
                                 @endphp
 
@@ -64,7 +73,7 @@
                                             <td class="px-2 py-1 border border-gray-300">
                                                 <img src="{{ asset('storage/' . $break->start_image) }}" alt="Start Image" class="w-12 h-12 object-cover border border-gray-200 rounded">
                                             </td>
-                                            <td class="px-2 py-1 border border-gray-300">{{ $break->end_distance }}</td>
+                                            <td class="px-2 py-1 border border-gray-300">{{ round($break->end_distance) }}</td>
                                             <td class="px-2 py-1 border border-gray-300">
                                                 <img src="{{ asset('storage/' . $break->end_image) }}" alt="End Image" class="w-12 h-12 object-cover border border-gray-200 rounded">
                                             </td>

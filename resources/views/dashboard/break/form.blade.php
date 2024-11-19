@@ -89,7 +89,7 @@
                         Capture
                     </button>
                     <form
-                        action="{{ $break ? route('break.stop', ['break' => $break->id]) : route('break.start') }}"
+                        action="{{ $break ? route('break.stop', ['break' => $break->id, 'employee' => $employee?->id ]) : route('break.start', ['employee' => $employee ? $employee->id : null]) }}"
                         method="POST" enctype="multipart/form-data" id="uploadForm" class="mt-3">
                         @csrf
                         <div class="mb-3 d-none">
