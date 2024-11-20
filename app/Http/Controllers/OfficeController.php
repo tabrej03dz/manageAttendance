@@ -32,8 +32,7 @@ class OfficeController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'radius' => '',
-            'number_of_employees' => 'required',
-            'price_per_employee' => 'required',
+            'number_of_employees' => '',
         ]);
         Office::create($request->all());
         return redirect('office')->with('success', 'Office Created successfully');

@@ -47,7 +47,7 @@
                                 <label for="phone" class="form-label" data-bs-toggle="tooltip" title="Please enter your phone number.">
                                     Phone <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Please enter your phone number" required>
+                                <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}" placeholder="Please enter your phone number">
                             </div>
 
                             <div class="col-md-6">

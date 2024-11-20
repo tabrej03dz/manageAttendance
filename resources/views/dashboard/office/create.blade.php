@@ -1,6 +1,13 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    @endif
     <div class="py-12">
         <div class="content">
             <div class="container-fluid">
@@ -32,10 +39,10 @@
                                 <label for="number_of_employees" class="form-label">Number of Employee</label>
                                 <input type="number" class="form-control" id="number_of_employees" name="number_of_employees">
                             </div>
-                            <div class="form-group mb-3">
-                                <label for="price_per_employee" class="form-label">Price Per Employee</label>
-                                <input type="number" value="59" class="form-control" id="price_per_employee" name="price_per_employee">
-                            </div>
+{{--                            <div class="form-group mb-3">--}}
+{{--                                <label for="price_per_employee" class="form-label">Price Per Employee</label>--}}
+{{--                                <input type="number" value="59" class="form-control" id="price_per_employee" name="price_per_employee">--}}
+{{--                            </div>--}}
                             <div class="col-md-6">
                                 <p>Under Radius Required?</p>
                                 <div>

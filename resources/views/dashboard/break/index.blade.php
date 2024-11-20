@@ -71,11 +71,15 @@
                                             <td class="px-2 py-1 border border-gray-300">{{ $break->end_time }}</td>
                                             <td class="px-2 py-1 border border-gray-300">{{ round($break->start_distance) }}</td>
                                             <td class="px-2 py-1 border border-gray-300">
+                                                <a href="{{ asset('storage/' . $break->start_image) }}" target="_blank">
                                                 <img src="{{ asset('storage/' . $break->start_image) }}" alt="Start Image" class="w-12 h-12 object-cover border border-gray-200 rounded">
+                                                </a>
                                             </td>
                                             <td class="px-2 py-1 border border-gray-300">{{ round($break->end_distance) }}</td>
                                             <td class="px-2 py-1 border border-gray-300">
+                                                <a href="{{ asset('storage/' . $break->end_image) }}" target="_blank">
                                                 <img src="{{ asset('storage/' . $break->end_image) }}" alt="End Image" class="w-12 h-12 object-cover border border-gray-200 rounded">
+                                                </a>
                                             </td>
                                             <td class="px-2 py-1 border border-gray-300">{{ $end_time ? $start_time->diffInMinutes($end_time) : 'N/A' }}</td>
                                         </tr>

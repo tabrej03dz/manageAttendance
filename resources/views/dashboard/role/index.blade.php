@@ -24,7 +24,11 @@
                 @foreach($roles as $role)
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
                         <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
-                        <td class="py-3 px-6 text-left">{{$role->name}}</td>
+                        @if(auth()->user()->hasRole('super_admin'))
+                            <td class="py-3 px-6 text-left">{{$role->name}}</td>
+                        @else
+                            <td class="py-3 px-6 text-left">{{explode('__', $role->name)[1]}}</td>
+                        @endif
                         <td class="py-3 px-6 text-left">{{$role->createdBy?->name}}</td>
 
 {{--                        <td class="py-3 px-6 text-left">--}}

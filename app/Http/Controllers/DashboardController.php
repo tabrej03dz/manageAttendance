@@ -27,7 +27,11 @@ class DashboardController extends Controller
                 $data['sundays'] += 1;
             }
             $data['days'] += 1;
-            $off = Off::whereDate('date', $date)->where('office_id', auth()->user()->office->id)->first();
+            if (auth()->user()->hasRole('owner')){
+                    $off = Off::whereDate('date', $date)->where('office_id', auth()->user()->offices->first()?->id)->first();
+            }else{
+                $off = Off::whereDate('date', $date)->where('office_id', auth()->user()->office->id)->first();
+            }
             if ($off){
                 $data['offs'] += 1;
             }

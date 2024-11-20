@@ -129,7 +129,7 @@
                 <div class="row">
                     @if($todayAttendanceRecord)
                         @if($break && $break->end_time == null)
-                            <a href="{{ route('break.form', ['break' => $break->id]) }}" class="btn btn-primary">Stop Break</a>
+                            <a href="{{ route('break.form', ['employee' => auth()->user()->id,'break' => $break->id]) }}" class="btn btn-primary">Stop Break</a>
                         @else
                             <a href="{{ route('break.form') }}" class="btn btn-primary">Take Break</a>
 

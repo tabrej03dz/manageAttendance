@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Off;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -18,15 +20,23 @@ class RoleController extends Controller
     }
 
     public function create(){
-        return view('dashboard.role.create');
+        if (auth()->user()->hasRole('super_admin')){
+            $offices = Office::all();
+        }else{
+            $offices = auth()->user()->offices;
+        }
+        return view('dashboard.role.create', compact('offices'));
     }
 
     public function store(Request $request){
         $request->validate([
-            'name' => 'required|string',
+            'name' => 'required|unique:roles,name',
+            'office' => 'required',
         ]);
-
-        $status = Role::create(['name' => $request->name, 'created_by'=> auth()->user()->id]);
+        if (Role::where('name', $request->office.'__'.$request->name)->exists()){
+            return back()->with('error', 'This role is already exists');
+        }
+        $status = Role::create(['name' => $request->office.'__'.$request->name, 'created_by'=> auth()->user()->id]);
         if ($status){
             request()->session()->flash('success', 'Role created successfully');
         }else{

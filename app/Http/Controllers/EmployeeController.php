@@ -63,6 +63,7 @@ class EmployeeController extends Controller
         $employee->joining_date = $request->joining_date;
         $employee->save();
 
+
         // Assign role to employee
         if ($request->role) {
             $employee->assignRole($request->role);
@@ -154,7 +155,6 @@ class EmployeeController extends Controller
             $user->revokePermissionTo($permission); // Remove the permission from the user
             return back()->with('success', 'Permission removed from the user successfully.');
         }
-
-        return response()->with('error', 'User does not have this permission.');
+        return back()->with('error', 'User does not have this permission.');
     }
 }

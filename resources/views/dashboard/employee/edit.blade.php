@@ -41,7 +41,7 @@
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label">Phone</label>
                                     <input type="text" class="form-control" id="phone" name="phone"
-                                        value="{{ $employee->phone ?? '' }}" required>
+                                        value="{{ $employee->phone ?? '' }}">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="address" class="form-label">Full Address</label>

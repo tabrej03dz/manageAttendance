@@ -1,6 +1,13 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    @if($errors->any())
+        <ul>
+            @foreach($errors->all() as $error)
+                <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    @endif
     <div class="py-12">
         <div class="content">
             <div class="container-fluid">
@@ -12,9 +19,25 @@
                             <h3 class="mb-0 py-3">Create Role</h3>
                         </div>
                         <div class="card-body">
-                            <div class="form-group mb-3">
+                            <div class="row">
+                            <div class="form-group col-md-6 mb-3">
                                 <label for="name" class="form-label">Price Per Employee</label>
-                                <input type="text" class="form-control" id="name" name="name">
+                                <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}">
+                            </div>
+
+                            @if(auth()->user()->hasRole('super_admin|owner'))
+                            <div class="form-group col-md-6 mb-3">
+                                <label for="name" class="form-label">Office for the role</label>
+                                <select name="office" id="" class="form-control">
+                                    <option value="">Select Office</option>
+                                    @foreach($offices as $office)
+                                        <option value="{{$office->name}}">{{$office->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @else
+                                <input type="text"  id="name" name="office" value="{{auth()->user()->office->name}}" hidden>
+                            @endif
                             </div>
 
                             <div class="text-center">
