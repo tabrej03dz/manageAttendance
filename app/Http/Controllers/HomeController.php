@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
 use App\Models\Leave;
+use App\Models\Office;
 use App\Models\User;
 use App\Models\UserAdditionalInformation;
 use Carbon\Carbon;
@@ -90,6 +91,9 @@ class HomeController extends Controller
                 $office = $user->office;
                 $employees = $office->users;
             }
+        }elseif($user->hasRole('owner')){
+            $officeIds = Office::where('owner_id', $user->id)->pluck('id');
+            $employees = User::whereIn('office_id', $officeIds)->get();
         }else{
             if ($user->hasRole('team_leader')){
                 $employees = $user->members;

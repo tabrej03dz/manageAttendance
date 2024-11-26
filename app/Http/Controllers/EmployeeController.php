@@ -14,12 +14,14 @@ use Spatie\Permission\Models\Permission;
 class EmployeeController extends Controller
 {
     public function index(){
-        if (auth()->user()->hasRole('super_admin')){
-            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
-        }else{
-            $office = auth()->user()->office;
-            $employees = $office->users;
-        }
+//        if (auth()->user()->hasRole('super_admin')){
+//            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
+//        }else{
+//            $office = auth()->user()->office;
+//            $employees = $office->users;
+//        }
+
+        $employees = HomeController::employeeList();
         return view('dashboard.employee.index', compact('employees'));
     }
 
@@ -28,7 +30,7 @@ class EmployeeController extends Controller
             $offices = Office::all();
             $teamLeaders = User::role('team_leader')->get();
         }else{
-            $offices = Office::where('id', auth()->user()->office_id)->get();
+            $offices = Office::where('owner_id', auth()->user()->id)->get();
             $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
         }
         return view('dashboard.employee.create', compact('offices', 'teamLeaders'));
