@@ -183,7 +183,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('permission')->name('permission.')->group(function(){
        Route::get('/', [\App\Http\Controllers\PermissionController::class, 'index'])->name('index');
+       Route::get('create', [\App\Http\Controllers\PermissionController::class, 'create'])->name('create');
        Route::post('give', [\App\Http\Controllers\PermissionController::class, 'givePermission'])->name('give');
+       Route::post('store', [\App\Http\Controllers\PermissionController::class, 'store'])->name('store');
     });
 
     Route::prefix('advance')->name('advance.')->group(function(){

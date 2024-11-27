@@ -15,10 +15,12 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Employees</h1>
 
+            @can('create employee')
             <a href="{{route('employee.create')}}"
                 class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create
             </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -47,21 +49,24 @@
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
                         <td class="py-3 px-6 text-left">
+                            @can('change status of employye')
                             <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($employee->status == '1')
                                     bg-green-100 text-green-800">Active
                                 @else
                                     bg-red-100 text-red-800">Inactive
                                 @endif
-
                             </a>
+                            @endcan
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
+                            @can('edit employee')
                             <a title="Edit" href="{{ route('employee.edit', ['employee' => $employee->id]) }}"
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
                             </a>
+                            @endcan
+                            @can('delete employee')
                             <form action="{{ route('employee.delete', ['employee' => $employee->id]) }}" method="post">
                                 @csrf
                                 <button title="Delete" type="submit"
@@ -69,17 +74,20 @@
                                     <span class="material-icons">delete</span>
                                 </button>
                             </form>
+                            @endcan
+                            @can('show profile of employee')
                             <a title="Profile" href="{{ route('employee.profile', ['user' => $employee->id]) }}"
                                 class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">account_circle</span>
                             </a>
+                            @endcan
 
+                            @can('show permissions of employee')
                             <a title="Profile" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">account_circle</span>
                             </a>
-
-                            @endrole
+                            @endcan
                         </td>
                     </tr>
                     @endforeach
@@ -87,6 +95,4 @@
             </table>
         </div>
     </div>
-
-
 @endsection

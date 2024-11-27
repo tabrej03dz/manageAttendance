@@ -3,8 +3,10 @@
 @section('content')
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">Due Payments</h1>
+            <h1 class="text-2xl font-bold">Advance Payments</h1>
+            @can('make advance payment')
             <a href="{{route('advance.create')}}" class="btn btn-primary">Make Advance Payment</a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">

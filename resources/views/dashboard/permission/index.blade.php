@@ -3,13 +3,13 @@
 
     <!-- /.card -->
     <div class="card">
-        <form action="{{route('permission.give')}}" method="post">
-            @csrf
             <div class="card-header">
-                <h3 class="card-title">DataTable with default features</h3>
+                <h3 class="card-title">Permissions</h3>
+                <a href="{{route('permission.create')}}" class="btn btn-primary">Create Permission</a>
             </div>
             <!-- /.card-header -->
-
+        <form action="{{route('permission.give')}}" method="post">
+            @csrf
             <div class="card-body">
                 <div class="form-row align-items-center">
                     <div class="col-12 col-sm-auto mb-md-3">

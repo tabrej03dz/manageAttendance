@@ -5,10 +5,12 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Manage Offs</h1>
 
+            @can('create off')
             <a href="{{route('off.create')}}"
                 class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create Off
             </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -20,9 +22,9 @@
                         <th class="py-3 px-6 text-left">Date</th>
                         <th class="py-3 px-6 text-left">Is Off</th>
                         <th class="py-3 px-6 text-left">Description</th>
-                        @role('super_admin|admin')
+
                         <th class="py-3 px-6 text-left">Action</th>
-                        @endrole
+
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -35,10 +37,13 @@
                         <td class="py-3 px-6 text-left">{{$off->description}}</td>
                         @role('super_admin|admin')
                         <td class="py-3 px-6 text-left flex space-x-2">
+                            @can('edit off')
                             <a title="Edit" href="{{route('off.edit', ['off' => $off->id])}}"
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
                             </a>
+                            @endcan
+                            @can('delete off')
                             <form action="{{route('off.delete', ['off' => $off->id])}}" method="post">
                                 @csrf
                             <button title="Delete" type="submit"
@@ -46,8 +51,8 @@
                                 <span class="material-icons">delete</span>
                             </button>
                             </form>
+                                @endcan
                         </td>
-                        @endrole
                     </tr>
                     @endforeach
                     <!-- Additional rows can go here -->

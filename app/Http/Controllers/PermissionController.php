@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
@@ -11,7 +12,12 @@ class PermissionController extends Controller
     public function index(){
         $users = HomeController::employeeList();
         $roles = Role::all();
-        $permissions = auth()->user()->getAllPermissions();
+        $user = auth()->user();
+        if ($user->hasRole('super_admin')){
+            $permissions = Permission::all();
+        }else{
+            $permissions = $user->getAllPermissions();
+        }
         return view('dashboard.permission.index', compact('permissions', 'users', 'roles'));
     }
 
@@ -31,7 +37,18 @@ class PermissionController extends Controller
             $role->givePermissionTo($request->permissions);
         }
         return back()->with('success','Permissions given successfully');
+    }
 
+    public function create(){
+        return view('dashboard.permission.create');
+    }
 
+    public function store(Request $request){
+        $request->validate([
+            'permission_name' => 'required|string|unique:permissions,name',
+        ]);
+
+        Permission::create(['name' => $request->permission_name]);
+        return redirect('permission')->with('success', 'permission created successfully');
     }
 }

@@ -11,34 +11,19 @@
     <div class="py-12">
         <div class="content">
             <div class="container-fluid">
-                <h2 class="text-center mb-4">Create Role</h2>
-                <form action="{{ route('role.store') }}" method="POST">
+                <h2 class="text-center mb-4">Create Permission</h2>
+                <form action="{{ route('permission.store') }}" method="POST">
                     @csrf
                     <div class="card shadow-lg border-danger rounded-3 mb-4">
                         <div class="card-header bg-danger text-white text-center rounded-top">
-                            <h3 class="mb-0 py-3">Create Role</h3>
+                            <h3 class="mb-0 py-3">Create Permission</h3>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                            <div class="form-group col-md-6 mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}">
-                            </div>
+                                <div class="form-group col-md-6 mb-3">
+                                    <label for="permission_name" class="form-label">Permission Name</label>
+                                    <input type="text" class="form-control" id="permission_name" name="permission_name" value="{{old('permission_name')}}">
+                                </div>
 
-                            @if(auth()->user()->hasRole('super_admin|owner'))
-                            <div class="form-group col-md-6 mb-3">
-                                <label for="name" class="form-label">Office for the role</label>
-                                <select name="office" id="" class="form-control">
-                                    <option value="">Select Office</option>
-                                    @foreach($offices as $office)
-                                        <option value="{{$office->name}}">{{$office->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @else
-                                <input type="text"  id="name" name="office" value="{{auth()->user()->office->name}}" hidden>
-                            @endif
-                            </div>
 
                             <div class="text-center">
                                 <button type="submit" class="btn btn-danger btn-lg">Submit</button>

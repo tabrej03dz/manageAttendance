@@ -4,10 +4,12 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Offices</h1>
 
+            @can('create office')
             <a href="{{ route('office.create') }}"
                 class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create Office
             </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -44,21 +46,25 @@
                             </a>
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
+                            @can('edit office')
                             <a title="Edit" href="{{route('office.edit', ['office' => $office->id])}}"
                                 class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
                             </a>
+                            @endcan
+                            @can('delete office')
                             <a title="Delete" href="{{route('office.delete', ['office' => $office->id])}}"
                                 class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span>
                             </a>
+                                @endcan
 
+                                @can('show office details')
                             <a title="Details" href="{{route('office.detail', ['office' => $office->id])}}"
                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">add</span>
                             </a>
-                            @endrole
+                                @endcan
                         </td>
                     </tr>
                     @endforeach

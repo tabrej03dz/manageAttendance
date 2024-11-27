@@ -10,20 +10,22 @@
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <!-- Mobile View -->
         <div class="md:hidden space-y-4">
+            <form action="{{ route('attendance.day-wise') }}">
             <div class="space-y-4">
                 <div class="flex flex-col w-full">
                     <label for="to-date-mobile" class="mb-1 text-sm font-medium text-gray-700">Select Date:</label>
-                    <input type="text" id="to-date-mobile" name="date"
+                    <input type="date" id="to-date-mobile" name="date"
                         class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Select To Date">
                 </div>
             </div>
             <div class="flex flex-col space-y-2">
-                <button
+                <button type="submit"
                     class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full">Filter</button>
                 <button
                     class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full">Clear</button>
             </div>
+            </form>
         </div>
 
         <!-- Web View (enhanced) -->
@@ -123,18 +125,20 @@
                                                             <i class="text-warning" style="margin-left: 5px;">P</i>
                                                         @endif
                                                     </span>
-                                                    @can('approve late message|reject late message')
                                                     <div class="mt-2 flex space-x-2">
-                                                        @if($record->check_in_note_status != 'approved')
-                                                            <a title="Approve"
-                                                            href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
-                                                            class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
-                                                                <i class="fas fa-check-circle"></i>
+                                                        @can('approve late message')
+                                                            @if($record->check_in_note_status != 'approved')
+                                                                <a title="Approve"
+                                                                href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'approved']) }}"
+                                                                class="bg-green-500 hover:bg-green-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 flex items-center space-x-1">
+                                                                    <i class="fas fa-check-circle"></i>
 
-                                                            </a>
-                                                        @endif
+                                                                </a>
+                                                            @endif
+                                                        @endcan
 
-                                                        @if($record->check_in_note_status != 'rejected')
+                                                        @can('reject late message')
+                                                    @if($record->check_in_note_status != 'rejected')
                                                             <a title="Reject"
                                                             href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_in_note', 'status' => 'rejected']) }}"
                                                             class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-2 md:py-1.5 md:px-3 text-xs md:text-sm rounded-md shadow-sm transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 flex items-center space-x-1">
@@ -142,8 +146,8 @@
 
                                                             </a>
                                                         @endif
+                                                            @endcan
                                                     </div>
-                                                    @endcan
                                                 @endif
 
                                             </td>
@@ -176,6 +180,7 @@
 
                                                 @can('approve before going message|reject before going message')
                                                 <div class="mt-2 flex space-x-2">
+                                                    @can('approve before going message')
                                                     @if($record->check_out_note_status != 'approved')
                                                         <a title="Approve"
                                                         href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'approved']) }}"
@@ -184,7 +189,9 @@
 
                                                         </a>
                                                     @endif
+                                                    @endcan
 
+                                                    @can('reject before going message')
                                                     @if($record->check_out_note_status != 'rejected')
                                                         <a title="Reject"
                                                         href="{{ route('attendance.user.note.response', ['record' => $record->id, 'type' => 'check_out_note', 'status' => 'rejected']) }}"
@@ -193,6 +200,7 @@
 
                                                         </a>
                                                     @endif
+                                                        @endcan
                                                 </div>
                                                 @endcan
                                             @endif
@@ -234,14 +242,14 @@
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if($record)
-                                                @role('super_admin|admin|team_leader')
+                                                @can('add note')
                                                 <!-- Trigger Button -->
                                                 <a title="Note" href="#"
                                                     class="bg-yellow-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-50 flex justify-center items-center"
                                                     onclick="togglePopup(event)">
                                                     <span class="material-icons">note</span>
                                                 </a>
-                                                @endrole
+                                                @endcan
                                                 <!-- Popup Form -->
                                                 <div id="popupForm"
                                                     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">

@@ -33,10 +33,12 @@
                         {{--                            </a>--}}
                         {{--                        </td>--}}
                         <td class="py-3 px-6 text-left flex space-x-2">
+                            @can('remove permission of employee')
                             <a title="remove" href="{{ route('employee.permissionRemove', ['permission' => $permission->id, 'user' => $user->id]) }}"
                                class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span> <!-- Correct icon name -->
                             </a>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach

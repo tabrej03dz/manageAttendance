@@ -99,6 +99,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'manual attendance entry']);
         Permission::create(['name' => 'show permissions']);
         Permission::create(['name' => 'advance salary']);
+        Permission::create(['name' => 'remove permission of employee']);
 
         $ownerPermissions = [
             'check-in', 'check-out', 'show dashboard',
