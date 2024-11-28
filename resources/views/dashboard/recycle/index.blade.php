@@ -41,23 +41,22 @@
                         <td class="py-3 px-6 text-left">{{$user->phone}}</td>
 
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
 
-                            <!-- Restore Button -->
-{{--                            <a title="Restore" href="{{ route('recycle.user.restore', ['user' => $user->id]) }}"--}}
-{{--                               class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">--}}
-{{--                                <span class="material-icons">restore</span>--}}
-{{--                            </a>--}}
 
+                           @can('permanent delete employee')
                             <!-- Hard Delete Button -->
                             <a title="Hard Delete" href="{{ route('recycle.user.delete', ['user' => $user->id]) }}"
                                class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50"
                                onclick="return confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')">
                                 <span class="material-icons">delete_forever</span>
                             </a>
-
-
-                            @endrole
+                            @endcan
+                            @can('restore employee')
+                            <a title="Restore" href="{{ route('recycle.user.restore', ['user' => $user->id]) }}"
+                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">restore</span>
+                            </a>
+                            @endcan
                         </td>
                     </tr>
                 @endforeach

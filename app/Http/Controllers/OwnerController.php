@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Testing\Fluent\Concerns\Has;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class OwnerController extends Controller
@@ -20,7 +21,41 @@ class OwnerController extends Controller
 
     public function create(){
 
-        return view('dashboard.owner.create');
+        $permissions = Permission::all();
+        $defaultPermissions = [
+            'check-in', 'check-out', 'show dashboard',
+            'show records',
+            'show records of employees',
+            'show attendance',
+            'approve late message',
+            'reject late message',
+            'approve before going message',
+            'reject before going message',
+            'add note',
+            'show offices',
+            'create office',
+            'edit office',
+            'delete office',
+            'show employees',
+            'create employee',
+            'edit employee',
+            'delete employee',
+            'show profile of employee',
+            'change status of employee',
+            'show leaves',
+            'request for leave',
+            'approve leave',
+            'reject leave',
+            'manage offs',
+            'create off',
+            'edit off',
+            'delete off',
+            'show reports',
+            'download reports',
+            'filter report',
+            'show breaks',
+        ];
+        return view('dashboard.owner.create', compact('permissions', 'defaultPermissions'));
     }
 
     public function store(Request $request){
@@ -45,16 +80,17 @@ class OwnerController extends Controller
                 $owner->photo = str_replace('public/', '', $photo);
                 $owner->save();
             }
-
             $plan = Plan::create([
                 'number_of_offices' => $request->number_of_offices,
                 'number_of_employees' => $request->number_of_employees,
                 'duration' => $request->number_of_employees,
                 'start_date' => $request->start_date ?? Carbon::today(),
                 'price' => $request->price,
-                'end_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($package->duration)->toDateString(),
+                'end_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($request->duration)->toDateString(),
                 'user_id' => $owner->id,
             ]);
+            $owner->givePermissionTo($request->permissions);
+
             request()->session()->flash('success', 'Owner Creates successfully');
         }else{
             request()->session()->flash('error', 'Failed, Try again!');

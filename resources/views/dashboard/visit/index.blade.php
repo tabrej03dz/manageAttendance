@@ -14,11 +14,12 @@
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Employees</h1>
-
+            @can('create visit')
             <a href="{{route('visit.create')}}"
                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create
             </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -79,7 +80,7 @@
                                 </a>
 
                             @else
-                                @role('super_admin|admin')
+                                @can('pay visit expense')
                                 <a title="Mark as Paid" href="{{ route('visit.paid', ['visit' => $visit->id]) }}"
                                    class="flex items-center justify-center bg-green-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 w-full md:w-auto">
                                     Mark as Paid
@@ -89,9 +90,7 @@
                                        class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                         <span class="material-icons">close</span>
                                     </a>
-
-                                    @endrole
-
+                                @endcan
                             @endif
                         </td>
                         <td class="py-3 px-6 text-left">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Office;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -21,6 +22,11 @@ class OfficeController extends Controller
         if (auth()->user()->hasRole('super_admin')){
             $owners = User::role('owner')->get();
         }else{
+            $user = auth()->user();
+            $plan = Plan::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+            if ($plan->number_of_offices <= $user->offices->count()){
+                return back()->with('error', 'You Office creation limit is exceeded');
+            }
             $owners = null;
         }
         return view('dashboard.office.create', compact('owners'));

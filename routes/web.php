@@ -13,6 +13,7 @@ use App\Http\Controllers\VisitController;
 use \App\Http\Controllers\OwnerController;
 use \App\Http\Controllers\LunchBreakController;
 use \App\Http\Controllers\AdvancePaymentController;
+use \App\Http\Controllers\PlanController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -78,14 +79,14 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('update/{owner}', [OwnerController::class, 'update'])->name('update');
        Route::post('delete/{owner}', [OwnerController::class, 'delete'])->name('delete');
        Route::get('status/{owner}', [OwnerController::class, 'status'])->name('status');
-       Route::get('plan/{owner}', [\App\Http\Controllers\PlanController::class, 'ownerPlan'])->name('plan');
+       Route::get('plan/{owner}', [PlanController::class, 'ownerPlan'])->name('plan');
     });
 
     Route::prefix('plan')->name('plan.')->group(function (){
-        Route::get('edit/{plan}', [\App\Http\Controllers\PlanController::class, 'edit'])->name('edit');
-        Route::post('update/{plan}', [\App\Http\Controllers\PlanController::class, 'update'])->name('update');
-        Route::get('status/{plan}', [\App\Http\Controllers\PlanController::class, 'status'])->name('status');
-        Route::post('delete/{plan}', [\App\Http\Controllers\PlanController::class, 'delete'])->name('delete');
+        Route::get('edit/{plan}', [PlanController::class, 'edit'])->name('edit');
+        Route::post('update/{plan}', [PlanController::class, 'update'])->name('update');
+        Route::get('status/{plan}', [PlanController::class, 'status'])->name('status');
+        Route::post('delete/{plan}', [PlanController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('break')->name('break.')->group(function(){
@@ -177,6 +178,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('recycle')->name('recycle.')->group(function(){
         Route::get('/', [\App\Http\Controllers\RecycleController::class, 'index'])->name('index');
         Route::get('user/delete/{user}', [\App\Http\Controllers\RecycleController::class, 'userDelete'])->name('user.delete');
+        Route::get('user/restore/{user}', [\App\Http\Controllers\RecycleController::class, 'userRestore'])->name('user.restore');
     });
 
     Route::get('manual/entry/form', [AttendanceRecordController::class, 'manualEntryForm'])->name('manual.entry.form');

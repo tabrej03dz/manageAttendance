@@ -4,10 +4,12 @@
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Offices</h1>
 
+            @can('create role')
             <a href="{{ route('role.create') }}"
                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create Role
             </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -42,15 +44,19 @@
 {{--                            </a>--}}
 {{--                        </td>--}}
                         <td class="py-3 px-6 text-left flex space-x-2">
+                            @can('delete role')
                             <a title="delete" href="{{ route('role.delete', ['role' => $role->id]) }}"
                                class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                                 <span class="material-icons">delete</span> <!-- Correct icon name -->
                             </a>
+                            @endcan
 
+                            @can('show permissions of role')
                             <a title="permissions" href="{{ route('role.permission', ['role' => $role->id]) }}"
                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
                                 <span class="material-icons">manage_accounts</span> <!-- Example of a valid Material Icon -->
                             </a>
+                            @endcan
 
                         </td>
                     </tr>

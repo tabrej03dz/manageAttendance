@@ -83,6 +83,14 @@
 
                             </div>
 
+                            <h2 class="text-lg">Permissions:-</h2>
+
+                            @foreach($permissions as $permission)
+                                <input type="checkbox" name="permissions[]" id="{{$permission->id}}" value="{{$permission->name}}" @if(in_array($permission->name, $defaultPermissions)) checked @endif >
+                                <label for="{{$permission->id}}">{{$permission->name}}</label>
+                            @endforeach
+
+
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-danger btn-lg">Register</button>
                             </div>

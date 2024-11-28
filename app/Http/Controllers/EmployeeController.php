@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EmployeeRequest;
 use App\Models\AttendanceRecord;
 use App\Models\Office;
+use App\Models\Plan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -30,6 +31,15 @@ class EmployeeController extends Controller
             $offices = Office::all();
             $teamLeaders = User::role('team_leader')->get();
         }else{
+            $user = auth()->user();
+            $plan = Plan::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+            $employeeCount = 0;
+            foreach ($user->offices as $office){
+                $employeeCount += $office->users->count();
+            }
+            if ($employeeCount >= $plan->number_of_employees){
+                return back()->with('error', 'Your employee creation limit exceeded!');
+            }
             $offices = Office::where('owner_id', auth()->user()->id)->get();
             $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
         }

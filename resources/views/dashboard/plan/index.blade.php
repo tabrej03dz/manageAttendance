@@ -14,13 +14,12 @@
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Owners</h1>
-
-            @role('super_admin')
-{{--            <a href="{{route('owner.create')}}"--}}
-{{--               class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">--}}
-{{--                Create Owner--}}
-{{--            </a>--}}
-            @endrole
+            @can('create owners')
+            <a href="{{route('owner.create')}}"
+               class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                Create Owner
+            </a>
+            @endcan
         </div>
 
         <div class="overflow-x-auto">
@@ -61,11 +60,13 @@
                             </a>
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
-                            @role('super_admin|admin')
+                          @can('edit plan')
                             <a title="Edit" href="{{ route('plan.edit', ['plan' => $plan->id]) }}"
                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
                                 <span class="material-icons">edit</span>
                             </a>
+                            @endcan
+                            @can('delete plan')
                             <form action="{{ route('plan.delete', ['plan' => $plan->id]) }}" method="post">
                                 @csrf
                                 <button title="Delete" type="submit"
@@ -73,12 +74,12 @@
                                     <span class="material-icons">delete</span>
                                 </button>
                             </form>
-{{--                            <a title="Plans" href="{{ route('plan.plan', ['plan' => $plan->id]) }}"--}}
-{{--                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">--}}
-{{--                                <span class="material-icons">details</span>--}}
-{{--                            </a>--}}
+                              @endcan
 
-                            @endrole
+                            <a title="Plans" href="{{ route('plan.plan', ['plan' => $plan->id]) }}"
+                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                <span class="material-icons">details</span>
+                            </a>
                         </td>
                     </tr>
                 @endforeach

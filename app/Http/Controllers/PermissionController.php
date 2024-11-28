@@ -11,14 +11,15 @@ class PermissionController extends Controller
 {
     public function index(){
         $users = HomeController::employeeList();
-        $roles = Role::all();
-        $user = auth()->user();
-        if ($user->hasRole('super_admin')){
+
+        if(auth()->user()->hasRole('super_admin')){
+            $roles = Role::all();
             $permissions = Permission::all();
         }else{
-            $permissions = $user->getAllPermissions();
+            $roles = Role::where('created_by', auth()->user()->id)->get();
+            $permissions = auth()->user()->getAllPermissions();
         }
-        return view('dashboard.permission.index', compact('permissions', 'users', 'roles'));
+        return view('dashboard.permission.index', compact('roles', 'permissions', 'users'));
     }
 
     public function givePermission(Request $request){
