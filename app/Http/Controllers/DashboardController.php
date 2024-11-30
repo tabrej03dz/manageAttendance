@@ -117,8 +117,6 @@ class DashboardController extends Controller
 //        Permission::create(['name' => 'manual attendance entry']);
 //        Permission::create(['name' => 'advance salary']);
 //        Permission::create(['name' => 'remove permission of employee']);
-//        Permission::create(['name' => 'show permissions']);
-        Permission::create(['name' => 'make advance payment']);
         Permission::create(['name' => 'show roles']);
         Permission::create(['name' => 'create permission']);
         Permission::create(['name' => 'give permission to role']);
