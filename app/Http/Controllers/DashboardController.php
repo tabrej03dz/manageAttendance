@@ -46,12 +46,12 @@ class DashboardController extends Controller
 
     public function dashboard(){
 
-//        $user = User::where('name', 'Super Admin')->first();
-//        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
-//        $admin = Role::firstOrCreate(['name' => 'admin']);
-//        $teamLeader = Role::firstOrCreate(['name' => 'team_leader']);
-//        $employee = Role::firstOrCreate(['name' => 'employee']);
-//        $owner = Role::firstOrCreate(['name' => 'owner']);
+        $user = User::where('name', 'Super Admin')->first();
+        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $teamLeader = Role::firstOrCreate(['name' => 'team_leader']);
+        $employee = Role::firstOrCreate(['name' => 'employee']);
+        $owner = Role::firstOrCreate(['name' => 'owner']);
 //
 //
 //        Permission::create(['name' => 'show dashboard']);
@@ -130,149 +130,148 @@ class DashboardController extends Controller
 //        $showPermissions = Permission::create(['name' => 'show permissions']);
 
 
-//        $ownerPermissions = [
-//            'check-in', 'check-out', 'show dashboard',
-//            'show records',
-//            'show records of employees',
-//            'show attendance',
-//            'approve late message',
-//            'reject late message',
-//            'approve before going message',
-//            'reject before going message',
-//            'add note',
-//            'show employees',
-//            'create employee',
-//            'edit employee',
-//            'delete employee',
-//            'show profile of employee',
-//            'change status of employee',
-//            'show leaves',
-//            'request for leave',
-//            'approve leave',
-//            'reject leave',
-//            'show offices',
-//            'create office',
-//            'edit office',
-//            'delete office',
-//            'show office office details',
-//            'manage offs',
-//            'create off',
-//            'edit off',
-//            'delete off',
-//            'show polices',
-//            'make policy',
-//            'edit policy',
-//            'delete policy',
-//            'show reports',
-//            'download reports',
-//            'filter report',
-//            'mark attendance of employees',
-//            'check-in attendance of employee',
-//            'check-out attendance of employee',
-//            'show salaries',
-//            'pay salary',
-//            'show visits',
-//            'create visit',
-//            'approve visit',
-//            'reject visit',
-//            'visit mark as paid',
-//            'show breaks',
-//            'manual attendance entry',
-//            'show permissions',
-//        ];
-//        $adminPermissions = [
-//            'check-in', 'check-out', 'show dashboard',
-//            'show records',
-//            'show records of employees',
-//            'show attendance',
-//            'approve late message',
-//            'reject late message',
-//            'approve before going message',
-//            'reject before going message',
-//            'add note',
-//            'show employees',
-//            'create employee',
-//            'edit employee',
-//            'delete employee',
-//            'show profile of employee',
-//            'change status of employee',
-//            'show leaves',
-//            'request for leave',
-//            'approve leave',
-//            'reject leave',
-//            'manage offs',
-//            'create off',
-//            'edit off',
-//            'delete off',
-//            'show polices',
-//            'make policy',
-//            'edit policy',
-//            'delete policy',
-//            'show reports',
-//            'download reports',
-//            'filter report',
-//            'mark attendance of employees',
-//            'check-in attendance of employee',
-//            'check-out attendance of employee',
-//            'show payments',
-//            'add payment',
-//            'show salaries',
-//            'pay salaries',
-//            'show visits',
-//            'create visit',
-//            'approve visit',
-//            'reject visit',
-//            'visit mark as paid',
-//            'show breaks',
-//            'manual attendance entry',
-//        ];
+        $ownerPermissions = [
+            'check-in', 'check-out', 'show dashboard',
+            'show records',
+            'show records of employees',
+            'show attendance',
+            'approve late message',
+            'reject late message',
+            'approve before going message',
+            'reject before going message',
+            'add note',
+            'show employees',
+            'create employee',
+            'edit employee',
+            'delete employee',
+            'show profile of employee',
+            'change status of employee',
+            'show leaves',
+            'request for leave',
+            'approve leave',
+            'reject leave',
+            'show offices',
+            'create office',
+            'edit office',
+            'delete office',
+            'show office office details',
+            'manage offs',
+            'create off',
+            'edit off',
+            'delete off',
+            'show polices',
+            'make policy',
+            'edit policy',
+            'delete policy',
+            'show reports',
+            'download reports',
+            'filter report',
+            'mark attendance of employees',
+            'check-in attendance of employee',
+            'check-out attendance of employee',
+            'show salaries',
+            'pay salary',
+            'show visits',
+            'create visit',
+            'approve visit',
+            'reject visit',
+            'visit mark as paid',
+            'show breaks',
+            'manual attendance entry',
+            'show permissions',
+        ];
+        $adminPermissions = [
+            'check-in', 'check-out', 'show dashboard',
+            'show records',
+            'show records of employees',
+            'show attendance',
+            'approve late message',
+            'reject late message',
+            'approve before going message',
+            'reject before going message',
+            'add note',
+            'show employees',
+            'create employee',
+            'edit employee',
+            'delete employee',
+            'show profile of employee',
+            'change status of employee',
+            'show leaves',
+            'request for leave',
+            'approve leave',
+            'reject leave',
+            'manage offs',
+            'create off',
+            'edit off',
+            'delete off',
+            'show polices',
+            'make policy',
+            'edit policy',
+            'delete policy',
+            'show reports',
+            'download reports',
+            'filter report',
+            'mark attendance of employees',
+            'check-in attendance of employee',
+            'check-out attendance of employee',
+            'show payments',
+            'add payment',
+            'show salaries',
+            'pay salaries',
+            'show visits',
+            'create visit',
+            'approve visit',
+            'reject visit',
+            'visit mark as paid',
+            'show breaks',
+            'manual attendance entry',
+        ];
+
+
+
+        $teamLeaderPermissions = [
+            'check-in', 'check-out', 'show dashboard',
+            'show records',
+            'show records of employees',
+            'show attendance',
+            'approve late message',
+            'reject late message',
+            'approve before going message',
+            'reject before going message',
+            'add note',
+            'show employees',
+            'create employee',
+            'show leaves',
+            'request for leave',
+            'approve leave',
+            'reject leave',
+            'show reports',
+            'mark attendance of employees',
+            'check-in attendance of employee',
+            'check-out attendance of employee',
+            'show breaks',
+            'manual attendance entry',
+        ];
+
+        $employeePermissions = [
+            'check-in', 'check-out', 'show dashboard',
+            'show records',
+            'show attendance',
+            'show leaves',
+            'request for leave',
+            'filter report',
+            'show breaks',
+
+        ];
 //
-//
-//
-//        $teamLeaderPermissions = [
-//            'check-in', 'check-out', 'show dashboard',
-//            'show records',
-//            'show records of employees',
-//            'show attendance',
-//            'approve late message',
-//            'reject late message',
-//            'approve before going message',
-//            'reject before going message',
-//            'add note',
-//            'show employees',
-//            'create employee',
-//            'show leaves',
-//            'request for leave',
-//            'approve leave',
-//            'reject leave',
-//            'show reports',
-//            'mark attendance of employees',
-//            'check-in attendance of employee',
-//            'check-out attendance of employee',
-//            'show breaks',
-//            'manual attendance entry',
-//        ];
-//
-//        $employeePermissions = [
-//            'check-in', 'check-out', 'show dashboard',
-//            'show records',
-//            'show attendance',
-//            'show leaves',
-//            'request for leave',
-//            'filter report',
-//            'show breaks',
-//
-//        ];
-//
-//        $user->assignRole('super_admin');
-//        $superAdmin->givePermissionTo($showPermissions);
-//        $superAdmin->givePermissionTo(Permission::all());
-//        $owner->givePermissionTo(Permission::whereIn('name', $ownerPermissions)->get());
-//        $admin->givePermissionTo(Permission::whereIn('name', $adminPermissions)->get());
-//        $teamLeader->givePermissionTo(Permission::whereIn('name', $teamLeaderPermissions)->get());
-//        $employee->givePermissionTo(Permission::whereIn('name', $employeePermissions)->get());
-//
-//        dd('permission');
+        $user->assignRole('super_admin');
+        $superAdmin->givePermissionTo(Permission::all());
+        $owner->givePermissionTo(Permission::whereIn('name', $ownerPermissions)->get());
+        $admin->givePermissionTo(Permission::whereIn('name', $adminPermissions)->get());
+        $teamLeader->givePermissionTo(Permission::whereIn('name', $teamLeaderPermissions)->get());
+        $employee->givePermissionTo(Permission::whereIn('name', $employeePermissions)->get());
+
+        dd('permission');
         $user = auth()->user();
 //        $halfDayRecords = AttendanceRecord::where('check_in', null)->orWhere('check_out', null)->get();
 //        foreach ($halfDayRecords as $record){
