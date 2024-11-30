@@ -74,7 +74,7 @@
 
 
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light hidden md:flex">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light md:flex">
 
     <ul class="navbar-nav">
         <li class="nav-item">

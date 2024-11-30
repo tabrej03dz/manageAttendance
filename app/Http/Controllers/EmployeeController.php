@@ -31,7 +31,11 @@ class EmployeeController extends Controller
             $offices = Office::all();
             $teamLeaders = User::role('team_leader')->get();
         }else{
-            $user = auth()->user();
+            if (auth()->user()->hasRole('owner')){
+                $user = auth()->user();
+            }else{
+                $user = auth()->user()->office->owner;
+            }
             $plan = Plan::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
             $employeeCount = 0;
             foreach ($user->offices as $office){

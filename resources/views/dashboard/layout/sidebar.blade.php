@@ -1,4 +1,4 @@
-<aside class="main-sidebar sidebar-dark-primary elevation-4 hidden md:block">
+<aside class="main-sidebar sidebar-dark-primary elevation-4 ">
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
@@ -148,6 +148,12 @@
 
                     @endcan
 
+                    <li class="nav-item">
+                        <a href="{{ route('note.index') }}" class="nav-link {{ request()->routeIs('note.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-signal"></i>
+                            <p>Note</p>
+                        </a>
+                    </li>
                     @can('show roles')
                     <li class="nav-item">
                         <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">

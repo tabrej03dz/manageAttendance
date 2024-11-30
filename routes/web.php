@@ -206,6 +206,12 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('permissionRemove/{permission}/{role}', [\App\Http\Controllers\RoleController::class, 'permissionRemove'])->name('permissionRemove');
     });
 
+    Route::prefix('note')->name('note.')->group(function(){
+       Route::get('/', [\App\Http\Controllers\NoteController::class, 'index'])->name('index');
+       Route::get('create', [\App\Http\Controllers\NoteController::class, 'create'])->name('create');
+       Route::post('store', [\App\Http\Controllers\NoteController::class, 'store'])->name('store');
+    });
+
     Route::get('/foo', function () {
         $exitCode = Artisan::call('storage:link');
         if ($exitCode === 0) {
