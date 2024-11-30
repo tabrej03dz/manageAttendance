@@ -148,12 +148,15 @@
 
                     @endcan
 
+
+                    @role('super_admin|owner')
                     <li class="nav-item">
                         <a href="{{ route('note.index') }}" class="nav-link {{ request()->routeIs('note.index') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-signal"></i>
                             <p>Note</p>
                         </a>
                     </li>
+                    @endrole
                     @can('show roles')
                     <li class="nav-item">
                         <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
