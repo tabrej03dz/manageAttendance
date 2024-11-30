@@ -100,6 +100,17 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'show permissions']);
         Permission::create(['name' => 'advance salary']);
         Permission::create(['name' => 'remove permission of employee']);
+        Permission::create(['name' => 'show permissions']);
+        Permission::create(['name' => 'make advance payment']);
+        Permission::create(['name' => 'show roles']);
+        Permission::create(['name' => 'create permission']);
+        Permission::create(['name' => 'give permission to role']);
+        Permission::create(['name' => 'give permission to user']);
+        Permission::create(['name' => 'give permission']);
+        Permission::create(['name' => 'delete role']);
+        Permission::create(['name' => 'show permissions of role']);
+        Permission::create(['name' => 'delete role\'s permission']);
+        Permission::create(['name' => 'pay visit expense']);
 
         $ownerPermissions = [
             'check-in', 'check-out', 'show dashboard',
