@@ -14,7 +14,7 @@
             @csrf
             <div class="card-body">
                 <div class="form-row align-items-center">
-                    @role('super_admin')
+{{--                    @role('super_admin')--}}
                     <div class="col-12 col-sm-auto mb-md-3">
                         <label for="userSelect" class="col-form-label">Select User</label>
                         <select class="form-control" id="userSelect" name="user_id">
@@ -24,8 +24,8 @@
                             @endforeach
                         </select>
                     </div>
-                    @endrole
-                    @role('super_admin')
+{{--                    @endrole--}}
+{{--                    @role('super_admin')--}}
                     <div class="col-12 col-sm-auto mb-md-3">
                         <label for="roleSelect" class="col-form-label">Select Role</label>
                         <select class="form-control" id="roleSelect" name="role_id">
@@ -35,7 +35,7 @@
                             @endforeach
                         </select>
                     </div>
-                    @endrole
+{{--                    @endrole--}}
                     <div class="col-12 col-sm-auto mt-sm-3 mt-md-4 mt-4">
 {{--                        @can('give permission')--}}
                         <input type="submit" value="Give Permission" class="btn btn-success btn-block btn-sm-inline">
