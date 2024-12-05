@@ -5,16 +5,16 @@
     <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Permissions</h3>
-{{--                @can('create permission')--}}
+                @role('super_admin')
                 <a href="{{route('permission.create')}}" class="btn btn-primary">Create Permission</a>
-{{--                @endcan--}}
+                @endrole
             </div>
             <!-- /.card-header -->
         <form action="{{route('permission.give')}}" method="post">
             @csrf
             <div class="card-body">
                 <div class="form-row align-items-center">
-{{--                    @can('give permission to user')--}}
+                    @role('super_admin')
                     <div class="col-12 col-sm-auto mb-md-3">
                         <label for="userSelect" class="col-form-label">Select User</label>
                         <select class="form-control" id="userSelect" name="user_id">
@@ -24,8 +24,8 @@
                             @endforeach
                         </select>
                     </div>
-{{--                    @endcan--}}
-{{--                    @can('give permission to role')--}}
+                    @endrole
+                    @role('super_admin')
                     <div class="col-12 col-sm-auto mb-md-3">
                         <label for="roleSelect" class="col-form-label">Select Role</label>
                         <select class="form-control" id="roleSelect" name="role_id">
@@ -35,7 +35,7 @@
                             @endforeach
                         </select>
                     </div>
-{{--                    @endcan--}}
+                    @endrole
                     <div class="col-12 col-sm-auto mt-sm-3 mt-md-4 mt-4">
 {{--                        @can('give permission')--}}
                         <input type="submit" value="Give Permission" class="btn btn-success btn-block btn-sm-inline">
