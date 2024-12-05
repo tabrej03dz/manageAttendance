@@ -145,6 +145,7 @@ class AttendanceRecordController extends Controller
         ], 200);
     }
 
+
     public function dayWise(Request $request){
         $user = $request->user();
 //        $user = User::find(1);
