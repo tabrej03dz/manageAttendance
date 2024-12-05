@@ -53,10 +53,10 @@ class EmployeeController extends Controller
     public function store(EmployeeRequest $request)
     {
         // Check if the email already exists
-//        $existingEmployee = User::where('email', $request->email)->first();
-//        if ($existingEmployee) {
-//            return back()->withErrors(['email' => 'Email already exists.'])->withInput();
-//        }
+        $existingEmployee = User::where('email', $request->email)->first();
+        if ($existingEmployee) {
+            return back()->withErrors(['email' => 'Email already exists.'])->withInput();
+        }
 
         // Parse check-in and check-out times
         $checkInTime = Carbon::parse($request->check_in_time);

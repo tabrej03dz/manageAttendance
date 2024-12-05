@@ -77,7 +77,7 @@
                                 <div class="col-md-6">
                                     <label for="salary" class="form-label">Salary</label>
                                     <input type="number" class="form-control" id="salary" name="salary" step="0.01"
-                                        value="{{ $employee->salary }}" required>
+                                        value="{{ $employee->salary }}" >
                                 </div>
                                 <div class="col-md-6">
                                     <label for="check_in_time" class="form-label">Check In Time</label>
