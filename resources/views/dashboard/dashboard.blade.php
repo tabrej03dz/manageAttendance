@@ -136,20 +136,7 @@
 
                         @endif
                     @endif
-                    <script>
-                        window.onload = function() {
-                            if (navigator.geolocation) {
-                                navigator.geolocation.getCurrentPosition(function(position) {
-                                    document.getElementById("break_latitude").value = position.coords.latitude;
-                                    document.getElementById("break_longitude").value = position.coords.longitude;
-                                }, function(error) {
-                                    alert("Unable to retrieve your location.");
-                                });
-                            } else {
-                                alert("Geolocation is not supported by this browser.");
-                            }
-                        };
-                    </script>
+
                 </div>
             </div>
         </div>

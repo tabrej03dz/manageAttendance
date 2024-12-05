@@ -130,7 +130,7 @@ class AttendanceRecordController extends Controller
 
     public function checkOut(Request $request, User $user = null){
         $request->validate([
-            'image' => 'required',
+            'image' => '',
             'latitude' => '',
             'longitude' => '',
             'distance' => '',

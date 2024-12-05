@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AttendanceRecordController;
+use \App\Http\Controllers\Api\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,10 +16,26 @@ use App\Http\Controllers\Api\AttendanceRecordController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//
+//
+//});
+
+Route::group(['middleware' => "auth:sanctum"], function(){
     Route::prefix('attendance')->name('attendance.')->group(function (){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
+        Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
+        Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
     });
+
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+
+
+
+
+

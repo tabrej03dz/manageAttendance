@@ -28,18 +28,50 @@
                                     </label>
                                     <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}" placeholder="Enter your full name" required>
                                 </div>
-
-                            </div>
-
-                            <div class="row mb-4">
-
-
                                 <div class="col-md-6">
                                     <label for="description" class="form-label" data-bs-toggle="tooltip" title="Please enter your full description.">
                                         Description
                                     </label>
                                     <textarea name="description" class="form-control" id="description" rows="2" placeholder="Enter your full description">{{ old('description') }}</textarea>
                                 </div>
+
+                            </div>
+
+                            <div class="row mb-4">
+
+                                <div class="col-md-6">
+                                    <label for="office_id" class="form-label" data-bs-toggle="tooltip" title="Please enter your full description.">
+                                        Office
+                                    </label>
+                                    <select name="office_id" id="office_id" class="form-control">
+                                        <option value="">Select office to show note</option>
+                                        @foreach($offices as $office)
+                                            <option value="{{$office->id}}">{{$office->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="role" class="form-label" data-bs-toggle="tooltip" title="Please enter your full description.">
+                                        Role
+                                    </label>
+                                    <select name="role" id="role" class="form-control">
+                                        <option value="">Select role</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="employee" class="form-label" data-bs-toggle="tooltip" title="Please enter your full description.">
+                                        Employees
+                                    </label>
+                                    <select name="employees[]" id="employee" multiple class="form-control">
+                                        <option value="all">Select All</option>
+{{--                                        @foreach($employees as $employee)--}}
+{{--                                                <option value="{{$employee->id}}">{{$employee->name}}</option>--}}
+{{--                                        @endforeach--}}
+                                    </select>
+                                </div>
+
+
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-danger btn-lg w-100">Submit</button>
@@ -85,4 +117,45 @@
             }
         }
     </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#office_id').change(function() {
+                const officeId = $(this).val();
+
+
+                if (officeId) {
+                    $.ajax({
+                        url: `get-office-role-and-employee/${officeId}`,
+                        type: 'GET',
+                        success: function(data) {
+                            console.log('Response:', data); // Debugging
+
+                            // Populate Employees Dropdown
+                            $('#employee').empty().append('<option value="">Select employee to show note</option>');
+                            $('#employee').append('<option value="all">Select All</option>');
+                            data.employees.forEach(employee => {
+                                $('#employee').append(`<option value="${employee.id}">${employee.name}</option>`);
+                            });
+
+                            // Populate Roles Dropdown
+                            $('#role').empty().append('<option value="">Select role to show note</option>');
+                            data.roles.forEach(role => {
+                                $('#role').append(`<option value="${role.name}">${role.name}</option>`);
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', error); // Debugging
+                            alert('Error fetching data.');
+                        }
+                    });
+                } else {
+                    $('#employee, #role').empty().append('<option value="">Select option</option>');
+                }
+            });
+        });
+
+    </script>
+
 @endsection

@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+//use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Api\HomeController;
+use App\Models\AttendanceRecord;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AttendanceRecordController extends Controller
@@ -10,16 +15,14 @@ class AttendanceRecordController extends Controller
     public function checkIn(Request $request, User $user = null)
     {
         $validatedData = $request->validate([
-            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif',
+            'image' => '',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
             'distance' => 'nullable|numeric',
         ]);
-
         if ($user === null) {
-            $user = auth()->user();
+            $user = $request->user();
         }
-
         if ($user->office->under_radius_required === '1') {
             if ($request->distance > $user->office->radius) {
                 return response()->json([
@@ -93,6 +96,65 @@ class AttendanceRecordController extends Controller
                 'message' => 'You have already checked in today.',
             ], 200);
         }
+    }
+
+    public function checkOut(Request $request, User $user = null){
+        $request->validate([
+            'image' => '',
+            'latitude' => '',
+            'longitude' => '',
+            'distance' => '',
+        ]);
+        if ($user == null){
+            $user = $request->user();
+        }
+        $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
+        if ($record){
+            $duration = Carbon::now()->diffInMinutes($record->check_in);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+        }else{
+//            $duration = $user->office_time / 2;
+//            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+            return response()->json([
+                'error' => 'Error, you cannot check-out without check-in'
+            ], 400);
+        }
+        if ($request->file('image')){
+            $file = $request->file('image')->store('public/images');
+            $record->check_out_image = str_replace('public/', '', $file);
+            $record->save();
+        }
+//        if (!$request->latitude || !$request->longitude){
+//            return view('dashboard.settingInstruction');
+//        }
+        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
+            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
+            $userCheckOutTime = Carbon::parse($user->check_out_time);
+            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+            $before = HomeController::getTime($time);
+//            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
+            return response()->json([
+                'message' => 'You are checking out before ' . $before.' write here the reasons',
+                'type' => 'check_out_note',
+                'record' => $record,
+            ], 200);
+        }
+        return response()->json([
+            'message' => 'Checked out successfully',
+            'record' => $record,
+        ], 200);
+    }
+
+    public function dayWise(Request $request){
+        $user = $request->user();
+//        $user = User::find(1);
+        if ($request->date){
+            $date = Carbon::parse($request->date);
+        }else{
+            $date = Carbon::today();
+        }
+        $employees = HomeController::employeeList($user, $date);
+        return response($employees);
     }
 
 }

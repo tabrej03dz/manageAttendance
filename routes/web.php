@@ -210,7 +210,15 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('/', [\App\Http\Controllers\NoteController::class, 'index'])->name('index');
        Route::get('create', [\App\Http\Controllers\NoteController::class, 'create'])->name('create');
        Route::post('store', [\App\Http\Controllers\NoteController::class, 'store'])->name('store');
+        Route::get('status/{note}', [\App\Http\Controllers\NoteController::class, 'status'])->name('status');
+        Route::post('delete/{note}', [\App\Http\Controllers\NoteController::class, 'delete'])->name('delete');
     });
+
+    // web.php
+
+// OfficeController.php
+    Route::get('note/get-office-role-and-employee/{officeId}', [\App\Http\Controllers\NoteController::class, 'getOfficeRoleAndEmployee']);
+
 
     Route::get('/foo', function () {
         $exitCode = Artisan::call('storage:link');

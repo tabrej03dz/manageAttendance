@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Note extends Model
 {
     use HasFactory;
+
+    protected $guarded = ['id'];
+
+    public function NoteUsers(){
+        return $this->hasMany(NoteUser::class, 'note_id');
+    }
 }

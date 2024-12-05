@@ -69,4 +69,14 @@ class User extends Authenticatable
     public function plans(){
         return $this->hasMany(Plan::class, 'user_id');
     }
+
+    public function userNotes(){
+        return $this->hasMany(NoteUser::class, 'user_id');
+    }
+
+    public function latestAttendance()
+    {
+        return $this->hasOne(AttendanceRecord::class, 'user_id');
+    }
+
 }

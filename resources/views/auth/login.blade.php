@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+
+    @if($errors->any())
+        @foreach($errors->all() as $error)
+            <li>{{$error}}</li>
+        @endforeach
+    @endif
     <div class="d-flex align-items-center justify-content-center min-vh-100 bg-dark">
         <div class="card shadow-lg p-4 bg-gray-800 text-white rounded-4" style="max-width: 450px; width: 100%;">
             <div class="card-header bg-danger text-white text-center rounded-top-4">
