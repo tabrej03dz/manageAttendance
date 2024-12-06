@@ -220,11 +220,17 @@
                                                                  </div>
                                                                  @php
                                                                      $breaks = $record?->breaks;
+                                                                     if($record){
+                                                                         $corrections = \App\Models\CorrectionNote::where('attendance_record_id', $record->id)->get();
+                                                                     }else{
+                                                                         $corrections = null;
+                                                                     }
                                                                  @endphp
-                                                                 @if ($breaks)
+                                                                 @if ($breaks || $corrections)
                                                                      <!-- Employee Break Details Table, shown only on hover -->
                                                                      <div class="bg-success p-3 rounded shadow-lg position-absolute translate-middle z-50 d-none mt-2"
                                                                          style="width: auto; background-color: #28a745;">
+                                                                         @if($breaks)
                                                                          <table
                                                                              class="table table-bordered table-sm w-auto">
                                                                              <thead>
@@ -249,6 +255,28 @@
                                                                              <!-- Add more rows as needed -->
                                                                              </tbody>
                                                                          </table>
+                                                                         @endif
+                                                                             @if($corrections)
+                                                                                 <table
+                                                                                     class="table table-bordered table-sm w-auto">
+                                                                                     <thead>
+                                                                                     <tr>
+                                                                                         <th>Note</th>
+                                                                                         <th>Action</th>
+                                                                                     </tr>
+                                                                                     </thead>
+                                                                                     <tbody>
+                                                                                     @foreach($corrections as $correction)
+                                                                                         <tr>
+                                                                                             <td>{{$correction->note}}</td>
+                                                                                             <td><a href="{{route('correctionNote.create', ['record' => $record->id, 'note' => $correction->id])}}">reply</a></td>
+
+                                                                                         </tr>
+                                                                                     @endforeach
+                                                                                     <!-- Add more rows as needed -->
+                                                                                     </tbody>
+                                                                                 </table>
+                                                                             @endif
                                                                      </div>
                                                                  @endif
 

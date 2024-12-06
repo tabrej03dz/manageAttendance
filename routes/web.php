@@ -14,6 +14,7 @@ use \App\Http\Controllers\OwnerController;
 use \App\Http\Controllers\LunchBreakController;
 use \App\Http\Controllers\AdvancePaymentController;
 use \App\Http\Controllers\PlanController;
+use \App\Http\Controllers\CorrectionNoteController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -212,6 +213,11 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('store', [\App\Http\Controllers\NoteController::class, 'store'])->name('store');
         Route::get('status/{note}', [\App\Http\Controllers\NoteController::class, 'status'])->name('status');
         Route::post('delete/{note}', [\App\Http\Controllers\NoteController::class, 'delete'])->name('delete');
+    });
+
+    Route::prefix('correctionNote')->name('correctionNote.')->group(function(){
+        Route::get('create/{record}/{note?}', [CorrectionNoteController::class, 'create'])->name('create');
+        Route::post('store/{record}', [CorrectionNoteController::class, 'store'])->name('store');
     });
 
     // web.php

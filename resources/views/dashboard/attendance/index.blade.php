@@ -267,6 +267,12 @@
                                             </td>
                                         @endif
 
+                                            <td>
+                                                @if($record)
+                                                <a href="{{route('correctionNote.create', ['record' => $record->id])}}">Correction Note</a>
+                                                @endif
+                                            </td>
+
                                         </tr>
                                     @endif
                                 @endforeach

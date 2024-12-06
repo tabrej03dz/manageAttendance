@@ -13,8 +13,14 @@ return new class extends Migration
     {
         Schema::create('correction_notes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('attendance_record_id')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
+            $table ->text('note');
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');
+            $table->foreign('attendance_record_id')->references('id')->on('attendance_records')->onDelete('SET NULL');
+            $table->foreign('parent_id')->references('id')->on('correction_notes')->cascadeOnDelete();
             $table->timestamps();
         });
     }
