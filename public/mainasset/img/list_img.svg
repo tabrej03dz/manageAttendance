@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 33.867 33.867" id="check-mark">
+  <defs>
+    <linearGradient id="a">
+      <stop offset="0" stop-color="#f6f600"></stop>
+      <stop offset="1" stop-color="#f69134"></stop>
+    </linearGradient>
+  </defs>
+  <path fill="#a8d0ff" d="M 19.144922,28.411751 A 13.663413,13.663413 0 0 0 32.808334,14.748338 13.663413,13.663413 0 0 0 19.144922,1.0849246 13.663413,13.663413 0 0 0 5.4815096,14.748338 13.663413,13.663413 0 0 0 19.144922,28.411751 Z" paint-order="fill markers stroke"></path>
+  <path fill="#00a1ff" d="M 14.721745,5.4815086 A 13.663413,13.663413 0 0 1 28.385158,19.144922 13.663413,13.663413 0 0 1 14.721745,32.808334 13.663413,13.663413 0 0 1 1.0583326,19.144922 13.663413,13.663413 0 0 1 14.721745,5.4815086 Z" paint-order="fill markers stroke"></path>
+  <path fill="#fff" d="m 19.937605,12.638731 -7.191092,5.310385 -3.3280881,-1.447602 c -2.1293773,-1.088883 -4.062662,0.67362 -2.8221474,2.822148 l 3.7970565,5.677803 c 1.039084,1.456161 3.526295,1.538299 4.702814,0 l 7.660061,-9.540627 C 24.274572,13.4049 21.881743,11.169119 19.937605,12.638731 Z" color="#000" enable-background="accumulate" font-family="sans-serif" font-weight="400" overflow="visible" paint-order="markers fill stroke" style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1"></path>
+</svg>

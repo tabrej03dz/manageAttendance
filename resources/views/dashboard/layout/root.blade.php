@@ -39,10 +39,12 @@
             0% {
                 transform: translateX(100%);
             }
+
             100% {
                 transform: translateX(-100%);
             }
         }
+
         .animate-scroll {
             animation: scroll 10s linear infinite;
         }
@@ -60,9 +62,9 @@
 
 
         @php
-        $user = auth()->user();
-            if ($user->hasRole('admin')){
-                 // Importing Carbon to keep it consistent
+            $user = auth()->user();
+            if ($user->hasRole('admin')) {
+                // Importing Carbon to keep it consistent
 
                 // Fetch the current month's payment for the user's office
                 $payment = App\Models\Payment::where('office_id', $user->office->id)
@@ -74,14 +76,14 @@
                 if ($payment == null) {
                     $payment = App\Models\Payment::create([
                         'office_id' => $user->office->id,
-                        'amount' => ($user->office->number_of_employees * $user->office->price_per_employee),
-                        'date' => Carbon\Carbon::now()->firstOfMonth(),  // Create payment for the first day of the month
+                        'amount' => $user->office->number_of_employees * $user->office->price_per_employee,
+                        'date' => Carbon\Carbon::now()->firstOfMonth(), // Create payment for the first day of the month
                     ]);
                 }
             }
         @endphp
 
-            <!-- Check if payment amount is greater than the paid amount -->
+        <!-- Check if payment amount is greater than the paid amount -->
 
 
         <!-- Content Wrapper. Contains page content -->
@@ -105,14 +107,14 @@
                     </button>
                 </div>
             @endif
-{{--                @if($user->hasRole('admin') && $payment->amount > $payment->paid_amount)--}}
-{{--                    <div class="overflow-hidden whitespace-nowrap border-3">--}}
-{{--                        <div class="inline-block animate-scroll text-danger">--}}
-{{--                            Payment of {{ $payment->amount - $payment->paid_amount }} rs is due for the month of {{ $payment->date->format('F') }}.--}}
+            {{--                @if ($user->hasRole('admin') && $payment->amount > $payment->paid_amount) --}}
+            {{--                    <div class="overflow-hidden whitespace-nowrap border-3"> --}}
+            {{--                        <div class="inline-block animate-scroll text-danger"> --}}
+            {{--                            Payment of {{ $payment->amount - $payment->paid_amount }} rs is due for the month of {{ $payment->date->format('F') }}. --}}
 
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                @endif--}}
+            {{--                        </div> --}}
+            {{--                    </div> --}}
+            {{--                @endif --}}
             @yield('content')
         </div>
 
@@ -137,7 +139,8 @@
                 <span class="material-icons text-white text-2xl">home</span>
                 <span class="text-xs text-white mt-1">Home</span>
             </a>
-            <a href="{{route('reports.index')}}" class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
+            <a href="{{ route('reports.index') }}"
+                class="group flex flex-col items-center transform hover:scale-105 transition duration-300">
                 <span class="material-icons text-white text-2xl">list</span>
                 <span class="text-xs text-white mt-1">Reports</span>
             </a>
@@ -168,19 +171,23 @@
         <div id="more-options" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
             <div
                 class="flex border-2 border-white justify-around bg-gradient-to-r from-red-600 to-red-500 shadow-md rounded-t-2xl py-2 mt-2">
-                <a href="{{route('leave.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{ route('leave.index') }}"
+                    class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">logout</span>
                     <span class="text-xs">Leave</span>
                 </a>
-                <a href="{{route('office.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{ route('office.index') }}"
+                    class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">work</span>
                     <span class="text-xs">Office</span>
                 </a>
-                <a href="{{route('off.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{ route('off.index') }}"
+                    class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">manage_accounts</span>
                     <span class="text-xs">Manage Off</span>
                 </a>
-                <a href="{{route('employee.index')}}" class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
+                <a href="{{ route('employee.index') }}"
+                    class="flex flex-col items-center text-white hover:bg-red-600 px-2 py-2">
                     <span class="material-icons text-white text-lg">people</span>
                     <span class="text-xs">Employees</span>
                 </a>

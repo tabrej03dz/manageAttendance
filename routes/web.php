@@ -26,9 +26,11 @@ use \App\Http\Controllers\CorrectionNoteController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'mainpage'])->name('mainpage');
+Route::get('/Blogs', [HomeController::class, 'blogs'])->name('blogs');
+Route::get('/blogDetailsPage', [HomeController::class, 'blogDetailsPage'])->name('blogDetailsPage');
+Route::get('/reqDemo', [HomeController::class, 'reqDemo'])->name('reqDemo');
+
 
 //Route::get('change-pass', [HomeController::class, 'changePass'])->name('change-pass');
 
