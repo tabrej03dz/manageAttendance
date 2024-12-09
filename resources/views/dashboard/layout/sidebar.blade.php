@@ -117,15 +117,15 @@
                     </li>
                     @endcan
 
-                    @can('show payments')
-                    <li class="nav-item">
-                        <a href="{{ route('payment.index') }}"
-                            class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-credit-card"></i>
-                            <p>Payment</p>
-                        </a>
-                    </li>
-                    @endcan
+{{--                    @can('show payments')--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a href="{{ route('payment.index') }}"--}}
+{{--                            class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">--}}
+{{--                            <i class="nav-icon fas fa-credit-card"></i>--}}
+{{--                            <p>Payment</p>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+{{--                    @endcan--}}
 
 
                     @can('show salaries')

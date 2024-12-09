@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leaves', function (Blueprint $table) {
-//            $table->enum('')
+            $table->string('subject')->nullable();
+            $table->enum('is_paid', ['0', '1'])->nullable();
+            $table->enum('approve_as', ['paid', 'unpaid'])->nullable();
         });
     }
 

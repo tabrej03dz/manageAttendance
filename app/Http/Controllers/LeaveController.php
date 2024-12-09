@@ -64,6 +64,13 @@ class LeaveController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'leave_type' => 'required',
+            'is_paid' => 'required',
+            'start_date'=> 'required',
+            'end_date' => '',
+            'reason' => '',
+        ]);
         $user = auth()->user();
         $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id]);
 
@@ -81,8 +88,8 @@ class LeaveController extends Controller
         return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
     }
 
-    public function status(Leave $leave, $status){
-        $leave->update(['status' => $status, 'responses_by' => auth()->user()->id]);
+    public function status(Leave $leave, $status, $type = null){
+        $leave->update(['status' => $status, 'responses_by' => auth()->user()->id, 'approve_as' => $type]);
         Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
         return back()->with('success', 'Status updated successfully');
     }

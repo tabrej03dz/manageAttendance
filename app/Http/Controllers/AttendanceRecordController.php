@@ -107,6 +107,7 @@ class AttendanceRecordController extends Controller
             // Save the attendance record
             $attendanceRecord->save();
             $message = 'Checked in successfully';
+            $messageType = 'success';
 
 //            if (!$request->latitude || !$request->longitude){
 //                return view('dashboard.settingInstruction');
@@ -123,9 +124,10 @@ class AttendanceRecordController extends Controller
 
         }else{
             $message = 'Today you has checked in already';
+            $messageType = 'error';
         }
         // Redirect to attendance index with success message
-        return redirect('attendance/day-wise')->with('success', $message);
+        return redirect('attendance/day-wise')->with($messageType, $message);
     }
 
     public function checkOut(Request $request, User $user = null){
@@ -168,6 +170,7 @@ class AttendanceRecordController extends Controller
     }
 
     public function form($formType, User $user = null){
+
 //        if (auth()->user()->is_accepted == '0'){
 //            return back()->with('error', 'You don\'t have accepted policy, Please read policies!');
 //        }

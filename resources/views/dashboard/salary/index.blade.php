@@ -82,6 +82,8 @@
                                                 @php
                                                     $workingDays = 0;
                                                     $leaveDays = 0;
+                                                    $paidLeave = 0;
+                                                    $unpaidLeave = 0;
                                                     $offDays = 0;
                                                     $lateCount = 0;
                                                     $lateTime = 0;
@@ -125,7 +127,12 @@
                                                             ->where(['user_id' => $user->id, 'status' => 'approved'])
                                                             ->first();
                                                         if ($leave) {
-                                                            $leaveDays++;
+                                                            if($leave->approve_as == 'paid'){
+                                                                     $paidLeave++;
+                                                                 }else{
+                                                                     $unpaidLeave++;
+                                                                 }
+                                                                    $leaveDays++;
                                                         }
                                                         $off = App\Models\Off::whereDate('date', $d)
                                                             ->where('office_id', $user->office_id)->where('is_off', '1')
@@ -146,7 +153,7 @@
                                                         $oneHourSalary = $oneDaySalary / ($user->office_time / 60);
 
                                                         // Calculate salaries
-                                                        $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2));
+                                                        $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2) + ($paidLeave * $oneDaySalary));
                                                         $durationSalary = (($workingDuration / 60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
 
                                                         // Create the salary record

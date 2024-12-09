@@ -30,6 +30,17 @@
                 </select>
             </div>
 
+                <div class="mt-4">
+                    <h2>Request for--</h2>
+                    <div>
+                        <input type="radio" value="1" id="paid" name="is_paid">
+                        <label for="paid" class="mb-2 font-semibold text-gray-700">Paid Leave</label>
+                        <input type="radio" value="0" id="unpaid" name="is_paid" checked>
+                        <label for="unpaid" class="mb-2 font-semibold text-gray-700">Unpaid Leave</label>
+                    </div>
+
+                </div>
+
 
             <!-- Date From Field -->
             <div class="mb-4">
@@ -60,6 +71,11 @@
                 </div>
             </div>
 
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-1" for="subject">Subject</label>
+                    <input id="subject" name="subject" class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" placeholder="Subject"/>
+                </div>
             <!-- Reason Field -->
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-1" for="reason">Reason for applying</label>

@@ -105,6 +105,8 @@
                                                      @php
                                                          $workingDays = 0;
                                                          $leaveDays = 0;
+                                                         $paidLeave = 0;
+                                                         $unpaidLeave = 0;
                                                          $offDays = 0;
                                                          $lateCount = 0;
                                                          $lateTime = 0;
@@ -164,11 +166,15 @@
                                                                  ->whereDate('end_date', '>=', $d)
                                                                  ->where([
                                                                      'user_id' => $user->id,
-                                                                     'status' => 'approved',
                                                                  ])
                                                                  ->first();
                                                              if ($leave) {
-                                                                 $leaveDays++;
+                                                                 if($leave->approve_as == 'paid'){
+                                                                     $paidLeave++;
+                                                                 }else{
+                                                                     $unpaidLeave++;
+                                                                 }
+                                                                    $leaveDays++;
                                                              }
                                                              $off = App\Models\Off::whereDate('date', $d)
                                                                  ->where('office_id', $user->office_id)
@@ -301,6 +307,7 @@
                                                              $salary =
                                                                  $workingDays * $oneDaySalary +
                                                                  $sundayCount * $oneDaySalary +
+                                                                 $paidLeave * $oneDaySalary +
                                                                  $offDays * $oneDaySalary +
                                                                  $offDays * $oneDaySalary +
                                                                  ($halfDayCount * $oneDaySalary) / 2;

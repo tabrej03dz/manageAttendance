@@ -126,7 +126,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('/', [LeaveController::class, 'index'])->name('index');
         Route::get('create', [LeaveController::class, 'create'])->name('create');
         Route::post('store', [LeaveController::class, 'store'])->name('store');
-        Route::get('status/{leave}/{status}', [LeaveController::class, 'status'])->name('status');
+        Route::get('status/{leave}/{status}/{type?}', [LeaveController::class, 'status'])->name('status');
         Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
     });
 
