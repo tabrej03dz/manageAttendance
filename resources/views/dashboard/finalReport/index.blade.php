@@ -94,7 +94,7 @@
                                              @foreach ($users as $user)
                                                  <tr>
                                                      <td class="fw-bold sticky left-0 bg-light" style="z-index: 10;">
-                                                         {{ $user->name }}</td> <!-- Sticky first column -->
+                                                         {{ $user?->name }}</td> <!-- Sticky first column -->
                                                      <td>
                                                          <div class="d-flex flex-column">
                                                              <span class="badge bg-success">Check-in</span>
@@ -186,7 +186,7 @@
                                                          @endphp
                                                          @if ($leave)
                                                              <td class="bg-warning text-dark">Leave approved by
-                                                                 {{ $leave->responsesBy->name }}</td>
+                                                                 {{ $leave->responsesBy?->name }}</td>
                                                          @elseif ($off)
                                                              <td class="bg-info text-dark">{{ $off->title }}</td>
                                                          @else

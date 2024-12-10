@@ -36,7 +36,7 @@ class HomeController extends Controller
     {
         return view('mainpage.reqaDemo');
     }
-    
+
     /**
      * Create a new controller instance.
      *
