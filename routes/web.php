@@ -222,6 +222,8 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('store/{record}', [CorrectionNoteController::class, 'store'])->name('store');
     });
 
+
+    // hello how are you mera naam hai jolly
     // web.php
 
 // OfficeController.php
