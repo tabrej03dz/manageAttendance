@@ -124,7 +124,7 @@
 
                                                         $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
                                                             ->whereDate('end_date', '>=', $d)
-                                                            ->where(['user_id' => $user->id, 'status' => 'approved'])
+                                                            ->where(['user_id' => $user->id])
                                                             ->first();
                                                         if ($leave) {
                                                             if($leave->approve_as == 'paid'){

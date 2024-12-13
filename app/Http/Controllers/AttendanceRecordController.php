@@ -14,19 +14,28 @@ use Illuminate\Support\Collection;
 class AttendanceRecordController extends Controller
 {
     public function index(Request $request){
-
-        if ($request->start){
-            $startOfMonth = Carbon::parse($request->start);
+        if ($request->month){
+            $month = $request->month;
+            $startOfMonth = Carbon::parse($request->month . '-01');
+            $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
         }else{
+            $month = Carbon::now()->format('Y-m');
             $startOfMonth = Carbon::now()->startOfMonth();
-        }
-        $monthStart = $startOfMonth->toDateTimeLocalString();
-
-        if ($request->end){
-            $endOfMonth = Carbon::parse($request->end);
-        }else{
             $endOfMonth = Carbon::now()->endOfMonth();
         }
+
+//        if ($request->start){
+//            $startOfMonth = Carbon::parse($request->start);
+//        }else{
+//            $startOfMonth = Carbon::now()->startOfMonth();
+//        }
+//        $monthStart = $startOfMonth->toDateTimeLocalString();
+//
+//        if ($request->end){
+//            $endOfMonth = Carbon::parse($request->end);
+//        }else{
+//            $endOfMonth = Carbon::now()->endOfMonth();
+//        }
         if($request->employee){
             $user = User::find($request->employee);
         }else{
@@ -51,7 +60,7 @@ class AttendanceRecordController extends Controller
 //            $users = $office->users;
 //        }
         $users = HomeController::employeeList();
-        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'monthStart', 'endOfMonth'));
+        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user',  'month'));
     }
 
 

@@ -26,18 +26,18 @@
             <!-- Date Filter Section -->
             <div class="md:hidden space-y-4">
                 <div class="space-y-4">
-                    <div class="flex flex-col w-full">
-                        <label for="from-date-mobile" class="mb-1 text-sm font-medium text-gray-700">From:</label>
-                        <input type="date" value="{{$monthStart ? \Carbon\Carbon::parse($monthStart)->format('Y-m-d') : ''}}" id="from-date-mobile" name="start"
+                    <div class="flex-1 flex-col w-full">
+                        <label for="month-selector" class="block mb-1 text-sm font-medium text-gray-700">Select Month:</label>
+                        <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}"
                             class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Select From Date">
+                            placeholder="Select Month">
                     </div>
-                    <div class="flex flex-col w-full">
-                        <label for="to-date-mobile" class="mb-1 text-sm font-medium text-gray-700">To:</label>
-                        <input type="date" id="to-date-mobile" value="{{$endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : ''}}" name="end"
-                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Select To Date">
-                    </div>
+{{--                    <div class="flex flex-col w-full">--}}
+{{--                        <label for="to-date-mobile" class="mb-1 text-sm font-medium text-gray-700">To:</label>--}}
+{{--                        <input type="date" id="to-date-mobile" value="{{$endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : ''}}" name="end"--}}
+{{--                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"--}}
+{{--                            placeholder="Select To Date">--}}
+{{--                    </div>--}}
                 </div>
                 <div class="flex flex-col space-y-2">
                     <button
@@ -51,18 +51,19 @@
             <div class="hidden md:block">
                 <div class="flex items-end space-x-4">
                     <div class="flex-grow flex space-x-4">
-                        <div class="flex-1">
-                            <label for="from-date-web" class="block mb-1 text-sm font-medium text-gray-700">From:</label>
-                            <input type="date" id="from-date-web" name="start" value="{{ $monthStart ? \Carbon\Carbon::parse($monthStart)->format('Y-m-d') : '' }}"
-                                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Select From Date">
-                        </div>
-                        <div class="flex-1">
-                            <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">To:</label>
-                            <input type="date" id="to-date-web" name="end" value="{{ $endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : '' }}"
-                                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Select To Date">
-                        </div>
+                    <div class="flex-1">
+                        <label for="month-selector" class="block mb-1 text-sm font-medium text-gray-700">Select Month:</label>
+                        <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}"
+                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Select Month">
+                    </div>
+
+{{--                        <div class="flex-1">--}}
+{{--                            <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">To:</label>--}}
+{{--                            <input type="date" id="to-date-web" name="end" value="{{ $endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : '' }}"--}}
+{{--                                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"--}}
+{{--                                placeholder="Select To Date">--}}
+{{--                        </div>--}}
                     </div>
                     <div class="flex space-x-2">
                         <button
@@ -137,44 +138,74 @@
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
 
-                                @php
-                                    $officeDays = 0;
-                                    $workingDays = 0;
-                                    $leaveDays = 0;
-                                    $offDays = 0;
-                                @endphp
+                            @php
+                                $workingDays = 0;
+                                $leaveDays = 0;
+                                $paidLeave = 0;
+                                $unpaidLeave = 0;
+                                $offDays = 0;
+                                $lateCount = 0;
+                                $lateTime = 0;
+                                $goneBeforeTime = 0;
+                                $goneBeforeTimeCount = 0;
+                                $halfDayCount = 0;
+                                $workingDuration = 0;
+                                $sundayCount = 0;
+                                $officeDays = 0;
+                            @endphp
 
                                 @foreach ($dates as $dateObj)
-                                    @php
-
+                                @php
+                                        $currentUser = $user ?? auth()->user();
                                         $d = \Carbon\Carbon::parse($dateObj->date);
-                                        $record = $attendanceRecords->first(function ($record) use ($d) {
-                                            return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
-                                        });
-                                        $isSunday = $d->format('D') === 'Sun';
+                                        $record = $attendanceRecords
+                                            ->where('user_id', $currentUser->id)
+                                            ->first(function ($record) use ($d) {
+                                                return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                            });
 
+
+                                        if($d->format('[D]') == '[Sun]'){
+                                            $sundayCount++;
+                                        }
                                         if ($record) {
+                                            if($record->check_in && $record->check_out){
                                             $workingDays++;
+                                            }else{
+                                                $halfDayCount++;
+                                            }
+                                            if ($record->late) {
+                                                $lateCount++;
+                                                $lateTime += $record->late;
+                                            }
+                                            if ($record->check_out && Carbon\Carbon::parse($record?->check_out)->format('H:i') < Carbon\Carbon::parse($currentUser->check_out_time)->format('H:i')) {
+                                            $goneBeforeTimeCount++;
+                                                $checkOutTime = Carbon\Carbon::parse($record?->check_out)->format('H:i'); // Convert datetime to time (H:i:s)
+                                                $userCheckOutTime = Carbon\Carbon::parse($currentUser->check_out_time); // Already a time
+
+                                                $goneBeforeTime += Carbon\Carbon::createFromFormat('H:i', $checkOutTime)->diffInMinutes($userCheckOutTime);
+                                            }
+                                            $workingDuration += $record->duration;
+
                                         }
 
                                         $leave = App\Models\Leave::whereDate('start_date', '<=', $d)
                                             ->whereDate('end_date', '>=', $d)
-                                            ->where([
-                                                'user_id' => $user ? $user->id : auth()->user()->id,
-                                                'status' => 'approved',
-                                            ])
+                                            ->where(['user_id' => $currentUser->id])
                                             ->first();
                                         if ($leave) {
-                                            $leaveDays++;
+                                            if($leave->approve_as == 'paid'){
+                                                        $paidLeave++;
+                                                    }else{
+                                                        $unpaidLeave++;
+                                                    }
+                                                    $leaveDays++;
                                         }
                                         $off = App\Models\Off::whereDate('date', $d)
-                                            ->where('office_id', auth()->user()->office_id)->where('is_off', '1')
+                                            ->where('office_id', $currentUser->office_id)->where('is_off', '1')
                                             ->first();
                                         if ($off) {
                                             $offDays++;
-                                        }
-                                        if (!$isSunday) {
-                                            $officeDays++;
                                         }
                                     @endphp
 
@@ -279,23 +310,85 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @php
+                    $advancePayment = App\Models\AdvancePayment::whereMonth('date', $month)->where('user_id', $currentUser)->sum('amount');
+                        $condition = ($d < \Carbon\Carbon::today()) && auth()->user()->hasRole(['admin', 'super_admin']) && (($currentUser->salary) > 0)
+                    @endphp
+                    @if ($condition)
+                        @php
+
+                            // Retrieve existing salary record for the month
+                            $userSalary = App\Models\Salary::where('user_id', $currentUser->id)
+                                                        ->where('month', $d)
+                                                        ->first();
+
+                            if (!$userSalary) {
+                                // Ensure salary and office_time are not null to avoid division errors
+                                $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
+                                $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
+
+                                // Calculate salaries
+                                $salary = (($workingDays * $dailySalary) +
+                                        ($sundayCount * $dailySalary) +
+                                        ($offDays * $dailySalary) +
+                                        (($halfDayCount * $dailySalary) / 2) +
+                                        ($paidLeave * $dailySalary));
+
+                                $durationSalary = (($workingDuration / 60) * $hourlySalary) +
+                                                (($sundayCount + $offDays) * $dailySalary);
+
+                                // Create the salary record
+                                $userSalary = App\Models\Salary::create([
+                                    'user_id' => $currentUser->id,
+                                    'month' => $d,
+                                    'day_wise_salary' => $salary,
+                                    'hour_wise_salary' => $durationSalary,
+                                    'status' => 'unpaid'
+                                ]);
+                            }
+                        @endphp
+                    @endif
+
+                    <button class="btn btn-warning text-white mb-2 mb-md-0 mr-md-2" onclick="printDivAsPDF()">Download
+                             as PDF</button>
                     <hr class="border-gray-300 border-4 my-6" />
                     <!-- Summary Information -->
-                    <div class="mt-6 bg-red-50 p-4 rounded-lg shadow-md">
+                    <div class="mt-6 bg-red-50 p-4 rounded-lg shadow-md" id="printDiv">
                         <h3 class="text-lg font-semibold text-gray-800">Summary Information</h3>
                         <div class="mt-4 space-y-2">
                             <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Office Days:</span>
-                                <span class="font-bold text-gray-800">{{ $officeDays }}</span>
+                                <span class="font-bold text-gray-800">{{ $dates->count() - ($offDays + $sundayCount) }}</span>
                             </div>
                             <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Working Days:</span>
                                 <span class="font-bold text-gray-800">{{ $workingDays }}</span>
                             </div>
                             <div class="flex justify-between text-sm font-medium text-gray-700">
+                                <span>Half Days:</span>
+                                <span class="font-bold text-gray-800">{{ $halfDayCount }}</span>
+                            </div>
+
+                            <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Leaves:</span>
                                 <span class="font-bold text-gray-800">{{ $leaveDays }}</span>
                             </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-700">
+                                <span>Salary:</span>
+                                <span class="font-bold text-gray-800">{{ $currentUser->salary }}</span>
+                            </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-700">
+                                <span>Generated Salary:</span>
+                            @if($condition)
+                                <span class="font-bold text-gray-800">{{ $userSalary ? $userSalary->day_wise_salary : 'Salary not generated yet!' }}</span>
+                            @endif
+                            </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-700">
+                                <span>Advance Payment</span>
+                                <span class="font-bold text-gray-800">{{ $advancePayment }}</span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -304,6 +397,46 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+         function printDivAsPDF() {
+             const {
+                 jsPDF
+             } = window.jspdf;
+
+             // Get the div element
+             var element = document.getElementById('printDiv');
+
+             // Use html2canvas to capture the div as an image
+             html2canvas(element).then(canvas => {
+                 var imgData = canvas.toDataURL('image/png');
+
+                 var pdf = new jsPDF('p', 'mm', 'a0');
+                 var pageHeight = pdf.internal.pageSize.getHeight();
+                 var imgWidth = 841; // A4 width in mm
+                 var imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                 var heightLeft = imgHeight;
+                 var position = 0;
+
+                 // Add the image to the PDF page by page
+                 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                 heightLeft -= pageHeight;
+
+                 while (heightLeft > 0) {
+                     position = heightLeft - imgHeight;
+                     pdf.addPage();
+                     pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                     heightLeft -= pageHeight;
+                 }
+
+                 // Save the PDF
+                 pdf.save('{{ $month }}.pdf');
+             });
+         }
+     </script>
 
 
 @endsection
