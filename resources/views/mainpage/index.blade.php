@@ -189,7 +189,7 @@
                     <p
                         class="text-lg font-futuraBk text-textSecondary font-light tracking-wider text-center sm:text-start md:text-justify leading-loose
           w-full h-auto sm:w-[550px] md:w-[600px] md:ml-12 overflow-auto">
-          Using GPS technology, employers can track their employees in real-time, identify their location, monitor their movements, and log their arrival and departure times from anywhere. GPS also facilitates automatic attendance recording, helps assess the most efficient routes for employees, and ensures their safety throughout the workday. RVG provides all of these capabilities, even in areas with limited or no network access, and integrates smoothly with payroll and leave management systems.
+          Using GPS technology, employers can track their employees in real-time, identify their location, monitor their movements, and log their arrival and departure times from anywhere. GPS also facilitates automatic attendance recording. RVG provides all of these capabilities, even in areas with limited or no network access, and integrates smoothly with payroll and leave management systems.
                     </p>
                 </div>
             </div>
