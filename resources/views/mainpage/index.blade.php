@@ -173,7 +173,7 @@
             <div
                 class="w-full xl:max-w-7xl mx-auto py-28 px-6 md:px-16 2xl:px-0 block xl:flex justify-between items-center place-items-center *:size-fit">
                 <div class="image xl:w-full">
-                    <img class="w-[1000px]" src="{{ asset('mainasset/img/aboutprimaryBg.png') }}" loading="lazy"
+                    <img class="w-[1000px]" src="{{ asset('asset/img/multitask.png') }}" loading="lazy"
                         alt="about...">
                 </div>
                 <div class="block md:place-items-end xl:place-items-start">

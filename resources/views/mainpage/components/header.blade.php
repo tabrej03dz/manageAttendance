@@ -128,7 +128,7 @@
                              <h6 class="pb-4 text-lg text-textSecondary font-futuraBk font-medium">Call or Email Us
                              </h6>
                              <a class="text-2xl font-futuraMd font-semibold" href="tel:+917753800444">+91
-                                 *******</a>
+                                7753800444</a>
                              <a class="pt-2 block text-xl font-futuraMd font-semibold"
                                  href="#">info@realvictorygroups</a>
                          </div>

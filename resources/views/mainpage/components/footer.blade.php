@@ -34,7 +34,7 @@
                       <h4 class="mb-2">
                           <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Call Now"><span
                                   class="font-futuraBk font-semibold">Tel: </span>
-                              +91 9999999999</a>
+                              +917753800444</a>
                       </h4>
                       <h4>
                           <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Email Now">
