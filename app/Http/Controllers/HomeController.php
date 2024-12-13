@@ -17,25 +17,6 @@ class HomeController extends Controller
 {
 
 
-    public function mainpage()
-    {
-        return view('mainpage.index');
-    }
-
-    public function blogs()
-    {
-        return view('mainpage.blog');
-    }
-
-    public function blogDetailsPage()
-    {
-        return view('mainpage.blogDetailsPage');
-    }
-
-    public function reqDemo()
-    {
-        return view('mainpage.reqaDemo');
-    }
 
     /**
      * Create a new controller instance.

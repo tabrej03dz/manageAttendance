@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\HomeController;
@@ -29,10 +28,13 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', [HomeController::class, 'mainpage'])->name('mainpage');
-Route::get('/Blogs', [HomeController::class, 'blogs'])->name('blogs');
-Route::get('/blogDetailsPage', [HomeController::class, 'blogDetailsPage'])->name('blogDetailsPage');
-Route::get('/reqDemo', [HomeController::class, 'reqDemo'])->name('reqDemo');
+Route::controller(\App\Http\Controllers\FrontController::class)->group(function(){
+    Route::get('/', 'mainpage')->name('mainpage');
+    Route::get('/Blogs', 'blogs')->name('blogs');
+    Route::get('/blogDetailsPage', 'blogDetailsPage')->name('blogDetailsPage');
+    Route::get('/reqDemo', 'reqDemo')->name('reqDemo');
+});
+
 
 
 //Route::get('change-pass', [HomeController::class, 'changePass'])->name('change-pass');
@@ -44,19 +46,17 @@ Route::middleware('auth')->group(function (){
 Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
 
 
-    Route::prefix('attendance')->name('attendance.')->group(function(){
-        Route::get('index/{user?}', [AttendanceRecordController::class, 'index'])->name('index');
-        Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
-        Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
-        Route::get('form/{form_type}/{user?}', [AttendanceRecordController::class, 'form'])->name('form');
-        Route::get('day-wise', [AttendanceRecordController::class, 'dayWise'])->name('day-wise');
-        Route::post('note/{record}', [AttendanceRecordController::class, 'addNote'])->name('note');
-        Route::post('user/note/{record}/{type}', [AttendanceRecordController::class, 'userNote'])->name('user.note');
-        Route::get('user/note/response/{record}/{type}/{status}', [AttendanceRecordController::class, 'userNoteResponse'])->name('user.note.response');
-
-        Route::get('reason/form/{type}/{message}/{record}', [AttendanceRecordController::class, 'reasonFormLoad'])->name('reason.form');
-
-        Route::post('store', [AttendanceRecordController::class, 'store'])->name('store');
+    Route::prefix('attendance')->name('attendance.')->controller(App\Http\Controllers\AttendanceRecordController::class)->group(function(){
+        Route::get('index/{user?}', 'index')->name('index');
+        Route::post('check_in/{user?}', 'checkIn')->name('check_in');
+        Route::post('check_out/{user?}', 'checkOut')->name('check_out');
+        Route::get('form/{form_type}/{user?}', 'form')->name('form');
+        Route::get('day-wise', 'dayWise')->name('day-wise');
+        Route::post('note/{record}', 'addNote')->name('note');
+        Route::post('user/note/{record}/{type}', 'userNote')->name('user.note');
+        Route::get('user/note/response/{record}/{type}/{status}', 'userNoteResponse')->name('user.note.response');
+        Route::get('reason/form/{type}/{message}/{record}', 'reasonFormLoad')->name('reason.form');
+        Route::post('store', 'store')->name('store');
     });
 
     Route::get('setting/instruction', function (){
