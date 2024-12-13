@@ -1990,7 +1990,7 @@ video {
 }
 
 .bg-heroGradient {
-  background-image: radial-gradient(circle at 94.35384114583333% 89.61588541666666%, #bd3838d4 0%, 20%, rgba(135, 134, 190, 0) 40%), radial-gradient(circle at 6.503906249999999% 88.037109375%, #dd4a4a 0%, 25%, rgba(124, 105, 186, 0) 50%), radial-gradient(circle at 6.165364583333333% 12.617187499999998%, #bd2424 0%, 42%, rgba(66, 65, 158, 0) 70%), radial-gradient(circle at 93.6865234375% 11.42578125%, #d23939 0%, 42%, rgba(151, 87, 191, 0) 70%), radial-gradient(circle at 48.9013671875% 49.521484375%, #ffffff 0%, 100%, rgba(255, 255, 255, 0) 100%);
+  background-image: radial-gradient(circle at 94.35384114583333% 89.61588541666666%, #DA7B93 0%, 20%, rgba(135, 134, 190, 0) 40%), radial-gradient(circle at 6.503906249999999% 88.037109375%, #dd4a4a 0%, 25%, rgba(124, 105, 186, 0) 50%), radial-gradient(circle at 6.165364583333333% 12.617187499999998%, #bd2424 0%, 42%, rgba(66, 65, 158, 0) 70%), radial-gradient(circle at 93.6865234375% 11.42578125%, #d23939 0%, 42%, rgba(151, 87, 191, 0) 70%), radial-gradient(circle at 48.9013671875% 49.521484375%, #ffffff 0%, 100%, rgba(255, 255, 255, 0) 100%);
 }
 
 .bg-\[size\:14px_24px\] {

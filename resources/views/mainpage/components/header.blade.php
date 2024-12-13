@@ -8,7 +8,7 @@
          <div class="logo flex items-center justify-start cursor-pointer">
              <a href="{{ route('mainpage') }}">
                  <div>
-                     <svg class="drop-shadow-md" preserveAspectRatio="xMidYMid meet" data-bbox="0 0 142 85"
+                     {{-- <svg class="drop-shadow-md" preserveAspectRatio="xMidYMid meet" data-bbox="0 0 142 85"
                          viewBox="0 0 142 85" height="85" width="70" xmlns="http://www.w3.org/2000/svg"
                          data-type="color" role="img" aria-label="AttendNow">
                          <g>
@@ -25,12 +25,15 @@
                                  d="M124.44 30.855 95.678 59.62a3.848 3.848 0 1 1-5.442-5.442L119 25.413a3.848 3.848 0 1 1 5.442 5.442z"
                                  data-color="3"></path>
                          </g>
-                     </svg>
-                 </div>
-                 <div class="text-paraTextxl ml-3">
+                     </svg> --}}
+                   
+                     <a href="{{ route('mainpage') }}"><img src="{{asset('asset/img/logo (2).png')}}" alt="" class="h-24 w-24">
+                     </a>
+                    </div>
+                 {{-- <div class="text-paraTextxl ml-3">
                      <h2 class="text-bgHeader font-futuraBk text-xl md:text-2xl tracking-wide"><a
                              href="{{ route('mainpage') }}">AttendNow</a></h2>
-                 </div>
+                 </div> --}}
              </a>
          </div>
 
@@ -41,12 +44,12 @@
                      <ul
                          class="navigation mr-16 flex font-futuraBk *:2xl:text-xl tracking-tighter text-textSecondary [&_a:hover]:text-bgHeader lg:mr-4 min-[1285px]:mr-16 *:min-[1024px]:text-base *:min-[1040px]:text-paraTextmd *:min-[1070px]:text-lg gap-4 xl:gap-8">
                          <li><a href="{{ route('mainpage') }}" class="text-bgSecondary">Home</a></li>
-                         <li><a href="#attendNow">Why AttendNow</a></li>
+                         <li><a href="#attendNow">Why RVG</a></li>
                          <li><a href="#benefit">Benefits</a></li>
                          <li><a href="#review">Reviews</a></li>
                          <li><a href="#price">Pricing</a></li>
-                         <li><a href="{{ route('blogs') }}">Blog</a></li>
-                         <li><a href="{{ route('reqDemo') }}">Requesta Demo</a>
+                         {{-- <li><a href="{{ route('blogs') }}">Blog</a></li> --}}
+                         <li><a href="{{ route('reqDemo') }}">Request a Demo</a>
                          </li>
                          <li><a href="{{ route('login') }}">Login</a></li>
                      </ul>
@@ -86,12 +89,12 @@
                      <ul
                          class="navigation w-full h-auto mt-8 grid gap-y-2 items-center font-futuraMd *:px-4 *:py-0 *:text-bgPrimary [&_li]:w-auto [&_a]:pr-9 [&_a]:pl-2 [&_a]:py-0 [&_a:hover]:text-bgSecondary [&_a:hover]:duration-150 [&_a:hover]:ease-in *:cursor-pointer">
                          <li><a class="navLink" href="{{ route('mainpage') }}">Home</a></li>
-                         <li><a class="navLink" href="#attendNow">Why AttendNow</a></li>
+                         <li><a class="navLink" href="#attendNow">Why RVG</a></li>
                          <li><a class="navLink" href="#benefit">Benefits</a></li>
                          <li><a class="navLink" href="#review">Reviews</a></li>
                          <li><a class="navLink" href="#price">Pricing</a></li>
-                         <li><a class="navLink" href="{{ route('blogs') }}">Blog</a></li>
-                         <li><a class="navLink" href="{{ route('reqDemo') }}">Requesta Demo</a></li>
+                         {{-- <li><a class="navLink" href="{{ route('blogs') }}">Blog</a></li> --}}
+                         <li><a class="navLink" href="{{ route('reqDemo') }}">Request a Demo</a></li>
                          <li><a class="navLink" href="{{ route('login') }}">Login</a></li>
                      </ul>
 
@@ -125,9 +128,9 @@
                              <h6 class="pb-4 text-lg text-textSecondary font-futuraBk font-medium">Call or Email Us
                              </h6>
                              <a class="text-2xl font-futuraMd font-semibold" href="tel:+917753800444">+91
-                                 7753800444</a>
+                                7753800444</a>
                              <a class="pt-2 block text-xl font-futuraMd font-semibold"
-                                 href="mailto:info@attendnow.in">info@attendnow.in</a>
+                                 href="#">info@realvictorygroups</a>
                          </div>
                      </div>
 

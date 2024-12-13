@@ -14,6 +14,9 @@ use \App\Http\Controllers\LunchBreakController;
 use \App\Http\Controllers\AdvancePaymentController;
 use \App\Http\Controllers\PlanController;
 use \App\Http\Controllers\CorrectionNoteController;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes

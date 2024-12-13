@@ -6,7 +6,7 @@
           <div class="grid sm:grid-cols-3 sm:py-10 py-8">
               <div class="rightSide">
                   <div class="logo block md:flex">
-                      <svg class="drop-shadow-md" preserveAspectRatio="xMidYMid meet" data-bbox="0 0 142 85"
+                      {{-- <svg class="drop-shadow-md" preserveAspectRatio="xMidYMid meet" data-bbox="0 0 142 85"
                           viewBox="0 0 142 85" width="45" xmlns="http://www.w3.org/2000/svg" data-type="color"
                           role="img" aria-label="AttendNow">
                           <g>
@@ -23,8 +23,10 @@
                                   d="M124.44 30.855 95.678 59.62a3.848 3.848 0 1 1-5.442-5.442L119 25.413a3.848 3.848 0 1 1 5.442 5.442z"
                                   data-color="3"></path>
                           </g>
-                      </svg>
-                      <div class="md:ml-3 mt-2 md:mt-0">
+                      </svg> --}}
+                      <a href="{{ route('mainpage') }}"><img src="{{asset('asset/img/logo (2).png')}}" alt="" class="h-24 w-24">
+                      </a>
+                      <div class="md:ml-3 mt-2 md:mt-4">
                           <h2 class="text-white font-semibold text-lg tracking-tight">Real Victory Groups</h2>
                       </div>
                   </div>
@@ -32,7 +34,7 @@
                       <h4 class="mb-2">
                           <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Call Now"><span
                                   class="font-futuraBk font-semibold">Tel: </span>
-                              +91 7753800444</a>
+                              +917753800444</a>
                       </h4>
                       <h4>
                           <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Email Now">
@@ -52,7 +54,7 @@
                           <a href="#">Home</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Why AttendNow</a>
+                          <a href="#">Why RVG</a>
                       </li>
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
                           <a href="#">Benefits</a>
