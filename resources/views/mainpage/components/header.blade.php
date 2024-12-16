@@ -37,6 +37,9 @@
              </a>
          </div>
 
+         {{-- button --}}
+         <div class="block md:hidden w-full flex justify-center"> <a class="navLink bg-red-600 rounded-lg p-2 px-4 font-bold text-white text-lg" href="{{ route('login') }}">Login</a></div>
+
          <!-- main navbar -->
          <nav class="flex items-center justify-center">
              <div class="hidden lg:block">
@@ -95,7 +98,7 @@
                          <li><a class="navLink" href="#price">Pricing</a></li>
                          {{-- <li><a class="navLink" href="{{ route('blogs') }}">Blog</a></li> --}}
                          <li><a class="navLink" href="{{ route('reqDemo') }}">Request a Demo</a></li>
-                         <li><a class="navLink" href="{{ route('login') }}">Login</a></li>
+                         {{-- <li><a class="navLink" href="{{ route('login') }}">Login</a></li> --}}
                      </ul>
 
                      <div>
@@ -136,6 +139,7 @@
 
 
                  </div>
+                 
              </div>
          </div>
 

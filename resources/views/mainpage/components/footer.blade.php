@@ -79,9 +79,9 @@
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
                           <a href="#">Refund Policy</a>
                       </li>
-                      <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
+                      {{-- <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
                           <a href="#">Shipping Policy</a>
-                      </li>
+                      </li> --}}
                   </ul>
               </div>
           </div>
