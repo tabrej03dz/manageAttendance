@@ -38,7 +38,7 @@
          </div>
 
          {{-- button --}}
-         <div class="block md:hidden w-full flex justify-center"> <a class="navLink bg-red-600 rounded-lg p-2 px-4 font-bold text-white text-lg" href="{{ route('login') }}">Login</a></div>
+         <div class="block md:hidden w-full flex justify-center"> <a class="Login bg-red-600 rounded-lg p-2 px-4 font-bold text-white text-lg" href="{{ route('login') }}">Login</a></div>
 
          <!-- main navbar -->
          <nav class="flex items-center justify-center">
