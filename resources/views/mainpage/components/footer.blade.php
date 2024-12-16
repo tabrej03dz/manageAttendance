@@ -32,7 +32,7 @@
                   </div>
                   <div class="py-6 font-futuraMd text-white md:ml-14">
                       <h4 class="mb-2">
-                          <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Call Now"><span
+                          <a href="tel: +917753800444" class="hover:text-gray-100 duration-75 ease-linear" title="Call Now"><span
                                   class="font-futuraBk font-semibold">Tel: </span>
                               +917753800444</a>
                       </h4>
