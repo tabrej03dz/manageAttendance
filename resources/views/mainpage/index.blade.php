@@ -508,12 +508,12 @@
                 <!-- slider -->
 
 
-                <section class="bg-gray-50">
+                {{-- <section class="bg-gray-50">
                     <div class="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-8 xl:py-24">
                         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-center lg:gap-16">
                             <div class="max-w-xl text-center ltr:sm:text-left rtl:sm:text-right">
                                 <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                                    Don't just take our word for it...
+                                    Testimonial
                                 </h2>
 
                                 <p class="mt-4 text-gray-700">
@@ -582,16 +582,11 @@
                                                 </div>
 
                                                 <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Stayin' Alive
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
                                                     </p>
 
                                                     <p class="mt-4 leading-relaxed text-gray-700">
-                                                        No, Rose, they are not breathing. And they have no arms or legs …
-                                                        Where are
-                                                        they? You know what? If we come across somebody with no arms or
-                                                        legs, do we
-                                                        bother resuscitating them? I mean, what quality of life do we have
-                                                        there?
+                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
                                                     </p>
                                                 </div>
                                             </div>
@@ -639,16 +634,11 @@
                                                 </div>
 
                                                 <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Stayin' Alive
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
                                                     </p>
 
                                                     <p class="mt-4 leading-relaxed text-gray-700">
-                                                        No, Rose, they are not breathing. And they have no arms or legs …
-                                                        Where are
-                                                        they? You know what? If we come across somebody with no arms or
-                                                        legs, do we
-                                                        bother resuscitating them? I mean, what quality of life do we have
-                                                        there?
+                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
                                                     </p>
                                                 </div>
                                             </div>
@@ -696,16 +686,326 @@
                                                 </div>
 
                                                 <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Stayin' Alive
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">BATHLA HARDWARE
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                        The integration of attendance and leave management in a single platform is what sets this software apart. It's reliable, easy to use, and saves a lot of administrative time. Kudos to Real Victory Groups!
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="-mx-6 lg:col-span-2 lg:mx-0">
+                                <div id="keen-slider" class="keen-slider">
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
                                                     </p>
 
                                                     <p class="mt-4 leading-relaxed text-gray-700">
-                                                        No, Rose, they are not breathing. And they have no arms or legs …
-                                                        Where are
-                                                        they? You know what? If we come across somebody with no arms or
-                                                        legs, do we
-                                                        bother resuscitating them? I mean, what quality of life do we have
-                                                        there?
+                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
+                                                    </p>
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">AASHIRVAD JEWELLERS
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                       This attendance management software has reduced errors and streamlined our payroll process. The support team is always helpful and quick to respond. It’s a must-have tool for any organization.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="-mx-6 lg:col-span-2 lg:mx-0">
+                                <div id="keen-slider" class="keen-slider">
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
+                                                    </p>
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
+                                                    </p>
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
+                                                &mdash; Michael Scott
+                                            </footer>
+                                        </blockquote>
+                                    </div>
+
+                                    <div class="keen-slider__slide">
+                                        <blockquote
+                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                            <div>
+                                                <div class="flex gap-0.5 text-green-500">
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+
+                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                </div>
+
+                                                <div class="mt-4">
+                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">SR Construction
+
+                                                    <p class="mt-4 leading-relaxed text-gray-700">
+                                                        With this software, we have full control over attendance and leave tracking. The insights we get from the reports have helped us make better decisions about workforce planning.
                                                     </p>
                                                 </div>
                                             </div>
@@ -739,11 +1039,118 @@
                             </button>
                         </div>
                     </div>
-                </section>
+                </section> --}}
 
 
 
-
+                <section class="bg-gray-50">
+                    <div class="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:py-16 xl:py-24">
+                      <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-center lg:gap-16">
+                        <!-- Section Header -->
+                        <div class="max-w-xl text-center sm:text-left">
+                          <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Testimonial</h2>
+                          <p class="mt-4 text-gray-700">
+                            See what our clients say about Real Victory Groups' attendance management software.
+                          </p>
+                          <div class="hidden lg:mt-8 lg:flex lg:gap-4">
+                            <button aria-label="Previous slide" id="keen-slider-previous-desktop" class="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 rtl:rotate-180">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                              </svg>
+                            </button>
+                            <button aria-label="Next slide" id="keen-slider-next-desktop" class="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 rtl:rotate-180">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5L15.75 12l-7.5 7.5" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                  
+                        <!-- Testimonials Slider -->
+                        <div class="-mx-6 lg:col-span-2 lg:mx-0">
+                          <div id="keen-slider" class="keen-slider">
+                            <!-- Testimonial 1 -->
+                            <div class="keen-slider__slide">
+                              <blockquote class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                <div class="mt-4">
+                                  <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers</p>
+                                  <div><span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                </div>
+                                  <p class="mt-4 leading-relaxed text-gray-700">
+                                    Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee
+                                    attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools
+                                    have significantly improved our efficiency.
+                                  </p>
+                                </div>
+                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                              </blockquote>
+                            </div>
+                  
+                            <!-- Testimonial 2 -->
+                            <div class="keen-slider__slide">
+                              <blockquote class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                
+                                <div class="mt-4">
+                                  <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Durga Jewellers</p>
+                                  <div><span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                </div>
+                                  <p class="mt-4 leading-relaxed text-gray-700">
+                                    We were struggling with manual attendance tracking until we discovered this software. Now, everything is
+                                    automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all
+                                    businesses!
+                                  </p>
+                                </div>
+                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                              </blockquote>
+                            </div>
+                  
+                            <!-- Testimonial 3 -->
+                            <div class="keen-slider__slide">
+                              <blockquote class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
+                                <div class="mt-4">
+                                  <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bathla Hardware</p>
+                                  <div><span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                    <span style="color: #7DE88D;">★</span>
+                                </div>
+                                  <p class="mt-4 leading-relaxed text-gray-700">
+                                    The integration of attendance and leave management in a single platform is what sets this software
+                                    apart. It's reliable, easy to use, and saves a lot of administrative time. Kudos to Real Victory Groups!
+                                  </p>
+                                </div>
+                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                              </blockquote>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  
+                      <!-- Mobile Navigation Buttons -->
+                      <div class="mt-8 flex justify-center gap-4 lg:hidden">
+                        <button aria-label="Previous slide" id="keen-slider-previous" class="rounded-full border border-rose-600 p-4 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                          <svg class="w-5 h-5 -rotate-180 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                          </svg>
+                        </button>
+                        <button aria-label="Next slide" id="keen-slider-next" class="rounded-full border border-rose-600 p-4 text-rose-600 transition hover:bg-rose-600 hover:text-white">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                  
 
 
             </div>
