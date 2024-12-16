@@ -115,7 +115,7 @@
           
               <!-- Optional Right Section (Commented Out) -->
               
-              <div class="relative mt-8 md:mt-0 md:ml-8 md:w-1/2 h-64 md:h-full rounded-lg overflow-hidden shadow-lg">
+              <div class="relative mt-8 md:mt-0 md:ml-8 md:w-1/2 h-64 md:h-full rounded-lg overflow-hidden shadow-lg hidden md:block">
                 <img 
                   src="{{ asset('asset/img/app-using.png') }}" 
                   alt="Feature Banner" 
@@ -131,32 +131,32 @@
             ======================== -->
 
 
-        {{-- <section class="w-full xl:max-w-7xl mx-auto py-16 px-6 md:px-16  2xl:px-0">
+        <section class="w-full xl:max-w-7xl mx-auto py-16 px-6 md:px-16  2xl:px-0">
             <marquee behavior="scroll-smooth" direction="ltr">
-                <div class="slide gap-8 *:cursor-pointer flex justify-center items-center xl:justify-between">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
-                    <img src="{{ asset('asset/img/company logo.png') }}" loading="lazy" alt="brand">
+                <div class="slide gap-8 *:cursor-pointer flex justify-center items-center xl:justify-between ">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40 ">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
+                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
                 </div>
             </marquee>
-        </section> --}}
+        </section>
 
 
             {{-- ABOUT --}}
