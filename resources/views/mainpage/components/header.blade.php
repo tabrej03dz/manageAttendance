@@ -54,9 +54,12 @@
                          {{-- <li><a href="{{ route('blogs') }}">Blog</a></li> --}}
                          <li><a href="{{ route('reqDemo') }}">Request a Demo</a>
                          </li>
-                         <li><a href="{{ route('login') }}">Login</a></li>
+                         {{-- <li><a href="{{ route('login') }}">Login</a></li> --}}
                      </ul>
-                     <form
+                    
+                     <div class="w-[152px] h-11 flex justify-center bg-gradient-to-t from-red-500 to-black text-white hover:text-white hover:bg-red-500 rounded-xl p-2 text-lg "> <a href="{{ route('login') }}">Login</a></div>
+                    
+                     {{-- <form
                          class="group w-[152px] h-11 max-w-sm bg-bgSecondary outline-none focus:ring-1 focus:ring-bgSecondary font-futuraBk rounded-full inline-flex cursor-pointer">
                          <select id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider"
                              class="bg-bgSecondary text-white text-base px-1 ml-5 py-2 outline-none border-none cursor-pointer *:border-b *:border-b-bgHeader">
@@ -79,7 +82,7 @@
                              <option value="తెలుగు">తెలుగు</option>
                              <option value="اردو">اردو</option>
                          </select>
-                     </form>
+                     </form> --}}
                  </div>
              </div>
          </nav>
@@ -102,7 +105,7 @@
                      </ul>
 
                      <div>
-                         <form
+                         {{-- <form
                              class="group w-[152px] h-11 max-w-sm bg-bgSecondary outline-none focus:ring-1 focus:ring-bgSecondary font-futuraBk rounded-full inline-flex cursor-pointer">
                              <select id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider"
                                  class="bg-bgSecondary text-white text-base px-1 ml-5 py-2 outline-none border-none cursor-pointer *:border-b *:border-b-bgHeader">
@@ -125,7 +128,7 @@
                                  <option value="తెలుగు">తెలుగు</option>
                                  <option value="اردو">اردو</option>
                              </select>
-                         </form>
+                         </form> --}}
 
                          <div class="infoText text-bgSecondary mt-16">
                              <h6 class="pb-4 text-lg text-textSecondary font-futuraBk font-medium">Call or Email Us
