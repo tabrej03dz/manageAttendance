@@ -1086,7 +1086,7 @@
                                     have significantly improved our efficiency.
                                   </p>
                                 </div>
-                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                                {{-- <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer> --}}
                               </blockquote>
                             </div>
                   
@@ -1108,7 +1108,7 @@
                                     businesses!
                                   </p>
                                 </div>
-                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                                {{-- <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer> --}}
                               </blockquote>
                             </div>
                   
@@ -1128,7 +1128,7 @@
                                     apart. It's reliable, easy to use, and saves a lot of administrative time. Kudos to Real Victory Groups!
                                   </p>
                                 </div>
-                                <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer>
+                                {{-- <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer> --}}
                               </blockquote>
                             </div>
                           </div>
