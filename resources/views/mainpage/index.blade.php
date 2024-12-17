@@ -89,41 +89,46 @@
         <div class="relative h-screen">
             <!-- Background Image with Overlay -->
             <div class="absolute inset-0">
-              <div class="absolute inset-0 bg-black bg-opacity-45"></div>
+              <div class="absolute inset-0 bg-black bg-opacity-50"></div>
               <img 
-                src="{{ asset('asset/img/bg.jpg') }}" 
+                src="{{ asset('asset/img/web header.jpg') }}" 
                 alt="Background Banner" 
-                class="w-full h-full object-cover">
+                class="w-full h-full object-cover"
+              />
             </div>
           
             <!-- Foreground Content -->
-            <div class=" relative max-w-7xl mx-auto h-full flex flex-col md:flex-row items-center justify-center p-6 md:p-12">
+            <div class="relative max-w-7xl mx-auto h-full flex flex-col md:flex-row items-center justify-center p-6 md:p-12">
+              
               <!-- Left Section -->
-              <div class="bg-white bg-opacity-0 rounded-lg shadow-lg p-8 md:w-1/2">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-100 mb-6 text-center">
+              <div class="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 md:w-1/2 mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
                   Attendance Management That Empowers Your Workforce
                 </h1>
-                <p class="text-gray-50 text-lg mb-8 leading-relaxed text-center">
+                <p class="text-white text-lg mb-8 leading-relaxed">
                   Bid farewell to tedious excel sheets, and say hello to a more efficient way to manage employee attendance. Generate insightful reports, regularize attendance, and empower your on-site and remote employees to check in from anywhere with our cloud-based attendance management system.
                 </p>
-              <div class="flex justify-center">
-                <button class="bg-[#DB2530]  text-white font-semibold py-3 px-6 rounded-lg hover:bg-red-600 transition">
-                    REQUEST FOR DEMO
-                  </button>
-              </div>
+                <a 
+                  href="{{ route('reqDemo') }}" 
+                  class="inline-block bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition"
+                >
+                  REQUEST FOR DEMO
+                </a>
               </div>
           
-              <!-- Optional Right Section (Commented Out) -->
-              
-              <div class="relative mt-8 md:mt-0 md:ml-8 md:w-1/2 h-64 md:h-full rounded-lg overflow-hidden shadow-lg hidden md:block">
-                <img 
+              <!-- Optional Right Section (Currently Hidden) -->
+              <div class="hidden md:block md:w-1/2 h-full relative mt-8 md:mt-0 md:ml-8">
+                <!-- Uncomment the following if image is required -->
+                <!-- <img 
                   src="{{ asset('asset/img/app-using.png') }}" 
                   alt="Feature Banner" 
-                  class="w-full h-full object-cover">
+                  class="w-full h-full object-cover rounded-lg shadow-lg"
+                /> -->
               </div>
-             
+          
             </div>
-        </div>
+          </div>
+          
           
           
         <!-- =======================

@@ -104,6 +104,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');
 
+    // DEMO TESTING MAIL
+    
+
     Route::prefix('office')->name('office.')->group(function(){
        Route::get('/', [OfficeController::class, 'index'])->name('index');
        Route::get('create', [OfficeController::class, 'create'])->name('create');

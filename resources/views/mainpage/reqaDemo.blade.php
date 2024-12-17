@@ -169,34 +169,35 @@
                     <hr class="w-full max-w-sm mx-auto">
                 </div>
 
-                <form
+                <form action="{{url('contact_mail')}}" method="post"
                     class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary"
                     action="backend.php">
+                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label for="myNname">Name:</label>
-                            <input type="text" name="myName" id="myName" placeholder="Company Name">
+                            <input type="text" name="myName" id="myName" name='name' placeholder="Company Name">
                         </div>
                         <div>
                             <label for="myAdmin">Admin:</label>
-                            <input type="text" name="myAdmin" id="myAdmin" placeholder="Account Owner / Admin Name">
+                            <input type="text" name="myAdmin" id="myAdmin" admin='admin' placeholder="Account Owner / Admin Name">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label for="myTel">Mobile No:</label>
-                            <input type="text" name="myTel" id="myTel" inputmode="numeric" placeholder="Mobile No">
+                            <input type="text" name="myTel" id="myTel" mobile='mobile' inputmode="numeric" placeholder="Mobile No">
                         </div>
                         <div>
                             <label for="myEmail">Email:</label>
-                            <input type="email" name="myEmail" id="myEmail" placeholder="example@gmail.com">
+                            <input type="email" name="myEmail" id="myEmail" Email='email' placeholder="example@gmail.com">
                         </div>
                     </div>
 
                     <div>
                         <label for="myCompAdd">Company Address:</label>
-                        <input type="text" name="myCompAdd" id="myCompAdd" placeholder="Company Name">
+                        <input type="text" name="myCompAdd" id="myCompAdd" text='text' placeholder="Company Name">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -231,7 +232,7 @@
                     <div>
                         <button
                             class="rounded-md px-6 py-3 mt-6 font-medium bg-bgPrimary text-white hover:bg-universal duration-150 ease-in">
-                            Sign Me Up
+                            Submit
                         </button>
                     </div>
                 </form>
