@@ -26,8 +26,9 @@
                       </svg> --}}
                       <a href="{{ route('mainpage') }}"><img src="{{asset('asset/img/logo (2).png')}}" alt="" class="h-24 w-24">
                       </a>
-                      <div class="md:ml-3 mt-2 md:mt-4">
-                          <h2 class="text-white font-semibold text-lg tracking-tight">Real Victory Groups</h2>
+                      <div class="md:ml-1 mt-2 md:mt-4">
+                          <h2 class="text-white font-semibold text-lg tracking-tight"><a href="http://realvictorygroups.com/">Real Victory Groups</a></h2>
+                          <p class="text-white">73 Basement, Ekta Enclave Society, Lakhanpur, Khyora, Kanpur, Uttar Pradesh 208024</p>
                       </div>
                   </div>
                   <div class="py-6 font-futuraMd text-white md:ml-14">
@@ -37,33 +38,34 @@
                               +917753800444</a>
                       </h4>
                       <h4>
-                          <a href="#" class="hover:text-gray-100 duration-75 ease-linear" title="Email Now">
+                          <a href="mailto:realvictorygroups@gmail.com" class="hover:text-gray-100 duration-75 ease-linear" title="Email Now">
                               <span class="font-futuraBk font-semibold">Email:
-                              </span> info@realvictorygroups.in</a>
+                              </span> realvictorygroups@gmail.com</a>
                       </h4>
                   </div>
                   <div class="text-paraTextxl text-white md:ml-14">
-                      <a href="#" class="mr-2"><i class="fa-brands fa-square-facebook"></i></a>
-                      <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                      <a href="https://www.facebook.com/realvictorygroups/" class="mr-2"><i class="fa-brands fa-square-facebook"></i></a>
+                      <a href="https://www.linkedin.com/company/realvictorygroups/?originalSubdomain=in"><i class="fa-brands fa-linkedin"></i></a>
+                      <a href="https://www.instagram.com/realvictorygroups/"><i class="fa-brands fa-instagram"></i></a>
                   </div>
               </div>
 
               <div class="leftSide place-items-start sm:place-items-end mt-4 sm:mt-0">
                   <ul class="font-futuraMd">
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Home</a>
+                          <a href="{{route('mainpage')}}">Home</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Why RVG</a>
+                          <a href="#attendNow">Why RVG</a>
                       </li>
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Benefits</a>
+                          <a href="#benefit">Benefits</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Reviews</a>
+                          <a href="#review">Reviews</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Pricing</a>
+                          <a href="#price">Pricing</a>
                       </li>
                   </ul>
               </div>
@@ -71,13 +73,13 @@
               <div class="leftSide place-items-start sm:place-items-end mt-4 sm:mt-0">
                   <ul class="font-futuraMd">
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Privacy Policy</a>
+                          <a href="https://realvictorygroups.com/privacy-policy/">Privacy Policy</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Terms & Conditions</a>
+                          <a href="https://realvictorygroups.com/terms-conditions/">Terms & Conditions</a>
                       </li>
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="#">Refund Policy</a>
+                          <a href="https://realvictorygroups.com/cancellation-refund-policy/">Refund Policy</a>
                       </li>
                       {{-- <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
                           <a href="#">Shipping Policy</a>
@@ -88,7 +90,7 @@
 
           <div class="place-items-center pt-4">
               <p class="text-paraTextmd font-futuraMd font-normal text-center text-white">© 2024 by
-                  Real Victory Groups </p>
+                <a href="http://realvictorygroups.com/">  Real Victory Groups </a></p>
           </div>
       </div>
   </footer>
