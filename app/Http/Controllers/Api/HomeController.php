@@ -11,40 +11,26 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public static function employeeList($user, $date)
+    public static function employeeList($user)
     {
 
         if ($user->hasRole('super_admin|admin')) {
             if ($user->hasRole('super_admin')) {
-                $employees = User::with(['latestAttendance' => function ($query) use ($date) {
-                    $query->whereDate('created_at', $date);
-                }])->get();
+                $employees = User::all();
             } else {
                 $office = $user->office;
-                $employees = $office->users()->with(['latestAttendance' => function ($query) use ($date) {
-                    $query->whereDate('created_at', $date);
-                }])->get();
+                $employees = $office->users;
             }
         } elseif ($user->hasRole('owner')) {
             $officeIds = Office::where('owner_id', $user->id)->pluck('id');
-            $employees = User::whereIn('office_id', $officeIds)
-                ->with(['latestAttendance' => function ($query) use ($date) {
-                    $query->whereDate('created_at', $date);
-                }])->get();
+            $employees = User::whereIn('office_id', $officeIds)->get();
         } else {
             if ($user->hasRole('team_leader')) {
-                $employees = $user->members()->with(['latestAttendance' => function ($query) use ($date) {
-                    $query->whereDate('created_at', $date);
-                }])->get();
-                $record = User::with(['latestAttendance' => function ($query) use ($date) {
-                    $query->whereDate('created_at', $date);
-                }])->find($user->id);
+                $employees = $user->members;
+                $record = User::find($user->id);
                 $employees->push($record);
             } else {
-                $employees = User::where('id', $user->id)
-                    ->with(['latestAttendance' => function ($query) use ($date) {
-                        $query->whereDate('created_at', $date);
-                    }])->get();
+                $employees = User::where('id', $user->id)->get();
             }
         }
 

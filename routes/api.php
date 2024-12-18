@@ -31,6 +31,10 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
     });
 
+    Route::prefix('salary')->name('salary.')->group(function(){
+       Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
+    });
+
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 

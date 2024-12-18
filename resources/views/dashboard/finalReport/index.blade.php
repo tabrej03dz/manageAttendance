@@ -289,7 +289,6 @@
                                                              </td>
                                                          @endif
                                                      @endforeach
-                                                     @endforeach
                                                      <td class="fw-bold">{{ $officeDays - $offDays }}</td>
                                                      <td>{{ $workingDays }}</td>
                                                      <td>{{ $halfDayCount }}</td>
