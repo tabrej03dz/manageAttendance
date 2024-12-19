@@ -72,7 +72,15 @@ class LeaveController extends Controller
             'reason' => '',
         ]);
         $user = auth()->user();
-        $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id]);
+        if ($request->start_date && $request->end_date){
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
+            // Calculate the difference in days
+            $dayCount = $startDate->diffInDays($endDate);
+        }else{
+            $dayCount = null;
+        }
+        $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id, 'day_count' => $dayCount ?? 1]);
 
         $admin = User::where('office_id', $user->office->id)
             ->whereHas('roles', function($query) {

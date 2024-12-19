@@ -154,7 +154,11 @@ class AttendanceRecordController extends Controller
         }else{
             $date = Carbon::today();
         }
-        $employees = HomeController::employeeList($user, $date);
+        $employees = HomeController::employeeList($user);
+        foreach ($employees as $employee){
+            $latest_attendance = AttendanceRecord::whereDate('created_at', $date)->first();
+            $employee->latest_attendance = $latest_attendance;
+        }
         return response($employees);
     }
 
