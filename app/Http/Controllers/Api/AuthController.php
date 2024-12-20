@@ -21,6 +21,7 @@ class AuthController extends Controller
         ]);
 
 
+
         // Attempt to authenticate the user
         $user = User::where('email', $request->email)->first();
 //        return response($user);

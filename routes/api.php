@@ -24,6 +24,7 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 //
 //});
 
+
 Route::group(['middleware' => "auth:sanctum"], function(){
     Route::prefix('attendance')->name('attendance.')->group(function (){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
@@ -32,8 +33,9 @@ Route::group(['middleware' => "auth:sanctum"], function(){
     });
 
     Route::prefix('salary')->name('salary.')->group(function(){
-       Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
+        Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
     });
+
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
