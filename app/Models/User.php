@@ -79,4 +79,8 @@ class User extends Authenticatable
         return $this->hasOne(AttendanceRecord::class, 'user_id');
     }
 
+    public function userSalary(){
+        return $this->hasOne(UserSalary::class, 'user_id');
+    }
+
 }

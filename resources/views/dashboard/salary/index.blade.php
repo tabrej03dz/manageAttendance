@@ -149,8 +149,8 @@
                                                 @php
                                                     $userSalary = App\Models\Salary::where('user_id', $user->id)->where('month', $d)->first();
                                                     if (!$userSalary) {
-                                                        $oneDaySalary = $user->salary / 30;
-                                                        $oneHourSalary = $oneDaySalary / ($user->office_time / 60);
+                                                        $oneDaySalary = $user->userSalary ?  $user->userSalary->total_salary : $user->salary / 30;
+                                                        $oneHourSalary = $oneDaySalary / ($user->office_time / 60)  ;
 
                                                         // Calculate salaries
                                                         $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2) + ($paidLeave * $oneDaySalary));

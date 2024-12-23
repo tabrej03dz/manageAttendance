@@ -30,6 +30,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
+        Route::get('record', [AttendanceRecordController::class, 'monthlyRecord'])->name('record');
     });
 
     Route::prefix('salary')->name('salary.')->group(function(){

@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+
 use App\Http\Controllers\Controller;
-//use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Api\HomeController;
 use App\Models\AttendanceRecord;
 use App\Models\User;
 use Carbon\Carbon;
+use http\Env\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class AttendanceRecordController extends Controller
 {
@@ -161,5 +163,65 @@ class AttendanceRecordController extends Controller
         }
         return response($employees);
     }
+
+    public function monthlyRecord(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'month' => 'nullable|date_format:Y-m',
+        ]);
+
+        // Determine the user
+        $user = $request->user_id
+            ? User::find($request->user_id)
+            : $request->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found.'], 404);
+        }
+        if ($user->hasRole('super_admin|admin|owner|team_leader')){
+            $employees = HomeController::employeeList($user);
+        }else{
+            $employees = null;
+        }
+
+
+
+        // Determine the month and calculate date range
+        $month = $request->month ?: Carbon::now()->format('Y-m');
+        $startOfMonth = Carbon::parse($month . '-01')->startOfMonth();
+        $endOfMonth = Carbon::parse($month . '-01')->endOfMonth();
+
+        // Get attendance records for the date range
+        $attendanceRecords = AttendanceRecord::where('user_id', $user->id)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->groupBy(function ($record) {
+                return $record->created_at->format('Y-m-d');
+            });
+
+        // Generate the dates and associate records
+        $dates = collect();
+        for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+            $dates->push([
+                'date' => $date->toDateString(),
+                'record' => $attendanceRecords->has($date->toDateString())
+                    ? $attendanceRecords[$date->toDateString()]->first()
+                    : null,
+            ]);
+        }
+
+        return response()->json([
+            'employees' => $employees,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+            ],
+            'month' => $month,
+            'attendance' => $dates,
+        ]);
+    }
+
 
 }

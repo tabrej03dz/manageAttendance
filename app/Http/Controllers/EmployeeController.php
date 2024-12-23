@@ -7,6 +7,7 @@ use App\Models\AttendanceRecord;
 use App\Models\Office;
 use App\Models\Plan;
 use App\Models\User;
+use App\Models\UserSalary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -85,6 +86,17 @@ class EmployeeController extends Controller
             $employee->assignRole($request->role);
         } else {
             $employee->assignRole('employee');
+        }
+
+        if ($employee){
+            $userSalary = UserSalary::create([
+                'basic_salary' => $request->basic_salary,
+                'house_rent_allowance' => $request->house_rent_allowance,
+                'transport_allowance' => $request->transport_allowance,
+                'medical_allowance' => $request->medical_allowance,
+                'special_allowance' => $request->special_allowance,
+                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+            ]);
         }
 
         // Redirect with success message
