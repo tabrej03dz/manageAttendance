@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->date('month');
-            $table->decimal('day_wise_salary', 10, 2);
-            $table->decimal('hour_wise_salary', 10, 2);
+            $table->decimal('day_wise_salary', 10, 2)->nullable();
+            $table->decimal('hour_wise_salary', 10, 2)->nullable();
             $table->enum('status', ['paid', 'unpaid']);
             $table->unsignedBigInteger('paid_by')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('SET NULL');

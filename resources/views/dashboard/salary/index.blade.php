@@ -162,7 +162,13 @@
                                                             'month' => $d,
                                                             'day_wise_salary' => $salary,
                                                             'hour_wise_salary' => $durationSalary,
-                                                            'status' => 'unpaid'
+                                                            'status' => 'unpaid',
+                                                            'basic_salary' => $user->userSalary ? $user->userSalary->basic_salary : $user->salary,
+                                                            'house_rent_allowance' => $user->userSalary ? $user->userSalary->house_rent_allowance : 0,
+                                                            'transport_allowance' => $user->userSalary ? $user->userSalary->transport_allowance : 0,
+                                                            'medical_allowance' => $user->userSalary ? $user->userSalary->medical_allowance : 0,
+                                                            'special_allowance' => $user->userSalary ? $user->userSalary->special_allowance : 0,
+                                                            'advance' => $advancePayments->where('user_id', $user->id)->sum('amount'),
                                                         ]);
                                                     }
                                                 @endphp

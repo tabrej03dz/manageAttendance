@@ -180,13 +180,11 @@ class AttendanceRecordController extends Controller
         if (!$user) {
             return response()->json(['error' => 'User not found.'], 404);
         }
-        if ($user->hasRole('super_admin|admin|owner|team_leader')){
-            $employees = HomeController::employeeList($user);
+        if ($request->user()->hasRole('super_admin|admin|owner|team_leader')){
+            $employees = HomeController::employeeList($request->user());
         }else{
             $employees = null;
         }
-
-
 
         // Determine the month and calculate date range
         $month = $request->month ?: Carbon::now()->format('Y-m');
