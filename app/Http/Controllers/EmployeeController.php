@@ -131,10 +131,34 @@ class EmployeeController extends Controller
             $employee->photo = str_replace('public/', '', $file);
         }
         $employee->joining_date =  $request->joining_date;
-        if ($request->role){
-            $employee->assignRole($request->role);
+        if ($request->role) {
+            // Remove old roles and assign the new role
+            $employee->syncRoles($request->role);
         }
         $employee->save();
+
+        $userSalary = UserSalary::where('user_id', $employee->id)->first();
+        if ($userSalary){
+            $userSalary = $userSalary->update([
+                'user_id' => $employee->id,
+                'basic_salary' => $request->basic_salary,
+                'house_rent_allowance' => $request->house_rent_allowance,
+                'transport_allowance' => $request->transport_allowance,
+                'medical_allowance' => $request->medical_allowance,
+                'special_allowance' => $request->special_allowance,
+                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+            ]);
+        }else{
+            $userSalary = UserSalary::create([
+                'user_id' => $employee->id,
+                'basic_salary' => $request->basic_salary,
+                'house_rent_allowance' => $request->house_rent_allowance,
+                'transport_allowance' => $request->transport_allowance,
+                'medical_allowance' => $request->medical_allowance,
+                'special_allowance' => $request->special_allowance,
+                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+            ]);
+        }
         return redirect('employee')->with('success', 'Record Updated successfully');
     }
 
