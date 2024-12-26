@@ -90,6 +90,7 @@ class EmployeeController extends Controller
 
         if ($employee){
             $userSalary = UserSalary::create([
+                'user_id' => $employee->id,
                 'basic_salary' => $request->basic_salary,
                 'house_rent_allowance' => $request->house_rent_allowance,
                 'transport_allowance' => $request->transport_allowance,
