@@ -136,7 +136,7 @@
             ======================== -->
 
 
-        <section class="w-full xl:max-w-7xl mx-auto py-16 px-6 md:px-16  2xl:px-0">
+        {{-- <section class="w-full xl:max-w-7xl mx-auto py-16 px-6 md:px-16  2xl:px-0">
             <marquee behavior="scroll-smooth" direction="ltr">
                 <div class="slide gap-8 *:cursor-pointer flex justify-center items-center xl:justify-between ">
                     <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40 ">
@@ -161,7 +161,7 @@
                     <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
                 </div>
             </marquee>
-        </section>
+        </section> --}}
 
 
             {{-- ABOUT --}}
