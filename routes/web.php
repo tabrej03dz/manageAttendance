@@ -14,6 +14,7 @@ use \App\Http\Controllers\LunchBreakController;
 use \App\Http\Controllers\AdvancePaymentController;
 use \App\Http\Controllers\PlanController;
 use \App\Http\Controllers\CorrectionNoteController;
+use App\Http\Controllers\RequestDemoController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,7 +34,16 @@ Route::controller(\App\Http\Controllers\FrontController::class)->group(function(
     Route::get('/Blogs', 'blogs')->name('blogs');
     Route::get('/blogDetailsPage', 'blogDetailsPage')->name('blogDetailsPage');
     Route::get('/reqDemo', 'reqDemo')->name('reqDemo');
+    Route::get('/thankyou', 'thankyou')->name('thankyoupage');
 });
+
+Route::controller(RequestDemoController::class)->group(function(){
+    Route::get('request/index', 'index')->name('request.index');
+    Route::post('reqest/store', 'store')->name('request.store');
+    // Route::get('/', '')->name('blogDetailsPage');
+    // Route::get('/', '')->name('reqDemo');
+});
+
 
 
 
@@ -105,7 +115,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::post('profile/update/{user}', [HomeController::class, 'updateProfile'])->name('profile.update');
 
     // DEMO TESTING MAIL
-    
+
 
     Route::prefix('office')->name('office.')->group(function(){
        Route::get('/', [OfficeController::class, 'index'])->name('index');

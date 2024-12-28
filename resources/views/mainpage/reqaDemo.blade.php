@@ -169,35 +169,35 @@
                     <hr class="w-full max-w-sm mx-auto">
                 </div>
 
-                <form action="{{url('contact_mail')}}" method="post"
+                <form action="{{route('request.store')}}" method="post"
                     class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary"
-                    action="backend.php">
+                    >
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label for="myNname">Name:</label>
-                            <input type="text" name="myName" id="myName" name='name' placeholder="Company Name">
+                            <label for="compan_name">Name:</label>
+                            <input type="text" name="compan_name" id="compan_name"  placeholder="Company Name">
                         </div>
                         <div>
-                            <label for="myAdmin">Admin:</label>
-                            <input type="text" name="myAdmin" id="myAdmin" admin='admin' placeholder="Account Owner / Admin Name">
+                            <label for="owner_name">Admin:</label>
+                            <input type="text" name="owner_name" id="owner_name" placeholder="Account Owner / Admin Name">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label for="myTel">Mobile No:</label>
-                            <input type="text" name="myTel" id="myTel" mobile='mobile' inputmode="numeric" placeholder="Mobile No">
+                            <label for="number">Mobile No:</label>
+                            <input type="text" name="number" id="number" inputmode="numeric" placeholder="Mobile No">
                         </div>
                         <div>
-                            <label for="myEmail">Email:</label>
-                            <input type="email" name="myEmail" id="myEmail" Email='email' placeholder="example@gmail.com">
+                            <label for="email">Email:</label>
+                            <input type="email" name="email" id="email" placeholder="example@gmail.com">
                         </div>
                     </div>
 
                     <div>
-                        <label for="myCompAdd">Company Address:</label>
-                        <input type="text" name="myCompAdd" id="myCompAdd" text='text' placeholder="Company Name">
+                        <label for="company_address">Company Address:</label>
+                        <input type="text" name="company_address" id="company_address"  placeholder="Company Address">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -205,26 +205,27 @@
                             <label for="employee">Employee Size:</label>
                             <select
                                 class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
-                                name="Desgination" id="employee">
-                                <option value="own">Employee Size</option>
-                                <option value="own">0-10</option>
-                                <option value="own">10-25</option>
-                                <option value="own">25-50</option>
-                                <option value="own">50-100</option>
-                                <option value="own">100-500</option>
-                                <option value="own">500+</option>
+                                name="emp_size" id="emp_size">
+                                <option value="">Select Employee Size</option>
+                                <option value="0-10">0-10</option>
+                                <option value="10-25">10-25</option>
+                                <option value="25-50">25-50</option>
+                                <option value="50-100">50-100</option>
+                                <option value="100-500">100-500</option>
+                                <option value="500+">500+</option>
                             </select>
                         </div>
                         <div>
                             <label for="desgi">Desgination:</label>
                             <select
                                 class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
-                                name="Desgination" id="desgi">
-                                <option value="own">Desgination</option>
-                                <option value="own">Owner</option>
-                                <option value="own">Manager</option>
-                                <option value="own">Employee</option>
-                                <option value="own">HR</option>
+                                name="designation" id="desgi">
+                                <option value="">Select Desgination</option>
+                                <option value="Owner">Owner</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Employee">Employee</option>
+                                <option value="HR">HR</option>
+                                <option value="other">Other</option>
                             </select>
                         </div>
                     </div>
