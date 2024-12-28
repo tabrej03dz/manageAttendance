@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AttendanceRecordController;
 use \App\Http\Controllers\Api\AuthController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +18,8 @@ use \App\Http\Controllers\Api\AuthController;
 */
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
+
 
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
