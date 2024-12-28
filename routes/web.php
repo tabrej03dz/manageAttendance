@@ -34,6 +34,7 @@ Route::controller(\App\Http\Controllers\FrontController::class)->group(function(
     Route::get('/Blogs', 'blogs')->name('blogs');
     Route::get('/blogDetailsPage', 'blogDetailsPage')->name('blogDetailsPage');
     Route::get('/reqDemo', 'reqDemo')->name('reqDemo');
+    Route::get('/thankyou', 'thankyou')->name('thankyoupage');
 });
 
 Route::controller(RequestDemoController::class)->group(function(){

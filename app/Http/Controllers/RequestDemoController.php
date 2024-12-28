@@ -28,6 +28,7 @@ class RequestDemoController extends Controller
          $adminEmail = 'realvictorygroups@gmail.com'; // Replace with the admin's email address
          Mail::to($adminEmail)->send(new AdminNewRequestDemoMail($requestDemo));
         // Redirect with success message
-        return redirect()->back()->with('success', 'Request demo submitted successfully!');
+        return redirect()->route('thankyouPage')->with('success', 'Request demo submitted successfully!');
+        // return redirect()->back();
     }
 }
