@@ -25,7 +25,7 @@ class RequestDemoController extends Controller
         // Send email
         Mail::to($request->email)->send(new RequestDemoMail($requestDemo));
   // Send email to the admin
-         $adminEmail = 'admin@example.com'; // Replace with the admin's email address
+         $adminEmail = 'realvictorygroups@gmail.com'; // Replace with the admin's email address
          Mail::to($adminEmail)->send(new AdminNewRequestDemoMail($requestDemo));
         // Redirect with success message
         return redirect()->back()->with('success', 'Request demo submitted successfully!');
