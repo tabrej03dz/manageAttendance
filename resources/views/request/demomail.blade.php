@@ -5,64 +5,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Demo Confirmation</title>
-    <!-- Tailwind CSS -->
-    <link href="{{ asset('mainasset/css/style.css') }}" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for social icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-<body class="bg-gray-50 text-gray-900">
+<body style="background-color: #f9fafb; color: #1f2937; margin: 0; font-family: Arial, sans-serif;">
     <!-- Header -->
-    <header class="bg-gray-200 text-white py-8 shadow-lg">
-        <div class="flex justify-center items-center">
-            <!-- Logo without border, more spacing -->
-            <img src="{{ asset('asset/img/logo.png') }}" alt="Real Victory Groups Logo" class="h-32 w-32 rounded-full">
+    <header
+        style="background-color: #e5e7eb; color: white; padding: 2rem 0; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <img src="{{ asset('asset/img/logo.png') }}" alt="Real Victory Groups Logo"
+                style="width: 90%; height: auto;">
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto my-12 mt-10 p-8 md:p-12 bg-white rounded-xl shadow-lg">
-        <h1 class="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-6">Hello, {{ $requestDemo->owner_name }}
-        </h1>
-        <p class="text-lg md:text-xl text-center text-gray-600 mb-8">Thank you for your demo request. Below are your
-            details:</p>
-        <ul class="list-disc pl-8 text-lg md:text-xl text-gray-700 space-y-4">
-            <li><strong class="font-semibold">Company Name:</strong> {{ $requestDemo->compan_name }}</li>
-            <li><strong class="font-semibold">Owner Name:</strong> {{ $requestDemo->owner_name }}</li>
-            <li><strong class="font-semibold">Phone Number:</strong> {{ $requestDemo->number }}</li>
-            <li><strong class="font-semibold">Email:</strong> {{ $requestDemo->email }}</li>
-            <li><strong class="font-semibold">Company Address:</strong> {{ $requestDemo->company_address }}</li>
-            <li><strong class="font-semibold">Employee Size:</strong> {{ $requestDemo->emp_size }}</li>
-            <li><strong class="font-semibold">Designation:</strong> {{ $requestDemo->designation }}</li>
+    <main
+        style="max-width: 800px; margin: 2.5rem auto; padding: 2rem; background-color: white; border-radius: 1rem; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
+        <h1 style="font-size: 2.5rem; font-weight: bold; text-align: center; color: #1f2937; margin-bottom: 1.5rem;">
+            Hello, {{ $requestDemo->owner_name }}</h1>
+        <p style="font-size: 1.125rem; text-align: center; color: #4b5563; margin-bottom: 2rem;">Thank you for your demo
+            request. Below are your details:</p>
+        <ul style="padding-left: 2rem; font-size: 1.125rem; color: #374151; line-height: 1.8; list-style-type: none;">
+            <li><strong style="font-weight: 600;">Company Name:</strong> {{ $requestDemo->compan_name }}</li>
+            <li><strong style="font-weight: 600;">Owner Name:</strong> {{ $requestDemo->owner_name }}</li>
+            <li><strong style="font-weight: 600;">Phone Number:</strong> {{ $requestDemo->number }}</li>
+            <li><strong style="font-weight: 600;">Email:</strong> {{ $requestDemo->email }}</li>
+            <li><strong style="font-weight: 600;">Company Address:</strong> {{ $requestDemo->company_address }}</li>
+            <li><strong style="font-weight: 600;">Employee Size:</strong> {{ $requestDemo->emp_size }}</li>
+            <li><strong style="font-weight: 600;">Designation:</strong> {{ $requestDemo->designation }}</li>
         </ul>
-        <p class="mt-8 text-lg md:text-xl font-medium text-center text-gray-800">We will contact you shortly!</p>
+        <p style="margin-top: 2rem; font-size: 1.125rem; font-weight: 500; text-align: center; color: #1f2937;">We will
+            contact you shortly!</p>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-red-600 text-white py-8 mt-12">
-        <div class="container mx-auto text-center space-y-6">
-            <p class="text-sm md:text-base">&copy; 2024 Real Victory Groups. All rights reserved.</p>
-            <ul class="contact-details text-sm md:text-base space-y-4">
-                <li><strong class="font-semibold">Contact Number:</strong> +917753800444</li>
-                <li><strong class="font-semibold">Email:</strong> realvictorygroups@gmail.com</li>
-                <li><strong class="font-semibold">Address:</strong> 73 Basement, Ekta Enclave Society, Lakhanpur,
+    <footer style="background-color: #dc2626; color: white; padding: 2rem 0; margin-top: 3rem;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 0.875rem; margin-bottom: 1.5rem;">&copy; 2024 Real Victory Groups. All rights reserved.
+            </p>
+            <ul style="font-size: 0.875rem; line-height: 1.8; margin-bottom: 1.5rem; list-style-type: none;">
+                <li><strong style="font-weight: 600;">Contact Number:</strong> +917753800444</li>
+                <li><strong style="font-weight: 600;">Email:</strong> realvictorygroups@gmail.com</li>
+                <li><strong style="font-weight: 600;">Address:</strong> 73 Basement, Ekta Enclave Society, Lakhanpur,
                     Khyora, Kanpur, Uttar Pradesh 208024</li>
             </ul>
             <!-- Social Media Icons -->
             <div>
-                <h2 class="text-xl md:text-2xl font-semibold text-white">Follow us on:</h2>
-                <div class="flex justify-center space-x-8 mt-4">
+                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Follow us on:</h2>
+                <div style="display: flex; justify-content: center; gap: 2rem;">
                     <a href="https://www.instagram.com/realvictorygroups/" target="_blank"
-                        class="text-white text-3xl hover:text-gray-300 transform hover:scale-110 transition-all duration-300">
+                        style="color: white; font-size: 2rem; transition: transform 0.3s, color 0.3s;">
                         <i class="fab fa-instagram"></i>
                     </a>
                     <a href="https://wa.me/+917753800444" target="_blank"
-                        class="text-white text-3xl hover:text-gray-300 transform hover:scale-110 transition-all duration-300">
+                        style="color: white; font-size: 2rem; transition: transform 0.3s, color 0.3s;">
                         <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
-
             </div>
         </div>
     </footer>
