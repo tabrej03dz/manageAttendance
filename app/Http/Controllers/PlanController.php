@@ -10,7 +10,8 @@ use App\Models\Plan;
 class PlanController extends Controller
 {
     public function ownerPlan(User $owner){
-        $plans = $owner->plans;
+        $plans = Plan::where('user_id', $owner->id)->latest()->get();
+
         return view('dashboard.plan.index', compact('plans'));
     }
 
