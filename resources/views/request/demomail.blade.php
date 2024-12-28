@@ -35,11 +35,6 @@
             .detail-value {
                 display: inline !important;
             }
-            .footer-contact {
-                display: block !important;
-                text-align: center !important;
-                margin-bottom: 8px !important;
-            }
         }
     </style>
 </head>
@@ -55,13 +50,13 @@
                         </td>
                     </tr>
 
-                    <!-- Main Content -->
+                    <!-- Main Content - Now Centered -->
                     <tr>
                         <td class="content" style="padding: 30px 20px;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 400px; margin: 0 auto;">
                                 <tr>
                                     <td align="center" style="padding-bottom: 20px;">
-                                        <h1 style="margin: 0; font-size: 22px; font-weight: bold; color: #1f2937;">Hello, {{ $requestDemo->owner_name ?? 'Valued Customer' }}</h1>
+                                        <h1 style="margin: 0; font-size: 22px; font-weight: bold; color: #1f2937;">Hello, {{ $requestDemo->owner_name }}</h1>
                                     </td>
                                 </tr>
                                 <tr>
@@ -75,37 +70,37 @@
                                             <!-- Details rows -->
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Company Name:</strong> {{ $requestDemo->compan_name ?? 'N/A' }}
+                                                    <strong>Company Name:</strong> {{ $requestDemo->compan_name }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Owner Name:</strong> {{ $requestDemo->owner_name ?? 'N/A' }}
+                                                    <strong>Owner Name:</strong> {{ $requestDemo->owner_name }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Phone Number:</strong> {{ $requestDemo->number ?? 'N/A' }}
+                                                    <strong>Phone Number:</strong> {{ $requestDemo->number }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Email:</strong> {{ $requestDemo->email ?? 'N/A' }}
+                                                    <strong>Email:</strong> {{ $requestDemo->email }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Company Address:</strong> 144/4, Vijay Nagar
+                                                    <strong>Company Address:</strong> {{ $requestDemo->company_address }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Employee Size:</strong> {{ $requestDemo->emp_size ?? 'N/A' }}
+                                                    <strong>Employee Size:</strong> {{ $requestDemo->emp_size }}
                                                 </td>
                                             </tr>
                                             <tr class="detail-row">
                                                 <td align="center" style="padding: 8px 0; color: #4b5563;">
-                                                    <strong>Designation:</strong> {{ $requestDemo->designation ?? 'N/A' }}
+                                                    <strong>Designation:</strong> {{ $requestDemo->designation }}
                                                 </td>
                                             </tr>
                                         </table>
@@ -130,21 +125,24 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                    <td align="center">
+                                        <table role="presentation" cellpadding="4" cellspacing="0" border="0">
                                             <tr>
-                                                <td align="center" style="color: #ffffff; font-size: 14px; padding: 4px 0;">
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
                                                     <strong>Contact:</strong> +917753800444
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td align="center" style="color: #ffffff; font-size: 14px; padding: 4px 0;">
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
                                                     <strong>Email:</strong> realvictorygroups@gmail.com
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td align="center" style="color: #ffffff; font-size: 14px; padding: 4px 0;">
-                                                    <strong>Address:</strong> 144/4, Vijay Nagar
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
+                                                    <strong>Address:</strong><br>
+                                                    73 Basement, Ekta Enclave Society,<br>
+                                                    Lakhanpur, Khyora, Kanpur,<br>
+                                                    Uttar Pradesh 208024
                                                 </td>
                                             </tr>
                                         </table>
