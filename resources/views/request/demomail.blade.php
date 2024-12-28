@@ -23,18 +23,17 @@
             .footer {
                 padding: 20px 15px !important;
             }
-            .mobile-full {
-                width: 100% !important;
+            .detail-row {
                 display: block !important;
+                text-align: center !important;
+                margin-bottom: 8px !important;
             }
-            .mobile-text {
-                font-size: 16px !important;
+            .detail-label {
+                display: inline !important;
+                margin-right: 5px !important;
             }
-            .mobile-small-text {
-                font-size: 14px !important;
-            }
-            h1 {
-                font-size: 20px !important;
+            .detail-value {
+                display: inline !important;
             }
         }
     </style>
@@ -43,7 +42,7 @@
     <table role="presentation" class="container" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f9fafb;">
         <tr>
             <td align="center" style="padding: 10px;">
-                <table role="presentation" class="main-table" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; width: 600px;">
+                <table role="presentation" class="main-table" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; width: 600px; margin: 0 auto;">
                     <!-- Header -->
                     <tr>
                         <td align="center" class="header" style="background-color: #e5e7eb; padding: 30px 20px;">
@@ -51,10 +50,10 @@
                         </td>
                     </tr>
 
-                    <!-- Main Content -->
+                    <!-- Main Content - Now Centered -->
                     <tr>
                         <td class="content" style="padding: 30px 20px;">
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 400px; margin: 0 auto;">
                                 <tr>
                                     <td align="center" style="padding-bottom: 20px;">
                                         <h1 style="margin: 0; font-size: 22px; font-weight: bold; color: #1f2937;">Hello, {{ $requestDemo->owner_name }}</h1>
@@ -62,67 +61,46 @@
                                 </tr>
                                 <tr>
                                     <td align="center" style="padding-bottom: 25px;">
-                                        <p class="mobile-text" style="margin: 0; font-size: 16px; color: #4b5563;">Thank you for your demo request. Below are your details:</p>
+                                        <p style="margin: 0; font-size: 16px; color: #4b5563;">Thank you for your demo request. Below are your details:</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 20px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
                                             <!-- Details rows -->
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Company Name:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->compan_name }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Company Name:</strong> {{ $requestDemo->compan_name }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Owner Name:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->owner_name }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Owner Name:</strong> {{ $requestDemo->owner_name }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Phone Number:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->number }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Phone Number:</strong> {{ $requestDemo->number }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Email:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->email }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Email:</strong> {{ $requestDemo->email }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Company Address:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->company_address }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Company Address:</strong> {{ $requestDemo->company_address }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Employee Size:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->emp_size }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Employee Size:</strong> {{ $requestDemo->emp_size }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    <strong>Designation:</strong>
-                                                </td>
-                                                <td class="mobile-full mobile-text" valign="top" style="padding: 8px 0;">
-                                                    {{ $requestDemo->designation }}
+                                            <tr class="detail-row">
+                                                <td align="center" style="padding: 8px 0; color: #4b5563;">
+                                                    <strong>Designation:</strong> {{ $requestDemo->designation }}
                                                 </td>
                                             </tr>
                                         </table>
@@ -130,7 +108,7 @@
                                 </tr>
                                 <tr>
                                     <td align="center" style="padding-top: 20px;">
-                                        <p class="mobile-text" style="margin: 0; font-size: 16px; font-weight: 500; color: #1f2937;">We will contact you shortly!</p>
+                                        <p style="margin: 0; font-size: 16px; font-weight: 500; color: #1f2937;">We will contact you shortly!</p>
                                     </td>
                                 </tr>
                             </table>
@@ -143,24 +121,24 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td align="center" style="padding-bottom: 15px;">
-                                        <p class="mobile-small-text" style="margin: 0; font-size: 14px; color: #ffffff;">&copy; 2024 Real Victory Groups. All rights reserved.</p>
+                                        <p style="margin: 0; font-size: 14px; color: #ffffff;">&copy; 2024 Real Victory Groups. All rights reserved.</p>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td align="center">
                                         <table role="presentation" cellpadding="4" cellspacing="0" border="0">
                                             <tr>
-                                                <td align="center" class="mobile-small-text" style="color: #ffffff; font-size: 14px;">
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
                                                     <strong>Contact:</strong> +917753800444
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td align="center" class="mobile-small-text" style="color: #ffffff; font-size: 14px;">
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
                                                     <strong>Email:</strong> realvictorygroups@gmail.com
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td align="center" class="mobile-small-text" style="color: #ffffff; font-size: 14px;">
+                                                <td align="center" style="color: #ffffff; font-size: 14px;">
                                                     <strong>Address:</strong><br>
                                                     73 Basement, Ekta Enclave Society,<br>
                                                     Lakhanpur, Khyora, Kanpur,<br>
