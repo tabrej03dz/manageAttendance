@@ -17,6 +17,7 @@ use \App\Http\Controllers\CorrectionNoteController;
 use App\Http\Controllers\RequestDemoController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AttendanceRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +100,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     });
 
     Route::prefix('plan')->name('plan.')->group(function (){
+        Route::get('create/{owner}', [PlanController::class, 'create'])->name('create');
         Route::get('edit/{plan}', [PlanController::class, 'edit'])->name('edit');
         Route::post('update/{plan}', [PlanController::class, 'update'])->name('update');
         Route::get('status/{plan}', [PlanController::class, 'status'])->name('status');
