@@ -12,7 +12,7 @@ class PlanController extends Controller
     public function ownerPlan(User $owner){
         $plans = Plan::where('user_id', $owner->id)->latest()->get();
 
-        return view('dashboard.plan.index', compact('plans'));
+        return view('dashboard.plan.index', compact('plans', 'owner'));
     }
 
     public function edit(Plan $plan){
