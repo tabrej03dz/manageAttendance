@@ -11,6 +11,7 @@
 
 <body style="background-color: #f9fafb; color: #1f2937; margin: 0; font-family: Arial, sans-serif;">
     <!-- Header -->
+    
     <header
         style="background-color: #e5e7eb; color: white; padding: 2rem 0; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
         <div style="display: flex; justify-content: center; align-items: center;">

@@ -25,5 +25,10 @@ class FrontController extends Controller
     {
         return view('mainpage.reqaDemo');
     }
+    public function thankyou()
+    {
+        return view('mainpage.thankyou');
+    }
+
 
 }
