@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Demo Confirmation</title>
-    <!-- Font Awesome for social icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body style="background-color: #f9fafb; color: #1f2937; margin: 0; font-family: Arial, sans-serif;">
@@ -50,20 +48,6 @@
                 <li><strong style="font-weight: 600;">Address:</strong> 73 Basement, Ekta Enclave Society, Lakhanpur,
                     Khyora, Kanpur, Uttar Pradesh 208024</li>
             </ul>
-            <!-- Social Media Icons -->
-            <div>
-                <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Follow us on:</h2>
-                <div style="display: flex; justify-content: center; gap: 2rem;">
-                    <a href="https://www.instagram.com/realvictorygroups/" target="_blank"
-                        style="color: white; font-size: 2rem; transition: transform 0.3s, color 0.3s;">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://wa.me/+917753800444" target="_blank"
-                        style="color: white; font-size: 2rem; transition: transform 0.3s, color 0.3s;">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                </div>
-            </div>
         </div>
     </footer>
 </body>
