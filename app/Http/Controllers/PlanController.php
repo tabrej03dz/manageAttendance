@@ -15,6 +15,30 @@ class PlanController extends Controller
         return view('dashboard.plan.index', compact('plans', 'owner'));
     }
 
+    public function create(User $owner){
+        return view('dashboard.plan.create', compact('owner'));
+    }
+
+    public function store(Request $request, User $owner){
+        $request->validate([
+            'number_of_offices' => 'required',
+            'number_of_employees' => 'required',
+            'duration' => 'required',
+            'price' => 'required',
+            'start_date' => '',
+        ]);
+        $plan = Plan::create([
+            'number_of_offices' => $request->number_of_offices,
+            'number_of_employees' => $request->number_of_employees,
+            'duration' => $request->number_of_employees,
+            'start_date' => $request->start_date ?? Carbon::today(),
+            'price' => $request->price,
+            'end_date' => $request->start_date ? Carbon::createFromFormat('Y-m-d', $request->input('start_date'))->addDays($request->duration)->toDateString() : Carbon::today()->addDays($request->duration)->toDateString(),
+            'user_id' => $owner->id,
+        ]);
+
+    }
+
     public function edit(Plan $plan){
         return view('dashboard.plan.edit', compact('plan'));
     }

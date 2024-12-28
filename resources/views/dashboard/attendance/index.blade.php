@@ -9,7 +9,7 @@
     <form action="{{ route('attendance.index', ['user' => $user?->id]) }}">
         <div class="bg-gray-100 p-4 rounded-lg shadow-md">
             <!-- Employee Selection -->
-            @role('super_admin|admin')
+            @role('super_admin|admin|owner')
                 <div class="mb-4">
                     <label for="employee-select" class="block mb-1 text-sm font-medium text-gray-700">Select Employee:</label>
                     <select id="employee-select" name="employee"
