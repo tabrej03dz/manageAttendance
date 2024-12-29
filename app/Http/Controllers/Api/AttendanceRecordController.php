@@ -91,6 +91,7 @@ class AttendanceRecordController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Checked in successfully.',
+                'record' => $attendanceRecord,
             ], 200);
         } else {
             return response()->json([
