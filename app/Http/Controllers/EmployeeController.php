@@ -88,17 +88,26 @@ class EmployeeController extends Controller
             $employee->assignRole('employee');
         }
 
-        if ($employee){
+        if ($employee) {
+            $basic_salary = $request->basic_salary ?? 0;
+            $house_rent_allowance = $request->house_rent_allowance ?? 0;
+            $transport_allowance = $request->transport_allowance ?? 0;
+            $medical_allowance = $request->medical_allowance ?? 0;
+            $special_allowance = $request->special_allowance ?? 0;
+
+            $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance;
+
             $userSalary = UserSalary::create([
                 'user_id' => $employee->id,
-                'basic_salary' => $request->basic_salary,
-                'house_rent_allowance' => $request->house_rent_allowance,
-                'transport_allowance' => $request->transport_allowance,
-                'medical_allowance' => $request->medical_allowance,
-                'special_allowance' => $request->special_allowance,
-                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+                'basic_salary' => $basic_salary,
+                'house_rent_allowance' => $house_rent_allowance,
+                'transport_allowance' => $transport_allowance,
+                'medical_allowance' => $medical_allowance,
+                'special_allowance' => $special_allowance,
+                'total_salary' => $total_salary,
             ]);
         }
+
 
         // Redirect with success message
         return redirect('employee')->with('success', 'Employee Registered successfully');
