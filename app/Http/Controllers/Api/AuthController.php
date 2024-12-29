@@ -33,7 +33,7 @@ class AuthController extends Controller
 
         // Generate a token for the user
         $token = $user->createToken('authToken')->plainTextToken;
-
+        $user->office = $user->office;
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -55,8 +55,6 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required|string',
         ]);
-
-
         // Extract the token from the request
         $token = $request->token;
 
@@ -69,6 +67,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid or expired token'], 401);
         }
 
+        $user->office = $user->office;
         return response()->json([
             'user' => $user,
             'message' => 'Authenticated successfully using token',
