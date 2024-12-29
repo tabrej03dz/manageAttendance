@@ -67,6 +67,11 @@
                                 <input type="file" class="form-control" id="photo" name="photo">
                             </div>
                             <div class="col-md-6">
+                                <label for="joining_date" class="form-label">Joining Date</label>
+                                <input type="date" class="form-control" id="joining_date" name="joining_date"
+                                    value="">
+                            </div>
+                            <div class="col-md-6">
                                 <label for="aadhar_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach Aadhar document.">
                                     Aadhar Attachment
                                 </label>

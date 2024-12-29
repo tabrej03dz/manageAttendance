@@ -20,13 +20,10 @@ class RequestDemoController extends Controller
 
     public function store(RequestDemoRequest $request)
     {
-        // Debug request data
-        // dd($request->all());
 
-        // Store data in the database
         $requestDemo = RequestDemo::create($request->all());
 
-        // Send email if email is provided
+
         if ($request->has('email') && $request->email) {
             Mail::to($request->email)->send(new RequestDemoMail($requestDemo));
         } else {
