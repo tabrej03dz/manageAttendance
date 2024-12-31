@@ -102,6 +102,17 @@ class OwnerController extends Controller
         return view('dashboard.owner.edit', compact('owner'));
     }
 
+    public function update(Request $request, User $owner){
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'phone' => '',
+            'phone' => '',
+        ]);
+        $owner->update($request->all());
+        return redirect('owner')->with('success', 'Owner Updated successfully');
+    }
+
     public function delete(User $owner){
         $owner->delete();
         return back()->with('success', 'Owner Deleted successfully');

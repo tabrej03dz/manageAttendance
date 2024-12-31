@@ -28,19 +28,26 @@ Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 //});
 
 
+
 Route::group(['middleware' => "auth:sanctum"], function(){
+
     Route::prefix('attendance')->name('attendance.')->group(function (){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
         Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
         Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
         Route::get('record', [AttendanceRecordController::class, 'monthlyRecord'])->name('record');
+        Route::post('user/note/{record?}/{type?}', [AttendanceRecordController::class, 'userNote'])->name('userNote');
     });
+    Route::get('dashboard', [\App\Http\Controllers\Api\HomeController::class, 'dashboard'])->name('dashboard');
 
     Route::prefix('salary')->name('salary.')->group(function(){
         Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
     });
 
-
+    Route::prefix('break')->name('break.')->group(function(){
+       Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start'])->name('start');
+       Route::post('stop/{break}/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop'])->name('stop');
+    });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });

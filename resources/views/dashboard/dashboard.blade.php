@@ -283,11 +283,13 @@
                     </div>
                 </div>
                 @php
-                    $lastMonthPayouts = App\Models\Salary::whereMonth('month', Carbon::now()->subMonth()->month)
+
+                    $lastMonthPayouts = App\Models\Salary::whereIn('user_id', $employeeIds)->whereMonth('month', Carbon::now()->subMonth()->month)
                                                          ->whereYear('month', Carbon::now()->subMonth()->year)
                                                          ->get();
                 @endphp
                 <div class="col-lg-3 col-6">
+                    @role('super_admin|admin|owner')
                     <!-- small box -->
                     <div class="small-box bg-success">
                         <div class="inner">
@@ -301,6 +303,7 @@
                         <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
                                 class="fas fa-arrow-circle-right"></i></a>
                     </div>
+                    @endrole
                 </div>
             </div>
 

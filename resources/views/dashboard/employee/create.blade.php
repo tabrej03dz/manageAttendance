@@ -164,7 +164,7 @@
                                 <select name="office_id" class="form-control" id="office_id" required>
                                     <option value="">Select Office</option>
                                     @foreach($offices as $office)
-                                        <option value="{{ $office->id }}">{{ $office->name }}</option>
+                                        <option value="{{ $office->id }}" {{$loop->iteration == 1 ? 'selected' : ''}}>{{ $office->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -180,7 +180,6 @@
                                 </select>
                             </div>
                         </div>
-
 
                         <h2>Salary Details</h2>
                         <div class="row mb-4">

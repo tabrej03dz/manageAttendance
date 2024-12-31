@@ -15,7 +15,7 @@ use Spatie\Permission\Models\Role;
 class DashboardController extends Controller
 {
 
-    function currentMonth($startOfMont, $endOfMonth){
+    public static function currentMonth($startOfMont, $endOfMonth, $user){
 
         $data['sundays'] = 0;
         $data['days'] = 0;
@@ -278,7 +278,7 @@ class DashboardController extends Controller
 //            $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);
 //        }
         $employees = User::all();
-        if (auth()->user()->hasRole('owner')){
+        if ($user->hasRole('owner')){
             $offices = $user->offices;
         }else{
             $offices = Office::all();
@@ -293,7 +293,7 @@ class DashboardController extends Controller
             $break = null;
         }
 
-        $data = $this->currentMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+        $data = $this->currentMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth(), $user);
 
         return view('dashboard.dashboard', compact('offices', 'data', 'todayAttendanceRecord', 'break'))->with('employees', $employees);
     }

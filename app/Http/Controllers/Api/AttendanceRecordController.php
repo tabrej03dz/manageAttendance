@@ -72,9 +72,7 @@ class AttendanceRecordController extends Controller
                     ], 500);
                 }
             }
-
             $attendanceRecord->save();
-
             if ($attendanceRecord->late) {
                 $type = 'check_in_note';
                 $time = HomeController::getTime($attendanceRecord->late);
@@ -83,11 +81,10 @@ class AttendanceRecordController extends Controller
                     'message' => 'You are ' . $time . ' late. Please provide a reason for being late.',
                     'data' => [
                         'type' => $type,
-                        'attendance_record_id' => $attendanceRecord->id,
+                        'attendance_record' => $attendanceRecord,
                     ],
                 ], 200);
             }
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Checked in successfully.',
@@ -222,5 +219,33 @@ class AttendanceRecordController extends Controller
         ]);
     }
 
+    public function UserNote(Request $request,$record = null, $type = null)
+    {
+        $record = AttendanceRecord::find($request->record);
+        // Validate the request
+        $request->validate([
+            'note' => 'required|min:6',
+//            'type' => ['required', Rule::in(['check_in_note', 'check_out_note'])],
+        ]);
 
+        // Update the appropriate note based on the type
+        if ($request->type == 'check_in_note') {
+            $record->check_in_note = $request->note;
+        } elseif ($request->type == 'check_out_note') {
+            $record->check_out_note = $request->note;
+        } else {
+            return response()->json([
+                'message' => 'Invalid type provided.'
+            ], 400);
+        }
+
+        // Save the record
+        $record->save();
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Note updated successfully.',
+            'data' => $record,
+        ], 200);
+    }
 }
