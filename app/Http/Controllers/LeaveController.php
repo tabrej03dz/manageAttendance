@@ -16,16 +16,12 @@ class LeaveController extends Controller
     public function index(Request $request){
         $user = auth()->user();
         $query = Leave::query();
-
-
-
         if ($user->hasRole('super_admin')) {
             $query->where(function ($q) {
                 $q->whereDate('start_date', '>=', today())
                     ->orWhereDate('end_date', '>=', today());
             });
         }
-
         elseif ($user->hasRole('admin')) {
             $userIds = $user->office->users->pluck('id');
             $query->whereIn('user_id', $userIds)
@@ -106,4 +102,6 @@ class LeaveController extends Controller
         $leave = Leave::find($id);
         return view('dashboard.leave.show', compact('leave'));
     }
+
+
 }

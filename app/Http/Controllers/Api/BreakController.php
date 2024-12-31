@@ -56,8 +56,9 @@ class BreakController extends Controller
         }
     }
 
-    public function stop(Request $request, LunchBreak $break)
+    public function stop(Request $request, $break, User $employee = null)
     {
+        $break = LunchBreak::find($break);
         try {
             $break->update([
                 'end_time' => Carbon::now()->format('h:i'),

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AttendanceRecordController;
 use \App\Http\Controllers\Api\AuthController;
+use \App\Http\Controllers\Api\LeaveController;
 
 
 /*
@@ -45,8 +46,16 @@ Route::group(['middleware' => "auth:sanctum"], function(){
     });
 
     Route::prefix('break')->name('break.')->group(function(){
-       Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start'])->name('start');
-       Route::post('stop/{break}/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop'])->name('stop');
+        Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start'])->name('start');
+        Route::post('stop/{break}/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop'])->name('stop');
+    });
+
+    Route::prefix('leave')->name('leave.')->group(function(){
+        Route::get('/', [LeaveController::class, 'index'])->name('index');
+        Route::post('request', [LeaveController::class, 'store'])->name('request');
+        Route::patch('status/{leave}/{status}/{type?}', [LeaveController::class, 'status'])->name('status');
+        Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
+        Route::get('check/{date}/{user}', [LeaveController::class, 'getLeaveByDate'])->name('check');
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
