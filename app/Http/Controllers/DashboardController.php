@@ -295,6 +295,7 @@ class DashboardController extends Controller
 
         $data = $this->currentMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth(), $user);
 
+
         return view('dashboard.dashboard', compact('offices', 'data', 'todayAttendanceRecord', 'break'))->with('employees', $employees);
     }
 

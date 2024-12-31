@@ -101,6 +101,8 @@
         if ($user->hasRole('admin')) {
             $employees = $user->office->users;
             $employeeIds = $employees->pluck('id');
+
+
             $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
                 ->whereDate('check_in', today())
                 ->get();
@@ -284,26 +286,26 @@
                 </div>
                 @php
 
-                    $lastMonthPayouts = App\Models\Salary::whereIn('user_id', $employeeIds)->whereMonth('month', Carbon::now()->subMonth()->month)
-                                                         ->whereYear('month', Carbon::now()->subMonth()->year)
-                                                         ->get();
+                                      //  $lastMonthPayouts = App\Models\Salary::whereIn('user_id', $employeeIds)->whereMonth('month', Carbon::now()->subMonth()->month)
+                                       //                                      ->whereYear('month', Carbon::now()->subMonth()->year)
+                                        //                                     ->get();
                 @endphp
                 <div class="col-lg-3 col-6">
-                    @role('super_admin|admin|owner')
-                    <!-- small box -->
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{ $lastMonthPayouts->sum('paid_amount') }}</h3>
+{{--                    @role('super_admin|admin|owner')--}}
+{{--                    <!-- small box -->--}}
+{{--                    <div class="small-box bg-success">--}}
+{{--                        <div class="inner">--}}
+{{--                            <h3>{{ $lastMonthPayouts->sum('paid_amount') }}</h3>--}}
 
-                            <p>Last Month Payout</p>
-                        </div>
-                        <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
-                        </div>
-                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
-                                class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                    @endrole
+{{--                            <p>Last Month Payout</p>--}}
+{{--                        </div>--}}
+{{--                        <div class="icon">--}}
+{{--                            <i class="ion ion-stats-bars"></i>--}}
+{{--                        </div>--}}
+{{--                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i--}}
+{{--                                class="fas fa-arrow-circle-right"></i></a>--}}
+{{--                    </div>--}}
+{{--                    @endrole--}}
                 </div>
             </div>
 

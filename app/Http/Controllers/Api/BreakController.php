@@ -13,6 +13,7 @@ class BreakController extends Controller
 {
     public function start(Request $request, User $employee = null)
     {
+
         // Determine the employee (current user if not provided)
         if (!$employee) {
             $employee = $request->user();
