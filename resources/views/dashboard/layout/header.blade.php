@@ -13,7 +13,7 @@
 
     .animate-scroll {
         display: inline-block;
-        animation: scroll 40s linear infinite;
+        animation: scroll 30s linear infinite;
     }
 </style>
 
