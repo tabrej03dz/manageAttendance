@@ -233,7 +233,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('create', [\App\Http\Controllers\NoteController::class, 'create'])->name('create');
        Route::post('store', [\App\Http\Controllers\NoteController::class, 'store'])->name('store');
         Route::get('status/{note}', [\App\Http\Controllers\NoteController::class, 'status'])->name('status');
-        Route::post('delete/{note}', [\App\Http\Controllers\NoteController::class, 'delete'])->name('delete');
+        Route::get('delete/{note}', [\App\Http\Controllers\NoteController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('correctionNote')->name('correctionNote.')->group(function(){
