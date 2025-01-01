@@ -13,7 +13,7 @@
 
     .animate-scroll {
         display: inline-block;
-        animation: scroll 10s linear infinite;
+        animation: scroll 40s linear infinite;
     }
 </style>
 
@@ -117,8 +117,9 @@ $lastLetter = strtoupper($nameParts[1][0] ?? '');
             ->first()?->note;
     @endphp
     @if ($note)
-        <div class="relative bg-blue-100 text-blue-800 rounded-lg shadow-md p-3 overflow-hidden">
-            <div class="absolute w-full animate-scroll whitespace-nowrap">
+        <div class="relative bg-red-100 text-black rounded-lg shadow-md p-4 w-full overflow-hidden"
+            style="min-height: 40px;">
+            <div class="absolute w-full top-4 left-0 animate-scroll whitespace-nowrap">
                 <span class="inline-block">{{ $note?->description }}</span>
             </div>
         </div>
