@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AttendanceRecordController;
 use \App\Http\Controllers\Api\AuthController;
 use \App\Http\Controllers\Api\LeaveController;
+use \App\Http\Controllers\Api\ReportController;
 
 
 /*
@@ -38,6 +39,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
         Route::get('record', [AttendanceRecordController::class, 'monthlyRecord'])->name('record');
         Route::post('user/note/{record?}/{type?}', [AttendanceRecordController::class, 'userNote'])->name('userNote');
+//        Route::get('user/record/of_single_date')
     });
     Route::get('dashboard', [\App\Http\Controllers\Api\HomeController::class, 'dashboard'])->name('dashboard');
 
@@ -56,6 +58,10 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::patch('status/{leave}/{status}/{type?}', [LeaveController::class, 'status'])->name('status');
         Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
         Route::get('check/{date}/{user}', [LeaveController::class, 'getLeaveByDate'])->name('check');
+    });
+
+    Route::prefix('report')->name('prefix.')->group(function(){
+       Route::get('/', [ReportController::class, 'index'])->name('index');
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');

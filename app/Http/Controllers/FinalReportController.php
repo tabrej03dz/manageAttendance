@@ -22,19 +22,6 @@ class FinalReportController extends Controller
             $endOfMonth = Carbon::now()->endOfMonth();
         }
 
-//        if ($request->start){
-//            $startOfMonth = Carbon::parse($request->start);
-//        }else{
-//            $startOfMonth = Carbon::now()->startOfMonth();
-//        }
-//        $monthStart = $startOfMonth->toDateTimeLocalString();
-//
-//        if ($request->end){
-//            $endOfMonth = Carbon::parse($request->end);
-//        }else{
-//            $endOfMonth = Carbon::now()->endOfMonth();
-//        }
-
         $dates = new Collection();
         $attendanceRecords = AttendanceRecord::query();
         for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
@@ -44,15 +31,6 @@ class FinalReportController extends Controller
             $attendanceRecords->orWhereDate('created_at', $date);
         }
         $attendanceRecords = $attendanceRecords->get();
-//        if (auth()->user()->hasRole('super_admin')){
-//            $users = User::all();
-//        }elseif(auth()->user()->hasRole('admin')){
-//            $office = auth()->user()->office;
-//            $users = $office->users;
-//        }else{
-//            $users = User::where('id', auth()->user()->id)->get();
-//        }
-
         $users = HomeController::employeeList();
         return view('dashboard.finalReport.index', compact('dates', 'attendanceRecords', 'users', 'month'));
     }

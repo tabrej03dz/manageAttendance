@@ -43,6 +43,7 @@ class BreakController extends Controller
                 $break->save();
             }
 
+            $break = LunchBreak::find($break->id);
             // Return success response
             return response()->json([
                 'message' => 'Break started successfully',
