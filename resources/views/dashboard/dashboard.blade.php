@@ -68,20 +68,11 @@
         }
     </style>
     <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4 p-3 shadow-sm rounded" style="padding: 15px;">
-        <div class="d-flex align-items-center">
-            <!-- Smaller Placeholder Avatar -->
-            <img src="{{ auth()->user()->photo ? asset('storage/' . auth()->user()->photo) : 'https://via.placeholder.com/40' }}"
-                alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
-            <h4 class="fw-bold mb-0 ml-2" style="font-size: 1.2rem;">{{ auth()->user()->name }}</h4>
-        </div>
+    <div class="d-flex justify-content-between align-items-center px-4 py-10 mb-4 shadow-sm rounded">
         @if (auth()->user()->is_accepted == '0')
-            <a href="{{ route('policy.read') }}" class="btn btn-outline-danger btn-sm text-decoration-none">Read Policy</a>
+            <a href="{{ route('policy.read') }}" class="btn btn-outline-danger btn-sm text-decoration-none w-full">Read
+                Policy</a>
         @endif
-        <form action="{{ route('logout') }}" method="post">
-            @csrf
-            <button type="submit" class="btn btn-outline-danger btn-sm text-decoration-none">LOGOUT</button>
-        </form>
     </div>
 
     @php
@@ -97,13 +88,12 @@
                 ->whereIn('user_id', $employeeIds)
                 ->where('status', 'approved')
                 ->get();
-        }elseif ($user->hasRole('owner')){
+        } elseif ($user->hasRole('owner')) {
             $officeIds = $user->office()->pluck('id');
             $employeeIds = $employees->whereIn('office_id', $officeIds)->pluck('id');
-        }elseif ($user->hasRole('admin')) {
+        } elseif ($user->hasRole('admin')) {
             $employees = $user->office->users;
             $employeeIds = $employees->pluck('id');
-
 
             $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
                 ->whereDate('check_in', today())
@@ -130,18 +120,24 @@
                             class="btn btn-danger w-100">Check Out</a>
                     </div>
                 </div>
-                <div class="row">
-                    @if($todayAttendanceRecord)
-                        @if($break && $break->end_time == null)
-                            <a href="{{ route('break.form', ['employee' => auth()->user()->id,'break' => $break->id]) }}" class="btn btn-primary">Stop Break</a>
-                        @else
-                            <a href="{{ route('break.form') }}" class="btn btn-primary">Take Break</a>
-
-
-                        @endif
+                <div class="row justify-content-center align-items-center my-4">
+                    @if ($todayAttendanceRecord)
+                        <div class="col-auto">
+                            @if ($break && $break->end_time == null)
+                                <a href="{{ route('break.form', ['employee' => auth()->user()->id, 'break' => $break->id]) }}"
+                                    class="btn btn-danger px-4 py-2 shadow rounded-lg text-white">
+                                    Stop Break
+                                </a>
+                            @else
+                                <a href="{{ route('break.form') }}"
+                                    class="btn btn-primary px-4 py-2 shadow rounded-lg text-white">
+                                    Take Break
+                                </a>
+                            @endif
+                        </div>
                     @endif
-
                 </div>
+
             </div>
         </div>
     </div>
@@ -149,9 +145,8 @@
     <section class="content">
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
-                <div class="row">
-                    @role('super_admin|admin')
-
+            <div class="row">
+                @role('super_admin|admin')
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
                         <div class="small-box bg-info">
@@ -185,9 +180,6 @@
                             </div>
                         </div>
                         <!-- ./col -->
-
-
-
                     @endrole
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
@@ -219,7 +211,6 @@
                             <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
-
                 @endrole
 
                 <div class="col-lg-3 col-6">
@@ -233,8 +224,7 @@
                         <div class="icon">
                             <i class="ion ion-bag"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i
-                                class="fas fa-arrow-circle-right"></i></a>
+                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -283,31 +273,33 @@
                         <div class="icon">
                             <i class="ion ion-pie-graph"></i>
                         </div>
-                        <a href="{{route('off.index')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <a href="{{ route('off.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-6">
                     @role('super_admin|admin|owner')
-                    @php
+                        @php
 
-                        $lastMonthPayouts = App\Models\Salary::whereIn('user_id', $employeeIds)->whereMonth('month', Carbon::now()->subMonth()->month)
-                                                             ->whereYear('month', Carbon::now()->subMonth()->year)
-                                                             ->get();
-                    @endphp
-                    <!-- small box -->
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3>{{ $lastMonthPayouts->sum('paid_amount') }}</h3>
+                            $lastMonthPayouts = App\Models\Salary::whereIn('user_id', $employeeIds)
+                                ->whereMonth('month', Carbon::now()->subMonth()->month)
+                                ->whereYear('month', Carbon::now()->subMonth()->year)
+                                ->get();
+                        @endphp
+                        <!-- small box -->
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ $lastMonthPayouts->sum('paid_amount') }}</h3>
 
-                            <p>Last Month Payout</p>
+                                <p>Last Month Payout</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-stats-bars"></i>
+                            </div>
+                            <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
                         </div>
-                        <div class="icon">
-                            <i class="ion ion-stats-bars"></i>
-                        </div>
-                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
-                                class="fas fa-arrow-circle-right"></i></a>
-                    </div>
                     @endrole
                 </div>
             </div>
@@ -364,53 +356,53 @@
                             </div>
                         </a>
                     </div>
-{{--                    <div class="col">--}}
-{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
-{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
-{{--                                <div--}}
-{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
-{{--                                    <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i>--}}
-{{--                                    <p class="mt-3 mb-0">Edit Records</p>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                    <div class="col">--}}
-{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
-{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
-{{--                                <div--}}
-{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
-{{--                                    <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i>--}}
-{{--                                    <p class="mt-3 mb-0">User Profiles</p>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                    <!-- New Cards -->--}}
-{{--                    <div class="col">--}}
-{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
-{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
-{{--                                <div--}}
-{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
-{{--                                    <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i>--}}
-{{--                                    <p class="mt-3 mb-0">Work Hours</p>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                    <div class="col">--}}
-{{--                        <a href="#" class="text-decoration-none text-reset d-block">--}}
-{{--                            <div class="card shadow border-0 h-100 responsive-card">--}}
-{{--                                <div--}}
-{{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4">--}}
-{{--                                    <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i>--}}
-{{--                                    <p class="mt-3 mb-0">Employee Profiles</p>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </a>--}}
+                    {{--                    <div class="col"> --}}
+                    {{--                        <a href="#" class="text-decoration-none text-reset d-block"> --}}
+                    {{--                            <div class="card shadow border-0 h-100 responsive-card"> --}}
+                    {{--                                <div --}}
+                    {{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4"> --}}
+                    {{--                                    <i class="fas fa-pencil-alt text-danger mb-3" style="font-size: 3rem;"></i> --}}
+                    {{--                                    <p class="mt-3 mb-0">Edit Records</p> --}}
+                    {{--                                </div> --}}
+                    {{--                            </div> --}}
+                    {{--                        </a> --}}
+                    {{--                    </div> --}}
+                    {{--                    <div class="col"> --}}
+                    {{--                        <a href="#" class="text-decoration-none text-reset d-block"> --}}
+                    {{--                            <div class="card shadow border-0 h-100 responsive-card"> --}}
+                    {{--                                <div --}}
+                    {{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4"> --}}
+                    {{--                                    <i class="fas fa-user-circle text-danger mb-3" style="font-size: 3rem;"></i> --}}
+                    {{--                                    <p class="mt-3 mb-0">User Profiles</p> --}}
+                    {{--                                </div> --}}
+                    {{--                            </div> --}}
+                    {{--                        </a> --}}
+                    {{--                    </div> --}}
+                    {{--                    <!-- New Cards --> --}}
+                    {{--                    <div class="col"> --}}
+                    {{--                        <a href="#" class="text-decoration-none text-reset d-block"> --}}
+                    {{--                            <div class="card shadow border-0 h-100 responsive-card"> --}}
+                    {{--                                <div --}}
+                    {{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4"> --}}
+                    {{--                                    <i class="fas fa-clock text-danger mb-3" style="font-size: 3rem;"></i> --}}
+                    {{--                                    <p class="mt-3 mb-0">Work Hours</p> --}}
+                    {{--                                </div> --}}
+                    {{--                            </div> --}}
+                    {{--                        </a> --}}
+                    {{--                    </div> --}}
+                    {{--                    <div class="col"> --}}
+                    {{--                        <a href="#" class="text-decoration-none text-reset d-block"> --}}
+                    {{--                            <div class="card shadow border-0 h-100 responsive-card"> --}}
+                    {{--                                <div --}}
+                    {{--                                    class="card-body d-flex flex-column justify-content-center align-items-center text-center p-4"> --}}
+                    {{--                                    <i class="fas fa-user text-danger mb-3" style="font-size: 3rem;"></i> --}}
+                    {{--                                    <p class="mt-3 mb-0">Employee Profiles</p> --}}
+                    {{--                                </div> --}}
+                    {{--                            </div> --}}
+                    {{--                        </a> --}}
 
-{{--                        <!-- /.row -->--}}
-{{--                    </div>--}}
+                    {{--                        <!-- /.row --> --}}
+                    {{--                    </div> --}}
                 </div>
             </div>
         </div>
