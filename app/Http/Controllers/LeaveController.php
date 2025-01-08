@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Mail\LeaveRequest;
 use App\Mail\LeaveResponse;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Leave;
 use Illuminate\Support\Facades\Mail;
