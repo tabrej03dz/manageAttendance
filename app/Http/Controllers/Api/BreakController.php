@@ -88,5 +88,26 @@ class BreakController extends Controller
         }
     }
 
+    public function latestBreak(Request $request, User $employee = null){
+        if ($employee){
+            $user = $employee;
+        }else{
+            $user = $request->user();
+        }
+        $break = LunchBreak::whereDate('created_at', Carbon::now()->format('Y-m-d'))->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        if ($break) {
+            return response()->json([
+                'success' => true,
+                'data' => $break,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No lunch break record found.',
+            ], 404); // 404 for "not found" or use 200 if it's not an error
+        }
+    }
 
 }
