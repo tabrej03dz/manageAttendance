@@ -125,8 +125,12 @@ class LeaveController extends Controller
     }
 
 
-    public function status(Request $request, Leave $leave, $status, $type = null)
+    public function status(Request $request)
     {
+//        return response($request->all());
+        $leave = Leave::find($request->leave_id);
+        $type = $request->type;
+        $status = $request->status;
         $user = $request->user();
         try {
             $leave->update([
