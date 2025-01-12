@@ -65,6 +65,10 @@ Route::group(['middleware' => "auth:sanctum"], function(){
        Route::get('/', [ReportController::class, 'index'])->name('index');
     });
 
+    Route::prefix('employee')->name('employee.')->group(function(){
+        Route::get('/', [\App\Http\Controllers\Api\EmployeeController::class, 'index'])->name('index');
+    });
+
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 
