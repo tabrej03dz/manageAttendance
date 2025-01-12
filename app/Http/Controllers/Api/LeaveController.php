@@ -155,8 +155,11 @@ class LeaveController extends Controller
         }
     }
 
-    public function getLeaveByDate(Request $request,$date, User $user)
+    public function getLeaveByDate(Request $request)
     {
+
+        $user = User::find($request->user_id);
+        $date = $request->date;
         try {
             $leave = Leave::whereDate('start_date', '<=', $date)
                 ->whereDate('end_date', '>=', $date)

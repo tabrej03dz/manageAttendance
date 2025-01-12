@@ -58,7 +58,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::post('request', [LeaveController::class, 'store'])->name('request');
         Route::patch('status', [LeaveController::class, 'status'])->name('status');
         Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
-        Route::get('check/{date}/{user}', [LeaveController::class, 'getLeaveByDate'])->name('check');
+        Route::get('check', [LeaveController::class, 'getLeaveByDate'])->name('check');
     });
 
     Route::prefix('report')->name('prefix.')->group(function(){
