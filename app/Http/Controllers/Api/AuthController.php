@@ -34,9 +34,13 @@ class AuthController extends Controller
         // Generate a token for the user
         $token = $user->createToken('authToken')->plainTextToken;
         $user->office = $user->office;
+        $roles = $user->getRoleNames();
+        $permissions = $user->getAllPermissions();
         return response()->json([
             'user' => $user,
             'token' => $token,
+            'roles' => $roles,
+            'permissions' => $permissions,
         ], 200);
     }
 
@@ -68,9 +72,13 @@ class AuthController extends Controller
         }
 
         $user->office = $user->office;
+        $roles = $user->getRoleNames();
+        $permissions = $user->getAllPermissions();
         return response()->json([
             'user' => $user,
             'message' => 'Authenticated successfully using token',
+            'roles' => $roles,
+            'permissions' => $permissions,
         ], 200);
     }
 }
