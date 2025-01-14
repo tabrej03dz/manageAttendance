@@ -11,6 +11,32 @@ use Illuminate\Http\Request;
 
 class BreakController extends Controller
 {
+    public function index(Request $request)
+    {
+        $date = $request->date ?? today();
+
+        // Get the authenticated user
+        $user = $request->user();
+
+        // Retrieve the employee list
+        $employees = HomeController::employeeList($user);
+
+        // Attach break details to each employee
+        foreach ($employees as $employee) {
+            $employee->breaks = LunchBreak::whereDate('created_at', $date)
+                ->where('user_id', $employee->id)
+                ->get();
+        }
+
+        // Return the response as JSON
+        return response()->json([
+            'success' => true,
+            'date' => $date,
+            'employees' => $employees,
+        ]);
+    }
+
+
     public function start(Request $request, User $employee = null)
     {
 
