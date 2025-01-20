@@ -16,10 +16,15 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('basic_salary', 10, 2)->default(0);
             $table->decimal('house_rent_allowance', 10, 2)->default(0);
+            $table->decimal('dearness_allowance', 10, 2)->default(0);
+            $table->decimal('relieving_charge', 10, 2)->default(0);
+            $table->decimal('additional_allowance', 10, 2)->default(0);
             $table->decimal('transport_allowance', 10, 2)->default(0);
             $table->decimal('medical_allowance', 10, 2)->default(0);
             $table->decimal('special_allowance', 10, 2)->default(0);
-            $table->decimal('total_salary', 10, 2)->default(0);
+            $table->decimal('provident_fund', 10, 2)->default(12.00);
+            $table->decimal('employee_state_insurance_corporation', 10, 3)->default(0.75);
+            $table->decimal('total_salary', 10, )->default(0);
             $table->timestamps();
         });
     }

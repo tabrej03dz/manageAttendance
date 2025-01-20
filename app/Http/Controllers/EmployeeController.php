@@ -94,8 +94,11 @@ class EmployeeController extends Controller
             $transport_allowance = $request->transport_allowance ?? 0;
             $medical_allowance = $request->medical_allowance ?? 0;
             $special_allowance = $request->special_allowance ?? 0;
+            $dearness_allowance = $request->dearness_allowance ?? 0;
+            $relieving_charge = $request->relieving_charge ?? 0;
+            $additional_allowance = $request->additional_allowance ?? 0;
 
-            $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance;
+            $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance + $dearness_allowance + $relieving_charge + $additional_allowance;
 
             $userSalary = UserSalary::create([
                 'user_id' => $employee->id,
@@ -104,6 +107,9 @@ class EmployeeController extends Controller
                 'transport_allowance' => $transport_allowance,
                 'medical_allowance' => $medical_allowance,
                 'special_allowance' => $special_allowance,
+                'dearness_allowance' => $dearness_allowance,
+                'relieving_charge' => $relieving_charge,
+                'additional_allowance' => $additional_allowance,
                 'total_salary' => $total_salary,
             ]);
         }

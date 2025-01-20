@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AdvancePayment;
 use App\Models\AttendanceRecord;
 use App\Models\Salary;
+use App\Models\User;
+use App\Models\UserSalary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -50,6 +52,32 @@ class SalaryController extends Controller
         $request->validate(['paid_amount' => 'required|numeric']);
         $salary->update(['paid_amount' => $request->paid_amount, 'status' => 'paid']);
         return back()->with('success', 'Paid amount saved successfully');
+    }
+
+    public function salarySetupForm(User $employee){
+        $userSalary = UserSalary::where('user_id', $employee->id)->first();
+        return view('dashboard.salary.setupForm', compact('employee', 'userSalary'));
+    }
+
+    public function userSalaryInformationStore(Request $request, User $employee, UserSalary $userSalary = null){
+        $basicSalary = $request->basic_salary;
+        $dearnessAllowance = $request->dearness_allowance;
+        $relievingCharge = $request->relieving_charge;
+        $additionalAllowance = $request->additional_allowance;
+
+        $totalSalary = $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance;
+
+        if ($userSalary){
+            $userSalary->update($request->all() + ['total_salary' => $totalSalary]);
+        }else{
+            UserSalary::create(['user_id' => $employee->id, 'total_salary' => $totalSalary] + $request->all());
+        }
+        return redirect('employee')->with('success', 'Salary Details Saved Successfully');
+    }
+
+    public function salarySlip(Salary $salary){
+        $userSalary = UserSalary::where('user_id', $salary->user_id)->first();
+        return view('dashboard.salary.slip', compact('salary', 'userSalary'));
     }
 
 }

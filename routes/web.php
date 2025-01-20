@@ -30,6 +30,10 @@ use App\Http\Controllers\AttendanceRecordController;
 |
 */
 
+Route::get('privacy-policy', function(){
+   return view('privacy-policy');
+})->name('privacy-policy');
+
 Route::controller(\App\Http\Controllers\FrontController::class)->group(function(){
     Route::get('/', 'mainpage')->name('mainpage');
     Route::get('/Blogs', 'blogs')->name('blogs');
@@ -86,6 +90,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('status/{employee}', [EmployeeController::class, 'status'])->name('status');
         Route::get('permission/{user}', [EmployeeController::class, 'permission'])->name('permission');
         Route::get('permissionRemove/{permission}/{user}', [EmployeeController::class, 'permissionRemove'])->name('permissionRemove');
+
     });
 
     Route::prefix('owner')->name('owner.')->group(function(){
@@ -195,6 +200,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('/', [\App\Http\Controllers\SalaryController::class, 'index'])->name('index');
        Route::get('status/{salary}', [\App\Http\Controllers\SalaryController::class, 'status'])->name('status');
        Route::post('pay/{salary}', [\App\Http\Controllers\SalaryController::class, 'paidAmount'])->name('pay');
+       Route::get('setupForm/{employee}', [\App\Http\Controllers\SalaryController::class, 'salarySetupForm'])->name('setupForm');
+       Route::post('informationStore/{employee}/{userSalary?}', [\App\Http\Controllers\SalaryController::class, 'userSalaryInformationStore'])->name('informationStore');
+       Route::get('slip/{salary}', [\App\Http\Controllers\SalaryController::class, 'salarySlip'])->name('slip');
     });
 
     Route::prefix('recycle')->name('recycle.')->group(function(){

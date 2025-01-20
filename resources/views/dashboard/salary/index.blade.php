@@ -156,6 +156,14 @@
                                                         $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2) + ($paidLeave * $oneDaySalary));
                                                         $durationSalary = (($workingDuration / 60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
 
+                                                        if ($user->userSalary){
+                                                        $providentFund = ($user->userSalary->total_salary * $user->userSalary->provident_fund)/100;
+                                                        $esic = ($user->userSalary->total_salary * $user->userSalary->employee_state_insurance_corporation)/100;
+                                                        }else{
+                                                            $providentFund = 0;
+                                                            $esic = 0;
+                                                        }
+
                                                         // Create the salary record
                                                         $userSalary = App\Models\Salary::create([
                                                             'user_id' => $user->id,
@@ -168,7 +176,13 @@
                                                             'transport_allowance' => $user->userSalary ? $user->userSalary->transport_allowance : 0,
                                                             'medical_allowance' => $user->userSalary ? $user->userSalary->medical_allowance : 0,
                                                             'special_allowance' => $user->userSalary ? $user->userSalary->special_allowance : 0,
+                                                            'dearness_allowance' => $user->userSalary ? $user->userSalary->dearness_allowance : 0,
+                                                            'relieving_charge' => $user->userSalary ? $user->userSalary->relieving_charge : 0,
+                                                            'additional_allowance' => $user->userSalary ? $user->userSalary->additional_allowance : 0,
+                                                            'provident_fund' => $providentFund,
+                                                            'employee_state_insurance_corporation' => $esic,
                                                             'advance' => $advancePayments->where('user_id', $user->id)->sum('amount'),
+                                                            'total_salary' => $salary,
                                                         ]);
                                                     }
                                                 @endphp
@@ -185,6 +199,7 @@
                                                             </div>
                                                             <button type="submit" class="btn btn-success btn-sm">Save</button>
                                                         </form>
+                                                        <a href="{{route('salary.slip', ['salary' => $userSalary->id])}}" class="btn btn-warning">Salary Slip</a>
                                                     </td>
                                                 @else
                                                     <td>Salary not generated yet</td>

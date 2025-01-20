@@ -73,7 +73,7 @@
               <div class="leftSide place-items-start sm:place-items-end mt-4 sm:mt-0">
                   <ul class="font-futuraMd">
                       <li class="text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
-                          <a href="https://realvictorygroups.com/privacy-policy/">Privacy Policy</a>
+                          <a href="{{ route('privacy-policy') }}">Privacy Policy</a>
                       </li>
                       <li class="py-2 text-white hover:text-gray-100 duration-100 ease-linear hover:underline">
                           <a href="https://realvictorygroups.com/terms-conditions/">Terms & Conditions</a>
