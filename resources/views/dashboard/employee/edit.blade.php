@@ -143,45 +143,62 @@
                                 </div>
                             </div>
 
+                            <label for="employee_id" class="form-label" data-bs-toggle="tooltip" title="Enter the employee Id.">
+                                Employee Id
+                            </label>
+                            <input type="text" class="form-control" id="employee_id" name="employee_id" step="0.01" value="{{ $employee->employee_id }}" placeholder="Employee Id">
+
+                            <label for="uan_number" class="form-label" data-bs-toggle="tooltip" title="Enter the employee UAN number">
+                                UAN Number
+                            </label>
+                            <input type="text" class="form-control" id="uan_number" name="uan_number" step="0.01" value="{{ $employee->uan_number }}" placeholder="UAN Number">
+
+                            <label for="esic_number" class="form-label" data-bs-toggle="tooltip" title="Enter the employee ESIC number">
+                                ESIC Number
+                            </label>
+                            <input type="text" class="form-control" id="esic_number" name="esic_number" step="0.01" value="{{ $employee->esic_number }}" placeholder="ESIC Number">
+
+                            <label for="account_number" class="form-label" data-bs-toggle="tooltip" title="Enter the employee ESIC number">
+                                Account Number
+                            </label>
+                            <input type="text" class="form-control" id="account_number" name="account_number" step="0.01" value="{{ $employee->account_number }}" placeholder="ESIC Number">
 
 
                             <h2>Salary Details</h2>
                             <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <label for="salary" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Basic salary.">
-                                        Basic Salary
+                                    <label for="basic_salary" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Basic Pay.">
+                                        Basic Pay
                                     </label>
                                     <input type="number" class="form-control" id="basic_salary" name="basic_salary" step="0.01" value="{{ $employee->userSalary?->basic_salary }}" placeholder="Basic salary">
+
+                                    <label for="dearness_allowance" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's D.A.">
+                                        Dearness Allowance (D.A)
+                                    </label>
+                                    <input type="number" class="form-control" id="dearness_allowance" name="dearness_allowance" step="0.01" value="{{ $employee->userSalary?->dearness_allowance }}" placeholder="Dearness Allowance">
+
+                                    <label for="relieving_charge" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Relieving Charge.">
+                                        Relieving Charge
+                                    </label>
+                                    <input type="number" class="form-control" id="relieving_charge" name="relieving_charge" step="0.01" value="{{ $employee->userSalary?->relieving_charge }}" placeholder="Relieving Charge.">
+
+                                    <label for="additional_allowance" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Additional Allowance.">
+                                        Additional Allowance
+                                    </label>
+                                    <input type="number" class="form-control" id="additional_allowance" name="additional_allowance" step="0.01" value="{{ $employee->userSalary?->additional_allowance }}" placeholder="Additional Allowance">
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label for="house_rent_allowance" class="form-label" data-bs-toggle="tooltip" title="House Rent Allowance.">
-                                        House Rent Allowance
+                                    <label for="provident_fund" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Provident Fund %.">
+                                        Provident Fund %
                                     </label>
-                                    <input type="number" class="form-control" id="house_rent_allowance" name="house_rent_allowance" step="0.01" value="{{ $employee->userSalary?->house_rent_allowance }}" placeholder="House Rent Allowance">
-                                </div>
+                                    <input type="number" class="form-control" id="provident_fund" name="provident_fund" step="0.01" value="{{ $employee->userSalary?->provident_fund }}" placeholder="Provident Fund %">
 
-                                <div class="col-md-6">
-                                    <label for="transport_allowance" class="form-label" data-bs-toggle="tooltip" title="Transport Allowance">
-                                        Transport Allowance
+                                    <label for="employee_state_insurance_corporation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's ESIC %.">
+                                        ESIC %
                                     </label>
-                                    <input type="number" class="form-control" id="transport_allowance" name="transport_allowance" step="0.01" value="{{ $employee->userSalary?->transport_allowance }}" placeholder="Transport Allowance">
+                                    <input type="number" class="form-control" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" step="0.01" value="{{ $employee->userSalary->employee_state_insurance_corporation }}" placeholder="ESIC %">
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label for="medical_allowance" class="form-label" data-bs-toggle="tooltip" title="Medical Allowance">
-                                        Medical Allowance
-                                    </label>
-                                    <input type="number" class="form-control" id="medical_allowance" name="medical_allowance" step="0.01" value="{{ $employee->userSalary?->medical_allowance }}" placeholder="Medical Allowance">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="special_allowance" class="form-label" data-bs-toggle="tooltip" title="Special Allowance">
-                                        Special Allowance
-                                    </label>
-                                    <input type="number" class="form-control" id="special_allowance" name="special_allowance" step="0.01" value="{{ $employee->userSalary?->special_allowance }}" placeholder="Special Allowance">
-                                </div>
-
                             </div>
 
                             <div class="text-center mt-4">

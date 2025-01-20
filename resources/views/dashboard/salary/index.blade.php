@@ -91,10 +91,21 @@
                                                     $goneBeforeTimeCount = 0;
                                                     $halfDayCount = 0;
                                                     $workingDuration = 0;
+                                                    $officeDays = 0;
+                                                    $sundayCount = 0;
                                                 @endphp
                                                 @foreach ($dates as $dateObj)
                                                     @php
                                                         $d = \Carbon\Carbon::parse($dateObj->date);
+
+                                                        $d = \Carbon\Carbon::parse($dateObj->date);
+                                                        $isSunday = $d->format('D') === 'Sun';
+                                                        if ($isSunday) {
+                                                            $sundayCount++;
+                                                        }else{
+                                                            $officeDays++;
+                                                        }
+
                                                         $record = $attendanceRecords
                                                             ->where('user_id', $user->id)
                                                             ->first(function ($record) use ($d) {

@@ -46,6 +46,10 @@
                                 <label for="price_per_employee" class="form-label">Price Per Employee</label>
                                 <input type="number" value="{{$office->price_per_employee}}" class="form-control" id="price_per_employee" name="price_per_employee">
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="address" class="form-label">Full Address</label>
+                                <textarea class="form-control" id="address" name="address">{{$office->address}}</textarea>
+                            </div>
                             <div class="col-md-6">
                                 <p>Under Radius Required?</p>
                                 <div>

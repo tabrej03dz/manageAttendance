@@ -90,7 +90,6 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('status/{employee}', [EmployeeController::class, 'status'])->name('status');
         Route::get('permission/{user}', [EmployeeController::class, 'permission'])->name('permission');
         Route::get('permissionRemove/{permission}/{user}', [EmployeeController::class, 'permissionRemove'])->name('permissionRemove');
-
     });
 
     Route::prefix('owner')->name('owner.')->group(function(){

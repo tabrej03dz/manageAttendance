@@ -21,23 +21,27 @@
                         <div class="card-body">
                             <div class="form-group mb-3">
                                 <label for="name" class="form-label">Office Name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name" value="{{old('name')}}" required>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="latitude" class="form-label">Latitude</label>
-                                <input type="text" class="form-control" id="latitude" name="latitude" required>
+                                <input type="text" class="form-control" id="latitude" name="latitude" value="{{old('latitude')}}" required>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="longitude" class="form-label">Longitude</label>
-                                <input type="text" class="form-control" id="longitude" name="longitude" required>
+                                <input type="text" class="form-control" id="longitude" name="longitude" value="{{old('longitude')}}" required>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="radius" class="form-label">Radius</label>
-                                <input type="text" class="form-control" id="radius" name="radius">
+                                <input type="text" class="form-control" id="radius" name="radius" value="{{old('radius')}}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="address" class="form-label">Full Address</label>
+                                <textarea class="form-control" id="address" name="address">{{ old('address') }}</textarea>
                             </div>
                             <div class="form-group mb-3">
                                 <label for="number_of_employees" class="form-label">Number of Employee</label>
-                                <input type="number" class="form-control" id="number_of_employees" name="number_of_employees">
+                                <input type="number" class="form-control" id="number_of_employees" name="number_of_employees" value="{{old('number_of_employee')}}">
                             </div>
 {{--                            <div class="form-group mb-3">--}}
 {{--                                <label for="price_per_employee" class="form-label">Price Per Employee</label>--}}
@@ -54,6 +58,8 @@
                                     <label for="under_radius_required_no" class="form-label">No</label>
                                 </div>
                             </div>
+
+
 
                         @if($owners)
                             <div class="form-group mb-3">

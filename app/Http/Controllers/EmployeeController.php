@@ -152,26 +152,35 @@ class EmployeeController extends Controller
         }
         $employee->save();
 
+        $basicSalary = $request->basic_salary ?? 0;
+        $dearnessAllowance = $request->dearness_allowance ?? 0;
+        $relievingCharge = $request->relieving_charge ?? 0;
+        $additionalAllowance = $request->additional_allowance ?? 0;
+        $providentFund = $request->provident_fund ?? 0;
+        $esic = $request->employee_state_insurance_corporation ?? 0;
+
         $userSalary = UserSalary::where('user_id', $employee->id)->first();
         if ($userSalary){
             $userSalary = $userSalary->update([
                 'user_id' => $employee->id,
-                'basic_salary' => $request->basic_salary,
-                'house_rent_allowance' => $request->house_rent_allowance,
-                'transport_allowance' => $request->transport_allowance,
-                'medical_allowance' => $request->medical_allowance,
-                'special_allowance' => $request->special_allowance,
-                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+                'basic_salary' => $basicSalary,
+                'dearness_allowance' => $dearnessAllowance,
+                'relieving_charge' => $relievingCharge,
+                'additional_allowance' => $additionalAllowance,
+                'provident_fund' => $providentFund,
+                'employee_state_insurance_corporation' => $esic,
+                'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
             ]);
         }else{
             $userSalary = UserSalary::create([
                 'user_id' => $employee->id,
-                'basic_salary' => $request->basic_salary,
-                'house_rent_allowance' => $request->house_rent_allowance,
-                'transport_allowance' => $request->transport_allowance,
-                'medical_allowance' => $request->medical_allowance,
-                'special_allowance' => $request->special_allowance,
-                'total_salary' => $request->basic_salary + $request->house_rent_allowance + $request->transport_allowance + $request->transport_allowance + $request->medical_allowance + $request->special_allowance,
+                'basic_salary' => $basicSalary,
+                'dearness_allowance' => $dearnessAllowance,
+                'relieving_charge' => $relievingCharge,
+                'additional_allowance' => $additionalAllowance,
+                'provident_fund' => $providentFund,
+                'employee_state_insurance_corporation' => $esic,
+                'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
             ]);
         }
         return redirect('employee')->with('success', 'Record Updated successfully');
