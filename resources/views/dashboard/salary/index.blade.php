@@ -149,7 +149,7 @@
                                                 @php
                                                     $userSalary = App\Models\Salary::where('user_id', $user->id)->where('month', $d)->first();
                                                     if (!$userSalary) {
-                                                        $oneDaySalary = $user->userSalary ?  $user->userSalary->total_salary : $user->salary / 30;
+                                                        $oneDaySalary = ($user->userSalary ?  $user->userSalary->total_salary : $user->salary) / 30;
                                                         $oneHourSalary = $oneDaySalary / ($user->office_time / 60)  ;
 
                                                         // Calculate salaries
@@ -182,7 +182,7 @@
                                                             'provident_fund' => $providentFund,
                                                             'employee_state_insurance_corporation' => $esic,
                                                             'advance' => $advancePayments->where('user_id', $user->id)->sum('amount'),
-                                                            'total_salary' => $salary,
+                                                            'total_salary' => $salary - ($providentFund + $esic),
                                                         ]);
                                                     }
                                                 @endphp

@@ -26,23 +26,22 @@
                                     <label for="salary" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Basic Pay.">
                                         Basic Pay
                                     </label>
-                                    <input type="number" class="form-control" id="basic_salary" name="basic_salary" step="0.01" value="{{ old('basic_salary') }}" placeholder="Basic salary">
-
+                                    <input type="number" class="form-control" id="basic_salary" name="basic_salary" step="0.01" value="{{$userSalary ? $userSalary->basic_salary : old('basic_salary') }}" placeholder="Basic salary">
 
                                     <label for="dearness_allowance" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's D.A.">
                                         Dearness Allowance (D.A)
                                     </label>
-                                    <input type="number" class="form-control" id="dearness_allowance" name="dearness_allowance" step="0.01" value="{{ old('dearness_allowance') }}" placeholder="Basic salary">
+                                    <input type="number" class="form-control" id="dearness_allowance" name="dearness_allowance" step="0.01" value="{{ $userSalary ? $userSalary->dearness_allowance : old('dearness_allowance') }}" placeholder="Basic salary">
 
                                     <label for="relieving_charge" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Relieving Charge.">
                                         Relieving Charge
                                     </label>
-                                    <input type="number" class="form-control" id="relieving_charge" name="relieving_charge" step="0.01" value="{{ old('relieving_charge') }}" placeholder="Basic salary">
+                                    <input type="number" class="form-control" id="relieving_charge" name="relieving_charge" step="0.01" value="{{ $userSalary ? $userSalary->relieving_charge : old('relieving_charge') }}" placeholder="Basic salary">
 
                                     <label for="additional_allowance" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Additional Allowance.">
                                         Additional Allowance
                                     </label>
-                                    <input type="number" class="form-control" id="additional_allowance" name="additional_allowance" step="0.01" value="{{ old('additional_allowance') }}" placeholder="Basic salary">
+                                    <input type="number" class="form-control" id="additional_allowance" name="additional_allowance" step="0.01" value="{{ $userSalary ? $userSalary->additional_allowance : old('additional_allowance') }}" placeholder="Basic salary">
 
                                 </div>
 
@@ -50,16 +49,16 @@
                                     <label for="provident_fund" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's Provident Fund %.">
                                         Provident Fund %
                                     </label>
-                                    <input type="number" class="form-control" id="provident_fund" name="provident_fund" step="0.01" value="{{ old('provident_fund') }}" placeholder="Basic salary">
+                                    <input type="number" class="form-control" id="provident_fund" name="provident_fund" step="0.01" value="{{ $userSalary ? $userSalary->provident_fund : old('provident_fund') }}" placeholder="Basic salary">
 
                                     <label for="employee_state_insurance_corporation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's ESIC %.">
                                         ESIC %
                                     </label>
-                                    <input type="number" class="form-control" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" step="0.01" value="{{ old('employee_state_insurance_corporation') }}" placeholder="Basic salary">
+                                    <input type="number" class="form-control" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" step="0.01" value="{{ $userSalary ? $userSalary->employee_state_insurance_corporation : old('employee_state_insurance_corporation') }}" placeholder="Basic salary">
                                 </div>
 
                                 <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-danger btn-lg w-100">Register</button>
+                                <button type="submit" class="btn btn-danger btn-lg w-100">{{$userSalary ? 'Update' : 'Submit'}}</button>
                                 </div>
                             </div>
                         </form>
