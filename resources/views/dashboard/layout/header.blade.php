@@ -64,19 +64,19 @@ $lastLetter = strtoupper($nameParts[1][0] ?? '');
             <ul class="py-2 text-gray-700">
                 <li class="px-4 py-2 font-bold text-center border-b">{{ $userName }}</li> <!-- User's name -->
                 <li>
-                    <a href=""
+                    <a href="{{ route('userprofile', ['user' => auth()->user()->id]) }}"
                         class="flex items-center px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">
-                        <i class="fas fa-user-circle mr-2"></i>
-                        Profile
+                        <i class="fas fa-user-circle mr-2"></i> Profile
                     </a>
                 </li>
-                <li>
+
+                {{-- <li>
                     <a href=""
                         class="flex items-center px-4 py-2 text-gray-700 hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors duration-200">
                         <i class="fas fa-cog mr-2"></i>
                         Settings
                     </a>
-                </li>
+                </li> --}}
                 <li>
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
