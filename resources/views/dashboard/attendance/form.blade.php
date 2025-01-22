@@ -31,7 +31,7 @@
 
 
 
-    <div class="container p-5">
+    <div>
         <div id="alert-container" style="display: none;">
             <div class="alert alert-danger alert-dismissible fade show p-4" role="alert">
                 <div class="flex justify-content-between">
@@ -292,7 +292,7 @@
     </script>
 
 
-// alert script
+{{-- // alert script --}}
     <script>
         // Check location permission
         if ('permissions' in navigator) {
