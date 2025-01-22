@@ -14,30 +14,32 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 @can('show dashboard')
                     <li class="nav-item has-treeview {{ request()->routeIs('home') ? 'menu-open' : '' }}">
-                    <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
-                    </a>
+                        <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
                     </li>
                 @endcan
                 @can('show records')
-                <li class="nav-item">
-                    <a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Records</p>
-                    </a>
-                </li>
-                    @endcan
+                    <li class="nav-item">
+                        <a href="{{ route('attendance.index') }}"
+                            class="nav-link {{ request()->routeIs('attendance.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Records</p>
+                        </a>
+                    </li>
+                @endcan
 
 
                 @can('show owners')
-                <li class="nav-item">
-                    <a href="{{ route('owner.index') }}" class="nav-link {{ request()->routeIs('owner.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>Owners</p>
-                    </a>
-                </li>
-                    @endcan
+                    <li class="nav-item">
+                        <a href="{{ route('owner.index') }}"
+                            class="nav-link {{ request()->routeIs('owner.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>Owners</p>
+                        </a>
+                    </li>
+                @endcan
 
                 @can('show attendance')
                     <li class="nav-item">
@@ -65,7 +67,7 @@
                             <p>Leave</p>
                         </a>
                     </li>
-                    @endcan
+                @endcan
                 @can('show offices')
                     <li class="nav-item">
                         <a href="{{ route('office.index') }}"
@@ -83,7 +85,7 @@
                             <p>Manage Offs</p>
                         </a>
                     </li>
-                    @endcan
+                @endcan
 
 
                 @can('show policies')
@@ -96,15 +98,15 @@
                     </li>
                 @endcan
 
-                    @can('show reports')
-                <li class="nav-item">
-                    <a href="{{ route('reports.index') }}"
-                        class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Reports</p>
-                    </a>
-                </li>
-                    @endcan
+                @can('show reports')
+                    <li class="nav-item">
+                        <a href="{{ route('reports.index') }}"
+                            class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>Reports</p>
+                        </a>
+                    </li>
+                @endcan
 
 
                 @can('mark attendance of employees')
@@ -115,20 +117,20 @@
                             <p>Mark Attendance</p>
                         </a>
                     </li>
-                    @endcan
+                @endcan
 
-{{--                    @can('show payments')--}}
-{{--                    <li class="nav-item">--}}
-{{--                        <a href="{{ route('payment.index') }}"--}}
-{{--                            class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}">--}}
-{{--                            <i class="nav-icon fas fa-credit-card"></i>--}}
-{{--                            <p>Payment</p>--}}
-{{--                        </a>--}}
-{{--                    </li>--}}
-{{--                    @endcan--}}
+                {{--                    @can('show payments') --}}
+                {{--                    <li class="nav-item"> --}}
+                {{--                        <a href="{{ route('payment.index') }}" --}}
+                {{--                            class="nav-link {{ request()->routeIs('payment.index') ? 'active' : '' }}"> --}}
+                {{--                            <i class="nav-icon fas fa-credit-card"></i> --}}
+                {{--                            <p>Payment</p> --}}
+                {{--                        </a> --}}
+                {{--                    </li> --}}
+                {{--                    @endcan --}}
 
 
-                    @can('show salaries')
+                @can('show salaries')
                     <li class="nav-item">
                         <a href="{{ route('salary.index') }}"
                             class="nav-link {{ request()->routeIs('salary.index') ? 'active' : '' }}">
@@ -136,87 +138,93 @@
                             <p>Salary</p>
                         </a>
                     </li>
-                    @endcan
+                @endcan
 
-                    @can('advance salary')
+                @can('advance salary')
                     <li class="nav-item">
-                        <a href="{{ route('advance.index') }}" class="nav-link {{ request()->routeIs('advance.index') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-signal"></i>
+                        <a href="{{ route('advance.index') }}"
+                            class="nav-link {{ request()->routeIs('advance.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-credit-card"></i>
                             <p>Advance Payment</p>
                         </a>
                     </li>
+                @endcan
 
-                    @endcan
 
-
-                    @role('super_admin|owner')
+                @role('super_admin|owner')
                     <li class="nav-item">
-                        <a href="{{ route('note.index') }}" class="nav-link {{ request()->routeIs('note.index') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-signal"></i>
+                        <a href="{{ route('note.index') }}"
+                            class="nav-link {{ request()->routeIs('note.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-sticky-note"></i>
                             <p>Note</p>
                         </a>
                     </li>
-                    @endrole
-                    @can('show roles')
+                @endrole
+                @can('show roles')
                     <li class="nav-item">
-                        <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-signal"></i>
+                        <a href="{{ route('role.index') }}"
+                            class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-user-shield"></i>
                             <p>Role</p>
                         </a>
+
                     </li>
-                    @endcan
-                    @can('show visits')
-                <li class="nav-item">
-                    <a href="{{ route('visit.index') }}"
-                        class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-map-marker-alt"></i>
-                        <p>Visits</p>
-                    </a>
-                </li>
-                    @endcan
+                @endcan
+                @can('show visits')
+                    <li class="nav-item">
+                        <a href="{{ route('visit.index') }}"
+                            class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-map-marker-alt"></i>
+                            <p>Visits</p>
+                        </a>
+                    </li>
+                @endcan
 
 
-                    @can('show recycles')
-                <li class="nav-item">
-{{--                    <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">--}}
-{{--                        <i class="nav-icon fas fa-signal"></i></a>--}}
+                @can('show recycles')
+                    <li class="nav-item">
+                        {{--                    <a href="{{ route('recycle.index') }}" class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}"> --}}
+                        {{--                        <i class="nav-icon fas fa-signal"></i></a> --}}
 
-                    <a href="{{ route('recycle.index') }}"
-                        class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-recycle"></i>
+                        <a href="{{ route('recycle.index') }}"
+                            class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-recycle"></i>
 
-                        <p>Recycle</p>
-                    </a>
-                </li>
-                    @endcan
+                            <p>Recycle</p>
+                        </a>
+                    </li>
+                @endcan
 
-                    @can('show breaks')
-                <li class="nav-item">
-                    <a href="{{ route('break.index') }}" class="nav-link {{ request()->routeIs('break.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-signal"></i>
-                        <p>Breaks</p>
-                    </a>
-                </li>
-                    @endcan
+                @can('show breaks')
+                    <li class="nav-item">
+                        <a href="{{ route('break.index') }}"
+                            class="nav-link {{ request()->routeIs('break.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-coffee"></i>
+                            <p>Breaks</p>
+                        </a>
+                    </li>
+                @endcan
 
-                    @can('manual attendance entry')
-                <li class="nav-item">
-                    <a href="{{ route('manual.entry.form') }}" class="nav-link {{ request()->routeIs('manual.entry.form') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-signal"></i>
-                        <p>Manual Entry</p>
-                    </a>
-                </li>
-                    @endcan
+                @can('manual attendance entry')
+                    <li class="nav-item">
+                        <a href="{{ route('manual.entry.form') }}"
+                            class="nav-link {{ request()->routeIs('manual.entry.form') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-keyboard"></i>
+                            <p>Manual Entry</p>
+                        </a>
+                    </li>
+                @endcan
 
 
-                    @can('show permissions')
-                <li class="nav-item">
-                    <a href="{{ route('permission.index') }}" class="nav-link {{ request()->routeIs('permission.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-signal"></i>
-                        <p>Permissions</p>
-                    </a>
-                </li>
-                    @endcan
+                @can('show permissions')
+                    <li class="nav-item">
+                        <a href="{{ route('permission.index') }}"
+                            class="nav-link {{ request()->routeIs('permission.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-lock"></i>
+                            <p>Permissions</p>
+                        </a>
+                    </li>
+                @endcan
 
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
