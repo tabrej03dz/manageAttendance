@@ -7,9 +7,10 @@
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-6 col-lg-4">
                         <!-- Logo -->
-                        <div class="text-center mb-5">
+                        <div class="text-center">
                             <div class="mx-auto mb-4" style="width: 250px;">
-                                <img src="{{ asset('asset/img/rvg_logo.png') }}" alt="Logo" class="img-fluid" style="max-width: 250px;" />
+                                <img src="{{ asset('asset/img/rvg_logo.png') }}" alt="Logo" class="img-fluid"
+                                    style="max-width: 250px;" />
                             </div>
                         </div>
 
@@ -18,15 +19,25 @@
                             <h1 class="text-center mb-4 fw-bold">Login</h1>
                             <form>
                                 <div class="mb-3">
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username" required>
+                                    <input type="text" class="form-control form-control-lg" placeholder="Username"
+                                        required>
                                 </div>
                                 <div class="mb-3 position-relative">
-                                    <input type="password" id="password" class="form-control form-control-lg" placeholder="Password" required>
-                                    <span id="eye-icon" class="position-absolute top-50 end-0 translate-middle-y pe-3" style="cursor: pointer;">
+                                    <input type="password" id="password" class="form-control form-control-lg"
+                                        placeholder="Password" required>
+                                    <span id="eye-icon" class="position-absolute top-50 end-0 translate-middle-y pe-3"
+                                        style="cursor: pointer;">
                                         <i class="bi bi-eye"></i> <!-- Eye icon -->
                                     </span>
                                 </div>
+
                                 <button type="submit" class="btn btn-danger btn-lg w-100">LOGIN</button>
+                                <!-- Forgot Password -->
+                                <div class="mb-3 text-center mt-3">
+                                    <a href="{{ route('password.request') }}"
+                                        class="text-danger text-decoration-none fw-semibold">Forgot Password?</a>
+                                </div>
+
                             </form>
                         </div>
                     </div>
@@ -36,7 +47,8 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
         <!-- Add Bootstrap Icons CDN for the eye icon -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
+            rel="stylesheet">
 
         <script>
             // Toggle password visibility
