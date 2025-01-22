@@ -33,7 +33,7 @@
 
                                 <!-- Username Field -->
                                 <div class="mb-3">
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username"
+                                    <input type="text" class="form-control form-control-lg" placeholder="Email or Mobile No"
                                         name="username" required>
                                 </div>
 
