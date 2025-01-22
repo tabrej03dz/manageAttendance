@@ -1,11 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @if ($errors->any())
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    @endif
     <div class="bg-white">
         <div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
             <div class="container">
@@ -19,15 +14,30 @@
                             </div>
                         </div>
 
+                        <!-- Error Display -->
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <!-- Login Form -->
                         <div class="bg-light shadow rounded p-4">
                             <h1 class="text-center mb-4 fw-bold">{{ __('Login Page') }}</h1>
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
+
+                                <!-- Username Field -->
                                 <div class="mb-3">
                                     <input type="text" class="form-control form-control-lg" placeholder="Username" name="username"
                                            required>
                                 </div>
+
+                                <!-- Password Field -->
                                 <div class="mb-3 position-relative">
                                     <input type="password" id="password" class="form-control form-control-lg"
                                            placeholder="Password" name="password" required>
@@ -37,7 +47,9 @@
                                     </span>
                                 </div>
 
+                                <!-- Login Button -->
                                 <button type="submit" class="btn btn-danger btn-lg w-100">LOGIN</button>
+
                                 <!-- Forgot Password -->
                                 @if (Route::has('password.request'))
                                     <div class="mb-3 text-center mt-3">
@@ -52,8 +64,8 @@
             </div>
         </div>
 
+        <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-        <!-- Add Bootstrap Icons CDN for the eye icon -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css"
               rel="stylesheet">
 
