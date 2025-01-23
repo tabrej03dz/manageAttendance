@@ -160,6 +160,16 @@
                         </a>
                     </li>
                 @endrole
+
+                @role('super_admin')
+                <li class="nav-item">
+                    <a href="{{ route('request.index') }}"
+                        class="nav-link {{ request()->routeIs('request.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-sticky-note"></i>
+                        <p>DemoRequest</p>
+                    </a>
+                </li>
+            @endrole
                 @can('show roles')
                     <li class="nav-item">
                         <a href="{{ route('role.index') }}"
