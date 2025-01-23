@@ -49,4 +49,11 @@ class RequestDemoController extends Controller
         // Redirect with success message
         return redirect()->route('thankyoupage')->with('success', 'Request demo submitted successfully!');
     }
+
+    public function delete(RequestDemo $appointment)
+    {
+        $appointment->delete(); // Delete the record
+        return redirect()->back()->with('success', 'Record deleted successfully.');
+    }
+
 }

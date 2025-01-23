@@ -1,9 +1,6 @@
 @extends('dashboard.layout.root')
 
 @section('content')
-<style>
-    
-</style>
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-12">
@@ -53,7 +50,7 @@
                                     <th>Company Address</th>
                                     <th>Employee Size</th>
                                     <th>Designation</th>
-
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -67,7 +64,13 @@
                                         <td>{{ $appointment->company_address }}</td>
                                         <td>{{ $appointment->emp_size }}</td>
                                         <td>{{ $appointment->designation }}</td>
+                                        <td>
+                                            <a href="{{ route('request.delete', $appointment->id) }}"
+                                                class="btn btn-danger btn-sm">
+                                                Delete
+                                            </a>
 
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
