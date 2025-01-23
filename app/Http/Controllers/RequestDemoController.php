@@ -24,7 +24,7 @@ class RequestDemoController extends Controller
         }
 
         // Order records by the latest created_at
-        $appointmentData = $appointment->orderBy('created_at', 'desc')->paginate(5);
+        $appointmentData = $appointment->orderBy('created_at', 'desc')->paginate(15);
 
         return view('request.index', compact('appointmentData'));
     }
