@@ -14,18 +14,21 @@ class RequestDemoController extends Controller
 {
 
 
-    public function index(Request $request){
-
+    public function index(Request $request)
+    {
         $keyword = $request->input('keyword');
         $appointment = RequestDemo::query();
-      
+
         if (!empty($keyword)) {
             $appointment->where('title', 'like', "%$keyword%");
         }
-        $appointmentData = $appointment->paginate(5);
 
-        return view('request.index',compact('appointmentData'));
+        // Order records by the latest created_at
+        $appointmentData = $appointment->orderBy('created_at', 'desc')->paginate(5);
+
+        return view('request.index', compact('appointmentData'));
     }
+
 
     public function store(RequestDemoRequest $request)
     {
