@@ -48,6 +48,7 @@
                                     <th>Number</th>
                                     <th>Email</th>
                                     <th>Company Address</th>
+                                    <th>PinCode</th>
                                     <th>Employee Size</th>
                                     <th>Designation</th>
                                     <th>Action</th>
@@ -62,6 +63,7 @@
                                         <td>{{ $appointment->number }}</td>
                                         <td>{{ $appointment->email }}</td>
                                         <td>{{ $appointment->company_address }}</td>
+                                        <td>{{ $appointment->pin_code }}</td>
                                         <td>{{ $appointment->emp_size }}</td>
                                         <td>{{ $appointment->designation }}</td>
                                         <td>

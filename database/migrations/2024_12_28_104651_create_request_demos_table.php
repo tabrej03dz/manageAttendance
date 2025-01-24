@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('request_demos', function (Blueprint $table) {
             $table->id();
-            $table->string('compan_name');
+            $table->string('compan_name')->nullable();
             $table->string('owner_name');
             $table->string('number');
-            $table->string('email');
-            $table->string('company_address');
-            $table->string('emp_size');
-            $table->string('designation');
+            $table->string('email')->nullable();
+            $table->string('company_address')->nullable();
+            $table->string('emp_size')->nullable();
+            $table->string('designation')->nullable();
+            $table->string('pin_code')->nullable();
             $table->timestamps();
         });
     }
