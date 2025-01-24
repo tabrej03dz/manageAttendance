@@ -134,6 +134,7 @@ class AttendanceRecordController extends Controller
             $before = HomeController::getTime($time);
 //            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
             return response()->json([
+                'status' => 'warning',
                 'message' => 'You are checking out before ' . $before.' write here the reasons',
                 'type' => 'check_out_note',
                 'record' => $record,
