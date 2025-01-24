@@ -23,6 +23,16 @@ class LeaveController extends Controller
                     ->orWhereDate('end_date', '>=', today());
             });
         }
+        elseif($user->hasRole('owner')){
+            $officeIds = $user->offices()->pluck('id');
+            $userIds = User::whereIn('office_id', $officeIds)->pluck('id');
+            $query->whereIn('user_id', $userIds)
+                ->where(function ($q) {
+                    $q->whereDate('start_date', '>=', today())
+                        ->orWhereDate('end_date', '>=', today());
+                });
+
+        }
         elseif ($user->hasRole('admin')) {
             $userIds = $user->office->users->pluck('id');
             $query->whereIn('user_id', $userIds)
@@ -31,6 +41,7 @@ class LeaveController extends Controller
                         ->orWhereDate('end_date', '>=', today());
                 });
         }
+
 
         elseif ($user->hasRole('team_leader')) {
             $userIds = $user->members->pluck('id');

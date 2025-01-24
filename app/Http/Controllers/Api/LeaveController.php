@@ -22,6 +22,7 @@ class LeaveController extends Controller
         $user = auth()->user();
         $query = Leave::query();
 
+//        dd('hello');
         if ($user->hasRole('super_admin')) {
             $query->where(function ($q) {
                 $q->whereDate('start_date', '>=', today())
@@ -42,6 +43,7 @@ class LeaveController extends Controller
                     $q->whereDate('start_date', '>=', today())
                         ->orWhereDate('end_date', '>=', today());
                 });
+
         }
         elseif ($user->hasRole('team_leader')) {
             $userIds = $user->members->pluck('id');
