@@ -1,8 +1,8 @@
 @extends('mainpage.components.main')
 @section('content')
     <!-- =======================
-        ***  Request A Demo Section ***
-        ======================== -->
+                ***  Request A Demo Section ***
+                ======================== -->
     <section class="relative">
         <div
             class="w-full h-max place-items-center block lg:grid grid-cols-2 xl:max-w-7xl 2xl:max-w-full mx-auto py-16 px-6 md:px-16 2xl:px-28 ">
@@ -169,66 +169,119 @@
                     <hr class="w-full max-w-sm mx-auto">
                 </div>
 
-                <form action="{{route('request.store')}}" method="post"
-                    class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary"
-                    >
+                <form action="{{ route('request.store') }}" method="post"
+                    class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary">
                     @csrf
+
+                    {{-- Show All Errors --}}
+                    @if ($errors->any())
+                        <div class="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+                            <ul class="list-disc pl-6">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label for="compan_name">Name:</label>
-                            <input type="text" name="compan_name" id="compan_name"  placeholder="Company Name">
+                            <label for="compan_name">Company Name:</label>
+                            <input type="text" name="compan_name" id="compan_name" placeholder="Company Name"
+                                value="{{ old('compan_name') }}">
+                            @error('compan_name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
-                            <label for="owner_name">Admin:</label>
-                            <input type="text" name="owner_name" id="owner_name" placeholder="Account Owner / Admin Name">
+                            <label for="owner_name">Admin: <span class="text-red-500">*</span></label>
+                            <input type="text" name="owner_name" id="owner_name" placeholder="Account Owner / Admin Name"
+                                required value="{{ old('owner_name') }}">
+                            @error('owner_name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label for="number">Mobile No:</label>
-                            <input type="text" name="number" id="number" inputmode="numeric" placeholder="Mobile No">
+                            <label for="number">Mobile No: <span class="text-red-500">*</span></label>
+                            <input type="text" name="number" id="number" inputmode="numeric"
+                                placeholder="Mobile No" required value="{{ old('number') }}">
+                            @error('number')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label for="email">Email:</label>
-                            <input type="email" name="email" id="email" placeholder="example@gmail.com">
+                            <input type="email" name="email" id="email" placeholder="example@gmail.com"
+                                value="{{ old('email') }}">
+                            @error('email')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
-
+                    <div class="">
+                        <div>
+                            <label for="pin_code">Pin Code:</label>
+                            <input type="number" name="pin_code" id="pin_code" inputmode="numeric"
+                                placeholder="Pin Code" value="{{ old('pin_code') }}">
+                            @error('pin_code')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                     <div>
                         <label for="company_address">Company Address:</label>
-                        <input type="text" name="company_address" id="company_address"  placeholder="Company Address">
+                        <input type="text" name="company_address" id="company_address" placeholder="Company Address"
+                            value="{{ old('company_address') }}">
+                        @error('company_address')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label for="employee">Employee Size:</label>
+                            <label for="emp_size">Employee Size:</label>
                             <select
                                 class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
                                 name="emp_size" id="emp_size">
                                 <option value="">Select Employee Size</option>
-                                <option value="0-10">0-10</option>
-                                <option value="10-25">10-25</option>
-                                <option value="25-50">25-50</option>
-                                <option value="50-100">50-100</option>
-                                <option value="100-500">100-500</option>
-                                <option value="500+">500+</option>
+                                <option value="0-10" {{ old('emp_size') == '0-10' ? 'selected' : '' }}>0-10</option>
+                                <option value="10-25" {{ old('emp_size') == '10-25' ? 'selected' : '' }}>10-25</option>
+                                <option value="25-50" {{ old('emp_size') == '25-50' ? 'selected' : '' }}>25-50</option>
+                                <option value="50-100" {{ old('emp_size') == '50-100' ? 'selected' : '' }}>50-100</option>
+                                <option value="100-500" {{ old('emp_size') == '100-500' ? 'selected' : '' }}>100-500
+                                </option>
+                                <option value="500+" {{ old('emp_size') == '500+' ? 'selected' : '' }}>500+</option>
                             </select>
+                            @error('emp_size')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
-                            <label for="desgi">Desgination:</label>
+                            <label for="designation">Designation:</label>
                             <select
                                 class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
-                                name="designation" id="desgi">
-                                <option value="">Select Desgination</option>
-                                <option value="Owner">Owner</option>
-                                <option value="Manager">Manager</option>
-                                <option value="Employee">Employee</option>
-                                <option value="HR">HR</option>
-                                <option value="other">Other</option>
+                                name="designation" id="designation">
+                                <option value="">Select Designation</option>
+                                <option value="Owner" {{ old('designation') == 'Owner' ? 'selected' : '' }}>Owner
+                                </option>
+                                <option value="Manager" {{ old('designation') == 'Manager' ? 'selected' : '' }}>Manager
+                                </option>
+                                <option value="Employee" {{ old('designation') == 'Employee' ? 'selected' : '' }}>Employee
+                                </option>
+                                <option value="HR" {{ old('designation') == 'HR' ? 'selected' : '' }}>HR</option>
+                                <option value="other" {{ old('designation') == 'other' ? 'selected' : '' }}>Other
+                                </option>
                             </select>
+                            @error('designation')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
+
+
 
                     <div>
                         <button
@@ -237,6 +290,8 @@
                         </button>
                     </div>
                 </form>
+
+
             </div>
         </div>
     </section>

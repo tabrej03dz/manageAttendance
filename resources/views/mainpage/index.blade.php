@@ -90,16 +90,16 @@
             <!-- Background Image with Overlay -->
             <div class="absolute inset-0">
               <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-              <img 
-                src="{{ asset('asset/img/web header.jpg') }}" 
-                alt="Background Banner" 
+              <img
+                src="{{ asset('asset/img/web header.jpg') }}"
+                alt="Background Banner"
                 class="w-full h-full object-cover"
               />
             </div>
-          
+
             <!-- Foreground Content -->
             <div class="relative max-w-7xl mx-auto h-full flex flex-col md:flex-row items-center justify-center p-6 md:p-12">
-              
+
               <!-- Left Section -->
               <div class="bg-white bg-opacity-10 rounded-lg shadow-lg p-6 md:w-1/2 mx-auto text-center">
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -108,29 +108,29 @@
                 <p class="text-white text-lg mb-8 leading-relaxed">
                   Bid farewell to tedious excel sheets, and say hello to a more efficient way to manage employee attendance. Generate insightful reports, regularize attendance, and empower your on-site and remote employees to check in from anywhere with our cloud-based attendance management system.
                 </p>
-                <a 
-                  href="{{ route('reqDemo') }}" 
+                <a
+                  href="{{ route('reqDemo') }}"
                   class="inline-block bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition"
                 >
                   REQUEST FOR DEMO
                 </a>
               </div>
-          
+
               <!-- Optional Right Section (Currently Hidden) -->
               <div class="hidden md:block md:w-1/2 h-full relative mt-8 md:mt-0 md:ml-8">
                 <!-- Uncomment the following if image is required -->
-                <!-- <img 
-                  src="{{ asset('asset/img/app-using.png') }}" 
-                  alt="Feature Banner" 
+                <!-- <img
+                  src="{{ asset('asset/img/app-using.png') }}"
+                  alt="Feature Banner"
                   class="w-full h-full object-cover rounded-lg shadow-lg"
                 /> -->
               </div>
-          
+
             </div>
           </div>
-          
-          
-          
+
+
+
         <!-- =======================
             *** Branding Section ***
             ======================== -->
@@ -489,8 +489,8 @@
     </div>
 </section>
 
-        
-        
+
+
 
 
         <!-- =======================
@@ -512,539 +512,6 @@
 
                 <!-- slider -->
 
-
-                {{-- <section class="bg-gray-50">
-                    <div class="mx-auto max-w-[1340px] px-4 py-12 sm:px-6 lg:me-0 lg:py-16 lg:pe-0 lg:ps-8 xl:py-24">
-                        <div class="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-center lg:gap-16">
-                            <div class="max-w-xl text-center ltr:sm:text-left rtl:sm:text-right">
-                                <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                                    Testimonial
-                                </h2>
-
-                                <p class="mt-4 text-gray-700">
-                                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptas veritatis illo
-                                    placeat
-                                    harum porro optio fugit a culpa sunt id!
-                                </p>
-
-                                <div class="hidden lg:mt-8 lg:flex lg:gap-4">
-                                    <button aria-label="Previous slide" id="keen-slider-previous-desktop"
-                                        class="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="size-5 rtl:rotate-180">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="M15.75 19.5L8.25 12l7.5-7.5" />
-                                        </svg>
-                                    </button>
-
-                                    <button aria-label="Next slide" id="keen-slider-next-desktop"
-                                        class="rounded-full border border-rose-600 p-3 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                                        <svg class="size-5 rtl:rotate-180" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="-mx-6 lg:col-span-2 lg:mx-0">
-                                <div id="keen-slider" class="keen-slider">
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">BATHLA HARDWARE
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        The integration of attendance and leave management in a single platform is what sets this software apart. It's reliable, easy to use, and saves a lot of administrative time. Kudos to Real Victory Groups!
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="-mx-6 lg:col-span-2 lg:mx-0">
-                                <div id="keen-slider" class="keen-slider">
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">AASHIRVAD JEWELLERS
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                       This attendance management software has reduced errors and streamlined our payroll process. The support team is always helpful and quick to respond. It’s a must-have tool for any organization.
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="-mx-6 lg:col-span-2 lg:mx-0">
-                                <div id="keen-slider" class="keen-slider">
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Bherunath Jewellers
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        Real Victory Groups' attendance management software has been a game-changer for us. Tracking employee attendance and leave has never been this easy. The user-friendly interface and detailed reporting tools have significantly improved our efficiency
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">DURGA JEWELLERS
-                                                    </p>
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        We were struggling with manual attendance tracking until we discovered this software. Now, everything is automated, and we can monitor attendance and leave requests seamlessly. Highly recommend it to all businesses!
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-
-                                    <div class="keen-slider__slide">
-                                        <blockquote
-                                            class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                            <div>
-                                                <div class="flex gap-0.5 text-green-500">
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-
-                                                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20"
-                                                        xmlns="http://www.w3.org/2000/svg">
-                                                        <path
-                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4">
-                                                    <p class="text-2xl font-bold text-rose-600 sm:text-3xl">SR Construction
-
-                                                    <p class="mt-4 leading-relaxed text-gray-700">
-                                                        With this software, we have full control over attendance and leave tracking. The insights we get from the reports have helped us make better decisions about workforce planning.
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">
-                                                &mdash; Michael Scott
-                                            </footer>
-                                        </blockquote>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 flex justify-center gap-4 lg:hidden">
-                            <button aria-label="Previous slide" id="keen-slider-previous"
-                                class="rounded-full border border-rose-600 p-4 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                                <svg class="size-5 -rotate-180 transform" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" />
-                                </svg>
-                            </button>
-
-                            <button aria-label="Next slide" id="keen-slider-next"
-                                class="rounded-full border border-rose-600 p-4 text-rose-600 transition hover:bg-rose-600 hover:text-white">
-                                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </section> --}}
 
 
 
@@ -1070,7 +537,7 @@
                             </button>
                           </div>
                         </div>
-                  
+
                         <!-- Testimonials Slider -->
                         <div class="-mx-6 lg:col-span-2 lg:mx-0">
                           <div id="keen-slider" class="keen-slider">
@@ -1094,11 +561,11 @@
                                 {{-- <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer> --}}
                               </blockquote>
                             </div>
-                  
+
                             <!-- Testimonial 2 -->
                             <div class="keen-slider__slide">
                               <blockquote class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
-                                
+
                                 <div class="mt-4">
                                   <p class="text-2xl font-bold text-rose-600 sm:text-3xl">Durga Jewellers</p>
                                   <div><span style="color: #7DE88D;">★</span>
@@ -1116,7 +583,7 @@
                                 {{-- <footer class="mt-4 text-sm font-medium text-gray-700 sm:mt-6">&mdash; Michael Scott</footer> --}}
                               </blockquote>
                             </div>
-                  
+
                             <!-- Testimonial 3 -->
                             <div class="keen-slider__slide">
                               <blockquote class="flex h-full flex-col justify-between bg-white p-6 shadow-sm sm:p-8 lg:p-12">
@@ -1139,7 +606,7 @@
                           </div>
                         </div>
                       </div>
-                  
+
                       <!-- Mobile Navigation Buttons -->
                       <div class="mt-8 flex justify-center gap-4 lg:hidden">
                         <button aria-label="Previous slide" id="keen-slider-previous" class="rounded-full border border-rose-600 p-4 text-rose-600 transition hover:bg-rose-600 hover:text-white">
@@ -1155,7 +622,7 @@
                       </div>
                     </div>
                   </section>
-                  
+
 
 
             </div>
@@ -1193,61 +660,7 @@
                 <div
                     class=" w-full max-w-full mx-auto block mt-8 md:mt-0 md:grid grid-cols-1 md:grid-cols-2 lg:flex gap-x-6 place-items-center last:row-span-2 *:shadow-lg">
 
-                    <!-- car1 -->
-                    {{-- <div
-                        class="box-1 bg-white w-full max-w-[375px] h-max mx-auto px-4 py-10 border-[1px] border-red-800 shadow-md shadow-red-500 font-futuraMd text-gray-500 rounded-2xl">
-                        <div class="text-center">
-                            <h4 class="text-xl text-gray-900 font-futuraBk font-semibold tracking-[.4rem]">SILVER</h4>
-                            <p class="text-paraTextmd font-futuraMd py-3 tracking-wide">PACK</p>
-                            <div class="bg-red-500">
-                                <h3 class="text-2xl text-white mt-1 font-futuraBk font-semibold tracking-wide">IND.79/user
-                                </h3>
-                                <h5 class="text-lg text-paraTextmd text-white">+18% GST</h5>
-                            </div>
-                        </div>
-
-                        <div class="py-8">
-                            <!-- List of features -->
-                            <ul class="list-none flex flex-col items-start">
-                                <li class="flex items-center py-2">
-                                    <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
-                                        alt="checkmark">
-                                    <span class="text-base tracking-tight text-neutral-700">1 to 10 Users</span>
-                                </li>
-                                <h3 class="px-8">Including 2 Offices</h3>
-
-                                <li class="flex items-center py-2">
-                                    <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
-                                        alt="checkmark">
-                                    <span class="text-base tracking-tight text-neutral-700">3 Month plan</span>
-                                </li>
-                                <h3 class="px-8">Same as per given price</h3>
-
-                                <li class="flex items-center py-2">
-                                    <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
-                                        alt="checkmark">
-                                    <span class="text-base tracking-tight text-neutral-700">6 Month plan</span>
-                                </li>
-                                <h3 class="px-8">1 month</h3>
-                                <h3 class="px-8">Subscription <span class="font-bold">FREE</span></h3>
-
-                                <li class="flex items-center py-2">
-                                    <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
-                                        alt="checkmark">
-                                    <span class="text-base tracking-tight text-neutral-700">1 Year plan</span>
-                                </li>
-                                <h3 class="px-8">5999+18% GST</h3>
-                            </ul>
-                        </div>
-
-                        <div class="text-center mt-0 lg:mt-16">
-                            <a href="{{ route('reqDemo') }}"
-                                class="font-futuraMd font-normal tracking-wide border-2 border-bgPrimary bg-white hover:bg-bgPrimary hover:text-white duration-150 ease-linear px-8 py-2 rounded-full">
-                                Request A Demo
-                            </a>
-                        </div>
-
-                    </div> --}}
+                  
 
                     <div class="box-1 bg-white w-full max-w-[375px] h-max mx-auto px-4 py-10 border-[1px] border-red-800 shadow-lg shadow-red-500 font-futuraMd text-gray-500 rounded-2xl">
                         <div class="text-center">
@@ -1259,7 +672,7 @@
                                 <h5 class="text-lg text-paraTextmd text-white">+18% GST</h5>
                             </div>
                         </div>
-                    
+
                         <div class="py-8">
                             <!-- List of features -->
                             <ul class="list-none flex flex-col items-start">
@@ -1269,14 +682,14 @@
                                     <span class="text-base tracking-tight text-neutral-700">1 to 10 Users</span>
                                 </li>
                                 <h3 class="px-8">Including 2 Offices</h3>
-                    
+
                                 <li class="flex items-center py-2">
                                     <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
                                         alt="checkmark">
                                     <span class="text-base tracking-tight text-neutral-700">3 Month plan</span>
                                 </li>
                                 <h3 class="px-8">Same as per given price</h3>
-                    
+
                                 <li class="flex items-center py-2">
                                     <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
                                         alt="checkmark">
@@ -1284,7 +697,7 @@
                                 </li>
                                 <h3 class="px-8">1 month</h3>
                                 <h3 class="px-8">Subscription <span class="font-bold">FREE</span></h3>
-                    
+
                                 <li class="flex items-center py-2">
                                     <img class="object-contain aspect-square mr-2 size-5" src="{{ asset('mainasset/img/mainCheck2.png') }}"
                                         alt="checkmark">
@@ -1293,16 +706,16 @@
                                 <h3 class="px-8">5999+18% GST</h3>
                             </ul>
                         </div>
-                    
+
                         <div class="text-center mt-0 lg:mt-16">
                             <a href="{{ route('reqDemo') }}"
                                 class="font-futuraMd font-normal tracking-wide border-2 border-bgPrimary bg-white hover:bg-bgPrimary hover:text-white duration-150 ease-linear px-8 py-2 rounded-full">
                                 Request A Demo
                             </a>
                         </div>
-                    
+
                     </div>
-                    
+
 
 
                     <!-- card2 -->
@@ -1421,7 +834,7 @@
 
 
         <!-- shape 2  -->
-    
+
         {{-- <div class="custom-shape-divider-bottom-1732633459 bg-gradient-to-r from-[#B33333] to-[#591919]">
             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
                 preserveAspectRatio="none">
@@ -1430,7 +843,7 @@
                     class="shape-fill"></path>
             </svg>
         </div> --}}
-        
+
 
 
     </div>
