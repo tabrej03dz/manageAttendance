@@ -119,16 +119,41 @@ class EmployeeController extends Controller
         return redirect('employee')->with('success', 'Employee Registered successfully');
     }
 
-    public function edit(User $employee){
-        if (auth()->user()->hasRole('super_admin')){
-            $offices = Office::all();
-            $teamLeaders = User::role('team_leader')->get();
-        }else{
-            $offices = Office::where('id', auth()->user()->office_id)->get();
-            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
-        }
-        return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
+    // public function edit(User $employee){
+    //     if (auth()->user()->hasRole('super_admin')){
+    //         $offices = Office::all();
+    //         $teamLeaders = User::role('team_leader')->get();
+    //     }else{
+    //         $offices = Office::where('id', auth()->user()->office_id)->get();
+    //         $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader','owner')->get();
+    //     }
+    //     return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
+    // }
+
+    public function edit(User $employee)
+{
+    if (auth()->user()->hasRole('super_admin')) {
+        // Super admin sees all offices and team leaders
+        $offices = Office::all();
+        $teamLeaders = User::role(['team_leader', 'owner'])->get();
+    } elseif (auth()->user()->hasRole('owner')) {
+        // Owner sees only their associated office(s) and users in those offices
+        $officeIds = auth()->user()->offices()->pluck('id'); // Get associated office IDs
+        $offices = Office::whereIn('id', $officeIds)->get();
+        $teamLeaders = User::whereIn('office_id', $officeIds)
+                           ->role(['team_leader', 'owner'])
+                           ->get();
+    } else {
+        // For other users, restrict by their single office ID
+        $offices = Office::where('id', auth()->user()->office_id)->get();
+        $teamLeaders = User::where('office_id', auth()->user()->office_id)
+                           ->role(['team_leader', 'owner'])
+                           ->get();
     }
+
+    return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
+}
+
 
     public function update(Request $request, User $employee){
         $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id, 'team_leader_id' => $request->team_leader_id]));
