@@ -116,7 +116,8 @@ class AttendanceRecordController extends Controller
 //            $duration = $user->office_time / 2;
 //            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
             return response()->json([
-                'error' => 'Error, you cannot check-out without check-in'
+                'status' => 'error',
+                'message' => 'Error, you cannot check-out without check-in'
             ], 400);
         }
         if ($request->file('image')){
@@ -134,6 +135,7 @@ class AttendanceRecordController extends Controller
             $before = HomeController::getTime($time);
 //            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
             return response()->json([
+                'status' => 'warning',
                 'message' => 'You are checking out before ' . $before.' write here the reasons',
                 'type' => 'check_out_note',
                 'record' => $record,
