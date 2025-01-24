@@ -197,7 +197,7 @@
                                     <label for="employee_state_insurance_corporation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's ESIC %.">
                                         ESIC %
                                     </label>
-                                    <input type="number" class="form-control" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" step="0.01" value="{{ $employee->userSalary->employee_state_insurance_corporation }}" placeholder="ESIC %">
+                                    <input type="number" class="form-control" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" step="0.01" value="{{ $employee->userSalary->employee_state_insurance_corporation ?? '' }}" placeholder="ESIC %">
                                 </div>
                             </div>
 
