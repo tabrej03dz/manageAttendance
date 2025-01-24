@@ -116,7 +116,8 @@ class AttendanceRecordController extends Controller
 //            $duration = $user->office_time / 2;
 //            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
             return response()->json([
-                'error' => 'Error, you cannot check-out without check-in'
+                'status' => 'error',
+                'message' => 'Error, you cannot check-out without check-in'
             ], 400);
         }
         if ($request->file('image')){
