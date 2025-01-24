@@ -20,7 +20,7 @@ class RequestDemoController extends Controller
         $appointment = RequestDemo::query();
 
         if (!empty($keyword)) {
-            $appointment->where('title', 'like', "%$keyword%");
+            $appointment->where('owner_name', 'like', "%$keyword%");
         }
 
         // Order records by the latest created_at
