@@ -12,9 +12,21 @@ use Illuminate\Support\Facades\Mail;
 
 class RequestDemoController extends Controller
 {
-    public function index()
+
+
+    public function index(Request $request)
     {
-        return view('request.index');
+        $keyword = $request->input('keyword');
+        $appointment = RequestDemo::query();
+
+        if (!empty($keyword)) {
+            $appointment->where('title', 'like', "%$keyword%");
+        }
+
+        // Order records by the latest created_at
+        $appointmentData = $appointment->orderBy('created_at', 'desc')->paginate(15);
+
+        return view('request.index', compact('appointmentData'));
     }
 
 
@@ -37,4 +49,11 @@ class RequestDemoController extends Controller
         // Redirect with success message
         return redirect()->route('thankyoupage')->with('success', 'Request demo submitted successfully!');
     }
+
+    public function delete(RequestDemo $appointment)
+    {
+        $appointment->delete(); // Delete the record
+        return redirect()->back()->with('success', 'Record deleted successfully.');
+    }
+
 }
