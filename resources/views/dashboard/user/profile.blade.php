@@ -388,11 +388,10 @@
 
                             <!-- Current Password Field -->
                             <div class="flex flex-col space-y-2">
-                                <label for="current-password" class="text-lg font-semibold text-gray-600">Current
-                                    Password</label>
+                                <label for="current-password" class="text-lg font-semibold text-gray-600">Current Password</label>
                                 <input type="password" id="current-password" name="current_password"
                                     class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                                    placeholder="Enter your current password">
+                                    placeholder="Enter your current password" autofocus>
                             </div>
 
                             <!-- New Password Field -->
@@ -405,8 +404,7 @@
 
                             <!-- Confirm Password Field -->
                             <div class="flex flex-col space-y-2">
-                                <label for="confirm-password" class="text-lg font-semibold text-gray-600">Confirm New
-                                    Password</label>
+                                <label for="confirm-password" class="text-lg font-semibold text-gray-600">Confirm New Password</label>
                                 <input type="password" id="confirm-password" name="confirm_password"
                                     class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
                                     placeholder="Confirm your new password">
@@ -426,6 +424,7 @@
                         </div>
                     </div>
                 </form>
+
             </div>
         </div>
 
