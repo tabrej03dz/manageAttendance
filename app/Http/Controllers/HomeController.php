@@ -83,6 +83,7 @@ class HomeController extends Controller
 
     public function updateProfile(Request $request, User $user)
     {
+        dd($request->all());
         $validated = $request->validate([
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'pan_attachment' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',

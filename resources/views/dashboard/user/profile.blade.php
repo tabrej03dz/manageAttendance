@@ -289,35 +289,44 @@
 
                             <!-- Office Start Time -->
                             <div class="flex flex-col space-y-2">
-                                <label for="start_time" class="text-lg font-semibold text-gray-600">Office Start
-                                    Time</label>
-                                <input type="time" id="start_time" name="start_time" value="{{ $user->start_time }}"
-                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
+                                <label for="check_in_time" class="text-lg font-semibold text-gray-600">Office Start Time</label>
+                                <input type="time" id="check_in_time" name="check_in_time"
+                                    value="{{ old('check_in_time', $user->check_in_time ? date('H:i', strtotime($user->check_in_time)) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
                             </div>
 
                             <!-- Office End Time -->
                             <div class="flex flex-col space-y-2">
-                                <label for="end_time" class="text-lg font-semibold text-gray-600">Office End Time</label>
-                                <input type="time" id="end_time" name="end_time" value="{{ $user->end_time }}"
-                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
+                                <label for="check_out_time" class="text-lg font-semibold text-gray-600">Office End Time</label>
+                                <input type="time" id="check_out_time" name="check_out_time"
+                                    value="{{ old('check_out_time', $user->check_out_time ? date('H:i', strtotime($user->check_out_time)) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
                             </div>
 
                             <!-- Break Time (Optional) -->
-                            <div class="flex flex-col space-y-2">
-                                <label for="break_time" class="text-lg font-semibold text-gray-600">Break Time</label>
-                                <input type="time" id="break_time" name="break_time" value="{{ $user->break_time }}"
-                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
-                            </div>
+                            {{-- <div class="flex flex-col space-y-2">
+                                <label for="break" class="text-lg font-semibold text-gray-600">Break Time</label>
+                                <input type="text" id="break" name="break"
+                                    value="{{ old('break', $user->break ? (int)(date('H', strtotime($user->break)) * 60 + date('i', strtotime($user->break))) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
+                            </div> --}}
+
 
                             <!-- Submit Button -->
                             <div class="mt-6 flex justify-center">
                                 <button type="submit"
-                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300"
+                                    disabled>
                                     Update
                                 </button>
                             </div>
                         </div>
                     </form>
+
+
                 </div>
 
             </div>
