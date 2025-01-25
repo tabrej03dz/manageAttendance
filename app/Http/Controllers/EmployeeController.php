@@ -15,8 +15,9 @@ use Spatie\Permission\Models\Permission;
 
 class EmployeeController extends Controller
 {
-    public function index(){
-//        if (auth()->user()->hasRole('super_admin')){
+    public function index()
+    {
+        //        if (auth()->user()->hasRole('super_admin')){
 //            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
 //        }else{
 //            $office = auth()->user()->office;
@@ -27,22 +28,23 @@ class EmployeeController extends Controller
         return view('dashboard.employee.index', compact('employees'));
     }
 
-    public function create(){
-        if (auth()->user()->hasRole('super_admin')){
+    public function create()
+    {
+        if (auth()->user()->hasRole('super_admin')) {
             $offices = Office::all();
             $teamLeaders = User::role('team_leader')->get();
-        }else{
-            if (auth()->user()->hasRole('owner')){
+        } else {
+            if (auth()->user()->hasRole('owner')) {
                 $user = auth()->user();
-            }else{
+            } else {
                 $user = auth()->user()->office->owner;
             }
             $plan = Plan::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
             $employeeCount = 0;
-            foreach ($user->offices as $office){
+            foreach ($user->offices as $office) {
                 $employeeCount += $office->users->count();
             }
-            if ($employeeCount >= $plan->number_of_employees){
+            if ($employeeCount >= $plan->number_of_employees) {
                 return back()->with('error', 'Your employee creation limit exceeded!');
             }
             $offices = Office::where('owner_id', auth()->user()->id)->get();
@@ -65,16 +67,27 @@ class EmployeeController extends Controller
 
         // Create the employee record
         $employee = User::create($request->except('joining_date') + [
-                'office_id' => $request->office_id,
-                'password' => Hash::make('password'),
-            ]);
+            'office_id' => $request->office_id,
+            'password' => Hash::make('password'),
+        ]);
 
         // Handle photo upload
         if ($request->file('photo')) {
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
-
+        if ($request->file('aadhar_attachment')) {
+            $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
+            $employee->aadhar_attachment = str_replace('public/', '', $file);
+        }
+        if ($request->file('pan_attachment')) {
+            $file = $request->file('pan_attachment')->store('public/pan_attachments');
+            $employee->pan_attachment = str_replace('public/', '', $file);
+        }
+        if ($request->file('other_attachment')) {
+            $file = $request->file('other_attachment')->store('public/other_attachments');
+            $employee->other_attachment = str_replace('public/', '', $file);
+        }
         // Calculate office time and save the joining date
         $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
         $employee->joining_date = $request->joining_date;
@@ -131,52 +144,167 @@ class EmployeeController extends Controller
     // }
 
     public function edit(User $employee)
-{
-    if (auth()->user()->hasRole('super_admin')) {
-        // Super admin sees all offices and team leaders
-        $offices = Office::all();
-        $teamLeaders = User::role(['team_leader', 'owner'])->get();
-    } elseif (auth()->user()->hasRole('owner')) {
-        // Owner sees only their associated office(s) and users in those offices
-        $officeIds = auth()->user()->offices()->pluck('id'); // Get associated office IDs
-        $offices = Office::whereIn('id', $officeIds)->get();
-        $teamLeaders = User::whereIn('office_id', $officeIds)
-                           ->role(['team_leader', 'owner'])
-                           ->get();
-    } else {
-        // For other users, restrict by their single office ID
-        $offices = Office::where('id', auth()->user()->office_id)->get();
-        $teamLeaders = User::where('office_id', auth()->user()->office_id)
-                           ->role(['team_leader', 'owner'])
-                           ->get();
+    {
+        if (auth()->user()->hasRole('super_admin')) {
+            // Super admin sees all offices and team leaders
+            $offices = Office::all();
+            $teamLeaders = User::role(['team_leader', 'owner'])->get();
+        } elseif (auth()->user()->hasRole('owner')) {
+            // Owner sees only their associated office(s) and users in those offices
+            $officeIds = auth()->user()->offices()->pluck('id'); // Get associated office IDs
+            $offices = Office::whereIn('id', $officeIds)->get();
+            $teamLeaders = User::whereIn('office_id', $officeIds)
+                ->role(['team_leader', 'owner'])
+                ->get();
+        } else {
+            // For other users, restrict by their single office ID
+            $offices = Office::where('id', auth()->user()->office_id)->get();
+            $teamLeaders = User::where('office_id', auth()->user()->office_id)
+                ->role(['team_leader', 'owner'])
+                ->get();
+        }
+
+        return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
     }
 
-    return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
-}
+
+    // public function update(Request $request, User $employee){
+    //     $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id, 'team_leader_id' => $request->team_leader_id]));
+    //     if ($request->filled('password')){
+    //         $employee->password = Hash::make($request->password);
+    //     }
+    //     if ($request->file('photo')){
+    //         if ($employee->photo){
+    //             $file = public_path('storage/'. $employee->photo);
+    //             if (file_exists($file)){
+    //                 unlink($file);
+    //             }
+    //         }
+    //         $file = $request->file('photo')->store('public/photos');
+    //         $employee->photo = str_replace('public/', '', $file);
+    //     }
+    //     $employee->joining_date =  $request->joining_date;
+    //     if ($request->role) {
+    //         // Remove old roles and assign the new role
+    //         $employee->syncRoles($request->role);
+    //     }
+    //     $employee->save();
+
+    //     $basicSalary = $request->basic_salary ?? 0;
+    //     $dearnessAllowance = $request->dearness_allowance ?? 0;
+    //     $relievingCharge = $request->relieving_charge ?? 0;
+    //     $additionalAllowance = $request->additional_allowance ?? 0;
+    //     $providentFund = $request->provident_fund ?? 0;
+    //     $esic = $request->employee_state_insurance_corporation ?? 0;
+
+    //     $userSalary = UserSalary::where('user_id', $employee->id)->first();
+    //     if ($userSalary){
+    //         $userSalary = $userSalary->update([
+    //             'user_id' => $employee->id,
+    //             'basic_salary' => $basicSalary,
+    //             'dearness_allowance' => $dearnessAllowance,
+    //             'relieving_charge' => $relievingCharge,
+    //             'additional_allowance' => $additionalAllowance,
+    //             'provident_fund' => $providentFund,
+    //             'employee_state_insurance_corporation' => $esic,
+    //             'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
+    //         ]);
+    //     }else{
+    //         $userSalary = UserSalary::create([
+    //             'user_id' => $employee->id,
+    //             'basic_salary' => $basicSalary,
+    //             'dearness_allowance' => $dearnessAllowance,
+    //             'relieving_charge' => $relievingCharge,
+    //             'additional_allowance' => $additionalAllowance,
+    //             'provident_fund' => $providentFund,
+    //             'employee_state_insurance_corporation' => $esic,
+    //             'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
+    //         ]);
+    //     }
+    //     return redirect('employee')->with('success', 'Record Updated successfully');
+    // }
 
 
-    public function update(Request $request, User $employee){
-        $employee->update($request->except(['password', 'photo', 'joining_date', 'office_id' => $request->office_id, 'team_leader_id' => $request->team_leader_id]));
-        if ($request->filled('password')){
+
+
+    public function update(Request $request, User $employee)
+    {
+        // Update employee details except sensitive fields
+        $employee->update($request->except([
+            'password',
+            'photo',
+            'aadhar_attachment',
+            'pan_attachment',
+            'other_attachment',
+            'joining_date',
+            'office_id',
+            'team_leader_id'
+        ]));
+
+        // Update password if provided
+        if ($request->filled('password')) {
             $employee->password = Hash::make($request->password);
         }
-        if ($request->file('photo')){
-            if ($employee->photo){
-                $file = public_path('storage/'. $employee->photo);
-                if (file_exists($file)){
+
+        // Update photo if a new one is uploaded
+        if ($request->file('photo')) {
+            if ($employee->photo) {
+                $file = public_path('storage/' . $employee->photo);
+                if (file_exists($file)) {
                     unlink($file);
                 }
             }
             $file = $request->file('photo')->store('public/photos');
             $employee->photo = str_replace('public/', '', $file);
         }
-        $employee->joining_date =  $request->joining_date;
+
+        // Update aadhar_attachment if a new one is uploaded
+        if ($request->file('aadhar_attachment')) {
+            if ($employee->aadhar_attachment) {
+                $file = public_path('storage/' . $employee->aadhar_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
+            $employee->aadhar_attachment = str_replace('public/', '', $file);
+        }
+
+        // Update pan_attachment if a new one is uploaded
+        if ($request->file('pan_attachment')) {
+            if ($employee->pan_attachment) {
+                $file = public_path('storage/' . $employee->pan_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            $file = $request->file('pan_attachment')->store('public/pan_attachments');
+            $employee->pan_attachment = str_replace('public/', '', $file);
+        }
+
+        // Update other_attachment if a new one is uploaded
+        if ($request->file('other_attachment')) {
+            if ($employee->other_attachment) {
+                $file = public_path('storage/' . $employee->other_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            $file = $request->file('other_attachment')->store('public/other_attachments');
+            $employee->other_attachment = str_replace('public/', '', $file);
+        }
+
+        // Update joining date
+        $employee->joining_date = $request->joining_date;
+
+        // Update role if provided
         if ($request->role) {
-            // Remove old roles and assign the new role
             $employee->syncRoles($request->role);
         }
+
         $employee->save();
 
+        // Update salary details
         $basicSalary = $request->basic_salary ?? 0;
         $dearnessAllowance = $request->dearness_allowance ?? 0;
         $relievingCharge = $request->relieving_charge ?? 0;
@@ -185,9 +313,8 @@ class EmployeeController extends Controller
         $esic = $request->employee_state_insurance_corporation ?? 0;
 
         $userSalary = UserSalary::where('user_id', $employee->id)->first();
-        if ($userSalary){
-            $userSalary = $userSalary->update([
-                'user_id' => $employee->id,
+        if ($userSalary) {
+            $userSalary->update([
                 'basic_salary' => $basicSalary,
                 'dearness_allowance' => $dearnessAllowance,
                 'relieving_charge' => $relievingCharge,
@@ -196,8 +323,8 @@ class EmployeeController extends Controller
                 'employee_state_insurance_corporation' => $esic,
                 'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
             ]);
-        }else{
-            $userSalary = UserSalary::create([
+        } else {
+            UserSalary::create([
                 'user_id' => $employee->id,
                 'basic_salary' => $basicSalary,
                 'dearness_allowance' => $dearnessAllowance,
@@ -208,13 +335,17 @@ class EmployeeController extends Controller
                 'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
             ]);
         }
+
+        // Redirect with success message
         return redirect('employee')->with('success', 'Record Updated successfully');
     }
 
-    public function delete(User $employee){
-        if ($employee->photo){
-            $file = public_path('storage/'. $employee->photo);
-            if (file_exists($file)){
+
+    public function delete(User $employee)
+    {
+        if ($employee->photo) {
+            $file = public_path('storage/' . $employee->photo);
+            if (file_exists($file)) {
                 unlink($file);
             }
         }
@@ -222,37 +353,41 @@ class EmployeeController extends Controller
         return back()->with('success', 'Record Deleted Successfully');
     }
 
-    public function employeeAttendance(){
+    public function employeeAttendance()
+    {
         $user = auth()->user();
-        if ($user->hasRole('super_admin')){
+        if ($user->hasRole('super_admin')) {
             $employees = User::all();
-        }else{
+        } else {
             $employees = User::where('office_id', $user->office_id)->get();
         }
         return view('dashboard.employee.list', compact('employees'));
     }
 
-    public function status(User $employee){
-        if ($employee->status == '1'){
+    public function status(User $employee)
+    {
+        if ($employee->status == '1') {
             $employee->status = '0';
-        }else{
+        } else {
             $employee->status = '1';
         }
         $response = $employee->save();
-        if ($response){
+        if ($response) {
             request()->session()->flash('success', 'Status changed successfully');
-        }else{
+        } else {
             \request()->session()->flash('error', 'Error, Try again!');
         }
         return back();
     }
 
-    public function permission(User $user){
+    public function permission(User $user)
+    {
         $permissions = $user->permissions;
         return view('dashboard.employee.permission', compact('permissions', 'user'));
     }
 
-    public function permissionRemove(Permission $permission, User $user){
+    public function permissionRemove(Permission $permission, User $user)
+    {
         if ($user->hasPermissionTo($permission)) { // Check if the user has the permission
             $user->revokePermissionTo($permission); // Remove the permission from the user
             return back()->with('success', 'Permission removed from the user successfully.');

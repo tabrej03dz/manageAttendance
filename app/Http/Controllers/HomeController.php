@@ -42,12 +42,16 @@ class HomeController extends Controller
 
     public function profile(User $user)
     {
+        // dd($user);
 
         $leaves = Leave::where('user_id', $user->id)
             ->whereDate('start_date', '>', today())
             ->get();
 
+
+
         $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
+
         return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
     }
 
@@ -71,7 +75,7 @@ class HomeController extends Controller
 
     public static function getTime($totalMinutes)
     {
-        $hours = (int)($totalMinutes / 60);
+        $hours = (int) ($totalMinutes / 60);
         $minutes = $totalMinutes % 60;
 
         return "$hours h, $minutes m";
@@ -79,14 +83,46 @@ class HomeController extends Controller
 
     public function updateProfile(Request $request, User $user)
     {
-        $status = $user->update($request->all());
-        if ($request->file('photo')) {
+        $validated = $request->validate([
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'pan_attachment' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+            'aadhar_attachment' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+            'other_attachment' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
+            'responsibility' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
+        ]);
+
+        $user->update($validated);
+
+        // Handle profile photo
+        if ($request->hasFile('photo')) {
             $file = $request->file('photo')->store('public/images');
             $user->photo = str_replace('public/', '', $file);
-            $user->save();
         }
-        return back()->with('success', 'updated successfully');
+
+        // Handle Pancard attachment
+        if ($request->hasFile('pan_attachment')) {
+            $file = $request->file('pan_attachment')->store('public/documents');
+            $user->pan_attachment = str_replace('public/', '', $file);
+        }
+
+        // Handle Aadharcard attachment
+        if ($request->hasFile('aadhar_attachment')) {
+            $file = $request->file('aadhar_attachment')->store('public/documents');
+            $user->aadhar_attachment = str_replace('public/', '', $file);
+        }
+
+        // Handle Other attachment
+        if ($request->hasFile('other_attachment')) {
+            $file = $request->file('other_attachment')->store('public/documents');
+            $user->other_attachment = str_replace('public/', '', $file);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Profile updated successfully!');
     }
+
 
     static function employeeList()
     {
