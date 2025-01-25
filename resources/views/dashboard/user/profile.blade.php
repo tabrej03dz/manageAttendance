@@ -67,7 +67,7 @@
                                 <div class="flex flex-col">
                                     <label for="joining_date" class="text-sm font-medium text-gray-700">Joining Date</label>
                                     <input type="date" id="joining_date" name="joining_date"
-                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                                         value="{{ $user->joining_date }}" disabled>
                                 </div>
 
@@ -192,50 +192,40 @@
 
                             <!-- Update Button -->
                             <div class="mt-6 text-center">
-                                <button type="submit"
+                                <button type="submit" id="submitBtn"
                                     class="bg-blue-600 text-white py-2 px-6 rounded-lg shadow hover:bg-blue-700 transition">
                                     Update
                                 </button>
+
                             </div>
                         </div>
                     </form>
                 </div>
-                {{-- <script>
-                    function previewImage(event, previewId) {
-                        const file = event.target.files[0];
-                        const preview = document.getElementById(previewId);
+                <!-- Processing Modal -->
+                <div id="loadingModal"
+                    class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+                    <div class="bg-white p-4 rounded-lg">
+                        <span class="text-xl text-gray-500">Processing...</span>
+                    </div>
+                </div>
 
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (e) => {
-                                preview.src = e.target.result;
-                                preview.style.display = 'block';
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    }
-                </script> --}}
                 <script>
+                    // Function to open the image modal
                     function openModal(imageId) {
-                        // Get the image element by its ID
                         var imgElement = document.getElementById(imageId);
-                        // Get the modal and modal image element
                         var modal = document.getElementById('imageModal');
                         var modalImg = document.getElementById('modalImage');
-
-                        // Set the modal image source to the clicked image's source
                         modalImg.src = imgElement.src;
-
-                        // Show the modal
                         modal.classList.remove('hidden');
                     }
 
+                    // Function to close the image modal
                     function closeModal() {
-                        // Close the modal
                         var modal = document.getElementById('imageModal');
                         modal.classList.add('hidden');
                     }
 
+                    // Function to preview image
                     function previewImage(event, previewId) {
                         const inputFile = event.target;
                         const previewImage = document.getElementById(previewId);
@@ -243,14 +233,11 @@
 
                         if (inputFile.files && inputFile.files[0]) {
                             const reader = new FileReader();
-
-                            reader.onload = function (e) {
+                            reader.onload = function(e) {
                                 previewImage.src = e.target.result;
                             };
-
                             reader.readAsDataURL(inputFile.files[0]);
 
-                            // Show the file name
                             fileNameDisplay.textContent = inputFile.files[0].name;
                             fileNameDisplay.classList.remove('hidden');
                         } else {
@@ -258,7 +245,28 @@
                             fileNameDisplay.classList.add('hidden');
                         }
                     }
+
+                    // Handle form submission
+                    const form = document.querySelector('form');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const loadingModal = document.getElementById('loadingModal');
+
+                    form.addEventListener('submit', function(e) {
+                        // Prevent form from actually submitting immediately
+                        e.preventDefault();
+
+                        // Disable the submit button and show the loading modal
+                        submitBtn.disabled = true;
+                        loadingModal.classList.remove('hidden'); // Show the processing modal
+
+                        // Simulate form submission delay (Remove the setTimeout when the actual form submission happens)
+                        setTimeout(function() {
+                            form.submit(); // Submit the form after delay
+                        }, 2000); // Adjust the time if needed (in ms)
+                    });
                 </script>
+
+
 
             </div>
         </div>
