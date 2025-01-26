@@ -80,7 +80,6 @@ class EmployeeController extends Controller
         $employee->joining_date = $request->joining_date;
         $employee->save();
 
-
         // Assign role to employee
         if ($request->role) {
             $employee->assignRole($request->role);
