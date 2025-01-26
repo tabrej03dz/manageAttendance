@@ -70,7 +70,7 @@ class OfficeController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         // Validate the request
         $validatedData = $request->validate([
@@ -83,7 +83,7 @@ class OfficeController extends Controller
 
         try {
             // Find the office by ID
-            $office = Office::find($request->office_id);
+            $office = Office::find($id);
 
             if (!$office) {
                 return response()->json(['error' => 'Office not found.'], 404);
@@ -105,11 +105,11 @@ class OfficeController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         try {
             // Find the office by ID
-            $office = Office::find($request->office_id);
+            $office = Office::find($id);
 
             // Check if the office exists
             if (!$office) {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserSalary;
 use Carbon\Carbon;
+//use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -126,32 +127,34 @@ class EmployeeController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
+
+        $employee = User::find($id);
+
         $request->validate([
-            'employee_id' => 'required',
             'name' => 'sometimes|required',
             'email' => 'sometimes|email',
             'phone' => 'nullable',
             'address' => 'nullable',
             'photo' => 'nullable|image',
-            'joining_date' => 'nullable|date',
+            'joining_date' => 'nullable',
             'designation' => 'nullable',
             'responsibility' => 'nullable',
-            'salary' => 'nullable|numeric',
+            'salary' => 'nullable',
             'check_in_time' => 'nullable',
             'check_out_time' => 'nullable',
-            'basic_salary' => 'nullable|numeric',
-            'dearness_allowance' => 'nullable|numeric',
-            'relieving_charge' => 'nullable|numeric',
-            'additional_allowance' => 'nullable|numeric',
-            'provident_fund' => 'nullable|numeric',
-            'employee_state_insurance_corporation' => 'nullable|numeric',
+            'basic_salary' => 'nullable',
+            'dearness_allowance' => 'nullable',
+            'relieving_charge' => 'nullable',
+            'additional_allowance' => 'nullable',
+            'provident_fund' => 'nullable',
+            'employee_state_insurance_corporation' => 'nullable',
         ]);
 
         try {
             // Find the employee by ID
-            $employee = User::find($request->employee_id);
+//            $employee = User::where('id', 37)->first();
             if (!$employee) {
                 return response()->json(['error' => 'Employee not found.'], 404);
             }
@@ -220,16 +223,12 @@ class EmployeeController extends Controller
         }
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request, User $employee)
     {
-        $request->validate([
-            'employee_id' => 'required',
-        ]);
+
 
         try {
-
             // Find the employee by ID
-            $employee = User::find($request->employee_id);
             if (!$employee) {
                 return response()->json(['error' => 'Employee not found.'], 404);
             }
