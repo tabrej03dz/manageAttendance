@@ -61,7 +61,7 @@ class LeaveController extends Controller
         }
 
         if ($request->status) {
-            $query->where('status', $request->status);
+            $query->where('status', $request->status)->with('user')->with('responsesBy');
         }
 
         $leaves = $query->get();

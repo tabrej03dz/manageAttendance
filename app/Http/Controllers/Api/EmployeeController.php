@@ -39,10 +39,9 @@ class EmployeeController extends Controller
             'designation' => '',
             'responsibility' => '',
             'salary' => '',
-            'check_in_time' => '',
-            'check_out_time' => '',
+            'check_in_time' => 'required',
+            'check_out_time' => 'required',
             'basic_salary' => '',
-            'house_rent_allowance' => '',
             'dearness_allowance' => '',
             'relieving_charge' => '',
             'additional_allowance' => '',
@@ -53,7 +52,10 @@ class EmployeeController extends Controller
             // Check if the email already exists
             $existingEmployee = User::where('email', $request->email)->first();
             if ($existingEmployee) {
-                return response()->json(['error' => 'Email already exists.'], 422);
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Email already exists.',
+                ], 422);
             }
 
             // Parse check-in and check-out times
@@ -112,6 +114,7 @@ class EmployeeController extends Controller
 
             // Return a success response
             return response()->json([
+                'status' => 'success',
                 'message' => 'Employee registered successfully.',
                 'employee' => $employee,
                 'salary' => $userSalary,
@@ -122,5 +125,129 @@ class EmployeeController extends Controller
             return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required',
+            'name' => 'sometimes|required',
+            'email' => 'sometimes|email',
+            'phone' => 'nullable',
+            'address' => 'nullable',
+            'photo' => 'nullable|image',
+            'joining_date' => 'nullable|date',
+            'designation' => 'nullable',
+            'responsibility' => 'nullable',
+            'salary' => 'nullable|numeric',
+            'check_in_time' => 'nullable',
+            'check_out_time' => 'nullable',
+            'basic_salary' => 'nullable|numeric',
+            'dearness_allowance' => 'nullable|numeric',
+            'relieving_charge' => 'nullable|numeric',
+            'additional_allowance' => 'nullable|numeric',
+            'provident_fund' => 'nullable|numeric',
+            'employee_state_insurance_corporation' => 'nullable|numeric',
+        ]);
+
+        try {
+            // Find the employee by ID
+            $employee = User::find($request->employee_id);
+            if (!$employee) {
+                return response()->json(['error' => 'Employee not found.'], 404);
+            }
+
+            // Update employee details
+            $employee->update($request->except(['photo', 'joining_date', 'check_in_time', 'check_out_time']));
+
+            // Handle photo upload
+            if ($request->file('photo')) {
+                $file = $request->file('photo')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+
+            // Update check-in and check-out times
+            if ($request->check_in_time && $request->check_out_time) {
+                $checkInTime = Carbon::parse($request->check_in_time);
+                $checkOutTime = Carbon::parse($request->check_out_time);
+                $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
+            }
+
+            // Update joining date
+            if ($request->joining_date) {
+                $employee->joining_date = $request->joining_date;
+            }
+
+            // Save the updated employee record
+            $employee->save();
+
+            // Update or calculate salary
+            $basic_salary = $request->basic_salary ?? $employee->userSalry?->basic_salary ?? 0;
+            $house_rent_allowance = $request->house_rent_allowance ?? $employee->userSalary?->house_rent_allowance ?? 0;
+            $transport_allowance = $request->transport_allowance ?? $employee->userSalary?->transport_allowance ?? 0;
+            $medical_allowance = $request->medical_allowance ?? $employee->userSalary?->medical_allowance ?? 0;
+            $special_allowance = $request->special_allowance ?? $employee->userSalary?->special_allowance ?? 0;
+            $dearness_allowance = $request->dearness_allowance ?? $employee->userSalary?->dearness_allowance ?? 0;
+            $relieving_charge = $request->relieving_charge ?? $employee->userSalary?->relieving_charge ?? 0;
+            $additional_allowance = $request->additional_allowance ?? $employee->userSalary?->additional_allowance ?? 0;
+
+            $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance + $dearness_allowance + $relieving_charge + $additional_allowance;
+
+            // Update the user's salary details
+            $userSalary = $employee->userSalary;
+            $userSalary->update([
+                'basic_salary' => $basic_salary,
+                'house_rent_allowance' => $house_rent_allowance,
+                'transport_allowance' => $transport_allowance,
+                'medical_allowance' => $medical_allowance,
+                'special_allowance' => $special_allowance,
+                'dearness_allowance' => $dearness_allowance,
+                'relieving_charge' => $relieving_charge,
+                'additional_allowance' => $additional_allowance,
+                'total_salary' => $total_salary,
+            ]);
+
+            // Return a success response
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Employee updated successfully.',
+                'employee' => $employee,
+                'salary' => $userSalary,
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Handle exceptions and return error response
+            return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required',
+        ]);
+
+        try {
+
+            // Find the employee by ID
+            $employee = User::find($request->employee_id);
+            if (!$employee) {
+                return response()->json(['error' => 'Employee not found.'], 404);
+            }
+
+            // Delete the employee
+            $employee->delete();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Employee deleted successfully.',
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Handle exceptions
+            return response()->json(['error' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
+    }
+
+
 
 }

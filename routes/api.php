@@ -69,6 +69,15 @@ Route::group(['middleware' => "auth:sanctum"], function(){
     Route::prefix('employee')->name('employee.')->controller(\App\Http\Controllers\Api\EmployeeController::class)->group(function(){
         Route::get('/', 'index')->name('index');
         Route::post('store', 'store')->name('store');
+        Route::post('update', 'update')->name('update');
+        Route::post('delete', 'delete')->name('delete');
+    });
+
+    Route::prefix('office')->name('office.')->controller(App\Http\Controllers\Api\OfficeController::class)->group(function(){
+       Route::get('index', 'index')->name('index');
+       Route::post('store', 'store')->name('store');
+       Route::post('update', 'update')->name('update');
+       Route::post('delete', 'destroy')->name('delete');
     });
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
