@@ -358,7 +358,10 @@ class EmployeeController extends Controller
         $user = auth()->user();
         if ($user->hasRole('super_admin')) {
             $employees = User::all();
-        } else {
+        } elseif($user->hasRole('owner')) {
+            $officeIds = $user->offices->pluck('id');
+            $employees = User::whereIn('office_id', $officeIds)->get();
+        }else{
             $employees = User::where('office_id', $user->office_id)->get();
         }
         return view('dashboard.employee.list', compact('employees'));
