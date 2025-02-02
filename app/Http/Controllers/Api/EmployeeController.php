@@ -172,6 +172,20 @@ class EmployeeController extends Controller
                 $employee->photo = str_replace('public/', '', $file);
             }
 
+            if ($request->file('aadhar_attachment')) {
+                $file = $request->file('aadhar_attachment')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+            if ($request->file('pan_attachment')) {
+                $file = $request->file('pan_attachment')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+
+            if ($request->file('other_attachment')) {
+                $file = $request->file('other_attachment')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+
             // Update check-in and check-out times
             if ($request->check_in_time && $request->check_out_time) {
                 $checkInTime = Carbon::parse($request->check_in_time);
