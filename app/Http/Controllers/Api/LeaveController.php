@@ -64,8 +64,7 @@ class LeaveController extends Controller
             $query->where('status', $request->status)->with('user')->with('responsesBy');
         }
 
-        $leaves = $query->get();
-
+        $leaves = $query->with(['user', 'responsesBy'])->get();
         return response()->json([
             'success' => true,
             'data' => $leaves,

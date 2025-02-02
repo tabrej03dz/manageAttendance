@@ -18,10 +18,6 @@ class EmployeeController extends Controller
         $user = $request->user(); // Get the authenticated user
         $employees = HomeController::employeeList($user); // Fetch the employee list
 
-        foreach ($employees as $employee){
-            $employee->userSalary = $employee->userSalary;
-        }
-
         return response()->json([
             'status' => 'success',
             'message' => 'Data retrieved successfully',
