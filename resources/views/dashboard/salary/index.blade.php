@@ -83,8 +83,14 @@
                                             <tr>
                                                 <td class="fw-bold sticky left-0 bg-light" style="z-index: 10;">{{ $user->name }}</td> <!-- Sticky first column -->
                                                 @php
-                                                    $advancePayment = $advancePayments->where('user_id', $user->id)->whereYear('date', $d->format('Y'))->whereMonth('date', $d->format('m'))->sum('amount');
-                                                @endphp
+                                                    $d = \Carbon\Carbon::parse($dates->first()->date);
+                                                    $advancePayment = $advancePayments
+                                                        ->where('user_id', $user->id)
+                                                        ->filter(function ($item) use ($d) {
+                                                            return $item->date->format('Y') == $d->format('Y') &&
+                                                                   $item->date->format('m') == $d->format('m');
+                                                        })
+                                                        ->sum('amount');                                                @endphp
                                                 <td>{{$advancePayment}}</td>
                                                 <td>{{ round($user->userSalary ? $user->userSalary->total_salary : $user->salary) }}</td>
 
