@@ -91,6 +91,9 @@ class HomeController extends Controller
             'other_attachment' => 'nullable|file|mimes:jpeg,png,pdf|max:2048',
             'responsibility' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+            'designation' => '',
+            'joining_date' => '',
+            'phone' => '',
             'email1'=>'nullable',
         ]);
 
