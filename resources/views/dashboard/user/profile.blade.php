@@ -399,7 +399,7 @@
                                 <label for="current-password" class="text-lg font-semibold text-gray-600">Current Password</label>
                                 <input type="password" id="current-password" name="current_password"
                                     class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
-                                    placeholder="Enter your current password" autofocus>
+                                    placeholder="Enter your current password" >
                             </div>
 
                             <!-- New Password Field -->
