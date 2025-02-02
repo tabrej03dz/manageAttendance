@@ -18,6 +18,9 @@ class EmployeeController extends Controller
         $user = $request->user(); // Get the authenticated user
         $employees = HomeController::employeeList($user); // Fetch the employee list
 
+        foreach ($employees as $employee){
+            $employee->role = $employee->roles->first();
+        }
         return response()->json([
             'status' => 'success',
             'message' => 'Data retrieved successfully',
@@ -72,6 +75,20 @@ class EmployeeController extends Controller
             // Handle photo upload
             if ($request->file('photo')) {
                 $file = $request->file('photo')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+
+            if ($request->file('aadhar_attachment')) {
+                $file = $request->file('aadhar_attachment')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+            if ($request->file('pan_attachment')) {
+                $file = $request->file('pan_attachment')->store('public/photos');
+                $employee->photo = str_replace('public/', '', $file);
+            }
+
+            if ($request->file('other_attachment')) {
+                $file = $request->file('other_attachment')->store('public/photos');
                 $employee->photo = str_replace('public/', '', $file);
             }
 

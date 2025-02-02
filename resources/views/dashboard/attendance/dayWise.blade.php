@@ -77,6 +77,10 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($employees as $employee)
                                     @php
+                                        //$record = \App\Models\AttendanceRecord::where('user_id', $employee->id)
+                                        //    ->whereDate('created_at', $date)
+                                        //    ->first();
+
                                         $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)
                                             ->whereDate('created_at', $date)
                                             ->first();
