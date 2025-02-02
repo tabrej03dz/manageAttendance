@@ -83,7 +83,7 @@
                                             <tr>
                                                 <td class="fw-bold sticky left-0 bg-light" style="z-index: 10;">{{ $user->name }}</td> <!-- Sticky first column -->
                                                 @php
-                                                    $advancePayment = $advancePayments->where('user_id', $user->id)->sum('amount');
+                                                    $advancePayment = $advancePayments->where('user_id', $user->id)->whereYear('date', $d->format('Y'))->whereMonth('date', $d->format('m'))->sum('amount');
                                                 @endphp
                                                 <td>{{$advancePayment}}</td>
                                                 <td>{{ round($user->userSalary ? $user->userSalary->total_salary : $user->salary) }}</td>
@@ -201,7 +201,7 @@
                                                             'additional_allowance' => $user->userSalary ? $user->userSalary->additional_allowance : 0,
                                                             'provident_fund' => $providentFund,
                                                             'employee_state_insurance_corporation' => $esic,
-                                                            'advance' => $advancePayments->where('user_id', $user->id)->whereYear('date', $d->format('Y'))->whereMonth('date', $d->format('m'))->sum('amount'),
+                                                            'advance' => $advancePayment,
                                                             'total_salary' => $salary - ($providentFund + $esic),
                                                             //'paid_leave' => $paidLeave,
                                                             //'unpaid_leave' => $unpaidLeave,
