@@ -94,6 +94,7 @@ class HomeController extends Controller
             'designation' => '',
             'joining_date' => '',
             'phone' => '',
+            'name' => '',
             'email1'=>'nullable',
         ]);
 

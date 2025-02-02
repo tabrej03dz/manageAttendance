@@ -51,6 +51,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start'])->name('start');
         Route::post('stop/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop'])->name('stop');
         Route::get('latest/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'latestBreak'])->name('latest');
+        Route::get('employee', [\App\Http\Controllers\Api\BreakController::class, 'employeeBreak'])->name('employee');
 
     });
 

@@ -136,4 +136,36 @@ class BreakController extends Controller
         }
     }
 
+    public function employeeBreak(Request $request)
+    {
+        // Validate request input
+        $validated = $request->validate([
+            'employee_id' => 'required|exists:users,id', // Ensure the employee exists
+            'date' => 'nullable|date', // Ensure date is a valid format
+        ]);
+
+
+
+        // Get date (default: today)
+        $date = isset($validated['date']) ? Carbon::parse($validated['date']) : today();
+
+
+
+        // Fetch breaks for the specific employee
+        $breaks = LunchBreak::where('user_id', $validated['employee_id'])
+            ->whereDate('created_at', $date)
+            ->get();
+
+        return response($breaks);
+
+
+        // Return response
+        return response()->json([
+            'success' => true,
+            'date' => $date->toDateString(),
+            'breaks' => $breaks
+        ], 200);
+    }
+
+
 }
