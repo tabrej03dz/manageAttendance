@@ -15,15 +15,20 @@ class OfficeController extends Controller
             $user = $request->user();
             $offices = [];
 
-            if ($user->hasRole('super_admin')) {
-                // Fetch all offices for super admin
+//            if ($user->hasRole('super_admin')) {
+//                // Fetch all offices for super admin
+//                $offices = Office::all();
+//            } elseif ($user->hasRole('owner')) {
+//                // Fetch offices owned by the user
+//                $offices = Office::where('owner_id', $user->id)->get();
+//            } else {
+//                // Fetch the specific office associated with the user
+//                $offices = Office::where('id', $user->office_id)->get();
+//            }
+            if (auth()->user()->hasRole('owner')){
+                $offices = auth()->user()->offices;
+            }else{
                 $offices = Office::all();
-            } elseif ($user->hasRole('owner')) {
-                // Fetch offices owned by the user
-                $offices = Office::where('owner_id', $user->id)->get();
-            } else {
-                // Fetch the specific office associated with the user
-                $offices = Office::where('id', $user->office_id)->get();
             }
 
             // Return the list of offices as a JSON response
