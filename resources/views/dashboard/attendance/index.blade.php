@@ -161,9 +161,8 @@
                                         $record = $attendanceRecords
                                             ->where('user_id', $currentUser->id)
                                             ->first(function ($record) use ($d) {
-                                                return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                                return $record->check_in->format('Y-m-d') === $d->format('Y-m-d');
                                             });
-
 
                                         if($d->format('[D]') == '[Sun]'){
                                             $sundayCount++;

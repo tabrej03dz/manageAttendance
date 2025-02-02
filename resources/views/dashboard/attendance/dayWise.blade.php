@@ -82,8 +82,11 @@
                                         //    ->first();
 
                                         $record = \App\Models\AttendanceRecord::where('user_id', $employee->id)
-                                            ->whereDate('created_at', $date)
-                                            ->first();
+                                        ->where(function ($query) use ($date) {
+                                            $query->whereDate('check_in', $date)
+                                                  ->orWhereDate('check_out', $date);
+                                        })
+                                        ->first();
 
                                         $leave = App\Models\Leave::whereDate('start_date', '<=', $date)
                                             ->whereDate('end_date', '>=', $date)

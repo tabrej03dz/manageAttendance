@@ -26,7 +26,7 @@
                             <!-- Profile Picture -->
                             <div class="flex flex-col items-center mb-6">
                                 <img id="photoPreview"
-                                    src="{{ $user->photo ? asset('storage/' . $user->photo) : 'https://via.placeholder.com/100' }}"
+                                    src="{{ $user->photo ? asset('storage/' . $user->photo) : 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIALcAwwMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABAUBAwYCB//EADEQAQACAQIDBwIDCQAAAAAAAAABAgMEESExUQUSIjJBYXEjUhMUwRUzYoGRoaKx0f/EABcBAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/APoIDo5gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9232z/QGAAAAAAAAAAAAAAAAAAAAASdHpLam2/lxxzt/wABqw4cme/dx13n/SywdmY67Tmnvz0jhCZixUw0imOu1Ye2dakeaY6Y42x0rX4jZ73YEV4yYseSPqUrb5hEzdmYr7zimaT05wnAKDUaXNp/PXw/dHGGl0s8Y2nkr9X2bW299P4bfZ6T8NSs2KoZtE0tNbRMTHOJFRgAAABmtbXtFaxMzPpEMLzQaeuHBWdvHaN7T+iWrIq/yOp23/Bnb5homJrMxaJiY5xLpEPtPT1yYZyxHjpG+/WDVxTAKyAAA94cVs2WuOnOf7A26PTW1OTblSPNK8pSuOkUpG1Y5Q84MVcGKMdOUevV7ZtakAEUAAAAAA2iecQwyA5oBtgAAdDp7xkwUvXlNXPJGk1l9NO0R3qTzrKWLKvWjXXimkyzPrXux/NG/auPb91ffpwQdVqsmptE34VjlWPRJFtaAGmQABd9n6b8vi3tH1Lc/b2Q+y9N37/jXjw1nw+8rZm1qQARQAAAAAAAAAFVbsrJHky1n5jZFzaXPh43xzt1jjC/F1Mc0LvUaDDm3msdy/WsfoqtRpsunttkrw9LRyldTGkBUAAAAG3TYbZ80Y6+vOekNS80Gm/L4vFH1Lcbe3slqyJFKVx0ilI2rEbQyDLQAAAAAAAAAAAAAAxatb1mt4iazziWQFRrOz7Yt74d7U9Y9YQXSq/XaCL75MEbW9a9fhZUsVQTG07TwkaZAS9Bo51Fu/eNsUf5ewN3Zel70xnyRwjyR191oREREREbRHKBhuAAAAAAAAAAAAAAAAAAAAIur0VNR4qz3MnXr8oE9m6iJ2iKz7xZci6mK7T9mRExbPaLfw15LGIiIiIiIiOUQCKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//Z' }}"
                                     alt="Profile Avatar" class="w-24 h-24 rounded-full mb-4 border">
                                 <label class="text-gray-700 text-sm font-medium">
                                     Upload Profile Photo
@@ -51,7 +51,7 @@
                                     <label for="designation" class="text-sm font-medium text-gray-700">Designation</label>
                                     <input type="text" id="designation" name="designation"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value="{{ $user->designation }}" disabled>
+                                        value="{{ $user->designation }}">
                                 </div>
 
                                 <!-- Responsibility Field -->
@@ -68,7 +68,7 @@
                                     <label for="joining_date" class="text-sm font-medium text-gray-700">Joining Date</label>
                                     <input type="date" id="joining_date" name="joining_date"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                                        value="{{ $user->joining_date }}" disabled>
+                                        value="{{ $user->joining_date }}" >
                                 </div>
 
                                 <!-- Email Field -->
@@ -79,12 +79,20 @@
                                         value="{{ $user->email }}" disabled>
                                 </div>
 
+                                <!-- Secondary Email Field -->
+                                <div class="flex flex-col space-y-2">
+                                    <label for="email1" class="text-lg font-semibold text-gray-600">Enter your secondary
+                                        email</label>
+                                    <input type="email" id="email1" name="email1" value="{{ $user->email1 }}"
+                                           class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
+                                </div>
+
                                 <!-- Phone Number Field -->
                                 <div class="flex flex-col">
                                     <label for="phone" class="text-sm font-medium text-gray-700">Phone</label>
                                     <input type="text" id="phone" name="phone"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value="{{ $user->phone }}" disabled>
+                                        value="{{ $user->phone }}">
                                 </div>
 
                                 <!-- Salary Field -->
@@ -345,27 +353,27 @@
                     </div>
 
                     <!-- Form Section -->
-                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
-                        @csrf
-                        <div class="p-6 space-y-6">
+{{--                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">--}}
+{{--                        @csrf--}}
+{{--                        <div class="p-6 space-y-6">--}}
 
-                            <!-- Secondary Email Field -->
-                            <div class="flex flex-col space-y-2">
-                                <label for="email1" class="text-lg font-semibold text-gray-600">Enter your secondary
-                                    email</label>
-                                <input type="email" id="email1" name="email1" value="{{ $user->email1 }}"
-                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
-                            </div>
+{{--                            <!-- Secondary Email Field -->--}}
+{{--                            <div class="flex flex-col space-y-2">--}}
+{{--                                <label for="email1" class="text-lg font-semibold text-gray-600">Enter your secondary--}}
+{{--                                    email</label>--}}
+{{--                                <input type="email" id="email1" name="email1" value="{{ $user->email1 }}"--}}
+{{--                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />--}}
+{{--                            </div>--}}
 
-                            <!-- Submit Button -->
-                            <div class="mt-6 flex justify-center">
-                                <button type="submit"
-                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
-                                    Update
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+{{--                            <!-- Submit Button -->--}}
+{{--                            <div class="mt-6 flex justify-center">--}}
+{{--                                <button type="submit"--}}
+{{--                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">--}}
+{{--                                    Update--}}
+{{--                                </button>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </form>--}}
                 </div>
             </div>
         </div>
