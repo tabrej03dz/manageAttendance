@@ -48,6 +48,13 @@
                                         <tr>
                                             <th class="sticky left-0 bg-primary" style="z-index: 20;">Employees</th> <!-- Sticky first column -->
                                             <th>Advance Payment</th>
+                                            <th>Employee Salary</th>
+                                            <th>Office Days</th>
+                                            <th>Working Days</th>
+                                            <th>Paid Leave</th>
+                                            <th>Unpaid Leave</th>
+                                            <th>Late Deduction</th>
+                                            <th>Other Deduction</th>
 
                                             @php
                                                 $officeDays = 0;
@@ -79,6 +86,8 @@
                                                     $advancePayment = $advancePayments->where('user_id', $user->id)->sum('amount');
                                                 @endphp
                                                 <td>{{$advancePayment}}</td>
+                                                <td>{{ round($user->userSalary ? $user->userSalary->total_salary : $user->salary) }}</td>
+
                                                 @php
                                                     $workingDays = 0;
                                                     $leaveDays = 0;
@@ -192,13 +201,24 @@
                                                             'additional_allowance' => $user->userSalary ? $user->userSalary->additional_allowance : 0,
                                                             'provident_fund' => $providentFund,
                                                             'employee_state_insurance_corporation' => $esic,
-                                                            'advance' => $advancePayments->where('user_id', $user->id)->sum('amount'),
+                                                            'advance' => $advancePayments->where('user_id', $user->id)->whereYear('date', $d->format('Y'))->whereMonth('date', $d->format('m'))->sum('amount'),
                                                             'total_salary' => $salary - ($providentFund + $esic),
+                                                            //'paid_leave' => $paidLeave,
+                                                            //'unpaid_leave' => $unpaidLeave,
+                                                            //'office_days' => $dates->count() - ($sundayCount + $offDays),
+                                                            //'office_closed_days' => $offDays,
+                                                            //'working_days' => $workingDays,
                                                         ]);
                                                     }
                                                 @endphp
 
                                                 @if($userSalary)
+                                                    <td>{{ $userSalary->office_days }}</td>
+                                                    <td>{{ $userSalary->working_days }}</td>
+                                                    <td>{{ $userSalary->paid_leave }}</td>
+                                                    <td>{{ $userSalary->unpaid_leave }}</td>
+                                                    <td>{{ $userSalary->late_deduction }}</td>
+                                                    <td>{{ $userSalary->other_deduction }}</td>
                                                     <td>{{ round($userSalary->day_wise_salary) }}</td>
                                                     <td>{{ round($userSalary->hour_wise_salary) }}</td>
                                                     <td>{{ $userSalary->status }}</td>

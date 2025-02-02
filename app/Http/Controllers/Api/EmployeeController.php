@@ -247,6 +247,24 @@ class EmployeeController extends Controller
         }
     }
 
+    public function teamLeaders(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->hasRole('admin')) {
+            $teamleaders = $user->office->users()->whereHas('roles', function ($query) {
+                $query->where('name', 'team_leader'); // Ensure the role name is correct
+            })->get();
+        } else {
+            $teamleaders = null;
+        }
+
+        return response()->json([
+            'team_leaders' => $teamleaders
+        ], 200);
+    }
+
+
 
 
 }

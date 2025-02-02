@@ -73,6 +73,8 @@ Route::group(['middleware' => "auth:sanctum"], function(){
         Route::post('delete', 'delete')->name('delete');
     });
 
+    Route::get('teamLeaders', [\App\Http\Controllers\Api\EmployeeController::class, 'teamLeaders'])->name('teamLeaders');
+
     Route::prefix('office')->name('office.')->controller(App\Http\Controllers\Api\OfficeController::class)->group(function(){
        Route::get('index', 'index')->name('index');
        Route::post('store', 'store')->name('store');
