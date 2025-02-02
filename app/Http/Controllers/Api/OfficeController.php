@@ -13,7 +13,6 @@ class OfficeController extends Controller
     {
         try {
             $user = $request->user();
-            $offices = [];
 
 //            if ($user->hasRole('super_admin')) {
 //                // Fetch all offices for super admin
