@@ -25,8 +25,8 @@ class OfficeController extends Controller
 //                // Fetch the specific office associated with the user
 //                $offices = Office::where('id', $user->office_id)->get();
 //            }
-            if (auth()->user()->hasRole('owner')){
-                $offices = auth()->user()->offices;
+            if ($user->hasRole('owner')){
+                $offices = $user->offices;
             }else{
                 $offices = Office::all();
             }
