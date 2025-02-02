@@ -201,17 +201,32 @@ class EmployeeController extends Controller
 
             // Update the user's salary details
             $userSalary = $employee->userSalary;
-            $userSalary->update([
-                'basic_salary' => $basic_salary,
-                'house_rent_allowance' => $house_rent_allowance,
-                'transport_allowance' => $transport_allowance,
-                'medical_allowance' => $medical_allowance,
-                'special_allowance' => $special_allowance,
-                'dearness_allowance' => $dearness_allowance,
-                'relieving_charge' => $relieving_charge,
-                'additional_allowance' => $additional_allowance,
-                'total_salary' => $total_salary,
-            ]);
+            if ($userSalary){
+                $userSalary->update([
+                    'basic_salary' => $basic_salary,
+                    'house_rent_allowance' => $house_rent_allowance,
+                    'transport_allowance' => $transport_allowance,
+                    'medical_allowance' => $medical_allowance,
+                    'special_allowance' => $special_allowance,
+                    'dearness_allowance' => $dearness_allowance,
+                    'relieving_charge' => $relieving_charge,
+                    'additional_allowance' => $additional_allowance,
+                    'total_salary' => $total_salary,
+                ]);
+            }else{
+                $userSalary->create([
+                    'user_id' => $employee->id,
+                    'basic_salary' => $basic_salary,
+                    'house_rent_allowance' => $house_rent_allowance,
+                    'transport_allowance' => $transport_allowance,
+                    'medical_allowance' => $medical_allowance,
+                    'special_allowance' => $special_allowance,
+                    'dearness_allowance' => $dearness_allowance,
+                    'relieving_charge' => $relieving_charge,
+                    'additional_allowance' => $additional_allowance,
+                    'total_salary' => $total_salary,
+                ]);
+            }
 
             // Return a success response
             return response()->json([
