@@ -342,17 +342,17 @@
 
 
         <!-- Secondary Email -->
-        <div class="bg-gray-100 flex items-center justify-center">
-            <div class="container mx-auto px-4 py-8">
-                <!-- Card with shadow and rounded corners -->
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+{{--        <div class="bg-gray-100 flex items-center justify-center">--}}
+{{--            <div class="container mx-auto px-4 py-8">--}}
+{{--                <!-- Card with shadow and rounded corners -->--}}
+{{--                <div class="bg-white rounded-lg shadow-lg overflow-hidden">--}}
 
-                    <!-- Header with a red background -->
-                    <div class="bg-red-600 text-white font-semibold text-2xl text-center py-2 shadow-md rounded-t-lg">
-                        Secondary Email
-                    </div>
+{{--                    <!-- Header with a red background -->--}}
+{{--                    <div class="bg-red-600 text-white font-semibold text-2xl text-center py-2 shadow-md rounded-t-lg">--}}
+{{--                        Secondary Email--}}
+{{--                    </div>--}}
 
-                    <!-- Form Section -->
+{{--                    <!-- Form Section -->--}}
 {{--                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">--}}
 {{--                        @csrf--}}
 {{--                        <div class="p-6 space-y-6">--}}
@@ -374,9 +374,9 @@
 {{--                            </div>--}}
 {{--                        </div>--}}
 {{--                    </form>--}}
-                </div>
-            </div>
-        </div>
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
 
 
         <!-- Change Password -->
