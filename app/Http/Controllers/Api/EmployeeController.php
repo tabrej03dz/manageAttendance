@@ -223,10 +223,9 @@ class EmployeeController extends Controller
         }
     }
 
-    public function delete(Request $request, User $employee)
+    public function delete(Request $request)
     {
-
-
+        $employee = User::where('id', $request->employee_id)->first();
         try {
             // Find the employee by ID
             if (!$employee) {
