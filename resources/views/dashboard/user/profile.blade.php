@@ -41,7 +41,7 @@
                                 <!-- Name Field -->
                                 <div class="flex flex-col">
                                     <label for="name" class="text-sm font-medium text-gray-700">Name</label>
-                                    <input type="text" id="name" name="name"
+                                    <input type="text" id="name" name="name" placeholder="Full Name"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value="{{ $user->name }}" disabled>
                                 </div>
@@ -49,7 +49,7 @@
                                 <!-- Designation Field -->
                                 <div class="flex flex-col">
                                     <label for="designation" class="text-sm font-medium text-gray-700">Designation</label>
-                                    <input type="text" id="designation" name="designation"
+                                    <input type="text" id="designation" name="designation" placeholder="Designation"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value="{{ $user->designation }}">
                                 </div>
@@ -58,7 +58,7 @@
                                 <div class="flex flex-col">
                                     <label for="responsibility"
                                         class="text-sm font-medium text-gray-700">Responsibility</label>
-                                    <input type="text" id="responsibility" name="responsibility"
+                                    <input type="text" id="responsibility" name="responsibility" placeholder="Responsibilities"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value="{{ $user->responsibility }}">
                                 </div>
@@ -81,16 +81,16 @@
 
                                 <!-- Secondary Email Field -->
                                 <div class="flex flex-col space-y-2">
-                                    <label for="email1" class="text-lg font-semibold text-gray-600">Enter your secondary
+                                    <label for="email1" class="text-lg font-medium text-gray-600">Enter your secondary
                                         email</label>
-                                    <input type="email" id="email1" name="email1" value="{{ $user->email1 }}"
+                                    <input type="email" id="email1" name="email1" value="{{ $user->email1 }}" placeholder="Secondary Email"
                                            class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
                                 </div>
 
                                 <!-- Phone Number Field -->
                                 <div class="flex flex-col">
                                     <label for="phone" class="text-sm font-medium text-gray-700">Phone</label>
-                                    <input type="text" id="phone" name="phone"
+                                    <input type="text" id="phone" name="phone" placeholder="Phone"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value="{{ $user->phone }}">
                                 </div>
@@ -98,7 +98,7 @@
                                 <!-- Salary Field -->
                                 <div class="flex flex-col">
                                     <label for="salary" class="text-sm font-medium text-gray-700">Salary</label>
-                                    <input type="text" id="salary" name="salary"
+                                    <input type="text" id="salary" name="salary" placeholder="Salary"
                                         class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         value="{{ $user->salary }}" disabled>
                                 </div>
