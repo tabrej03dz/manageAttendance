@@ -49,7 +49,7 @@
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
                         <td class="py-3 px-6 text-left">
-                            @can('change status of employye')
+                            @can('change status of employee')
                             <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($employee->status == '1')
                                     bg-green-100 text-green-800">Active
@@ -81,17 +81,17 @@
                                 <span class="material-icons">account_circle</span>
                             </a>
                             @endcan
-                                @role('super_admin|admin|owner')
-                                <a title="Profile" href="{{ route('salary.setupForm', ['employee' => $employee->id]) }}"
+                            @role('super_admin|admin|owner')
+                                <a title="Salary Setup" href="{{ route('salary.setupForm', ['employee' => $employee->id]) }}"
                                    class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                    <span class="material-icons">account_circle</span>
+                                    <span class="material-icons">payments</span>
                                 </a>
-                                @endrole
+                            @endrole
                             @can('show permissions of employee')
-                            <a title="Profile" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
-                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">account_circle</span>
-                            </a>
+                                <a title="Permissions" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
+                                   class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                    <span class="material-icons">admin_panel_settings</span>
+                                </a>
                             @endcan
                         </td>
                     </tr>

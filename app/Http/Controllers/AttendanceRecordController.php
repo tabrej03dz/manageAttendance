@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 
 class AttendanceRecordController extends Controller
 {
+
     public function index(Request $request){
         if ($request->month){
             $month = $request->month;
@@ -74,6 +75,9 @@ class AttendanceRecordController extends Controller
 
         if ($user == null){
             $user = auth()->user();
+        }
+        if ($user->status == '0' || $user->office->status == 'inactive'){
+            return back()->with('error', 'You are inactive user');
         }
 
         if ($user->office->under_radius_required == '1'){
@@ -148,6 +152,9 @@ class AttendanceRecordController extends Controller
         ]);
         if ($user == null){
             $user = auth()->user();
+        }
+        if ($user->status == '0' || $user->office->status == 'inactive'){
+            return back()->with('error', 'You are inactive user');
         }
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record){
