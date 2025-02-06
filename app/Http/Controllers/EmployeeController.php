@@ -224,8 +224,6 @@ class EmployeeController extends Controller
     // }
 
 
-
-
     public function update(Request $request, User $employee)
     {
         // dd($request->all());
@@ -238,7 +236,6 @@ class EmployeeController extends Controller
             'other_attachment',
             'joining_date',
             'office_id',
-            'team_leader_id'
         ]));
 
         // Update password if provided
