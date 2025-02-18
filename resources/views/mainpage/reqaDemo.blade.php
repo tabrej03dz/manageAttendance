@@ -169,127 +169,165 @@
                     <hr class="w-full max-w-sm mx-auto">
                 </div>
 
-                <form action="{{ route('request.store') }}" method="post"
-                    class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary">
-                    @csrf
+                <form id="simpleUserForm" action="{{ route('request.store') }}" method="post"
+                class="rounded-md mt-2 mb-6 py-6 px-4 [&_div]:grid [&_div]:w-full w-full grid-cols-1 text-start [&_div]:py-2 [&_label]:text-lg [&_label]:py-2 [&_label]:text-headerBgcolor [&_label]:w-fit [&_label]:cursor-pointer [&_label]:font-light [&_input]:border [&_input]:py-3 [&_input]:px-4 [&_input]:text-base [&_input]:rounded-md place-items-center [&_input:]:outline-none [&_input:focus]:outline [&_input:focus]:outline-bgSecondary">
+                @csrf
 
-                    {{-- Show All Errors --}}
-                    @if ($errors->any())
-                        <div class="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
-                            <ul class="list-disc pl-6">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="compan_name">Company Name:</label>
-                            <input type="text" name="compan_name" id="compan_name" placeholder="Company Name"
-                                value="{{ old('compan_name') }}">
-                            @error('compan_name')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="owner_name">Admin: <span class="text-red-500">*</span></label>
-                            <input type="text" name="owner_name" id="owner_name" placeholder="Account Owner / Admin Name"
-                                required value="{{ old('owner_name') }}">
-                            @error('owner_name')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                @if ($errors->any())
+                    <div class="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+                        <ul class="list-disc pl-6">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
+                @endif
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="number">Mobile No: <span class="text-red-500">*</span></label>
-                            <input type="text" name="number" id="number" inputmode="numeric"
-                                placeholder="Mobile No" required value="{{ old('number') }}">
-                            @error('number')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="email">Email:</label>
-                            <input type="email" name="email" id="email" placeholder="example@gmail.com"
-                                value="{{ old('email') }}">
-                            @error('email')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="">
-                        <div>
-                            <label for="pin_code">Pin Code:</label>
-                            <input type="number" name="pin_code" id="pin_code" inputmode="numeric"
-                                placeholder="Pin Code" value="{{ old('pin_code') }}" required>
-                            @error('pin_code')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="compan_name">Company Name:</label>
+                        <input type="text" name="compan_name" id="compan_name" placeholder="Company Name"
+                            value="{{ old('compan_name') }}">
+                        <p class="text-red-500 text-sm mt-1 error-compan_name"></p>
                     </div>
                     <div>
-                        <label for="company_address">Company Address:</label>
-                        <input type="text" name="company_address" id="company_address" placeholder="Company Address"
-                            value="{{ old('company_address') }}">
-                        @error('company_address')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
+                        <label for="owner_name">Admin: <span class="text-red-500">*</span></label>
+                        <input type="text" name="owner_name" id="owner_name" placeholder="Account Owner / Admin Name"
+                            required value="{{ old('owner_name') }}">
+                        <p class="text-red-500 text-sm mt-1 error-owner_name"></p>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label for="emp_size">Employee Size:</label>
-                            <select
-                                class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
-                                name="emp_size" id="emp_size">
-                                <option value="">Select Employee Size</option>
-                                <option value="0-10" {{ old('emp_size') == '0-10' ? 'selected' : '' }}>0-10</option>
-                                <option value="10-25" {{ old('emp_size') == '10-25' ? 'selected' : '' }}>10-25</option>
-                                <option value="25-50" {{ old('emp_size') == '25-50' ? 'selected' : '' }}>25-50</option>
-                                <option value="50-100" {{ old('emp_size') == '50-100' ? 'selected' : '' }}>50-100</option>
-                                <option value="100-500" {{ old('emp_size') == '100-500' ? 'selected' : '' }}>100-500
-                                </option>
-                                <option value="500+" {{ old('emp_size') == '500+' ? 'selected' : '' }}>500+</option>
-                            </select>
-                            @error('emp_size')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="designation">Designation:</label>
-                            <select
-                                class="border py-3 px-4 text-base rounded-md outline-none focus:outline-1 focus:outline-bgSecondary"
-                                name="designation" id="designation">
-                                <option value="">Select Designation</option>
-                                <option value="Owner" {{ old('designation') == 'Owner' ? 'selected' : '' }}>Owner
-                                </option>
-                                <option value="Manager" {{ old('designation') == 'Manager' ? 'selected' : '' }}>Manager
-                                </option>
-                                <option value="Employee" {{ old('designation') == 'Employee' ? 'selected' : '' }}>Employee
-                                </option>
-                                <option value="HR" {{ old('designation') == 'HR' ? 'selected' : '' }}>HR</option>
-                                <option value="other" {{ old('designation') == 'other' ? 'selected' : '' }}>Other
-                                </option>
-                            </select>
-                            @error('designation')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <button
-                            class="rounded-md px-6 py-3 mt-6 font-medium bg-bgPrimary text-white hover:bg-universal duration-150 ease-in">
-                            Submit
-                        </button>
+                        <label for="number">Mobile No: <span class="text-red-500">*</span></label>
+                        <input type="text" name="number" id="number" inputmode="numeric"
+                            placeholder="Mobile No" required value="{{ old('number') }}">
+                        <p class="text-red-500 text-sm mt-1 error-number"></p>
                     </div>
-                </form>
+                    <div>
+                        <label for="email">Email:</label>
+                        <input type="email" name="email" id="email" placeholder="example@gmail.com"
+                            value="{{ old('email') }}">
+                        <p class="text-red-500 text-sm mt-1 error-email"></p>
+                    </div>
+                </div>
+
+                <div class="">
+                    <div>
+                        <label for="pin_code">Pin Code:</label>
+                        <input type="number" name="pin_code" id="pin_code" inputmode="numeric"
+                            placeholder="Pin Code" value="{{ old('pin_code') }}">
+                        <p class="text-red-500 text-sm mt-1 error-pin_code"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="company_address">Company Address:</label>
+                    <input type="text" name="company_address" id="company_address" placeholder="Company Address"
+                        value="{{ old('company_address') }}">
+                    <p class="text-red-500 text-sm mt-1 error-company_address"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="emp_size">Employee Size:</label>
+                        <select name="emp_size" id="emp_size">
+                            <option value="">Select Employee Size</option>
+                            <option value="0-10">0-10</option>
+                            <option value="10-25">10-25</option>
+                            <option value="25-50">25-50</option>
+                            <option value="50-100">50-100</option>
+                            <option value="100-500">100-500</option>
+                            <option value="500+">500+</option>
+                        </select>
+                        <p class="text-red-500 text-sm mt-1 error-emp_size"></p>
+                    </div>
+                    <div>
+                        <label for="designation">Designation:</label>
+                        <select name="designation" id="designation">
+                            <option value="">Select Designation</option>
+                            <option value="Owner">Owner</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Employee">Employee</option>
+                            <option value="HR">HR</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <p class="text-red-500 text-sm mt-1 error-designation"></p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit"
+                        class="rounded-md px-6 py-3 mt-6 font-medium bg-bgPrimary text-white hover:bg-universal duration-150 ease-in">
+                        <span id="submitText">Submit</span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Modal de Éxito -->
+          <!-- ✅ Success Modal पहले से छुपा हुआ रहेगा -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-body p-4">
+                <h3 class="text-success">Success!</h3>
+                <p>Your request has been submitted successfully.</p>
+                <button class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#simpleUserForm').on('submit', function (e) {
+                        e.preventDefault();
+                        let formData = $(this).serialize();
+
+                        // 1️⃣ "Waiting..." टेक्स्ट और स्पिनर दिखाएं
+                        $('#submitText').text('Waiting...');
+                        $('#loadingSpinner').removeClass('d-none');
+
+                        $.ajax({
+                            url: "{{ route('request.store') }}",
+                            type: "POST",
+                            data: formData,
+                            dataType: "json",
+                            beforeSend: function () {
+                                $('p.text-danger').text('');
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    // ✅ Success Popup अब Blade में नहीं दिखेगा, सिर्फ यहाँ दिखेगा
+                                    $('#successModal').css('display', 'block').modal('show');
+                                    $('#simpleUserForm')[0].reset();
+                                }
+                            },
+                            error: function (xhr) {
+                                $('#submitText').text('Submit');
+                                $('#loadingSpinner').addClass('d-none');
+
+                                if (xhr.status === 422) {
+                                    let errors = xhr.responseJSON.errors;
+                                    $.each(errors, function (key, value) {
+                                        $('.error-' + key).text(value[0]);
+                                    });
+                                } else {
+                                    alert("Something went wrong. Please try again.");
+                                }
+                            },
+                            complete: function () {
+                                $('#submitText').text('Submit');
+                                $('#loadingSpinner').addClass('d-none');
+                            }
+                        });
+                    });
+                });
+                </script>
 
 
             </div>
