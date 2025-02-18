@@ -225,7 +225,7 @@
                         <div>
                             <label for="pin_code">Pin Code:</label>
                             <input type="number" name="pin_code" id="pin_code" inputmode="numeric"
-                                placeholder="Pin Code" value="{{ old('pin_code') }}">
+                                placeholder="Pin Code" value="{{ old('pin_code') }}" required>
                             @error('pin_code')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror

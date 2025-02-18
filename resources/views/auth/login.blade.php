@@ -77,6 +77,16 @@
                         <h5 class="modal-title" id="newUserModalLabel">New User Registration</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                      {{-- Show All Errors --}}
+                      @if ($errors->any())
+                      <div class="mb-4 p-4 text-red-700 bg-red-100 rounded-md">
+                          <ul class="list-disc pl-6">
+                              @foreach ($errors->all() as $error)
+                                  <li>{{ $error }}</li>
+                              @endforeach
+                          </ul>
+                      </div>
+                  @endif
                     <div class="modal-body">
                         <form action="{{ route('request.store') }}" method="post">
                             @csrf
@@ -95,6 +105,12 @@
                             <div class="mb-3">
                                 <label for="number" class="form-label text-dark">Mobile No</label>
                                 <input type="text" name="number" id="number" inputmode="numeric" class="form-control"
+                                    placeholder="Mobile No" style="border-radius: 10px;">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="pincode" class="form-label text-dark">pincode No</label>
+                                <input type="text" name="pincode" id="pincode" inputmode="numeric" class="form-control"
                                     placeholder="Mobile No" style="border-radius: 10px;">
                             </div>
 

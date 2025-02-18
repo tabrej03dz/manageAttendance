@@ -29,7 +29,7 @@ class RequestDemoRequest extends FormRequest
             'company_address' => 'nullable|string|max:500',
             'emp_size' => 'nullable|string|max:50',
             'designation' => 'nullable|string|max:255',
-            'pin_code' => 'nullable|string|max:10|regex:/^[0-9]+$/',
+           'pin_code' => 'required|digits:6'
         ];
     }
 
