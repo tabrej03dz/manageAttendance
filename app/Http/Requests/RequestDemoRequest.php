@@ -24,7 +24,8 @@ class RequestDemoRequest extends FormRequest
         return [
             'compan_name' => 'nullable|string|max:255',
             'owner_name' => 'required|string|max:255',
-            'number' => 'required|string|max:15|regex:/^[0-9]+$/',
+          'number' => 'required|string|min:10|max:15|regex:/^[0-9]+$/',
+
             'email' => 'nullable|email|max:255',
             'company_address' => 'nullable|string|max:500',
             'emp_size' => 'nullable|string|max:50',
