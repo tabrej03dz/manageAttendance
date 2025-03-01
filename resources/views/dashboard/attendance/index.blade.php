@@ -361,6 +361,11 @@
                         <div class="mt-4 space-y-2">
                             <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Office Days:</span>
+    @php
+        if($user->office->name 'rs motors' || $user->office->name == 'RS Motors') {
+            $sundayCount = 2;
+        }
+    @endphp
                                 <span class="font-bold text-gray-800">{{ $dates->count() - ($offDays + $sundayCount) }}</span>
                             </div>
                             <div class="flex justify-between text-sm font-medium text-gray-700">
