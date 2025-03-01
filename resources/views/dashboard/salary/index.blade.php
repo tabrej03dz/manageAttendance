@@ -171,7 +171,7 @@
                                                 @endforeach
 
 
-                                                @if(($d < \Carbon\Carbon::today()) && auth()->user()->hasRole('admin|super_admin') && $user->salary > 0)
+                                                @if(($d < \Carbon\Carbon::today()) && auth()->user()->hasRole('admin|super_admin|owner') && $user->salary > 0)
                                                 @php
                                                     $userSalary = App\Models\Salary::where('user_id', $user->id)->where('month', $d)->first();
                                                     if (!$userSalary) {

@@ -327,6 +327,7 @@
                                 $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
                                 $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
 
+                                if
                                 // Calculate salaries
                                 $salary = (($workingDays * $dailySalary) +
                                         ($sundayCount * $dailySalary) +
