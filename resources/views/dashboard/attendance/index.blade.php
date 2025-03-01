@@ -327,7 +327,7 @@
                                 $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
                                 $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
 
-                                if($user?->office?->name == 'rs motors' || $user?->office?->name == 'RS Motors'){
+                                if($currentUser?->office?->name == 'rs motors' || $currentUser?->office?->name == 'RS Motors'){
                                     $sundayCount = 2;
                                 }
                                 // Calculate salaries
@@ -362,7 +362,7 @@
                             <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Office Days:</span>
     @php
-        if($user->office->name 'rs motors' || $user->office->name == 'RS Motors') {
+        if($currentUser->office->name == 'rs motors' || $currentUser->office->name == 'RS Motors') {
             $sundayCount = 2;
         }
     @endphp
