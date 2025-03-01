@@ -208,7 +208,7 @@
                                         }
                                     @endphp
 
-                                    @if ($leave)
+                                    @if ($leave && !$record)
                                         <!-- Sample Data Row -->
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-4 py-4 text-sm text-gray-700">
@@ -327,7 +327,9 @@
                                 $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
                                 $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
 
-                                if
+                                if($user?->office?->name == 'rs motors' || $user?->office?->name == 'RS Motors'){
+                                    $sundayCount = 2;
+                                }
                                 // Calculate salaries
                                 $salary = (($workingDays * $dailySalary) +
                                         ($sundayCount * $dailySalary) +
