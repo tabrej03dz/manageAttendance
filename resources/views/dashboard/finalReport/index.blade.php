@@ -1,6 +1,7 @@
  @extends('dashboard.layout.root')
 
  @section('content')
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
      <style>
          .break:hover .position-absolute {
              display: block !important;
@@ -30,6 +31,7 @@
                              class="btn btn-danger text-white mb-2 mb-md-0 mr-md-2">Check Out</a>
                          <button class="btn btn-warning text-white mb-2 mb-md-0 mr-md-2" onclick="printDivAsPDF()">Download
                              as PDF</button>
+                         <button onclick="exportToExcel()">Export to Excel</button>
                      </div>
                  </div>
 
@@ -372,29 +374,16 @@
          }
      </script>
 
-     {{--     <script> --}}
-     {{--         function printDivAsPDF() { --}}
-     {{--             const { jsPDF } = window.jspdf; --}}
 
-     {{--             // Get the div element --}}
-     {{--             const element = document.getElementById('contentToPrint'); --}}
 
-     {{--             // Use html2canvas with high scale to capture the full width --}}
-     {{--             html2canvas(element, { scale: 2 }).then(canvas => { --}}
-     {{--                 const imgData = canvas.toDataURL('image/png'); --}}
+     <script>
+         function exportToExcel() {
+             let table = document.getElementById("contentToPrint");
+             let workbook = XLSX.utils.book_new();
+             let worksheet = XLSX.utils.table_to_sheet(table);
 
-     {{--                 // Calculate width and height based on the element's actual dimensions --}}
-     {{--                 const pdfWidth = canvas.width / 6.9; // Adjust this value as needed --}}
-     {{--                 const pdfHeight = canvas.height / 6.9; --}}
-
-     {{--                 const pdf = new jsPDF('landscape', 'mm', [pdfWidth, pdfHeight]); --}}
-
-     {{--                 // Add image to PDF --}}
-     {{--                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight); --}}
-
-     {{--                 // Save the PDF --}}
-     {{--                 pdf.save('{{ $dates->first()->date->format('M-Y') }}.pdf'); --}}
-     {{--             }); --}}
-     {{--         } --}}
-     {{--     </script> --}}
+             XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+             XLSX.writeFile(workbook, "table_data.xlsx");
+         }
+     </script>
  @endsection
