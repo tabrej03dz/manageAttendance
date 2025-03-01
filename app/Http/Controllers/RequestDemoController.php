@@ -32,23 +32,17 @@ class RequestDemoController extends Controller
 
     public function store(RequestDemoRequest $request)
     {
-
         $requestDemo = RequestDemo::create($request->all());
-
 
         if ($request->has('email') && $request->email) {
             Mail::to($request->email)->send(new RequestDemoMail($requestDemo));
-        } else {
-            Log::warning('Request submitted without email.', ['request' => $request->all()]);
         }
 
-        // Send email to the admin
-        $adminEmail = 'realvictorygroups@gmail.com'; // Replace with the admin's email address
-        Mail::to($adminEmail)->send(new AdminNewRequestDemoMail($requestDemo));
+        Mail::to('realvictorygroups@gmail.com')->send(new AdminNewRequestDemoMail($requestDemo));
 
-        // Redirect with success message
-        return redirect()->route('thankyoupage')->with('success', 'Request demo submitted successfully!');
+        return response()->json(['success' => true, 'message' => 'Request demo submitted successfully!']);
     }
+
 
     public function delete(RequestDemo $appointment)
     {

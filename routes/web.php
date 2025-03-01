@@ -18,6 +18,7 @@ use App\Http\Controllers\RequestDemoController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\NewUserLeadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,8 @@ use App\Http\Controllers\AttendanceRecordController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::post('/new-user-lead/store', [NewUserLeadController::class, 'store'])->name('request.store');
 
 Route::get('privacy-policy', function(){
    return view('privacy-policy');
