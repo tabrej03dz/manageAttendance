@@ -63,7 +63,8 @@
                         <th>ESIC No.</th>
                         <td>{{$salary->user->account_number ?? '3012950500'}}</td>
                         <th>No of Days</th>
-                        <td>30</td>
+                        <td>{{ \Carbon\Carbon::parse($salary->month)->daysInMonth }}
+                        </td>
                     </tr>
                     </tbody>
                 </table>

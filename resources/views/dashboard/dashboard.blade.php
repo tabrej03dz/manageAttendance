@@ -217,6 +217,7 @@
                     <!-- small box -->
                     <div class="small-box bg-info">
                         <div class="inner">
+{{--                            @dd($data['days']);--}}
                             <h3>{{ $data['days'] - ($data['sundays'] + $data['offs']) }}</h3>
 
                             <p>Office Days</p>

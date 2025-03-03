@@ -32,12 +32,6 @@
                             class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Select Month">
                     </div>
-{{--                    <div class="flex flex-col w-full">--}}
-{{--                        <label for="to-date-mobile" class="mb-1 text-sm font-medium text-gray-700">To:</label>--}}
-{{--                        <input type="date" id="to-date-mobile" value="{{$endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : ''}}" name="end"--}}
-{{--                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"--}}
-{{--                            placeholder="Select To Date">--}}
-{{--                    </div>--}}
                 </div>
                 <div class="flex flex-col space-y-2">
                     <button
@@ -46,35 +40,14 @@
                         class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full">Clear</button>
                 </div>
             </div>
-
-            <!-- Web View (enhanced) -->
-            <div class="hidden md:block">
-                <div class="flex items-end space-x-4">
-                    <div class="flex-grow flex space-x-4">
-                    <div class="flex-1">
-                        <label for="month-selector" class="block mb-1 text-sm font-medium text-gray-700">Select Month:</label>
-                        <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}"
-                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Select Month">
-                    </div>
-
-{{--                        <div class="flex-1">--}}
-{{--                            <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">To:</label>--}}
-{{--                            <input type="date" id="to-date-web" name="end" value="{{ $endOfMonth ? \Carbon\Carbon::parse($endOfMonth)->format('Y-m-d') : '' }}"--}}
-{{--                                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"--}}
-{{--                                placeholder="Select To Date">--}}
-{{--                        </div>--}}
-                    </div>
-                    <div class="flex space-x-2">
-                        <button
-                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">Filter</button>
-                        <a href="{{ route('attendance.index') }}"
-                            class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out">Clear</a>
-                    </div>
-                </div>
-            </div>
         </div>
     </form>
+
+
+
+
+
+
 
     <!-- Attendance Records Section -->
     <div class="bg-gray-100 min-h-screen py-10">

@@ -36,6 +36,7 @@
                         <td class="py-3 px-6 text-left">{{$office->radius}}</td>
                         <td class="py-3 px-6 text-left">{{$office->under_radius_required == '1' ? 'yes' : 'no'}}</td>
                         <td class="py-3 px-6 text-left">
+                            @can('office status change')
                             <a href="{{route('office.status', ['office' => $office->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
                                 @if($office->status == 'active')
                                     bg-green-100 text-green-800
@@ -44,6 +45,7 @@
                                 @endif
                                 ">{{ucfirst($office->status)}}
                             </a>
+                            @endcan
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @can('edit office')
