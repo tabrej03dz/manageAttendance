@@ -179,9 +179,7 @@
                                                         $oneHourSalary = $oneDaySalary / ($user->office_time / 60)  ;
 
                                                         // Calculate salaries
-                                                        if (strtolower($user->office->name) == 'rs motors'){
-                                                            $sundayCount = 2;
-                                                        }
+
                                                         $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2) + ($paidLeave * $oneDaySalary));
                                                         $durationSalary = (($workingDuration / 60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
 

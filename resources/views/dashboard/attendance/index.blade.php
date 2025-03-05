@@ -300,9 +300,6 @@
                                 $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
                                 $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
 
-                                if($currentUser?->office?->name == 'rs motors' || $currentUser?->office?->name == 'RS Motors'){
-                                    $sundayCount = 2;
-                                }
                                 // Calculate salaries
                                 $salary = (($workingDays * $dailySalary) +
                                         ($sundayCount * $dailySalary) +
@@ -334,11 +331,6 @@
                         <div class="mt-4 space-y-2">
                             <div class="flex justify-between text-sm font-medium text-gray-700">
                                 <span>Office Days:</span>
-    @php
-        if($currentUser->office->name == 'rs motors' || $currentUser->office->name == 'RS Motors') {
-            $sundayCount = 2;
-        }
-    @endphp
                                 <span class="font-bold text-gray-800">{{ $dates->count() - ($offDays + $sundayCount) }}</span>
                             </div>
                             <div class="flex justify-between text-sm font-medium text-gray-700">
