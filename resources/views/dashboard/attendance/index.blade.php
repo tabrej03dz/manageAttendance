@@ -6,42 +6,31 @@
 @section('content')
 
 
-    <form action="{{ route('attendance.index', ['user' => $user?->id]) }}">
-        <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-            <!-- Employee Selection -->
-            @role('super_admin|admin|owner')
-                <div class="mb-4">
-                    <label for="employee-select" class="block mb-1 text-sm font-medium text-gray-700">Select Employee:</label>
-                    <select id="employee-select" name="employee"
-                        class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Select an employee</option>
-                        @foreach ($users as $u)
-                            <option value="{{ $u->id }}" {{ $u->id == $user?->id ? 'selected' : '' }}>{{ $u->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            @endrole
-
-            <!-- Date Filter Section -->
-            <div class="md:hidden space-y-4">
-                <div class="space-y-4">
-                    <div class="flex-1 flex-col w-full">
-                        <label for="month-selector" class="block mb-1 text-sm font-medium text-gray-700">Select Month:</label>
-                        <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}"
-                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Select Month">
-                    </div>
-                </div>
-                <div class="flex flex-col space-y-2">
-                    <button
-                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full">Filter</button>
-                    <button
-                        class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full">Clear</button>
-                </div>
+<form action="{{ route('attendance.index', ['user' => $user?->id]) }}">
+    <div class="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+        @role('super_admin|admin|owner')
+            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 w-full">
+                <label for="employee-select" class="text-sm font-medium text-gray-700">Select Employee:</label>
+                <select id="employee-select" name="employee" class="border-gray-300 rounded-md shadow-sm p-2 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select an employee</option>
+                    @foreach ($users as $u)
+                        <option value="{{ $u->id }}" {{ $u->id == $user?->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                    @endforeach
+                </select>
             </div>
+        @endrole
+        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 w-full">
+            <label for="month-selector" class="text-sm font-medium text-gray-700">Select Month:</label>
+            <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}" class="border-gray-300 rounded-md shadow-sm p-2 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
-    </form>
+        <div class="flex flex-col sm:flex-row sm:space-x-2 w-full sm:w-auto">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full sm:w-auto">Filter</button>
+            <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full sm:w-auto">Clear</button>
+        </div>
+    </div>
+</form>
+
+
 
 
 
