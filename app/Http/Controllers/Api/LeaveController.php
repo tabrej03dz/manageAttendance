@@ -111,6 +111,7 @@ class LeaveController extends Controller
 
             $superAdmin = User::role('super_admin')->first();
 
+
             // Send email notifications
             if ($superAdmin) {
                 Mail::to($superAdmin->email)->send(new LeaveRequest($leave));

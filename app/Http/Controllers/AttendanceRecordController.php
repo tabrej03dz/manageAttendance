@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
-use App\Models\Leave;
-use App\Models\Office;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 class AttendanceRecordController extends Controller
@@ -200,6 +200,17 @@ class AttendanceRecordController extends Controller
             $date = today();
         }
         $employees = HomeController::employeeList();
+
+        $perPage = 20;
+        $currentPage = Paginator::resolveCurrentPage();
+        $employees = new LengthAwarePaginator(
+            $employees->forPage($currentPage, $perPage), // Get items for current page
+            $employees->count(),
+            $perPage,
+            $currentPage,
+            ['path' => Paginator::resolveCurrentPath()]
+        );
+
         return view('dashboard.attendance.dayWise', compact('employees', 'date'));
     }
 

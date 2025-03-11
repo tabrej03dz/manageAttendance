@@ -80,6 +80,7 @@ class LeaveController extends Controller
             'reason' => '',
         ]);
         $user = auth()->user();
+
         if ($request->start_date && $request->end_date){
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
@@ -96,10 +97,17 @@ class LeaveController extends Controller
             })
             ->first();
         $superAdmin = User::role('super_admin')->first();
+
+        $teamLeader = $user->teamLeader;
         Mail::to($superAdmin->email)->send(new LeaveRequest($leave));
         if($admin){
             Mail::to($admin->email)->send(new LeaveRequest($leave));
         }
+
+        if ($teamLeader){
+            Mail::to($admin->email)->send(new LeaveRequest($leave));
+        }
+
 
         return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
     }

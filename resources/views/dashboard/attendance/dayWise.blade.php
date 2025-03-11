@@ -291,6 +291,7 @@
                             </tbody>
                         </table>
                     </div>
+                    {{$employees->appends(request()->query())->links()}}
                 </div>
             </div>
         </div>
