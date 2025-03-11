@@ -105,7 +105,7 @@ class LeaveController extends Controller
         }
 
         if ($teamLeader){
-            Mail::to($admin->email)->send(new LeaveRequest($leave));
+            Mail::to($teamLeader->email)->send(new LeaveRequest($leave));
         }
 
 
