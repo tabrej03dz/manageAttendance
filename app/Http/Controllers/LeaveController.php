@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\LeaveRequest;
 use App\Mail\LeaveResponse;
+use App\Models\LeaveImage;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -78,6 +79,7 @@ class LeaveController extends Controller
             'start_date'=> 'required',
             'end_date' => '',
             'reason' => '',
+            'image.*' => 'required',
         ]);
         $user = auth()->user();
 
@@ -90,6 +92,16 @@ class LeaveController extends Controller
             $dayCount = null;
         }
         $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id, 'day_count' => $dayCount ?? 1]);
+
+        if ($request->hasFile('image')){
+            foreach ($request->image as $image){
+                $path = $image->store('public/leave');
+                LeaveImage::create([
+                    'leave_id' => $leave->id,
+                    'path' => str_replace('public', '', $path),
+                ]);
+            }
+        }
 
         $admin = User::where('office_id', $user->office->id)
             ->whereHas('roles', function($query) {
@@ -108,7 +120,6 @@ class LeaveController extends Controller
             Mail::to($teamLeader->email)->send(new LeaveRequest($leave));
         }
 
-
         return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
     }
 
@@ -123,5 +134,10 @@ class LeaveController extends Controller
         return view('dashboard.leave.show', compact('leave'));
     }
 
-
+    public function response(Request $request, Leave $leave){
+//        dd($request->all());
+        $leave->update($request->all() + ['responses_by' => auth()->user()->id]);
+        Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
+        return back()->with('success', 'operation successfully');
+    }
 }

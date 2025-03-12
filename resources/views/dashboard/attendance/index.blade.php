@@ -170,22 +170,23 @@
                                         }
                                     @endphp
 
-                                    @if ($leave && !$record)
+{{--                                    @if ($leave && !$record)--}}
+                                        <!-- Sample Data Row -->
+{{--                                        <tr class="hover:bg-gray-50">--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700">--}}
+{{--                                                {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}--}}
+{{--                                            </td>--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="8">--}}
+{{--                                                {{ $leave->leave_type . ' leave' }}</td>--}}
+
+{{--                                        </tr>--}}
+{{--                                    @else--}}
+
                                         <!-- Sample Data Row -->
                                         <tr class="hover:bg-gray-50">
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}
-                                            </td>
-                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="8">
-                                                {{ $leave->leave_type . ' leave' }}</td>
-
-                                        </tr>
-                                    @else
-
-                                        <!-- Sample Data Row -->
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-4 text-sm text-gray-700">
-                                                {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}
+                                                <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span>
                                             </td>
 
                                             <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($record?->user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
@@ -266,7 +267,7 @@
                                             </td>
 
                                         </tr>
-                                    @endif
+{{--                                    @endif--}}
                                 @endforeach
                             </tbody>
                         </table>

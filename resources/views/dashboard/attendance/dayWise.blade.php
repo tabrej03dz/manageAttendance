@@ -93,17 +93,17 @@
                                             ->where(['user_id' => $employee->id])
                                             ->first();
                                     @endphp
-                                    @if ($leave)
+{{--                                    @if ($leave)--}}
+{{--                                        <tr class="hover:bg-gray-50">--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }}</td>--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="4">--}}
+{{--                                                {{ $leave->leave_type . ' leave' }}</td>--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="4">--}}
+{{--                                                {{'Status: '. $leave->status }}</td>--}}
+{{--                                        </tr>--}}
+{{--                                    @else--}}
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }}</td>
-                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="4">
-                                                {{ $leave->leave_type . ' leave' }}</td>
-                                            <td class="px-4 py-4 text-sm text-gray-700 text-center text-lg" colspan="4">
-                                                {{'Status: '. $leave->status }}</td>
-                                        </tr>
-                                    @else
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }}</td>
+                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }} <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span> </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->office?->name }}</td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($employee->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
@@ -286,7 +286,7 @@
                                                 @endif
                                             </td>
                                         </tr>
-                                    @endif
+{{--                                    @endif--}}
                                 @endforeach
                             </tbody>
                         </table>

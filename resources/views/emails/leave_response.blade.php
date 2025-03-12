@@ -64,6 +64,8 @@
         @else
             <p>Unfortunately, your leave request has been denied.</p>
         @endif
+
+        <p>{{$leaveResponse->response}}</p>
     </div>
     <div class="email-footer">
         <p>If you have any questions, please contact HR.</p>

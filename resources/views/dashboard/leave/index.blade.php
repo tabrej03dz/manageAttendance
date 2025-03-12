@@ -57,7 +57,7 @@
                         <th class="py-3 px-6 text-left">Start Date</th>
                         <th class="py-3 px-6 text-left">End Date</th>
                         <th class="py-3 px-6 text-left">Leave Type</th>
-                        <th class="py-3 px-6 text-left">Reason</th>
+{{--                        <th class="py-3 px-6 text-left">Reason</th>--}}
                         <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Response By</th>
                         <th class="py-3 px-6 text-left">Approved As</th>
@@ -74,35 +74,42 @@
                             <td class="py-3 px-6 text-left">{{ $leave->start_date }}</td>
                             <td class="py-3 px-6 text-left">{{ $leave->end_date }}</td>
                             <td class="py-3 px-6 text-left">{{ $leave->leave_type }}</td>
-                            <td class="py-3 px-6 text-left">{{ $leave->reason }}</td>
+{{--                            <td class="py-3 px-6 text-left">{{ $leave->reason }}</td>--}}
                             <td class="py-3 px-6 text-left">{{ $leave->status }}</td>
                             <td class="py-3 px-6 text-left">{{ $leave->responsesBy?->name }}</td>
                             <td class="py-3 px-6 text-left">{{ $leave->approve_as }}</td>
 
                                 <td class="py-3 px-6 text-left flex space-x-2">
                                     @can('approve leave')
-                                    @if ($leave->status != 'approved')
-                                        <a title="Approve"
-                                            href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'approved', 'type' => 'paid']) }}"
-                                            class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                            Approve As Paid
-                                        </a>
-                                            <a title="Approve"
-                                               href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'approved', 'type' => 'unpaid']) }}"
-                                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                                Approve As UnPaid
-                                            </a>
-                                    @endif
+{{--                                    @if ($leave->status != 'approved')--}}
+{{--                                        <a title="Approve"--}}
+{{--                                            href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'approved', 'type' => 'paid']) }}"--}}
+{{--                                            class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">--}}
+{{--                                            Approve As Paid--}}
+{{--                                        </a>--}}
+{{--                                            <a title="Approve"--}}
+{{--                                               href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'approved', 'type' => 'unpaid']) }}"--}}
+{{--                                               class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">--}}
+{{--                                                Approve As UnPaid--}}
+{{--                                            </a>--}}
+{{--                                    @endif--}}
                                     @endcan
                                     @can('reject leave')
-                                    @if ($leave->status != 'rejected')
-                                        <a title="Reject"
-                                            href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'rejected']) }}"
-                                            class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                                            <span class="material-icons">cancel</span>
-                                        </a>
-                                    @endif
+{{--                                    @if ($leave->status != 'rejected')--}}
+{{--                                        <a title="Reject"--}}
+{{--                                            href="{{ route('leave.status', ['leave' => $leave->id, 'status' => 'rejected']) }}"--}}
+{{--                                            class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">--}}
+{{--                                            <span class="material-icons">cancel</span>--}}
+{{--                                        </a>--}}
+{{--                                    @endif--}}
                                         @endcan
+
+                                            <a title="Details"
+                                                href="{{ route('leave.show', ['leave' => $leave->id]) }}"
+                                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
+                                                Detail
+                                            </a>
+
                                 </td>
 
                         </tr>

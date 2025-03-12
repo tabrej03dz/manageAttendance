@@ -11,7 +11,7 @@
                 <h2 class="text-2xl font-semibold text-gray-900">New Leave</h2>
             </div>
 
-            <form action="{{route('leave.store')}}" method="post">
+            <form action="{{route('leave.store')}}" method="post" enctype="multipart/form-data">
             @csrf
             <!-- Leave Type Selection -->
             <div class="mt-4">
@@ -82,7 +82,13 @@
                 <textarea id="reason" name="reason" class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" rows="4" placeholder="Enter your reason here"></textarea>
             </div>
 
-            <!-- Buttons -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-1" for="reason">Upload Image</label>
+                    <input type="file" id="image" name="image[]" multiple accept="image/*" class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+
+                <!-- Buttons -->
             <div class="flex justify-between">
                 <!-- <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 hover:bg-gray-400">Cancel</button> -->
                 <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 hover:bg-red-500">Send for approval</button>

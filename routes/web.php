@@ -157,6 +157,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('store', [LeaveController::class, 'store'])->name('store');
         Route::get('status/{leave}/{status}/{type?}', [LeaveController::class, 'status'])->name('status');
         Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
+        Route::post('response/{leave}', [LeaveController::class, 'response'])->name('response');
     });
 
     Route::prefix('off')->name('off.')->group(function(){

@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('salaries', function (Blueprint $table) {
-            $table->string('office_days')->nullable();
-            $table->string('working_days')->nullable();
-            $table->string('office_closed_days')->nullable();
-            $table->string('paid_leave')->nullable();
-            $table->string('unpaid_leave')->nullable();
-            $table->string('late_deduction')->nullable();
-            $table->string('other_deduction')->nullable();
+//            $table->string('office_days')->nullable();
+////            $table->string('working_days')->nullable();
+//            $table->string('office_closed_days')->nullable();
+//            $table->string('paid_leave')->nullable();
+//            $table->string('unpaid_leave')->nullable();
+//            $table->string('late_deduction')->nullable();
+//            $table->string('other_deduction')->nullable();
         });
     }
 
