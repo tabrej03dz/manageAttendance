@@ -186,10 +186,10 @@
                                                                  $offDays++;
                                                              }
                                                          @endphp
-                                                         @if ($leave)
-                                                             <td class="bg-warning text-dark">Leave approved by
-                                                                 {{ $leave->responsesBy?->name }}</td>
-                                                         @elseif ($off)
+{{--                                                         @if ($leave)--}}
+{{--                                                             <td class="bg-warning text-dark">Leave approved by--}}
+{{--                                                                 {{ $leave->responsesBy?->name }}</td>--}}
+                                                         @if ($off)
                                                              <td class="bg-info text-dark">{{ $off->title }}</td>
                                                          @else
                                                              <td class="break position-relative">
@@ -263,6 +263,7 @@
                                                                              <!-- Add more rows as needed -->
                                                                              </tbody>
                                                                          </table>
+                                                                             <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span>
                                                                          @endif
                                                                              @if($corrections)
                                                                                  <table
