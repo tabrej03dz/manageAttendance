@@ -53,8 +53,9 @@
                                             <th>Working Days</th>
                                             <th>Paid Leave</th>
                                             <th>Unpaid Leave</th>
-                                            <th>Late Deduction</th>
-                                            <th>Other Deduction</th>
+                                            <th>Deduction</th>
+{{--                                            <th>Late Deduction</th>--}}
+{{--                                            <th>Other Deduction</th>--}}
 
                                             @php
                                                 $officeDays = 0;
@@ -124,7 +125,7 @@
                                                         $record = $attendanceRecords
                                                             ->where('user_id', $user->id)
                                                             ->first(function ($record) use ($d) {
-                                                                return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                                                return $record->check_in->format('Y-m-d') === $d->format('Y-m-d');
                                                             });
 
                                                         if ($record) {
@@ -181,7 +182,7 @@
                                                         // Calculate salaries
 
                                                         $salary = (($workingDays * $oneDaySalary) + ($sundayCount * $oneDaySalary) + ($offDays * $oneDaySalary) + (($halfDayCount * $oneDaySalary) / 2) + ($paidLeave * $oneDaySalary));
-                                                        $durationSalary = (($workingDuration / 60) * $oneHourSalary) + (($sundayCount + $offDays) * $oneDaySalary);
+                                                        $durationSalary = ($oneDaySalary * $sundayCount) + (($workingDuration / 60) * $oneHourSalary) + ($offDays * $oneDaySalary);
 
                                                         if ($user->userSalary){
                                                         $providentFund = ($user->userSalary->total_salary * $user->userSalary->provident_fund)/100;
@@ -224,10 +225,11 @@
                                                     <td>{{ $userSalary->working_days }}</td>
                                                     <td>{{ $userSalary->paid_leave }}</td>
                                                     <td>{{ $userSalary->unpaid_leave }}</td>
-                                                    <td>{{ $userSalary->late_deduction }}</td>
-                                                    <td>{{ $userSalary->other_deduction }}</td>
-                                                    <td>{{ round($userSalary->day_wise_salary) }}</td>
-                                                    <td>{{ round($userSalary->hour_wise_salary) }}</td>
+                                                    <td>{{ ($userSalary->provident_fund + $userSalary->employee_state_insurance_corporation) }}</td>
+{{--                                                    <td>{{ $userSalary->late_deduction }}</td>--}}
+{{--                                                    <td>{{ $userSalary->other_deduction }}</td>--}}
+                                                    <td>{{ number_format($userSalary->day_wise_salary - ($userSalary->provident_fund + $userSalary->employee_state_insurance_corporation), 2) }}</td>
+                                                    <td>{{ number_format($userSalary->hour_wise_salary - ($userSalary->provident_fund + $userSalary->employee_state_insurance_corporation), 2) }}</td>
                                                     <td>{{ $userSalary->status }}</td>
                                                     <td>
                                                         <form action="{{ route('salary.pay', ['salary' => $userSalary->id]) }}" method="post" class="form-inline">

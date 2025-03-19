@@ -100,6 +100,11 @@
                     <td>{{$userSalary->additional_allowance}}</td>
                 </tr>
                 <tr>
+                    <td colspan="2"></td>
+                    <td>Absence {{$salary->absence}}</td>
+                    <td>{{($userSalary->total_salary / 30) * $salary->absence}}</td>
+                </tr>
+                <tr>
                     <td><strong>Total</strong></td>
                     <td><strong>{{$userSalary->total_salary}}</strong></td>
                     <td><strong>Total</strong></td>

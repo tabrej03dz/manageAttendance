@@ -31,7 +31,7 @@ class SalaryController extends Controller
             $dates->push((object)[
                 'date' => $date->copy(),
             ]);
-            $attendanceRecords->orWhereDate('created_at', $date);
+            $attendanceRecords->orWhereDate('check_in', $date)->orWhereDate('check_out', $date);
         }
         $attendanceRecords = $attendanceRecords->get();
 

@@ -139,6 +139,12 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('detail/{office}', [OfficeController::class, 'detail'])->name('detail');
     });
 
+    Route::prefix('off_policy')->name('off_policy.')->controller(\App\Http\Controllers\OfficeOffPolicyController::class)->group(function(){
+       Route::get('/', 'index')->name('index');
+       Route::get('create', 'create')->name('create');
+       Route::post('store', 'store')->name('store');
+    });
+
     Route::prefix('payment')->name('payment.')->group(function(){
         Route::get('/', [PaymentController::class, 'index'])->name('index');
        Route::get('paymentForm/{payment}', [PaymentController::class, 'paymentForm'])->name('paymentForm');

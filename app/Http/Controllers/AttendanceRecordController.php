@@ -49,9 +49,10 @@ class AttendanceRecordController extends Controller
             $dates->push((object)[
                 'date' => $date->copy(),
             ]);
-            $attendanceRecords->orWhereDate('created_at', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
+            $attendanceRecords->orWhereDate('check_in', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
         }
         $attendanceRecords = $attendanceRecords->get();
+
 //        if (auth()->user()->hasRole('super_admin')){
 //
 //            $users = User::role(['admin', 'employee'])->get();

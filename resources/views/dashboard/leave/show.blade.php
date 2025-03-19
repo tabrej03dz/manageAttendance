@@ -32,14 +32,14 @@
                         @foreach($leave->images as $image)
                             <a href="{{ asset('storage' . $image->path) }}" target="_blank">
                             <div class="border rounded p-1 shadow-sm" style="width: 200px;">
-                                <img src="{{ asset('storage' . $image->path) }}" alt="Leave Image" class="img-fluid rounded">
+                                <img src="{{ asset('storage/' . $image->path) }}" alt="Leave Image" class="img-fluid rounded">
                             </div>
                             </a>
                         @endforeach
                     </div>
                 </div>
 
-
+@role('super_admin|owner|admin')
                 <form action="{{ route('leave.response', $leave) }}" method="post" class="p-3 border rounded shadow-sm bg-white">
                     @csrf
 
@@ -75,7 +75,7 @@
 
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
-
+@endrole
             </div>
         </div>
     </div>
