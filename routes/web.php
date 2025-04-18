@@ -233,7 +233,10 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
     Route::prefix('advance')->name('advance.')->group(function(){
         Route::get('/', [AdvancePaymentController::class, 'index'])->name('index');
         Route::get('create/{user?}', [AdvancePaymentController::class, 'create'])->name('create');
+        Route::get('request', [AdvancePaymentController::class, 'request'])->name('request');
+        Route::post('request/store', [AdvancePaymentController::class, 'requestStore'])->name('request.store');
         Route::post('store', [AdvancePaymentController::class, 'store'])->name('store');
+        Route::get('status/{payment}', [AdvancePaymentController::class, 'status'])->name('status')->can('change advance payment status');
     });
 
 

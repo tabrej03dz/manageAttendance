@@ -144,13 +144,21 @@ class HomeController extends Controller
             $officeIds = Office::where('owner_id', $user->id)->pluck('id');
             $employees = User::whereIn('office_id', $officeIds)->get();
         } else {
-            if ($user->hasRole('team_leader')) {
+//            if ($user->hasRole('team_leader')) {
                 $employees = $user->members;
                 $record = User::where('id', $user->id)->first();
                 $employees->push($record);
-            } else {
-                $employees = User::where('id', $user->id)->get();
-            }
+
+
+
+                // Recursively get all members under this leader
+                $employees = $user->getAllTeamMembers();
+
+                // Include the current team leader in the list
+                $employees->push($user);
+//            } else {
+//                $employees = User::where('id', $user->id)->get();
+//            }
         }
         return $employees;
     }
@@ -208,4 +216,7 @@ class HomeController extends Controller
     // {
     //     return view('mainpage.index');
     // }
+
+
+
 }

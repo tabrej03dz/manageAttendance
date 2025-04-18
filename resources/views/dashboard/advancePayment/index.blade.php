@@ -7,6 +7,13 @@
             @can('make advance payment')
             <a href="{{route('advance.create')}}" class="btn btn-primary">Make Advance Payment</a>
             @endcan
+            <a href="{{route('advance.request')}}" class="btn btn-primary">Request For Advance</a>
+
+
+            <form action="{{route('advance.index')}}" method="get">
+                @csrf
+                <input type="month" name="month" placeholder="Select Mont" value="{{$selectedMonth}}" onchange="this.form.submit()">
+            </form>
         </div>
 
         <div class="overflow-x-auto">
@@ -17,9 +24,10 @@
                     <th class="py-3 px-6 text-left">Title</th>
                     <th class="py-3 px-6 text-left">Employee</th>
                     <th class="py-3 px-6 text-left">Description</th>
-                    <th class="py-3 px-6 text-left">Paid Amount</th>
+                    <th class="py-3 px-6 text-left">Amount</th>
                     <th class="py-3 px-6 text-left">Date</th>
-                    <th class="py-3 px-6 text-left">Paid By</th>
+                    <th class="py-3 px-6 text-left">Status</th>
+                    <th class="py-3 px-6 text-left">Response By</th>
                 </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm font-light">
@@ -31,6 +39,15 @@
                         <td class="py-3 px-6 text-left">{{$payment->description}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->amount}}</td>
                         <td class="py-3 px-6 text-left">{{$payment->date}}</td>
+                        <td class="py-3 px-6 text-left">
+                            <form action="{{route('advance.status', ['payment' => $payment->id])}}" method="get">
+                                <select name="status" id="" @can('change advance payment status')onchange="this.form.submit()" @endcan>
+                                    <option value="requested" {{$payment->status == 'requested' ? 'selected' : ''}}>Requested</option>
+                                    <option value="rejected" {{$payment->status == 'rejected' ? 'selected' : ''}}>Rejected</option>
+                                    <option value="paid" {{$payment->status == 'paid' ? 'selected' : ''}}>Paid</option>
+                                </select>
+                            </form>
+                        </td>
                         <td class="py-3 px-6 text-left">{{$payment->paidBy?->name}}</td>
                     </tr>
                 @endforeach

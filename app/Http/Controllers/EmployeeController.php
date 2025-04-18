@@ -48,7 +48,8 @@ class EmployeeController extends Controller
                 return back()->with('error', 'Your employee creation limit exceeded!');
             }
             $offices = Office::where('owner_id', auth()->user()->id)->get();
-            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
+//            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
+            $teamLeaders = HomeController::employeeList();
         }
         return view('dashboard.employee.create', compact('offices', 'teamLeaders'));
     }
@@ -147,20 +148,23 @@ class EmployeeController extends Controller
         if (auth()->user()->hasRole('super_admin')) {
             // Super admin sees all offices and team leaders
             $offices = Office::all();
-            $teamLeaders = User::role(['team_leader', 'owner'])->get();
+//            $teamLeaders = User::role(['team_leader', 'owner'])->get();
+            $teamLeaders = HomeController::employeeList();
         } elseif (auth()->user()->hasRole('owner')) {
             // Owner sees only their associated office(s) and users in those offices
             $officeIds = auth()->user()->offices()->pluck('id'); // Get associated office IDs
             $offices = Office::whereIn('id', $officeIds)->get();
-            $teamLeaders = User::whereIn('office_id', $officeIds)
-                ->role(['team_leader', 'owner'])
-                ->get();
+//            $teamLeaders = User::whereIn('office_id', $officeIds)
+//                ->role(['team_leader', 'owner'])
+//                ->get();
+            $teamLeaders = HomeController::employeeList();
         } else {
             // For other users, restrict by their single office ID
             $offices = Office::where('id', auth()->user()->office_id)->get();
-            $teamLeaders = User::where('office_id', auth()->user()->office_id)
-                ->role(['team_leader', 'owner'])
-                ->get();
+//            $teamLeaders = User::where('office_id', auth()->user()->office_id)
+//                ->role(['team_leader', 'owner'])
+//                ->get();
+            $teamLeaders = HomeController::employeeList();
         }
 
         return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));

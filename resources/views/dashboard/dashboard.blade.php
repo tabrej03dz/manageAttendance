@@ -91,6 +91,14 @@
         } elseif ($user->hasRole('owner')) {
             $officeIds = $user->office()->pluck('id');
             $employeeIds = $employees->whereIn('office_id', $officeIds)->pluck('id');
+            $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
+                ->whereDate('check_in', today())
+                ->get();
+            $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
+                ->whereDate('end_date', '>=', today())
+                ->whereIn('user_id', $employeeIds)
+                ->where('status', 'approved')
+                ->get();
         } elseif ($user->hasRole('admin')) {
             $employees = $user->office->users;
             $employeeIds = $employees->pluck('id');
@@ -146,7 +154,25 @@
         <div class="container-fluid">
             <!-- Small boxes (Stat box) -->
             <div class="row">
-                @role('super_admin|admin')
+                @role('super_admin|owner')
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $offices->count() }}</h3>
+
+                            <p>Offices</p>
+                        </div>
+                        <div class="icon">
+                            <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                @endrole
+                @role('super_admin|admin|owner')
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
                         <div class="small-box bg-info">
@@ -163,24 +189,7 @@
                         </div>
                     </div>
                     <!-- ./col -->
-                    @role('super_admin|owner')
-                        <div class="col-lg-3 col-6">
-                            <!-- small box -->
-                            <div class="small-box bg-success">
-                                <div class="inner">
-                                    <h3>{{ $offices->count() }}</h3>
 
-                                    <p>Offices</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-stats-bars"></i>
-                                </div>
-                                <a href="{{ route('office.index') }}" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <!-- ./col -->
-                    @endrole
                     <div class="col-lg-3 col-6">
                         <!-- small box -->
                         <div class="small-box bg-warning">

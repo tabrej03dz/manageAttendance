@@ -87,4 +87,16 @@ class User extends Authenticatable
         return $this->hasOne(UserSalary::class, 'user_id');
     }
 
+    public function getAllTeamMembers()
+    {
+        $members = collect();
+
+        foreach ($this->members()->get() as $member) {
+            $members->push($member);
+            $members = $members->merge($member->getAllTeamMembers());
+        }
+
+        return $members;
+    }
+
 }

@@ -15,6 +15,7 @@ class AttendanceRecordController extends Controller
 {
 
     public function index(Request $request){
+
         if ($request->month){
             $month = $request->month;
             $startOfMonth = Carbon::parse($request->month . '-01');

@@ -197,8 +197,10 @@
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if ($record)
+                                                <a href="{{asset('storage/' . $record?->check_in_image)}}" target="_blank">
                                                     <img src="{{ asset('storage/' . $record?->check_in_image) }}"
                                                         alt="Check-in" class="w-10 h-10 rounded-full">
+                                                    </a>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
@@ -216,8 +218,10 @@
                                                 {{ $record?->check_out?->format('h:i:s A') }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 @if ($record)
+                                                <a href="{{asset('storage/' . $record?->check_out_image)}}" target="_blank">
                                                     <img src="{{ asset('storage/' . $record?->check_out_image) }}"
                                                         alt="Check-in" class="w-10 h-10 rounded-full">
+                                                    </a>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">

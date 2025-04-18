@@ -78,15 +78,15 @@
                     </li>
                 @endcan
 
-                    @role('super_admin|admin|owner')
-                    <li class="nav-item">
-                        <a href="{{ route('off_policy.index') }}"
-                           class="nav-link {{ request()->routeIs('off_policy.*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-industry"></i>
-                            <p>Off Police</p>
-                        </a>
-                    </li>
-                    @endrole
+{{--                    @role('super_admin|admin|owner')--}}
+{{--                    <li class="nav-item">--}}
+{{--                        <a href="{{ route('off_policy.index') }}"--}}
+{{--                           class="nav-link {{ request()->routeIs('off_policy.*') ? 'active' : '' }}">--}}
+{{--                            <i class="nav-icon fas fa-industry"></i>--}}
+{{--                            <p>Off Police</p>--}}
+{{--                        </a>--}}
+{{--                    </li>--}}
+{{--                    @endrole--}}
                 @can('manage offs')
                     <li class="nav-item">
                         <a href="{{ route('off.index') }}"
