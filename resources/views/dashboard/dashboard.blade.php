@@ -77,6 +77,7 @@
 
     @php
         use Carbon\Carbon;
+
         $user = auth()->user();
         if ($user->hasRole('super_admin')) {
             $employeeIds = $employees->pluck('id');
@@ -89,7 +90,8 @@
                 ->where('status', 'approved')
                 ->get();
         } elseif ($user->hasRole('owner')) {
-            $officeIds = $user->office()->pluck('id');
+            $officeIds = $user->offices->pluck('id');
+            //$employees =$employees->whereIn('office_id', $officeIds)->get();
             $employeeIds = $employees->whereIn('office_id', $officeIds)->pluck('id');
             $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
                 ->whereDate('check_in', today())

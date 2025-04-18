@@ -277,7 +277,8 @@ class DashboardController extends Controller
 //        foreach ($halfDayRecords as $record){
 //            $record->update(['day_type' => 'half day', 'duration' => $record->user->office_time / 2]);
 //        }
-        $employees = User::all();
+//        $employees = User::all();
+        $employees = HomeController::employeeList();
         if ($user->hasRole('owner')){
             $offices = $user->offices;
         }else{

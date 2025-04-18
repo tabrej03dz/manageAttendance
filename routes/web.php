@@ -262,6 +262,10 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('store/{record}', [CorrectionNoteController::class, 'store'])->name('store');
     });
 
+    Route::prefix('half-day')->name('half-day.')->controller(\App\Http\Controllers\HalfDayController::class)->group(function(){
+       Route::get('/', 'index')->name('index');
+    });
+
 
     // hello how are you mera naam hai jolly
     // web.php
