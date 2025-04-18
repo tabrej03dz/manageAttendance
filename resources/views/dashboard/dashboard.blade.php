@@ -179,9 +179,9 @@
                         <!-- small box -->
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3>{{ $employees->count() }}</h3>
+                                <h3>{{ $employees->where('status', '1')->count() }}</h3>
 
-                                <p>All Users</p>
+                                <p>Active Users</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
