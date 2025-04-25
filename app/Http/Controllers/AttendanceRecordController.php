@@ -195,26 +195,70 @@ class AttendanceRecordController extends Controller
         return view('dashboard.attendance.form', compact('formType', 'user'));
     }
 
-    public function dayWise(Request $request){
-        if ($request->date){
-            $date = $request->date;
-        }else{
-            $date = today();
-        }
+//    public function dayWise(Request $request){
+//        if ($request->date){
+//            $date = $request->date;
+//        }else{
+//            $date = today();
+//        }
+//        $employees = HomeController::employeeList();
+//
+//        $perPage = 20;
+//        $currentPage = Paginator::resolveCurrentPage();
+//        $employees = new LengthAwarePaginator(
+//            $employees->forPage($currentPage, $perPage), // Get items for current page
+//            $employees->count(),
+//            $perPage,
+//            $currentPage,
+//            ['path' => Paginator::resolveCurrentPath()]
+//        );
+//
+//        return view('dashboard.attendance.dayWise', compact('employees', 'date'));
+//    }
+
+
+
+    public function dayWise(Request $request)
+    {
+        $date = $request->date ?? today();
+
+        // Get all employees
         $employees = HomeController::employeeList();
 
+        // Convert to Laravel Collection if not already
+        $employees = collect($employees);
+
+        // Load attendance for the selected date
+        $attendances = AttendanceRecord::whereDate('created_at', $date)->get()->keyBy('user_id');
+
+        // Attach attendance status to each employee
+        $employees = $employees->map(function ($employee) use ($attendances) {
+            $employee->has_attendance = $attendances->has($employee->id); // or $employee->user_id
+            return $employee;
+        });
+
+        // Sort: those with attendance first
+
+
+        $employees = isset($request->status) ? $employees->where('status', $request->status)->sortByDesc('has_attendance')->values() : $employees->sortByDesc('has_attendance')->values();
+
+        // Paginate
         $perPage = 20;
         $currentPage = Paginator::resolveCurrentPage();
-        $employees = new LengthAwarePaginator(
-            $employees->forPage($currentPage, $perPage), // Get items for current page
+        $paginatedEmployees = new LengthAwarePaginator(
+            $employees->forPage($currentPage, $perPage),
             $employees->count(),
             $perPage,
             $currentPage,
             ['path' => Paginator::resolveCurrentPath()]
         );
 
-        return view('dashboard.attendance.dayWise', compact('employees', 'date'));
+        return view('dashboard.attendance.dayWise', [
+            'employees' => $paginatedEmployees,
+            'date' => $date,
+        ]);
     }
+
 
     public function addNote(Request $request, AttendanceRecord $record){
         $request->validate([

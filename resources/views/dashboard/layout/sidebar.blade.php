@@ -246,13 +246,13 @@
                     </li>
                 @endcan
 
-{{--                <li class="nav-item">--}}
-{{--                    <a href="{{ route('half-day.index') }}"--}}
-{{--                       class="nav-link {{ request()->routeIs('half-day.index') ? 'active' : '' }}">--}}
-{{--                        <i class="nav-icon fas fa-lock"></i>--}}
-{{--                        <p>Permissions</p>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
+                <li class="nav-item">
+                    <a href="{{ route('half-day.index') }}"
+                       class="nav-link {{ request()->routeIs('half-day.index') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-lock"></i>
+                        <p>Half Days</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf

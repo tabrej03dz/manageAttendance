@@ -17,6 +17,15 @@
                     <input type="date" id="to-date-mobile" name="date"
                         class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Select To Date">
+
+                    <label for="status" class="mb-1 text-sm font-medium text-gray-700">Status:</label>
+                    <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                    <input type="date" id="to-date-mobile" name="date"
+                           class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Select To Date">
                 </div>
             </div>
             <div class="flex flex-col space-y-2">
@@ -36,9 +45,21 @@
                         <div class="flex-1">
                             <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">Select
                                 Date:</label>
-                            <input type="text" id="to-date-web" name="date"
+                            <input type="date" id="to-date-web" name="date"
                                 class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Select To Date">
+
+                        </div>
+                    </div>
+
+                    <div class="flex-grow flex space-x-4">
+                        <div class="flex-1">
+                            <label for="status" class="block mb-1 text-sm font-medium text-gray-700">Status:</label>
+                            <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+
                         </div>
                     </div>
                     <div class="flex space-x-2">

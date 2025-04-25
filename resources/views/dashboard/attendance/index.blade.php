@@ -43,7 +43,8 @@
         <div class="container mx-auto px-6">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden w-full md:max-w-5xl mx-auto">
                 <div class="p-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Attendance Records</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Attendance Records </h2>
+
 
                     <!-- Attendance Table -->
                     <div class="overflow-x-auto">
@@ -132,7 +133,8 @@
                                         }
                                         if ($record) {
                                             if($record->check_in && $record->check_out){
-                                            $workingDays++;
+                                                $workingDays++;
+
                                             }else{
                                                 $halfDayCount++;
                                             }
@@ -169,7 +171,11 @@
                                         if ($off) {
                                             $offDays++;
                                         }
-                                    @endphp
+                                        $halfDayRecord = App\Models\HalfDay::where('date', $d)->where('user_id', $currentUser->id)->first();
+                                        if($halfDayRecord){
+                                            $halfDayCount++;
+                                        }
+                                @endphp
 
 {{--                                    @if ($leave && !$record)--}}
                                         <!-- Sample Data Row -->
@@ -188,6 +194,9 @@
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}
                                                 <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span>
+                                                @if($halfDayRecord)
+                                                <span class="text-red-700">{{  'Half Day: '.$halfDayRecord->status }}</span>
+                                                @endif
                                             </td>
 
                                             <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($record?->user->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">

@@ -264,6 +264,9 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('half-day')->name('half-day.')->controller(\App\Http\Controllers\HalfDayController::class)->group(function(){
        Route::get('/', 'index')->name('index');
+       Route::get('create', 'create')->name('create');
+       Route::post('store', 'store')->name('store');
+       Route::post('status/{halfDay}', 'status')->name('status');
     });
 
 
