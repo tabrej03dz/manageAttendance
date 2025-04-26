@@ -13,6 +13,7 @@
                 @csrf
 
                 <!-- Date Field -->
+                <input type="hidden" name="employee_id" value="{{$employeeId}}">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-1" for="date">Date</label>
                     <input type="date" id="date" name="date" value="{{old('date')}}" class="w-full border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500" />

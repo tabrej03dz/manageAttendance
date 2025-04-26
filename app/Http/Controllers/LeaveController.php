@@ -70,8 +70,8 @@ class LeaveController extends Controller
     }
 
 
-    public function create(){
-        return view('dashboard.leave.create');
+    public function create($employeeId = null){
+        return view('dashboard.leave.create', compact('employeeId'));
     }
 
     public function store(Request $request)
@@ -84,7 +84,8 @@ class LeaveController extends Controller
             'reason' => '',
             'image.*' => 'required',
         ]);
-        $user = auth()->user();
+        dd($request->all());
+        $user = $request->employee_id ? User::find($request->employee_id) :  auth()->user();
 
         if ($request->start_date && $request->end_date){
             $startDate = Carbon::parse($request->start_date);
@@ -123,7 +124,7 @@ class LeaveController extends Controller
             Mail::to($teamLeader->email)->send(new LeaveRequest($leave));
         }
 
-        return redirect('userprofile/' . $user->id)->with('success', 'Leave request taken successfully and notification sent to admin.');
+        return back()->with('success', 'Leave request taken successfully and notification sent to admin.');
     }
 
     public function status(Leave $leave, $status, $type = null){

@@ -159,7 +159,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('leave')->name('leave.')->group(function(){
         Route::get('/', [LeaveController::class, 'index'])->name('index');
-        Route::get('create', [LeaveController::class, 'create'])->name('create');
+        Route::get('create/{employeeId?}', [LeaveController::class, 'create'])->name('create');
         Route::post('store', [LeaveController::class, 'store'])->name('store');
         Route::get('status/{leave}/{status}/{type?}', [LeaveController::class, 'status'])->name('status');
         Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
@@ -264,7 +264,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
 
     Route::prefix('half-day')->name('half-day.')->controller(\App\Http\Controllers\HalfDayController::class)->group(function(){
        Route::get('/', 'index')->name('index');
-       Route::get('create', 'create')->name('create');
+       Route::get('create/{employee?}', 'create')->name('create');
        Route::post('store', 'store')->name('store');
        Route::post('status/{halfDay}', 'status')->name('status');
     });

@@ -82,16 +82,6 @@
                 <div class="p-8">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-3xl font-semibold text-gray-800 mb-6">Attendance Records</h2>
-
-
-                        <a href="{{route('leave.create')}}"
-                           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                            Request For Leave
-                        </a>
-                        <a href="{{route('half-day.create')}}"
-                           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                            Request For Half Day
-                        </a>
                     </div>
                     <!-- Attendance Table -->
                     <div class="overflow-x-auto">
@@ -136,7 +126,7 @@
 {{--                                                {{'Status: '. $leave->status }}</td>--}}
 {{--                                        </tr>--}}
 {{--                                    @else--}}
-                                        <tr class="hover:bg-gray-50">
+                                        <tr class="hover:bg-gray-50" oncontextmenu="showModal(event, {{ $employee->id }})">
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }} <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}} {{$halfDayRecord ? 'Half Day: '.$halfDayRecord->status : ''}}</span> </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->office?->name }}</td>
                                             <td
@@ -332,6 +322,29 @@
     </div>
 </div>
 
+    <!-- Modal positioned dynamically -->
+    <div id="customModal" class="absolute hidden bg-white p-4 rounded-lg shadow-lg z-50 border border-gray-300 min-w-[250px]">
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="absolute top-1 right-1 text-gray-500 hover:text-red-600 text-xl font-bold focus:outline-none">
+            &times;
+        </button>
+
+        <h2 class="text-lg font-bold mb-2">Quick Actions</h2>
+        <a id="leaveLink"
+           href="#"
+           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+            Request For Leave
+        </a> &nbsp;
+        <a id="halfDayLink"
+           href="#"
+           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+            Request For Half Day
+        </a>
+
+        <!-- You can add more modal content/buttons below -->
+    </div>
+
+
 
     <!-- Initialize Flatpickr for date inputs -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -352,4 +365,30 @@
             });
         });
     </script>
+
+    <script>
+        function showModal(event, employeeId) {
+            event.preventDefault();
+
+            const modal = document.getElementById('customModal');
+            const leaveLink = document.getElementById('leaveLink');
+            const halfDayLink = document.getElementById('halfDayLink');
+            // const display = document.getElementById('employeeIdDisplay');
+
+            // Update the links dynamically
+            leaveLink.href = `/leave/create/${employeeId}`;
+            halfDayLink.href = `/half-day/create/${employeeId}`;
+            // display.textContent = `Employee ID: ${employeeId}`;
+
+            // Show the modal near the mouse pointer
+            modal.style.left = `${event.pageX}px`;
+            modal.style.top = `${event.pageY}px`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+    </script>
+
 @endsection

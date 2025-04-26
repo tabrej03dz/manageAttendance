@@ -30,8 +30,8 @@ class HalfDayController extends Controller
         return view('dashboard.half-day.index', compact('halfDays', 'month', 'status'));
     }
 
-    public function create(){
-        return view('dashboard.half-day.create');
+    public function create($employeeId = null){
+        return view('dashboard.half-day.create', compact('employeeId'));
     }
 
     public function store(Request $request){
@@ -41,7 +41,7 @@ class HalfDayController extends Controller
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         $halfDay = HalfDay::create([
-            'user_id' => auth()->user()->id,
+            'user_id' => $request->employee_id ?? auth()->user()->id,
             'date' => $request->date ?? today(),
             'reason' => $request->reason,
         ]);

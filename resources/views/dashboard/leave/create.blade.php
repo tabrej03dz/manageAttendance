@@ -13,6 +13,8 @@
 
             <form action="{{route('leave.store')}}" method="post" enctype="multipart/form-data">
             @csrf
+
+                <input type="hidden" name="employee_id" value="{{$employeeId}}">
             <!-- Leave Type Selection -->
             <div class="mt-4">
                 <div>
