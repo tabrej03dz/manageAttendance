@@ -84,7 +84,6 @@ class LeaveController extends Controller
             'reason' => '',
             'image.*' => 'required',
         ]);
-        dd($request->all());
         $user = $request->employee_id ? User::find($request->employee_id) :  auth()->user();
 
         if ($request->start_date && $request->end_date){
