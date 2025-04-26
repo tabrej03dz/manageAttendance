@@ -18,51 +18,54 @@ class LeaveController extends Controller
     public function index(Request $request){
         $user = auth()->user();
         $query = Leave::query();
-        if ($user->hasRole('super_admin')) {
-            $query->where(function ($q) {
-                $q->whereDate('start_date', '>=', today())
-                    ->orWhereDate('end_date', '>=', today());
-            });
-        }
-        elseif($user->hasRole('owner')){
-            $officeIds = $user->offices()->pluck('id');
-            $userIds = User::whereIn('office_id', $officeIds)->pluck('id');
-            $query->whereIn('user_id', $userIds)
-                ->where(function ($q) {
-                    $q->whereDate('start_date', '>=', today())
-                        ->orWhereDate('end_date', '>=', today());
-                });
-
-        }
-        elseif ($user->hasRole('admin')) {
-            $userIds = $user->office->users->pluck('id');
-            $query->whereIn('user_id', $userIds)
-                ->where(function ($q) {
-                    $q->whereDate('start_date', '>=', today())
-                        ->orWhereDate('end_date', '>=', today());
-                });
-        }
-
-
-        elseif ($user->hasRole('team_leader')) {
-            $userIds = $user->members->pluck('id');
-            $query->whereIn('user_id', $userIds)
-                ->where(function ($q) {
-                    $q->whereDate('start_date', '>=', today())
-                        ->orWhereDate('end_date', '>=', today());
-                });
-        }else{
-
-            $query->where('user_id', $user->id)
-                ->where(function ($q) {
-                    $q->whereDate('start_date', '>=', today())
-                        ->orWhereDate('end_date', '>=', today());
-                });
-        }
+//        if ($user->hasRole('super_admin')) {
+//            $query->where(function ($q) {
+//                $q->whereDate('start_date', '>=', today())
+//                    ->orWhereDate('end_date', '>=', today());
+//            });
+//        }
+//        elseif($user->hasRole('owner')){
+//            $officeIds = $user->offices()->pluck('id');
+//            $userIds = User::whereIn('office_id', $officeIds)->pluck('id');
+//            $query->whereIn('user_id', $userIds)
+//                ->where(function ($q) {
+//                    $q->whereDate('start_date', '>=', today())
+//                        ->orWhereDate('end_date', '>=', today());
+//                });
+//
+//        }
+//        elseif ($user->hasRole('admin')) {
+//            $userIds = $user->office->users->pluck('id');
+//            $query->whereIn('user_id', $userIds)
+//                ->where(function ($q) {
+//                    $q->whereDate('start_date', '>=', today())
+//                        ->orWhereDate('end_date', '>=', today());
+//                });
+//        }
+//
+//
+//        elseif ($user->hasRole('team_leader')) {
+//            $userIds = $user->members->pluck('id');
+//            $query->whereIn('user_id', $userIds)
+//                ->where(function ($q) {
+//                    $q->whereDate('start_date', '>=', today())
+//                        ->orWhereDate('end_date', '>=', today());
+//                });
+//        }else{
+//
+//            $query->where('user_id', $user->id)
+//                ->where(function ($q) {
+//                    $q->whereDate('start_date', '>=', today())
+//                        ->orWhereDate('end_date', '>=', today());
+//                });
+//        }
+        $employeesIds = HomeController::employeeList()->pluck('id');
+//        dd($employeesIds);
+        $query->whereIn('user_id', $employeesIds);
         if ($request->status){
             $query->where('status', $request->status);
         }
-        $leaves = $query->get();
+        $leaves = $query->orderBy('start_date', 'desc')->get();
         return view('dashboard.leave.index', compact('leaves'));
     }
 

@@ -80,8 +80,19 @@
         <div class="container mx-auto px-4">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden w-full md:max-w-5xl mx-auto">
                 <div class="p-8">
-                    <h2 class="text-3xl font-semibold text-gray-800 mb-6">Attendance Records</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Attendance Records</h2>
 
+
+                        <a href="{{route('leave.create')}}"
+                           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                            Request For Leave
+                        </a>
+                        <a href="{{route('half-day.create')}}"
+                           class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
+                            Request For Half Day
+                        </a>
+                    </div>
                     <!-- Attendance Table -->
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white rounded-lg shadow-sm">
@@ -113,6 +124,8 @@
                                             ->whereDate('end_date', '>=', $date)
                                             ->where(['user_id' => $employee->id])
                                             ->first();
+                                        $halfDayRecord = App\Models\HalfDay::where('date', $date)->where('user_id', $employee->id)->first();
+
                                     @endphp
 {{--                                    @if ($leave)--}}
 {{--                                        <tr class="hover:bg-gray-50">--}}
@@ -124,7 +137,7 @@
 {{--                                        </tr>--}}
 {{--                                    @else--}}
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }} <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span> </td>
+                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }} <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}} {{$halfDayRecord ? 'Half Day: '.$halfDayRecord->status : ''}}</span> </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->office?->name }}</td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($employee->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
