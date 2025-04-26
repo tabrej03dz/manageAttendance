@@ -31,7 +31,9 @@ class FinalReportController extends Controller
             $attendanceRecords->orWhereDate('created_at', $date);
         }
         $attendanceRecords = $attendanceRecords->get();
-        $users = HomeController::employeeList();
+
+        $users = isset($request->status) ? HomeController::employeeList()->where('status', $request->status) : HomeController::employeeList()->where('status', '1');
+
         return view('dashboard.finalReport.index', compact('dates', 'attendanceRecords', 'users', 'month'));
     }
 }

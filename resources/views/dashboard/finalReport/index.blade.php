@@ -18,9 +18,16 @@
                          <form action="{{ route('reports.index') }}" method="GET"
                              class="d-flex flex-column flex-md-row align-items-stretch">
                              @csrf
-                             <input type="month" name="month" value="{{ $month }}" placeholder="Start Date"
+                             <input type="month" name="month" onchange="this.form.submit()" value="{{ $month }}" placeholder="Start Date"
                                  class="form-control mb-2 mb-md-0 mr-md-2">
-                             <input type="submit" value="Filter" class="btn btn-success text-white mb-2">
+
+                             <select name="status" id="" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
+                                 <option value="">Status</option>
+                                 <option value="1">Active</option>
+                                 <option value="0">Inactive</option>
+                             </select>
+
+{{--                             <input type="submit" value="Filter" class="btn btn-success text-white mb-2">--}}
                              <a href="{{ route('reports.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
                          </form>
                      </div>

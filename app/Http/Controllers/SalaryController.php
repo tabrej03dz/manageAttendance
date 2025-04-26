@@ -35,7 +35,7 @@ class SalaryController extends Controller
         }
         $attendanceRecords = $attendanceRecords->get();
 
-        $users = HomeController::employeeList();
+        $users = HomeController::employeeList()->where('status', '1');
 
         $parseMonthYear = Carbon::parse($month);
         $advancePayments = AdvancePayment::whereMonth('date', $parseMonthYear->month)->whereYear('date',$parseMonthYear->year)->get();

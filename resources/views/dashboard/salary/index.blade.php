@@ -12,9 +12,9 @@
                         <form action="{{ route('salary.index') }}" method="GET"
                               class="d-flex flex-column flex-md-row align-items-stretch">
                             @csrf
-                            <input type="month" name="month" value="{{$month}}" placeholder="Start Date"
+                            <input type="month" name="month" value="{{$month}}" placeholder="Start Date" onchange="this.form.submit()"
                                    class="form-control mb-2 mb-md-0 mr-md-2">
-                            <input type="submit" value="Filter" class="btn btn-success text-white mb-2">
+{{--                            <input type="submit" value="Filter" class="btn btn-success text-white mb-2">--}}
                             <a href="{{ route('salary.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
                         </form>
                     </div>

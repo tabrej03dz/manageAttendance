@@ -15,7 +15,7 @@ use Spatie\Permission\Models\Permission;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         //        if (auth()->user()->hasRole('super_admin')){
 //            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
@@ -24,7 +24,7 @@ class EmployeeController extends Controller
 //            $employees = $office->users;
 //        }
 
-        $employees = HomeController::employeeList();
+        $employees = isset($request->status) ? HomeController::employeeList()->where('status', $request->status) : HomeController::employeeList()->where('status', '1');
         return view('dashboard.employee.index', compact('employees'));
     }
 
