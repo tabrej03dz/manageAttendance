@@ -112,6 +112,9 @@ class DatabaseSeeder extends Seeder
             'show permissions of role',
             'delete role\'s permission',
             'pay visit expense',
+            'show owners',
+            'create owners',
+
         ];
 
         foreach ($permissions as $permission) {

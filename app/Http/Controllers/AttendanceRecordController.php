@@ -82,11 +82,7 @@ class AttendanceRecordController extends Controller
             return back()->with('error', 'You are inactive user');
         }
 
-        if ($user->office->under_radius_required == '1'){
-            if ($request->distance > $user->office->radius){
-                return back()->with('error', 'You are '.round($request->distance).'m of distance from the office, You should be under '. $user->office->radius);
-            }
-        }
+
         // Fetch today's attendance record
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())
             ->where('user_id', $user->id)
@@ -142,7 +138,24 @@ class AttendanceRecordController extends Controller
             $messageType = 'error';
         }
         // Redirect to attendance index with success message
-        return redirect('attendance/day-wise')->with($messageType, $message);
+        $message1 = '';
+        if ($user->office->under_radius_required == '1') {
+            if ($request->distance > $user->office->radius) {
+                if ($request->distance >= 1000) {
+                    $distance = round($request->distance / 1000, 2) . ' km';
+                } else {
+                    $distance = round($request->distance) . ' m';
+                }
+
+                $required = $user->office->radius >= 1000
+                    ? ($user->office->radius / 1000) . ' km'
+                    : $user->office->radius . ' m';
+
+                $message1 = "You are {$distance} away from the office, You should be under {$required}";
+                // return back()->with('error', $message1);
+            }
+        }
+        return redirect('attendance/day-wise')->with([$messageType => $message , 'error' => $message1]);
     }
 
     public function checkOut(Request $request, User $user = null){
@@ -184,7 +197,25 @@ class AttendanceRecordController extends Controller
             $type = 'check_out_note';
             return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
         }
-        return redirect('attendance/day-wise')->with('success', 'checked out successfully');
+        $message1 = '';
+        if ($user->office->under_radius_required == '1') {
+            if ($request->distance > $user->office->radius) {
+                if ($request->distance >= 1000) {
+                    $distance = round($request->distance / 1000, 2) . ' km';
+                } else {
+                    $distance = round($request->distance) . ' m';
+                }
+
+                $required = $user->office->radius >= 1000
+                    ? ($user->office->radius / 1000) . ' km'
+                    : $user->office->radius . ' m';
+
+                $message1 = "You are {$distance} away from the office, You should be under {$required}";
+                // return back()->with('error', $message1);
+            }
+        }
+
+        return redirect('attendance/day-wise')->with(['success' => 'checked out successfully', 'error' => $message1]);
     }
 
     public function form($formType, User $user = null){
