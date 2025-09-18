@@ -81,6 +81,9 @@ class AttendanceRecordController extends Controller
         if ($user->status == '0' || $user->office->status == 'inactive'){
             return back()->with('error', 'You are inactive user');
         }
+        if ($user->location_required === 'yes' && (!$request->latitude || !$request->longitude)) {
+            return view('dashboard.settingInstruction');
+        }
 
 
         // Fetch today's attendance record
@@ -120,9 +123,6 @@ class AttendanceRecordController extends Controller
             $message = 'Checked in successfully';
             $messageType = 'success';
 
-//            if (!$request->latitude || !$request->longitude){
-//                return view('dashboard.settingInstruction');
-//            }
 
             if ($attendanceRecord->late){
                 $type = 'check_in_note';
@@ -171,6 +171,9 @@ class AttendanceRecordController extends Controller
         if ($user->status == '0' || $user->office->status == 'inactive'){
             return back()->with('error', 'You are inactive user');
         }
+        if ($user->location_required === 'yes' && (!$request->latitude || !$request->longitude)) {
+            return view('dashboard.settingInstruction');
+        }
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
@@ -188,6 +191,7 @@ class AttendanceRecordController extends Controller
 //        if (!$request->latitude || !$request->longitude){
 //            return view('dashboard.settingInstruction');
 //        }
+
         if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
             $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
             $userCheckOutTime = Carbon::parse($user->check_out_time);

@@ -47,6 +47,7 @@
                         <th class="py-3 px-6 text-left">Image</th>
                         <th class="py-3 px-6 text-left">Office</th>
                         <th class="py-3 px-6 text-left">Status</th>
+                        <th class="py-3 px-6 text-left">Location R</th>
                         <th class="py-3 px-6 text-left">Action</th>
                     </tr>
                 </thead>
@@ -72,6 +73,7 @@
                             </a>
                             @endcan
                         </td>
+                        <td class="py-3 px-6 text-left">{{$employee->location_required}}</td>
                         <td class="py-3 px-6 text-left flex space-x-2">
                             @can('edit employee')
                             <a title="Edit" href="{{ route('employee.edit', ['employee' => $employee->id]) }}"

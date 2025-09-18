@@ -237,6 +237,18 @@
 
                         </div>
 
+                        <div class="col-md-6">
+                            <p>Location Required</p>
+                            <div>
+                                <input type="radio" class="" value="1" id="location_required_yes" name="location_required">
+                                <label for="location_required_yes" class="form-label">Yes</label>
+                            </div>
+                            <div>
+                                <input type="radio" class="" value="0" id="location_required_no" name="location_required" checked>
+                                <label for="location_required_no" class="form-label">No</label>
+                            </div>
+                        </div>
+
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-danger btn-lg w-100">Register</button>
                         </div>
