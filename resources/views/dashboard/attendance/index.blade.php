@@ -248,10 +248,47 @@
                                                 {{ $record?->duration ? App\Http\Controllers\HomeController::getTime($record->duration) : '' }}
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $record?->day_type }}</td>
-                                            <td class="px-4 py-4 text-sm text-gray-700">
-                                                {{ round($record?->check_out_distance) }} m</td>
-                                            <td class="px-4 py-4 text-sm text-gray-700">
-                                                {{ round($record?->check_out_distance) }} m</td>
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700">--}}
+{{--                                                {{ round($record?->check_out_distance) }} m</td>--}}
+{{--                                            <td class="px-4 py-4 text-sm text-gray-700">--}}
+{{--                                                {{ round($record?->check_out_distance) }} m</td>--}}
+
+
+                                            <td
+                                                class="px-4 py-4 text-sm text-{{ $record?->check_in_distance > 100 ? 'red' : 'gray' }}-700">
+                                                @php
+                                                    if ($record?->check_in_latitude && $record->check_in_longitude){
+                                                        $check_in_latitude = App\Http\Controllers\HomeController::latitudeInDMS($record->check_in_latitude);
+                                                        $check_in_longitude = App\Http\Controllers\HomeController::longitudeInDMS($record->check_in_longitude);
+                                                    }
+
+                                                    if ($record?->check_out_latitude && $record->check_out_longitude){
+                                                        $check_out_latitude = App\Http\Controllers\HomeController::latitudeInDMS($record->check_out_latitude);
+                                                        $check_out_longitude = App\Http\Controllers\HomeController::longitudeInDMS($record->check_out_longitude);
+                                                    }
+
+                                                @endphp
+                                                @if ($record?->check_in_latitude && $record->check_in_longitude)
+                                                <a href="{{'https://www.google.com/maps/place/'.$check_in_latitude.'+'.$check_in_longitude.'/@'.$record->check_in_latitude.','.$record->check_out_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                {{ round($record?->check_in_distance) }} m
+                                                </a>
+                                                @else
+                                                {{ round($record?->check_in_distance) }} m
+                                                @endif
+                                            </td>
+                                            <td
+                                                class="px-4 py-4 text-sm text-sm text-{{ $record?->check_out_distance > 100 ? 'red' : 'gray' }}">
+                                                @if($record?->check_out_latitude && $record->check_out_longitude)
+                                                <a href="{{'https://www.google.com/maps/place/'.$check_out_latitude.'+'.$check_out_longitude.'/@'.$record->check_out_latitude.','.$record->check_out_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                {{ round($record?->check_out_distance) }} m
+                                                </a>
+                                                @else
+
+                                                    {{ round($record?->check_out_distance) }} m
+                                                @endif
+                                            </td>
+
+
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $record?->checkInBy?->name }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">

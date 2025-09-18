@@ -268,7 +268,8 @@
                                                 {{ round($record?->check_out_distance) }} m
                                                 </a>
                                                 @else
-                                                {{ round($record?->check_out_distance) }} m
+
+                                                    {{ round($record?->check_out_distance) }} m
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
