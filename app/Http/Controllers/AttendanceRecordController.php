@@ -192,7 +192,7 @@ class AttendanceRecordController extends Controller
 //            return view('dashboard.settingInstruction');
 //        }
 
-        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
+        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
             $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
             $userCheckOutTime = Carbon::parse($user->check_out_time);
             $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
@@ -201,6 +201,20 @@ class AttendanceRecordController extends Controller
             $type = 'check_out_note';
             return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
         }
+
+        $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
+
+// 8 hours 30 minutes = 510 minutes
+        if ($diffMinutes < 510) {
+            $message = 'You are checking out before completing 8 hours 30 minutes. Please provide the reason for early check-out.';
+            $type = 'check_out_note';
+            return redirect()->route('attendance.reason.form', [
+                'type' => $type,
+                'message' => $message,
+                'record' => $record
+            ]);
+        }
+
         $message1 = '';
         if ($user->office->under_radius_required == '1') {
             if ($request->distance > $user->office->radius) {
