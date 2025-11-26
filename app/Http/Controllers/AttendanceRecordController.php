@@ -205,15 +205,49 @@ class AttendanceRecordController extends Controller
         $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
 
 // 8 hours 30 minutes = 510 minutes
+//        if ($diffMinutes < 510) {
+//            $message = 'You are checking out before completing 8 hours 30 minutes. Please provide the reason for early check-out.';
+//            $type = 'check_out_note';
+//            return redirect()->route('attendance.reason.form', [
+//                'type' => $type,
+//                'message' => $message,
+//                'record' => $record
+//            ]);
+//        }
+
+
+        $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
+
+// 8 hours 30 min = 510 minutes (same as your previous logic)
+        $requiredMinutes = 510;
+
+// How many minutes remaining
+        $remainingMinutes = max(0, $requiredMinutes - $diffMinutes);
+
+// Format check-in time
+        $checkInTime = Carbon::parse($record->check_in)->format('h:i A');
+
+// If less than 8h 30m
         if ($diffMinutes < 510) {
-            $message = 'You are checking out before completing 8 hours 30 minutes. Please provide the reason for early check-out.';
+
+            // Prepare message
+            $message = "You are checking out before completing 8 hours 30 minutes.\n"
+                . "Check-in Time: {$checkInTime}\n"
+                . "Completed: " . floor($diffMinutes / 60) . " hrs " . ($diffMinutes % 60) . " mins\n"
+                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
+                . "Please provide the reason for early check-out.";
+
             $type = 'check_out_note';
+
             return redirect()->route('attendance.reason.form', [
                 'type' => $type,
-                'message' => $message,
+                'message' => nl2br($message), // line breaks safe for Blade
                 'record' => $record
             ]);
         }
+
+
+
 
         $message1 = '';
         if ($user->office->under_radius_required == '1') {
