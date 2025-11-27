@@ -231,8 +231,6 @@ class AttendanceRecordController extends Controller
 
             $message = "You are checking out early.\n"
                 . "Required: {$reqHrs}h {$reqMins}m\n"
-                . "Completed: " . floor($diffMinutes / 60) . "h " . ($diffMinutes % 60) . "m\n"
-                . "Remaining: " . floor($remainingMinutes / 60) . "h " . ($remainingMinutes % 60) . "m\n"
                 . "Reason for early check-out?";
 
             $type = 'check_out_note';
