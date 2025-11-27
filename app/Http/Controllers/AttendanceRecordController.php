@@ -229,11 +229,7 @@ class AttendanceRecordController extends Controller
 //                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
 //                . "Please provide the reason for early check-out.";
 
-            $message = urlencode(
-                "You are checking out early.\n"
-                . "Required: {$reqHrs}h {$reqMins}m\n"
-                . "Reason for early check-out?"
-            );
+            $message = urlencode("You are checking out early. Reason for early check-out?");
 
             $type = 'check_out_note';
 
