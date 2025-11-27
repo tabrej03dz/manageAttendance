@@ -223,11 +223,17 @@ class AttendanceRecordController extends Controller
             $reqHrs  = floor($requiredMinutes / 60);
             $reqMins = $requiredMinutes % 60;
 
-            $message = "You are checking out before completing {$reqHrs} hrs {$reqMins} mins.\n"
-                . "Check-in Time: {$checkInTime}\n"
-                . "Completed: " . floor($diffMinutes / 60) . " hrs " . ($diffMinutes % 60) . " mins\n"
-                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
-                . "Please provide the reason for early check-out.";
+//            $message = "You are checking out before completing {$reqHrs} hrs {$reqMins} mins.\n"
+//                . "Check-in Time: {$checkInTime}\n"
+//                . "Completed: " . floor($diffMinutes / 60) . " hrs " . ($diffMinutes % 60) . " mins\n"
+//                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
+//                . "Please provide the reason for early check-out.";
+
+            $message = "You are checking out early.\n"
+                . "Required: {$reqHrs}h {$reqMins}m\n"
+                . "Completed: " . floor($diffMinutes / 60) . "h " . ($diffMinutes % 60) . "m\n"
+                . "Remaining: " . floor($remainingMinutes / 60) . "h " . ($remainingMinutes % 60) . "m\n"
+                . "Reason for early check-out?";
 
             $type = 'check_out_note';
 
