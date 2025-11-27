@@ -192,46 +192,38 @@ class AttendanceRecordController extends Controller
 //            return view('dashboard.settingInstruction');
 //        }
 
-        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
-            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
-            $userCheckOutTime = Carbon::parse($user->check_out_time);
-            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
-            $before = HomeController::getTime($time);
-            $message = 'You are checking out before '.$before.' write here the reasons';
-            $type = 'check_out_note';
-            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
-        }
-
-        $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
-
-// 8 hours 30 minutes = 510 minutes
-//        if ($diffMinutes < 510) {
-//            $message = 'You are checking out before completing 8 hours 30 minutes. Please provide the reason for early check-out.';
+//        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
+//            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
+//            $userCheckOutTime = Carbon::parse($user->check_out_time);
+//            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+//            $before = HomeController::getTime($time);
+//            $message = 'You are checking out before '.$before.' write here the reasons';
 //            $type = 'check_out_note';
-//            return redirect()->route('attendance.reason.form', [
-//                'type' => $type,
-//                'message' => $message,
-//                'record' => $record
-//            ]);
+//            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
 //        }
 
 
+
         $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
 
-// 8 hours 30 min = 510 minutes (same as your previous logic)
-        $requiredMinutes = 510;
+// Required working minutes: based on user’s defined shift timing
+        $requiredMinutes = Carbon::parse($user->check_in_time)
+            ->diffInMinutes(Carbon::parse($user->check_out_time));
 
-// How many minutes remaining
+// Remaining minutes (to complete required time)
         $remainingMinutes = max(0, $requiredMinutes - $diffMinutes);
 
-// Format check-in time
+// Format check-in time for display
         $checkInTime = Carbon::parse($record->check_in)->format('h:i A');
 
-// If less than 8h 30m
-        if ($diffMinutes < 510) {
+// If user is checking out before completing required working time
+        if ($diffMinutes < $requiredMinutes) {
 
-            // Prepare message
-            $message = "You are checking out before completing 8 hours 30 minutes.\n"
+            // Convert required minutes to hours/min (for message)
+            $reqHrs  = floor($requiredMinutes / 60);
+            $reqMins = $requiredMinutes % 60;
+
+            $message = "You are checking out before completing {$reqHrs} hrs {$reqMins} mins.\n"
                 . "Check-in Time: {$checkInTime}\n"
                 . "Completed: " . floor($diffMinutes / 60) . " hrs " . ($diffMinutes % 60) . " mins\n"
                 . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
@@ -241,7 +233,7 @@ class AttendanceRecordController extends Controller
 
             return redirect()->route('attendance.reason.form', [
                 'type' => $type,
-                'message' => nl2br($message), // line breaks safe for Blade
+                'message' => $message,
                 'record' => $record
             ]);
         }
