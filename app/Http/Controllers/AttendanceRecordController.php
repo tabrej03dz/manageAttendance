@@ -192,15 +192,15 @@ class AttendanceRecordController extends Controller
 //            return view('dashboard.settingInstruction');
 //        }
 
-        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
-            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
-            $userCheckOutTime = Carbon::parse($user->check_out_time);
-            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
-            $before = HomeController::getTime($time);
-            $message = 'You are checking out before '.$before.' write here the reasons';
-            $type = 'check_out_note';
-            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
-        }
+//        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
+//            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
+//            $userCheckOutTime = Carbon::parse($user->check_out_time);
+//            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+//            $before = HomeController::getTime($time);
+//            $message = 'You are checking out before '.$before.' write here the reasons';
+//            $type = 'check_out_note';
+//            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
+//        }
 
 
 
