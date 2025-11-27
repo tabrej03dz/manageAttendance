@@ -192,31 +192,31 @@ class AttendanceRecordController extends Controller
 //            return view('dashboard.settingInstruction');
 //        }
 
-//        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
-//            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
-//            $userCheckOutTime = Carbon::parse($user->check_out_time);
-//            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
-//            $before = HomeController::getTime($time);
-//            $message = 'You are checking out before '.$before.' write here the reasons';
-//            $type = 'check_out_note';
-//            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
-//        }
+        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s') ){
+            $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
+            $userCheckOutTime = Carbon::parse($user->check_out_time);
+            $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
+            $before = HomeController::getTime($time);
+            $message = 'You are checking out before '.$before.' write here the reasons';
+            $type = 'check_out_note';
+            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
+        }
 
 
 
         $diffMinutes = Carbon::parse($record->check_in)->diffInMinutes($record->check_out);
 
-// Required working minutes: based on user’s defined shift timing
+        // Required working minutes: based on user’s defined shift timing
         $requiredMinutes = Carbon::parse($user->check_in_time)
             ->diffInMinutes(Carbon::parse($user->check_out_time));
 
-// Remaining minutes (to complete required time)
+        // Remaining minutes (to complete required time)
         $remainingMinutes = max(0, $requiredMinutes - $diffMinutes);
 
-// Format check-in time for display
+        // Format check-in time for display
         $checkInTime = Carbon::parse($record->check_in)->format('h:i A');
 
-// If user is checking out before completing required working time
+        // If user is checking out before completing required working time
         if ($diffMinutes < $requiredMinutes) {
 
             // Convert required minutes to hours/min (for message)
