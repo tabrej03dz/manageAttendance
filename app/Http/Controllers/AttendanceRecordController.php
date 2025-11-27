@@ -220,8 +220,8 @@ class AttendanceRecordController extends Controller
         if ($diffMinutes < $requiredMinutes) {
 
             // Convert required minutes to hours/min (for message)
-            $reqHrs  = floor($requiredMinutes / 60);
-            $reqMins = $requiredMinutes % 60;
+//            $reqHrs  = floor($requiredMinutes / 60);
+//            $reqMins = $requiredMinutes % 60;
 
 //            $message = "You are checking out before completing {$reqHrs} hrs {$reqMins} mins.\n"
 //                . "Check-in Time: {$checkInTime}\n"
@@ -229,8 +229,7 @@ class AttendanceRecordController extends Controller
 //                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
 //                . "Please provide the reason for early check-out.";
 
-            $message = "You are checking out early. Reason for early check-out?";
-
+            $message = 'You are checking out before completing 08:30 write here the reasons';
             $type = 'check_out_note';
 
             return redirect()->route('attendance.reason.form', [
