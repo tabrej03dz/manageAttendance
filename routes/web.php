@@ -74,7 +74,7 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::post('note/{record}', 'addNote')->name('note');
         Route::post('user/note/{record}/{type}', 'userNote')->name('user.note');
         Route::get('user/note/response/{record}/{type}/{status}', 'userNoteResponse')->name('user.note.response');
-        Route::get('reason/form/{type}/{message}/{record}', 'reasonFormLoad')->name('reason.form');
+        Route::get('reason/form/{type}/{record}', 'reasonFormLoad')->name('reason.form');
         Route::post('store', 'store')->name('store');
     });
 

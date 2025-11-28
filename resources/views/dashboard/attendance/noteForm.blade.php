@@ -47,7 +47,7 @@
                 <!-- Generated Message -->
                 <div class="text-center mb-4">
                     <p id="attendanceMessage" class="text-red-600 font-medium whitespace-pre-line">
-                        {{ $message }}
+                        {{ session('message') }}
                     </p>
                 </div>
 

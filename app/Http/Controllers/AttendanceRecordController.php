@@ -124,12 +124,22 @@ class AttendanceRecordController extends Controller
             $messageType = 'success';
 
 
-            if ($attendanceRecord->late){
+            if ($attendanceRecord->late) {
+
                 $type = 'check_in_note';
                 $time = HomeController::getTime($attendanceRecord->late);
-                $message = 'You are '.$time.' late, Write here why you have been late..';
-                return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $attendanceRecord]);
+
+                $message = "You are {$time} late.\nPlease share the reason for late check-in.";
+
+                // 🔥 Sirf message ko session me bhejo
+                session()->flash('message', $message);
+
+                return redirect()->route('attendance.reason.form', [
+                    'type' => $type,
+                    'record' => $attendanceRecord
+                ]);
             }
+
 
 
 
@@ -197,9 +207,10 @@ class AttendanceRecordController extends Controller
             $userCheckOutTime = Carbon::parse($user->check_out_time);
             $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
             $before = HomeController::getTime($time);
-            $message = 'You are checking out before '.$before.' write here the reasons';
+            $message = "You are checking out {$before} earlier than your scheduled time.\nPlease share the reason for early check-out.";
+            session()->flash('message', $message);
             $type = 'check_out_note';
-            return redirect()->route('attendance.reason.form', ['type' => $type, 'message' => $message, 'record' => $record]);
+            return redirect()->route('attendance.reason.form', ['type' => $type, 'record' => $record]);
         }
 
 
@@ -220,21 +231,21 @@ class AttendanceRecordController extends Controller
         if ($diffMinutes < $requiredMinutes) {
 
             // Convert required minutes to hours/min (for message)
-//            $reqHrs  = floor($requiredMinutes / 60);
-//            $reqMins = $requiredMinutes % 60;
+            $reqHrs  = floor($requiredMinutes / 60);
+            $reqMins = $requiredMinutes % 60;
 
-//            $message = "You are checking out before completing {$reqHrs} hrs {$reqMins} mins.\n"
-//                . "Check-in Time: {$checkInTime}\n"
-//                . "Completed: " . floor($diffMinutes / 60) . " hrs " . ($diffMinutes % 60) . " mins\n"
-//                . "Remaining: " . floor($remainingMinutes / 60) . " hrs " . ($remainingMinutes % 60) . " mins\n"
-//                . "Please provide the reason for early check-out.";
+            $message = "You are checking out before completing {$reqHrs} hours {$reqMins} minutes.\n"
+                . "Check-in Time: {$checkInTime}\n"
+                . "Completed: " . floor($diffMinutes / 60) . " hours " . ($diffMinutes % 60) . " minutes\n"
+                . "Remaining: " . floor($remainingMinutes / 60) . " hours " . ($remainingMinutes % 60) . " minutes\n"
+                . "Please provide the reason for early check-out.";
 
-            $message = 'You are checking out before completing 08:30 write here the reasons';
+            session()->flash('message', $message);
+
             $type = 'check_out_note';
 
             return redirect()->route('attendance.reason.form', [
                 'type' => $type,
-                'message' => $message,
                 'record' => $record
             ]);
         }
@@ -371,8 +382,8 @@ class AttendanceRecordController extends Controller
         return back();
     }
 
-    public function reasonFormLoad($type, $message, AttendanceRecord $record){
-        return view('dashboard.attendance.noteForm', compact('type', 'message', 'record'));
+    public function reasonFormLoad($type, AttendanceRecord $record){
+        return view('dashboard.attendance.noteForm', compact('type',  'record'));
     }
 
     public function manualEntryForm(){
