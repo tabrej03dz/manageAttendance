@@ -14,9 +14,9 @@
 
         #contentToPrint table th,
         #contentToPrint table td {
-            padding: 4px 5px !important;      /* ऊपर-नीचे थोड़ा gap */
-            font-size: 16px !important;       /* साफ readable */
-            line-height: 1.3 !important;      /* text border से नहीं चिपकेगा */
+            padding: 4px 5px !important;
+            font-size: 16px !important;
+            line-height: 1.3 !important;
             vertical-align: middle !important;
             white-space: nowrap;
         }
@@ -37,11 +37,6 @@
             margin: 0 0 4px 0 !important;
             font-size: 12px !important;
             font-weight: 600;
-        }
-
-        .print-block {
-            margin-bottom: 8px !important;
-            padding-bottom: 6px !important;
         }
     </style>
 
@@ -112,7 +107,7 @@
                         $dateChunks = $dates->chunk(10);
                     @endphp
 
-                        <!-- ========== 1) ORIGINAL FULL TABLE (WEB + EXCEL) ========== -->
+                        <!-- ========== 1) ORIGINAL FULL TABLE (WEB + EXCEL VIEW) ========== -->
                     <div class="table-responsive mt-3" style="max-height: 75vh; overflow-y: auto;" id="webTableWrapper">
                         <div class="table-responsive text-xs">
                             <div class="table-responsive mt-3 d-md-block">
@@ -300,11 +295,11 @@
                                 $p_halfDayCount = 0;
                             @endphp
 
-                            <div class="print-block mb-2">
-                                <h5 class="mb-0"
+                            <div class="print-block">
+                                <h5 class="pb-2"
                                     style="text-transform: uppercase; border-bottom: 1px solid #333;">
                                     {{ $user?->name }}
-                                    <span style="font-weight: 600; font-size: 11px; color:#555;">
+                                    <span style="font-weight: 600; font-size: 11px; margin-bottom: 4px; color:#555;">
                                         ({{ $dates->first()->date->format('M-Y') }})
                                     </span>
                                 </h5>
@@ -312,7 +307,7 @@
 
                             {{-- per user parts (10-10 dates) --}}
                             @foreach($dateChunks as $chunkIndex => $dateChunk)
-                                <div class="print-block mb-3" style="border-bottom: 1px dashed #ccc;">
+                                <div class="print-block" style="border-bottom: 1px dashed #ccc;">
                                     <h6 class="mb-1">
                                         Part {{ $chunkIndex + 1 }} :
                                         {{ \Carbon\Carbon::parse($dateChunk->first()->date)->format('d M') }}
@@ -323,6 +318,7 @@
                                            style="margin-bottom: 0;">
                                         <thead class="bg-light">
                                         <tr>
+                                            <th style="min-width: 100px;">Employee</th>
                                             <th style="min-width: 70px;">Type</th>
                                             @foreach($dateChunk as $dateObj)
                                                 @php $d = \Carbon\Carbon::parse($dateObj->date); @endphp
@@ -331,8 +327,11 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {{-- Check-in row --}}
+                                        {{-- Check-in row (employee name rowspan="2") --}}
                                         <tr>
+                                            <td rowspan="2" style="font-weight: 600; text-align: left;">
+                                                {{ $user?->name }}
+                                            </td>
                                             <td><strong>Check-in</strong></td>
                                             @foreach($dateChunk as $dateObj)
                                                 @php
@@ -494,6 +493,86 @@
                             </div>
                         @endforeach
                     </div> {{-- /#contentToPrint --}}
+
+                    {{-- ========== 3) HIDDEN TABLE FOR EXCEL EXPORT (WITH ROWSPAN NAME) ========== --}}
+                    <table id="excelTable" class="d-none">
+                        <thead>
+                        <tr>
+                            <th>Type</th>
+                            @foreach($dates as $dateObj)
+                                @php $d = \Carbon\Carbon::parse($dateObj->date); @endphp
+                                <th>{{ $d->format('d-[D]') }}</th>
+                            @endforeach
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($users as $user)
+                            @php
+                                $excelIn  = [];
+                                $excelOut = [];
+                                foreach ($dates as $dateObj) {
+                                    $d = \Carbon\Carbon::parse($dateObj->date);
+
+                                    $record = $attendanceRecords
+                                        ->where('user_id', $user->id)
+                                        ->first(function ($record) use ($d) {
+                                            return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                        });
+
+                                    $off = \App\Models\Off::whereDate('date', $d)
+                                        ->where('office_id', $user->office_id)
+                                        ->where('is_off', '1')
+                                        ->first();
+
+                                    $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
+                                        ->whereDate('end_date', '>=', $d)
+                                        ->where('user_id', $user->id)
+                                        ->first();
+
+                                    // IN text
+                                    $inText = '-';
+                                    if ($off) {
+                                        $inText = 'OFF';
+                                    } elseif ($leave) {
+                                        $inText = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                    } elseif ($record && $record->check_in) {
+                                        $inText = $record->check_in->format('h:i A');
+                                    }
+
+                                    // OUT text
+                                    $outText = '-';
+                                    if ($off) {
+                                        $outText = 'OFF';
+                                    } elseif ($leave) {
+                                        $outText = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                    } elseif ($record && $record->check_out) {
+                                        $outText = $record->check_out->format('h:i A');
+                                    }
+
+                                    $excelIn[]  = $inText;
+                                    $excelOut[] = $outText;
+                                }
+                            @endphp
+
+                            {{-- Row 1: Employee name (rowspan 2) + Check-in --}}
+                            <tr>
+
+                                <td>C-In</td>
+                                @foreach($excelIn as $val)
+                                    <td>{{ $val }}</td>
+                                @endforeach
+                            </tr>
+
+                            {{-- Row 2: Check-out --}}
+                            <tr>
+                                <td>C-Out</td>
+                                @foreach($excelOut as $val)
+                                    <td>{{ $val }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -655,10 +734,10 @@
         }
     </script>
 
-    {{-- Excel – full detailed table (all columns) --}}
+    {{-- Excel – export using hidden excelTable (employee name rowspan) --}}
     <script>
         function exportToExcel() {
-            let table = document.getElementById("mainTable");
+            let table = document.getElementById("excelTable"); // 🔹 yahi table export hoga
 
             if (!table) {
                 alert("Table not found for export.");
