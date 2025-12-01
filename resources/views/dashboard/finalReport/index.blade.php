@@ -499,6 +499,10 @@
                 return;
             }
 
+            // 👉 Optional: simple loader
+            const oldTitle = document.title;
+            document.title = "Generating PDF, please wait...";
+
             // Web table hide, print-view show
             if (webWrapper) webWrapper.classList.add('d-none');
             printDiv.classList.remove('d-none');
@@ -506,58 +510,61 @@
             // ✅ A4 PORTRAIT = 210 x 297 mm
             const pdf = new jsPDF("p", "mm", "a4");
 
-            // A4 portrait dimensions
             const pageWidth  = 210;
             const pageHeight = 297;
 
-            const marginX = 10;   // thoda side margin
-            const marginY = 10;   // top/bottom margin
+            const marginX = 10;
+            const marginY = 10;
 
             const usableWidth  = pageWidth  - marginX * 2;
             const usableHeight = pageHeight - marginY * 2;
 
             let currentY = marginY;
 
+            // ⚡ IMPORTANT SPEED FIX:
+            // scale: 1 (pehle 2 tha) → 4x fast, size bhi kam
+            const CANVAS_OPTIONS = {
+                scale: 1,
+                useCORS: true,
+                logging: false
+            };
+
             const processBlock = (index) => {
                 if (index >= blocks.length) {
                     pdf.save("{{ $dates->first()->date->format('M-Y') }}.pdf");
 
-                    // View wapas normal karo
+                    // View wapas normal
                     if (webWrapper) webWrapper.classList.remove('d-none');
                     printDiv.classList.add('d-none');
+                    document.title = oldTitle;
                     return;
                 }
 
                 const el = blocks[index];
 
-                html2canvas(el, {
-                    scale: 2,
-                    useCORS: true
-                }).then(canvas => {
-                    const imgData   = canvas.toDataURL('image/png');
-
-                    // Block ko page ki width ke hisaab se scale karo
+                html2canvas(el, CANVAS_OPTIONS).then(canvas => {
+                    const imgData   = canvas.toDataURL('image/jpeg', 0.9); // JPEG = smaller + faster
                     const imgWidth  = usableWidth;
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    // Agar ye block current page pe fit nahi ho raha → new page
+                    // Agar current page pe fit nahi hota to naya A4 page
                     if (currentY + imgHeight > pageHeight - marginY) {
-                        pdf.addPage();      // naya A4 portrait page
-                        currentY = marginY; // top se start
+                        pdf.addPage();
+                        currentY = marginY;
                     }
 
-                    // Block ko add karo bina cut kiye
-                    pdf.addImage(imgData, "PNG", marginX, currentY, imgWidth, imgHeight);
-                    currentY += imgHeight + 3;   // chhota sa gap next block ke liye
+                    pdf.addImage(imgData, "JPEG", marginX, currentY, imgWidth, imgHeight);
+                    currentY += imgHeight + 3;
 
-                    processBlock(index + 1);
+                    // Thoda browser ko breathe dene ke liye
+                    setTimeout(() => processBlock(index + 1), 0);
                 });
             };
 
             processBlock(0);
         }
-
     </script>
+
 
     {{-- Excel – full detailed table (all columns) --}}
     <script>
