@@ -264,11 +264,28 @@
                             @endphp
 
                             {{-- per user heading (small block) --}}
-                            <div class="print-block mb-2" style="padding-bottom: 2px;">
-                                <h5 class="mb-0" style="font-size: 11px;">
-                                    {{ $user?->name }} ({{ $dates->first()->date->format('M-Y') }})
+{{--                            <div class="print-block mb-2" style="padding-bottom: 2px;">--}}
+{{--                                <h5 class="mb-0" style="font-size: 11px;">--}}
+{{--                                    {{ $user?->name }} ({{ $dates->first()->date->format('M-Y') }})--}}
+{{--                                </h5>--}}
+{{--                            </div>--}}
+                            <div class="print-block mb-2" style="">
+                                <h5 class="mb-0"
+                                    style="
+                                            font-size: 12px;
+                                            font-weight: 900;
+                                            color: #000;
+                                            text-transform: uppercase;
+                                            border-bottom: 1px solid #333;
+                                            padding-bottom: 10px;
+                                        ">
+                                    {{ $user?->name }}
+                                    <span style="font-weight: 600; font-size: 11px; color:#555;">
+                                        ({{ $dates->first()->date->format('M-Y') }})
+                                    </span>
                                 </h5>
                             </div>
+
 
                             {{-- per user parts (10-10 dates) --}}
                             @foreach($dateChunks as $chunkIndex => $dateChunk)
