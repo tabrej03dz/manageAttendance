@@ -186,9 +186,8 @@
                                                             });
 
                                                         if ($record) {
-                                                            if ($record->check_in && $record->check_out) {
-                                                                $workingDays++;
-                                                            } else {
+                                                            $workingDays++;
+                                                            if (!($record->check_in && $record->check_out)) {
                                                                 $halfDayCount++;
                                                             }
                                                             if ($record->late) {
