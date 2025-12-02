@@ -296,7 +296,7 @@
                             @endphp
 
                             <div class="print-block">
-                                <h5 class="pb-2"
+                                <h5 class="pb-6"
                                     style="text-transform: uppercase; border-bottom: 1px solid #333;">
                                     {{ $user?->name }}
                                     <span style="font-weight: 600; font-size: 11px; margin-bottom: 4px; color:#555;">

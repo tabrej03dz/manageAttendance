@@ -97,6 +97,18 @@
 
                         <div class="row mb-4">
                             <div class="col-md-6">
+                                <label for="department" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's department.">
+                                    Department
+                                </label>
+                                <select name="department_id" id="department_id" class="form-control">
+                                    <option value="">Choose Department</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{$department->id}}">{{$department->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
                                 <label for="designation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's designation.">
                                     Designation
                                 </label>
