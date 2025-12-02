@@ -274,7 +274,7 @@
                         </div>
                     </div>
 
-                    <!-- ========== 2) PRINT VIEW – PER USER, 10-10 DATES + SUMMARY ========== -->
+                    <!-- ========== 2) PRINT VIEW – PER EMPLOYEE BLOCK, 3 PER PAGE ========== -->
                     <div id="contentToPrint" class="mt-4 d-none">
                         <h4 class="text-center mb-3">
                             Monthly Attendance – {{ $dates->first()->date->format('M-Y') }}
@@ -295,199 +295,202 @@
                                 $p_halfDayCount = 0;
                             @endphp
 
-                            <div class="print-block">
-                                <h5 class="pb-6"
-                                    style="text-transform: uppercase; border-bottom: 1px solid #333;">
-                                    {{ $user?->name }}
-                                    <span style="font-weight: 600; font-size: 11px; margin-bottom: 4px; color:#555;">
-                                        ({{ $dates->first()->date->format('M-Y') }})
-                                    </span>
-                                </h5>
-                            </div>
+                            {{-- PURE EMPLOYEE BLOCK – yahi ek unit hai, jo ek hi page ke ek slot me jayega --}}
+                            <div class="employee-block mb-4">
+                                {{-- Header block --}}
+                                <div class="print-block">
+                                    <h5 class="pb-12"
+                                        style="text-transform: uppercase; border-bottom: 1px solid #333;">
+                                        {{ $user?->name }}
+                                        <span style="font-weight: 600; font-size: 11px; margin-bottom: 4px; color:#555;">
+                                            ({{ $dates->first()->date->format('M-Y') }})
+                                        </span>
+                                    </h5>
+                                </div>
 
-                            {{-- per user parts (10-10 dates) --}}
-                            @foreach($dateChunks as $chunkIndex => $dateChunk)
-                                <div class="print-block" style="border-bottom: 1px dashed #ccc;">
-                                    <h6 class="mb-1">
-                                        Part {{ $chunkIndex + 1 }} :
-                                        {{ \Carbon\Carbon::parse($dateChunk->first()->date)->format('d M') }}
-                                        – {{ \Carbon\Carbon::parse($dateChunk->last()->date)->format('d M Y') }}
-                                    </h6>
+                                {{-- per user parts (10-10 dates) --}}
+                                @foreach($dateChunks as $chunkIndex => $dateChunk)
+                                    <div class="print-block" style="border-bottom: 1px dashed #ccc;">
+                                        <h6 class="mb-12">
+                                            Part {{ $chunkIndex + 1 }} :
+                                            {{ \Carbon\Carbon::parse($dateChunk->first()->date)->format('d M') }}
+                                            – {{ \Carbon\Carbon::parse($dateChunk->last()->date)->format('d M Y') }}
+                                        </h6>
 
-                                    <table class="table table-bordered table-hover align-middle text-center"
-                                           style="margin-bottom: 0;">
+                                        <table class="table table-bordered table-hover align-middle text-center"
+                                               style="margin-bottom: 0;">
+                                            <thead class="bg-light">
+                                            <tr>
+                                                <th style="min-width: 70px;">Type</th>
+                                                @foreach($dateChunk as $dateObj)
+                                                    @php $d = \Carbon\Carbon::parse($dateObj->date); @endphp
+                                                    <th>{{ $d->format('d-[D]') }}</th>
+                                                @endforeach
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{-- Check-in row --}}
+                                            <tr>
+                                                <td><strong>C-In</strong></td>
+                                                @foreach($dateChunk as $dateObj)
+                                                    @php
+                                                        $d = \Carbon\Carbon::parse($dateObj->date);
+
+                                                        $record = $attendanceRecords
+                                                            ->where('user_id', $user->id)
+                                                            ->first(function ($record) use ($d) {
+                                                                return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                                            });
+
+                                                        $off = \App\Models\Off::whereDate('date', $d)
+                                                            ->where('office_id', $user->office_id)
+                                                            ->where('is_off', '1')
+                                                            ->first();
+
+                                                        $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
+                                                            ->whereDate('end_date', '>=', $d)
+                                                            ->where('user_id', $user->id)
+                                                            ->first();
+
+                                                        // Summary counters
+                                                        if ($record) {
+                                                            if ($record->check_in && $record->check_out) {
+                                                                $p_workingDays++;
+                                                            } else {
+                                                                $p_halfDayCount++;
+                                                            }
+                                                            if ($record->late) {
+                                                                $p_lateCount++;
+                                                                $p_lateTime += $record->late;
+                                                            }
+                                                            if (
+                                                                $record->check_out &&
+                                                                \Carbon\Carbon::parse($record?->check_out)->format('H:i') <
+                                                                    \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
+                                                            ) {
+                                                                $p_goneBeforeTimeCount++;
+                                                                $checkOutTime = \Carbon\Carbon::parse($record?->check_out)->format('H:i');
+                                                                $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
+                                                                $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
+                                                                    ->diffInMinutes($userCheckOutTime);
+                                                            }
+                                                        }
+
+                                                        if ($leave) {
+                                                            if ($leave->approve_as == 'paid') {
+                                                                $p_paidLeave++;
+                                                            } else {
+                                                                $p_unpaidLeave++;
+                                                            }
+                                                            $p_leaveDays++;
+                                                        }
+
+                                                        if ($off) {
+                                                            $p_offDays++;
+                                                        }
+
+                                                        $cellTextIn = '-';
+                                                        if ($off) {
+                                                            $cellTextIn = 'OFF';
+                                                        } elseif ($leave) {
+                                                            $cellTextIn = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                                        } elseif ($record && $record->check_in) {
+                                                            $cellTextIn = $record->check_in->format('h:i A');
+                                                        }
+                                                    @endphp
+                                                    <td>{{ $cellTextIn }}</td>
+                                                @endforeach
+                                            </tr>
+
+                                            {{-- Check-out row --}}
+                                            <tr>
+                                                <td><strong>C-Out</strong></td>
+                                                @foreach($dateChunk as $dateObj)
+                                                    @php
+                                                        $d = \Carbon\Carbon::parse($dateObj->date);
+
+                                                        $record = $attendanceRecords
+                                                            ->where('user_id', $user->id)
+                                                            ->first(function ($record) use ($d) {
+                                                                return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
+                                                            });
+
+                                                        $off = \App\Models\Off::whereDate('date', $d)
+                                                            ->where('office_id', $user->office_id)
+                                                            ->where('is_off', '1')
+                                                            ->first();
+
+                                                        $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
+                                                            ->whereDate('end_date', '>=', $d)
+                                                            ->where('user_id', $user->id)
+                                                            ->first();
+
+                                                        $cellTextOut = '-';
+                                                        if ($off) {
+                                                            $cellTextOut = 'OFF';
+                                                        } elseif ($leave) {
+                                                            $cellTextOut = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                                        } elseif ($record && $record->check_out) {
+                                                            $cellTextOut = $record->check_out->format('h:i A');
+                                                        }
+                                                    @endphp
+                                                    <td>{{ $cellTextOut }}</td>
+                                                @endforeach
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endforeach
+
+                                {{-- SUMMARY BLOCK for this user --}}
+                                <div class="print-block mb-4">
+                                    <table class="table table-bordered table-sm text-center">
                                         <thead class="bg-light">
                                         <tr>
-                                            <th style="min-width: 70px;">Type</th>
-                                            @foreach($dateChunk as $dateObj)
-                                                @php $d = \Carbon\Carbon::parse($dateObj->date); @endphp
-                                                <th>{{ $d->format('d-[D]') }}</th>
-                                            @endforeach
+                                            <th>Office Days</th>
+                                            <th>Working Days</th>
+                                            <th>Half Days</th>
+                                            <th>Leaves</th>
+                                            <th>Paid Leaves</th>
+                                            <th>Late Count</th>
+                                            <th>Late Time</th>
+                                            <th>Gone Before Time</th>
+                                            <th>Gone Before Time Count</th>
+                                            @if (\Carbon\Carbon::parse($dates->last()->date)->lt(\Carbon\Carbon::today()) &&
+                                                auth()->user()->hasRole('admin|super_admin'))
+                                                <th>Basic Salary</th>
+                                            @endif
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {{-- Check-in row (employee name rowspan="2") --}}
                                         <tr>
-
-                                            <td><strong>C-In</strong></td>
-                                            @foreach($dateChunk as $dateObj)
+                                            <td>{{ $officeDays - $p_offDays }}</td>
+                                            <td>{{ $p_workingDays }}</td>
+                                            <td>{{ $p_halfDayCount }}</td>
+                                            <td>{{ $p_leaveDays }}</td>
+                                            <td>{{ $p_paidLeave }}</td>
+                                            <td>{{ $p_lateCount }}</td>
+                                            <td>{{ $p_lateTime ? App\Http\Controllers\HomeController::getTime($p_lateTime) : 'N/A' }}</td>
+                                            <td>{{ $p_goneBeforeTime ? App\Http\Controllers\HomeController::getTime($p_goneBeforeTime) : 'N/A' }}</td>
+                                            <td>{{ $p_goneBeforeTimeCount }}</td>
+                                            @if (\Carbon\Carbon::parse($dates->last()->date)->lt(\Carbon\Carbon::today()) &&
+                                                auth()->user()->hasRole('admin|super_admin'))
                                                 @php
-                                                    $d = \Carbon\Carbon::parse($dateObj->date);
-
-                                                    $record = $attendanceRecords
-                                                        ->where('user_id', $user->id)
-                                                        ->first(function ($record) use ($d) {
-                                                            return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
-                                                        });
-
-                                                    $off = \App\Models\Off::whereDate('date', $d)
-                                                        ->where('office_id', $user->office_id)
-                                                        ->where('is_off', '1')
-                                                        ->first();
-
-                                                    $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
-                                                        ->whereDate('end_date', '>=', $d)
-                                                        ->where('user_id', $user->id)
-                                                        ->first();
-
-                                                    // Summary counters
-                                                    if ($record) {
-                                                        if ($record->check_in && $record->check_out) {
-                                                            $p_workingDays++;
-                                                        } else {
-                                                            $p_halfDayCount++;
-                                                        }
-                                                        if ($record->late) {
-                                                            $p_lateCount++;
-                                                            $p_lateTime += $record->late;
-                                                        }
-                                                        if (
-                                                            $record->check_out &&
-                                                            \Carbon\Carbon::parse($record?->check_out)->format('H:i') <
-                                                                \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
-                                                        ) {
-                                                            $p_goneBeforeTimeCount++;
-                                                            $checkOutTime = \Carbon\Carbon::parse($record?->check_out)->format('H:i');
-                                                            $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
-                                                            $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
-                                                                ->diffInMinutes($userCheckOutTime);
-                                                        }
-                                                    }
-
-                                                    if ($leave) {
-                                                        if ($leave->approve_as == 'paid') {
-                                                            $p_paidLeave++;
-                                                        } else {
-                                                            $p_unpaidLeave++;
-                                                        }
-                                                        $p_leaveDays++;
-                                                    }
-
-                                                    if ($off) {
-                                                        $p_offDays++;
-                                                    }
-
-                                                    $cellTextIn = '-';
-                                                    if ($off) {
-                                                        $cellTextIn = 'OFF';
-                                                    } elseif ($leave) {
-                                                        $cellTextIn = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
-                                                    } elseif ($record && $record->check_in) {
-                                                        $cellTextIn = $record->check_in->format('h:i A');
-                                                    }
+                                                    $p_oneDaySalary = $user->salary / 30;
+                                                    $p_salary =
+                                                        $p_workingDays * $p_oneDaySalary +
+                                                        $sundayCount * $p_oneDaySalary +
+                                                        $p_paidLeave * $p_oneDaySalary +
+                                                        $p_offDays * $p_oneDaySalary +
+                                                        ($p_halfDayCount * $p_oneDaySalary) / 2;
                                                 @endphp
-                                                <td>{{ $cellTextIn }}</td>
-                                            @endforeach
-                                        </tr>
-
-                                        {{-- Check-out row --}}
-                                        <tr>
-                                            <td><strong>C-Out</strong></td>
-                                            @foreach($dateChunk as $dateObj)
-                                                @php
-                                                    $d = \Carbon\Carbon::parse($dateObj->date);
-
-                                                    $record = $attendanceRecords
-                                                        ->where('user_id', $user->id)
-                                                        ->first(function ($record) use ($d) {
-                                                            return $record->created_at->format('Y-m-d') === $d->format('Y-m-d');
-                                                        });
-
-                                                    $off = \App\Models\Off::whereDate('date', $d)
-                                                        ->where('office_id', $user->office_id)
-                                                        ->where('is_off', '1')
-                                                        ->first();
-
-                                                    $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
-                                                        ->whereDate('end_date', '>=', $d)
-                                                        ->where('user_id', $user->id)
-                                                        ->first();
-
-                                                    $cellTextOut = '-';
-                                                    if ($off) {
-                                                        $cellTextOut = 'OFF';
-                                                    } elseif ($leave) {
-                                                        $cellTextOut = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
-                                                    } elseif ($record && $record->check_out) {
-                                                        $cellTextOut = $record->check_out->format('h:i A');
-                                                    }
-                                                @endphp
-                                                <td>{{ $cellTextOut }}</td>
-                                            @endforeach
+                                                <td>{{ round($p_salary) }}</td>
+                                            @endif
                                         </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                            @endforeach
-
-                            {{-- SUMMARY BLOCK for this user --}}
-                            <div class="print-block mb-4">
-                                <table class="table table-bordered table-sm text-center">
-                                    <thead class="bg-light">
-                                    <tr>
-                                        <th>Office Days</th>
-                                        <th>Working Days</th>
-                                        <th>Half Days</th>
-                                        <th>Leaves</th>
-                                        <th>Paid Leaves</th>
-                                        <th>Late Count</th>
-                                        <th>Late Time</th>
-                                        <th>Gone Before Time</th>
-                                        <th>Gone Before Time Count</th>
-                                        @if (\Carbon\Carbon::parse($dates->last()->date)->lt(\Carbon\Carbon::today()) &&
-                                            auth()->user()->hasRole('admin|super_admin'))
-                                            <th>Basic Salary</th>
-                                        @endif
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>{{ $officeDays - $p_offDays }}</td>
-                                        <td>{{ $p_workingDays }}</td>
-                                        <td>{{ $p_halfDayCount }}</td>
-                                        <td>{{ $p_leaveDays }}</td>
-                                        <td>{{ $p_paidLeave }}</td>
-                                        <td>{{ $p_lateCount }}</td>
-                                        <td>{{ $p_lateTime ? App\Http\Controllers\HomeController::getTime($p_lateTime) : 'N/A' }}</td>
-                                        <td>{{ $p_goneBeforeTime ? App\Http\Controllers\HomeController::getTime($p_goneBeforeTime) : 'N/A' }}</td>
-                                        <td>{{ $p_goneBeforeTimeCount }}</td>
-                                        @if (\Carbon\Carbon::parse($dates->last()->date)->lt(\Carbon\Carbon::today()) &&
-                                            auth()->user()->hasRole('admin|super_admin'))
-                                            @php
-                                                $p_oneDaySalary = $user->salary / 30;
-                                                $p_salary =
-                                                    $p_workingDays * $p_oneDaySalary +
-                                                    $sundayCount * $p_oneDaySalary +
-                                                    $p_paidLeave * $p_oneDaySalary +
-                                                    $p_offDays * $p_oneDaySalary +
-                                                    ($p_halfDayCount * $p_oneDaySalary) / 2;
-                                            @endphp
-                                            <td>{{ round($p_salary) }}</td>
-                                        @endif
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            </div> {{-- /.employee-block --}}
                         @endforeach
                     </div> {{-- /#contentToPrint --}}
 
@@ -551,9 +554,8 @@
                                 }
                             @endphp
 
-                            {{-- Row 1: Employee name (rowspan 2) + Check-in --}}
+                            {{-- Row 1: Check-in --}}
                             <tr>
-
                                 <td>C-In</td>
                                 @foreach($excelIn as $val)
                                     <td>{{ $val }}</td>
@@ -603,7 +605,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    {{-- PDF – A4 portrait, block-wise, improved progress bar --}}
+    {{-- PDF – A4 portrait, 3 employees per page, no split --}}
     <script>
         function printDivAsPDF() {
             const { jsPDF } = window.jspdf;
@@ -616,9 +618,9 @@
                 return;
             }
 
-            const blocks = printDiv.querySelectorAll('.print-block');
-            if (!blocks.length) {
-                alert('No blocks to print');
+            const employeeBlocks = printDiv.querySelectorAll('.employee-block');
+            if (!employeeBlocks.length) {
+                alert('No employee blocks to print');
                 return;
             }
 
@@ -659,7 +661,9 @@
             const usableWidth  = pageWidth  - marginX * 2;
             const usableHeight = pageHeight - marginY * 2;
 
-            let currentY = marginY;
+            // 3 slots per page
+            const slotsPerPage = 3;
+            const slotHeight   = usableHeight / slotsPerPage;
 
             const CANVAS_OPTIONS = {
                 scale: 1,
@@ -667,7 +671,7 @@
                 logging: false
             };
 
-            const totalBlocks = blocks.length;
+            const totalBlocks = employeeBlocks.length;
 
             function updateProgress(doneCount) {
                 const percent = Math.min(100, Math.round((doneCount / totalBlocks) * 100));
@@ -680,7 +684,7 @@
                 }
             }
 
-            const processBlock = (index) => {
+            const processEmployee = (index) => {
                 if (index >= totalBlocks) {
                     // Done
                     pdf.save("{{ $dates->first()->date->format('M-Y') }}.pdf");
@@ -698,43 +702,50 @@
                     return;
                 }
 
-                const el = blocks[index];
-
-                // Start of this block => show live progress
+                const block = employeeBlocks[index];
                 updateProgress(index);
 
-                html2canvas(el, CANVAS_OPTIONS).then(canvas => {
+                html2canvas(block, CANVAS_OPTIONS).then(canvas => {
                     const imgData   = canvas.toDataURL('image/jpeg', 0.9);
-                    const imgWidth  = usableWidth;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    if (currentY + imgHeight > pageHeight - marginY) {
+                    // Scaling to fit within one slot (width + height both respected)
+                    const scaleX = usableWidth / canvas.width;
+                    const scaleY = slotHeight   / canvas.height;
+                    const scale  = Math.min(scaleX, scaleY, 1); // 1 se zyada zoom nahi karenge
+
+                    const imgWidth  = canvas.width  * scale;
+                    const imgHeight = canvas.height * scale;
+
+                    const employeeIndexOnPage = index % slotsPerPage;
+
+                    // New page after every 3 employees
+                    if (employeeIndexOnPage === 0 && index !== 0) {
                         pdf.addPage();
-                        currentY = marginY;
                     }
 
-                    pdf.addImage(imgData, "JPEG", marginX, currentY, imgWidth, imgHeight);
-                    currentY += imgHeight + 3;
+                    const posY = marginY + employeeIndexOnPage * slotHeight + (slotHeight - imgHeight) / 2;
+                    const posX = marginX + (usableWidth - imgWidth) / 2;
 
-                    // Block successfully done
+                    pdf.addImage(imgData, "JPEG", posX, posY, imgWidth, imgHeight);
+
                     updateProgress(index + 1);
 
-                    setTimeout(() => processBlock(index + 1), 0);
+                    setTimeout(() => processEmployee(index + 1), 0);
                 }).catch(() => {
                     // Even if this block fails, move progress forward
                     updateProgress(index + 1);
-                    setTimeout(() => processBlock(index + 1), 0);
+                    setTimeout(() => processEmployee(index + 1), 0);
                 });
             };
 
-            processBlock(0);
+            processEmployee(0);
         }
     </script>
 
-    {{-- Excel – export using hidden excelTable (employee name rowspan) --}}
+    {{-- Excel – export using hidden excelTable --}}
     <script>
         function exportToExcel() {
-            let table = document.getElementById("excelTable"); // 🔹 yahi table export hoga
+            let table = document.getElementById("excelTable");
 
             if (!table) {
                 alert("Table not found for export.");
