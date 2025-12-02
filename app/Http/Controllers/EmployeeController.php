@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EmployeeRequest;
 use App\Models\AttendanceRecord;
+use App\Models\Department;
 use App\Models\Office;
 use App\Models\Plan;
 use App\Models\User;
@@ -51,7 +52,8 @@ class EmployeeController extends Controller
 //            $teamLeaders = User::where('office_id', auth()->user()->office_id)->role('team_leader')->get();
             $teamLeaders = HomeController::employeeList();
         }
-        return view('dashboard.employee.create', compact('offices', 'teamLeaders'));
+        $departments = Department::all();
+        return view('dashboard.employee.create', compact('offices', 'teamLeaders', 'departments'));
     }
 
     public function store(EmployeeRequest $request)

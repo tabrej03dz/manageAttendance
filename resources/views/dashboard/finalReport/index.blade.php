@@ -318,7 +318,6 @@
                                            style="margin-bottom: 0;">
                                         <thead class="bg-light">
                                         <tr>
-                                            <th style="min-width: 100px;">Employee</th>
                                             <th style="min-width: 70px;">Type</th>
                                             @foreach($dateChunk as $dateObj)
                                                 @php $d = \Carbon\Carbon::parse($dateObj->date); @endphp
@@ -329,10 +328,8 @@
                                         <tbody>
                                         {{-- Check-in row (employee name rowspan="2") --}}
                                         <tr>
-                                            <td rowspan="2" style="font-weight: 600; text-align: left;">
-                                                {{ $user?->name }}
-                                            </td>
-                                            <td><strong>Check-in</strong></td>
+
+                                            <td><strong>C-In</strong></td>
                                             @foreach($dateChunk as $dateObj)
                                                 @php
                                                     $d = \Carbon\Carbon::parse($dateObj->date);
@@ -405,7 +402,7 @@
 
                                         {{-- Check-out row --}}
                                         <tr>
-                                            <td><strong>Check-out</strong></td>
+                                            <td><strong>C-Out</strong></td>
                                             @foreach($dateChunk as $dateObj)
                                                 @php
                                                     $d = \Carbon\Carbon::parse($dateObj->date);
