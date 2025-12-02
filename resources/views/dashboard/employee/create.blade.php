@@ -77,25 +77,22 @@
                                 </label>
                                 <input type="file" class="form-control" id="aadhar_attachment" name="aadhar_attachment">
                             </div>
-                        </div>
-
-                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="pan_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach Pan document.">
                                     Pan Attachment
                                 </label>
                                 <input type="file" class="form-control" id="pan_attachment" name="pan_attachment">
                             </div>
+                        </div>
+
+                        <div class="row mb-4">
+
                             <div class="col-md-6">
                                 <label for="other_attachment" class="form-label" data-bs-toggle="tooltip" title="Attach any other relevant document.">
                                     Other Attachment
                                 </label>
                                 <input type="file" class="form-control" id="other_attachment" name="other_attachment">
                             </div>
-                        </div>
-
-
-                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="department" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's department.">
                                     Department
@@ -107,6 +104,11 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+
+
+                        <div class="row mb-4">
+
 
                             <div class="col-md-6">
                                 <label for="designation" class="form-label" data-bs-toggle="tooltip" title="Enter the employee's designation.">

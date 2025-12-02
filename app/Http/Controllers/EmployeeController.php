@@ -169,7 +169,9 @@ class EmployeeController extends Controller
             $teamLeaders = HomeController::employeeList();
         }
 
-        return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders'));
+        $departments = Department::all();
+
+        return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders', 'departments'));
     }
 
 

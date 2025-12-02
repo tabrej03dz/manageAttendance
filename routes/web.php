@@ -96,6 +96,8 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
         Route::get('permissionRemove/{permission}/{user}', [EmployeeController::class, 'permissionRemove'])->name('permissionRemove');
     });
 
+    Route::resource('departments', \App\Http\Controllers\DepartmentController::class);
+
     Route::prefix('owner')->name('owner.')->group(function(){
        Route::get('/', [OwnerController::class, 'index'])->name('index');
        Route::get('create', [OwnerController::class, 'create'])->name('create');
