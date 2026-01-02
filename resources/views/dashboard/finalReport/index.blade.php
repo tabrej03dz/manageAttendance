@@ -362,11 +362,33 @@
 
                                                         // Summary counters
                                                         if ($record) {
-                                                            if ($record->check_in && $record->check_out) {
+                                                            if ($record) {
+                                                                // ✅ present count (full + half) – web jaisa
                                                                 $p_workingDays++;
-                                                            } else {
-                                                                $p_halfDayCount++;
+
+                                                                // ✅ half day separately
+                                                                if (!($record->check_in && $record->check_out)) {
+                                                                    $p_halfDayCount++;
+                                                                }
+
+                                                                if ($record->late) {
+                                                                    $p_lateCount++;
+                                                                    $p_lateTime += $record->late;
+                                                                }
+
+                                                                if (
+                                                                    $record->check_out &&
+                                                                    \Carbon\Carbon::parse($record?->check_out)->format('H:i') <
+                                                                        \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
+                                                                ) {
+                                                                    $p_goneBeforeTimeCount++;
+                                                                    $checkOutTime = \Carbon\Carbon::parse($record?->check_out)->format('H:i');
+                                                                    $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
+                                                                    $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
+                                                                        ->diffInMinutes($userCheckOutTime);
+                                                                }
                                                             }
+
                                                             if ($record->late) {
                                                                 $p_lateCount++;
                                                                 $p_lateTime += $record->late;
