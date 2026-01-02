@@ -389,10 +389,7 @@
                                                                 }
                                                             }
 
-                                                            if ($record->late) {
-                                                                $p_lateCount++;
-                                                                $p_lateTime += $record->late;
-                                                            }
+
                                                             if (
                                                                 $record->check_out &&
                                                                 \Carbon\Carbon::parse($record?->check_out)->format('H:i') <
