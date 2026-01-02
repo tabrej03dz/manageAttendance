@@ -38,6 +38,12 @@
             font-size: 12px !important;
             font-weight: 600;
         }
+
+        /* ===== SUMMARY TABLE BOLD (FINAL REPORT) ===== */
+        #contentToPrint .summary-table td,
+        #contentToPrint .summary-table th {
+            font-weight: 700 !important;
+        }
     </style>
 
     <div class="pb-20">
@@ -471,8 +477,8 @@
 
                                 {{-- SUMMARY BLOCK for this user --}}
                                 <div class="print-block mb-4">
-                                    <table class="table table-bordered table-sm text-center">
-                                        <thead class="bg-light">
+                                    <table class="table table-bordered table-sm text-center summary-table">
+                                    <thead class="bg-light">
                                         <tr>
                                             <th>Office Days</th>
                                             <th>Working Days</th>
