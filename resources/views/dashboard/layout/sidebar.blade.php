@@ -50,7 +50,17 @@
                         </a>
                     </li>
                 @endcan
-                @can('show employees')
+
+                @can('show departments')
+                    <li class="nav-item">
+                        <a href="{{ route('departments.index') }}"
+                            class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>Departments</p>
+                        </a>
+                    </li>
+                @endcan
+                    @can('show employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.index') }}"
                             class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
