@@ -234,6 +234,7 @@ class EmployeeController extends Controller
 
     public function update(Request $request, User $employee)
     {
+        dd($request->all());
         // dd($request->all());
         // Update employee details except sensitive fields
         $employee->update($request->except([
