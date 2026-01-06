@@ -24,15 +24,19 @@
                     <option value="0">Inactive</option>
                 </select>
 
-{{--                <select name="department_id" id="" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">--}}
-{{--                    <option value="">Choose Department</option>--}}
-{{--                    --}}
-{{--                    <option value="1">Active</option>--}}
-{{--                    <option value="0">Inactive</option>--}}
-{{--                </select>--}}
+                <select name="department_id" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
+                    <option value="">Choose Department</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->id }}"
+                            {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                            {{ $department->name }}
+                        </option>
+                    @endforeach
+                </select>
+
 
                 {{--                             <input type="submit" value="Filter" class="btn btn-success text-white mb-2">--}}
-                <a href="{{ route('reports.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
+                <a href="{{ route('employee.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
             </form>
 
             @can('create employee')

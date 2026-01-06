@@ -19,16 +19,32 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         //        if (auth()->user()->hasRole('super_admin')){
-//            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
-//        }else{
-//            $office = auth()->user()->office;
-//            $employees = $office->users;
-//        }
+        //            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
+        //        }else{
+        //            $office = auth()->user()->office;
+        //            $employees = $office->users;
+        //        }
 
-        $employees = isset($request->status) ? HomeController::employeeList()->where('status', $request->status) : HomeController::employeeList()->where('status', '1');
+        $employees = HomeController::employeeList();
+
+        // status filter
+        if (isset($request->status) && $request->status !== '') {
+            $employees = $employees->where('status', $request->status);
+        } else {
+            $employees = $employees->where('status', '1');
+        }
+
+        // ✅ department filter
+        if (isset($request->department_id) && $request->department_id !== '') {
+            $employees = $employees->where('department_id', $request->department_id);
+        }
+
         $departments = Department::all();
+
         return view('dashboard.employee.index', compact('employees', 'departments'));
     }
+
+
 
     public function create()
     {
