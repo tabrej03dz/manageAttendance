@@ -54,7 +54,7 @@
                 @canany(['Show Departments', 'show departments'])
                     <li class="nav-item">
                         <a href="{{ route('departments.index') }}"
-                            class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('departments*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-users"></i>
                             <p>Departments</p>
                         </a>
@@ -63,7 +63,7 @@
                     @can('show employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.index') }}"
-                            class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('employee*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-users"></i>
                             <p>Employee</p>
                         </a>
@@ -72,7 +72,7 @@
                 @can('show leaves')
                     <li class="nav-item">
                         <a href="{{ route('leave.index') }}"
-                            class="nav-link {{ request()->routeIs('leave.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('leave*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-quote-left"></i>
                             <p>Leave</p>
                         </a>
@@ -81,7 +81,7 @@
                 @can('show offices')
                     <li class="nav-item">
                         <a href="{{ route('office.index') }}"
-                            class="nav-link {{ request()->routeIs('office.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('office*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-industry"></i>
                             <p>Office</p>
                         </a>
@@ -100,7 +100,7 @@
                 @can('manage offs')
                     <li class="nav-item">
                         <a href="{{ route('off.index') }}"
-                            class="nav-link {{ request()->routeIs('off.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('off*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-calendar-alt"></i>
                             <p>Manage Offs</p>
                         </a>
@@ -111,7 +111,7 @@
                 @can('show policies')
                     <li class="nav-item">
                         <a href="{{ route('policy.index') }}"
-                            class="nav-link {{ request()->routeIs('policy.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('policy*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-pencil-alt"></i>
                             <p>Policy</p>
                         </a>
@@ -121,7 +121,7 @@
                 @can('show reports')
                     <li class="nav-item">
                         <a href="{{ route('reports.index') }}"
-                            class="nav-link {{ request()->routeIs('reports.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('reports*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-chart-bar"></i>
                             <p>Reports</p>
                         </a>
@@ -132,7 +132,7 @@
                 @can('mark attendance of employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.attendance') }}"
-                            class="nav-link {{ request()->routeIs('employee.attendance') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('employee*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-check-circle"></i>
                             <p>Mark Attendance</p>
                         </a>
@@ -153,7 +153,7 @@
                 @can('show salaries')
                     <li class="nav-item">
                         <a href="{{ route('salary.index') }}"
-                            class="nav-link {{ request()->routeIs('salary.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('salary*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-dollar-sign"></i>
                             <p>Salary</p>
                         </a>
@@ -163,7 +163,7 @@
                 @can('advance salary')
                     <li class="nav-item">
                         <a href="{{ route('advance.index') }}"
-                            class="nav-link {{ request()->routeIs('advance.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('advance*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-credit-card"></i>
                             <p>Advance Payment</p>
                         </a>
@@ -174,7 +174,7 @@
                 @role('super_admin|owner')
                     <li class="nav-item">
                         <a href="{{ route('note.index') }}"
-                            class="nav-link {{ request()->routeIs('note.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('note*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-sticky-note"></i>
                             <p>Note</p>
                         </a>
@@ -184,7 +184,7 @@
                 @role('super_admin')
                 <li class="nav-item">
                     <a href="{{ route('request.index') }}"
-                        class="nav-link {{ request()->routeIs('request.index') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('request*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-sticky-note"></i>
                         <p>DemoRequest</p>
                     </a>
@@ -193,7 +193,7 @@
                 @can('show roles')
                     <li class="nav-item">
                         <a href="{{ route('role.index') }}"
-                            class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('role*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-user-shield"></i>
                             <p>Role</p>
                         </a>
@@ -203,7 +203,7 @@
                 @can('show visits')
                     <li class="nav-item">
                         <a href="{{ route('visit.index') }}"
-                            class="nav-link {{ request()->routeIs('visit.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('visit*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-map-marker-alt"></i>
                             <p>Visits</p>
                         </a>
@@ -217,7 +217,7 @@
                         {{--                        <i class="nav-icon fas fa-signal"></i></a> --}}
 
                         <a href="{{ route('recycle.index') }}"
-                            class="nav-link {{ request()->routeIs('recycle.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('recycle*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-recycle"></i>
 
                             <p>Recycle</p>
@@ -228,7 +228,7 @@
                 @can('show breaks')
                     <li class="nav-item">
                         <a href="{{ route('break.index') }}"
-                            class="nav-link {{ request()->routeIs('break.index') ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs('break*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-coffee"></i>
                             <p>Breaks</p>
                         </a>
