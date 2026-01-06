@@ -51,7 +51,7 @@
                     </li>
                 @endcan
 
-                @can('show departments')
+                @can('Show Departments')
                     <li class="nav-item">
                         <a href="{{ route('departments.index') }}"
                             class="nav-link {{ request()->routeIs('employee.index') ? 'active' : '' }}">
