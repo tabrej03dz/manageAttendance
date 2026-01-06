@@ -24,6 +24,13 @@
                     <option value="0">Inactive</option>
                 </select>
 
+{{--                <select name="department_id" id="" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">--}}
+{{--                    <option value="">Choose Department</option>--}}
+{{--                    --}}
+{{--                    <option value="1">Active</option>--}}
+{{--                    <option value="0">Inactive</option>--}}
+{{--                </select>--}}
+
                 {{--                             <input type="submit" value="Filter" class="btn btn-success text-white mb-2">--}}
                 <a href="{{ route('reports.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
             </form>
@@ -33,11 +40,15 @@
                 class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                 Create
             </a>
+
+            @endcan
+
+            @canany(['show departments', 'Show Departments'])
                 <a href="{{route('departments.index')}}"
                    class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
                     Departments
                 </a>
-            @endcan
+            @endcanany
         </div>
 
         <div class="overflow-x-auto">
@@ -50,6 +61,7 @@
                         <th class="py-3 px-6 text-left">Phone</th>
                         <th class="py-3 px-6 text-left">Image</th>
                         <th class="py-3 px-6 text-left">Office</th>
+                        <th class="py-3 px-6 text-left">Department</th>
                         <th class="py-3 px-6 text-left">Status</th>
                         <th class="py-3 px-6 text-left">Location R</th>
                         <th class="py-3 px-6 text-left">Action</th>
@@ -66,6 +78,7 @@
                             <img src="{{$employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/50'}}" alt="{{$employee->name}}" class="rounded-full w-12 h-12">
                         </td>
                         <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
+                        <td class="py-3 px-6 text-left">{{$employee->department?->name ?? 'N/A'}}</td>
                         <td class="py-3 px-6 text-left">
                             @can('change status of employee')
                             <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold

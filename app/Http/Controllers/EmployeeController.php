@@ -26,7 +26,8 @@ class EmployeeController extends Controller
 //        }
 
         $employees = isset($request->status) ? HomeController::employeeList()->where('status', $request->status) : HomeController::employeeList()->where('status', '1');
-        return view('dashboard.employee.index', compact('employees'));
+        $departments = Department::all();
+        return view('dashboard.employee.index', compact('employees', 'departments'));
     }
 
     public function create()
