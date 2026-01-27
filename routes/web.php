@@ -43,6 +43,8 @@ Route::controller(\App\Http\Controllers\FrontController::class)->group(function(
     Route::get('/blogDetailsPage', 'blogDetailsPage')->name('blogDetailsPage');
     Route::get('/reqDemo', 'reqDemo')->name('reqDemo');
     Route::get('/thankyou', 'thankyou')->name('thankyoupage');
+    Route::get('employee-form', 'employeeForm')->name('employee-form');
+    Route::post('employee-register', 'employeeRegister')->name('employee-register');
 });
 
 Route::controller(RequestDemoController::class)->group(function(){

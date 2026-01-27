@@ -16,12 +16,17 @@
             <h1 class="text-2xl font-bold">Employees</h1>
 
             <form action="{{ route('employee.index') }}" method="GET"
-                  class="d-flex flex-column flex-md-row align-items-stretch">
-                @csrf
-                <select name="status" id="" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
+                class="d-flex flex-column flex-md-row align-items-stretch">
+
+                {{-- ✅ SEARCH --}}
+                <input type="text" name="q" value="{{ request('q') }}"
+                    placeholder="Search name / email / phone"
+                    class="form-control mb-2 mb-md-0 mr-md-2" />
+
+                <select name="status" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
                     <option value="">Status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
                 </select>
 
                 <select name="department_id" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
@@ -34,10 +39,11 @@
                     @endforeach
                 </select>
 
+                <button type="submit" class="btn btn-success mb-2">Search</button>
 
-                {{--                             <input type="submit" value="Filter" class="btn btn-success text-white mb-2">--}}
                 <a href="{{ route('employee.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
             </form>
+
 
             @can('create employee')
             <a href="{{route('employee.create')}}"
@@ -46,6 +52,21 @@
             </a>
 
             @endcan
+
+            <a href="{{ route('employee.index', array_merge(request()->all(), ['office_unassigned' => 1])) }}"
+                class="relative btn mb-2 ml-2
+                {{ request('office_unassigned') == '1' ? 'btn-dark' : 'btn-warning' }}">
+
+                Register Request
+
+                @if($unassignedCount > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">
+                        {{ $unassignedCount }}
+                    </span>
+                @endif
+            </a>
+
+
 
             @canany(['show departments', 'Show Departments'])
                 <a href="{{route('departments.index')}}"
