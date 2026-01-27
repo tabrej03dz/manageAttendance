@@ -50,9 +50,9 @@ class FrontController extends Controller
             'esic_number'     => ['nullable','string','max:255'],
             'account_number'  => ['nullable','string','max:255'],
 
-            'location_required' => ['required', Rule::in(['yes','no'])],
-            'is_accepted'       => ['required', Rule::in(['0','1',0,1])],
-            'status'            => ['required', Rule::in(['0','1',0,1])],
+            'location_required' => ['nullable', Rule::in(['yes','no'])],
+            'is_accepted'       => ['nullable', Rule::in(['0','1',0,1])],
+            'status'            => ['nullable', Rule::in(['0','1',0,1])],
 
             // files
             'photo'            => ['nullable','image','max:4096'], // 4MB
