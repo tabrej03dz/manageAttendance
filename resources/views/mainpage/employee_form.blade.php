@@ -283,7 +283,7 @@
             </div>
 
             {{-- STATUS / SETTINGS --}}
-            <div>
+            {{-- <div>
               <div class="flex items-center justify-between gap-3 mb-5">
                 <h3 class="text-lg font-semibold text-slate-900">Status & Settings</h3>
                 <span class="h-[1px] flex-1 bg-slate-200"></span>
@@ -314,7 +314,7 @@
                   </select>
                 </div>
               </div>
-            </div>
+            </div> --}}
 
             {{-- ACTIONS --}}
             <div class="pt-2 flex flex-col sm:flex-row gap-3 justify-end">
