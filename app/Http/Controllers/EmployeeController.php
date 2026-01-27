@@ -367,7 +367,6 @@ public function index(Request $request)
             $employee->syncRoles($request->role);
         }
         $employee->office_id = $request->office_id;
-
         $employee->save();
 
         // Update salary details
