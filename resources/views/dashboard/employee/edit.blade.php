@@ -158,6 +158,17 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
                             <label for="employee_id" class="form-label" data-bs-toggle="tooltip" title="Enter the employee Id.">
                                 Employee Id
                             </label>

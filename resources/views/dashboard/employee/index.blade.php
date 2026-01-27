@@ -53,7 +53,7 @@
 
             @endcan
 
-            <a href="{{ route('employee.index', array_merge(request()->all(), ['office_unassigned' => 1])) }}"
+            <a href="{{ route('employee.index', array_merge(request()->all(), ['office_unassigned' => 1, 'status' => '0'])) }}"
                 class="relative btn mb-2 ml-2
                 {{ request('office_unassigned') == '1' ? 'btn-dark' : 'btn-warning' }}">
 
