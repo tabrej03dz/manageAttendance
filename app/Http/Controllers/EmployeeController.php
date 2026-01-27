@@ -304,7 +304,6 @@ public function index(Request $request)
             'pan_attachment',
             'other_attachment',
             'joining_date',
-            'office_id',
         ]));
 
         // Update password if provided
