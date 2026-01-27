@@ -46,6 +46,21 @@
         </div>
       </div>
 
+      {{-- Flash Messages --}}
+        @if(session('success'))
+            <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-sm">
+                <div class="font-semibold">Success 🎉</div>
+                <p class="text-sm mt-1">{{ session('success') }}</p>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm">
+                <div class="font-semibold">Failed ❌</div>
+                <p class="text-sm mt-1">{{ session('error') }}</p>
+            </div>
+        @endif
+
       {{-- Errors --}}
       @if ($errors->any())
         <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 shadow-sm">

@@ -298,7 +298,7 @@ public function index(Request $request)
         // dd($request->all());
         // Update employee details except sensitive fields
         $employee->update($request->except([
-            'password',
+            
             'photo',
             'aadhar_attachment',
             'pan_attachment',
@@ -366,6 +366,7 @@ public function index(Request $request)
         if ($request->role) {
             $employee->syncRoles($request->role);
         }
+        $employee->office_id = $request->office_id;
 
         $employee->save();
 
