@@ -40,6 +40,8 @@
                          {{-- <li><a href="{{ route('blogs') }}">Blog</a></li> --}}
                          <li><a href="{{ route('reqDemo') }}">Request a Demo</a>
                          </li>
+                         <li><a href="{{ route('employee-form') }}">Register as Employee</a>
+                         </li>
                          {{-- <li><a href="{{ route('login') }}">Login</a></li> --}}
                      </ul>
 
