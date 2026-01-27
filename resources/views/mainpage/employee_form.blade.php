@@ -138,10 +138,10 @@
                   <input type="text" name="responsibility" value="{{ old('responsibility') }}" class="{{ $input }}" placeholder="e.g. Sales / HR / Accounts">
                 </div>
 
-                <div>
+                {{-- <div>
                   <label class="text-sm font-medium text-slate-700">Salary</label>
                   <input type="number" step="0.01" name="salary" value="{{ old('salary') }}" class="{{ $input }}" placeholder="0.00">
-                </div>
+                </div> --}}
               </div>
             </div>
 
