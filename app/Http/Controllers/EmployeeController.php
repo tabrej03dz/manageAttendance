@@ -45,55 +45,14 @@ class EmployeeController extends Controller
     // }
 
 
-// public function index(Request $request)
-// {
-//     $employees = HomeController::employeeList();
-
-//     // ✅ SEARCH (name/email/phone)
-//     if ($request->filled('q')) {
-//         $q = trim($request->q);
-//         $employees = $employees->where(function ($qq) use ($q) {
-//             $qq->where('name', 'like', "%{$q}%")
-//                ->orWhere('email', 'like', "%{$q}%")
-//                ->orWhere('phone', 'like', "%{$q}%");
-//         });
-//     }
-
-//     // status filter
-//     if (isset($request->status) && $request->status !== '') {
-//         $employees = $employees->where('status', $request->status);
-//     } else {
-//         $employees = $employees->where('status', '1');
-//     }
-
-//     // department filter
-//     if (isset($request->department_id) && $request->department_id !== '') {
-//         $employees = $employees->where('department_id', $request->department_id);
-//     }
-
-//     // ✅ office not assigned filter
-//     if (isset($request->office_unassigned) && $request->office_unassigned == '1') {
-//         $employees = $employees->whereNull('office_id'); // better than = null
-//     }
-
-//     $departments = Department::all();
-
-//     $unassignedCount = HomeController::employeeList()
-//         ->whereNull('office_id')
-//         ->count();
-
-//     return view('dashboard.employee.index', compact('employees', 'departments', 'unassignedCount'));
-// }
-
-
 public function index(Request $request)
 {
-    $employees = HomeController::employeeList(); // must return query, not collection
+    $employees = HomeController::employeeList();
 
-    // 🔍 SEARCH
+    // ✅ SEARCH (name/email/phone)
     if ($request->filled('q')) {
         $q = trim($request->q);
-        $employees->where(function ($qq) use ($q) {
+        $employees = $employees->where(function ($qq) use ($q) {
             $qq->where('name', 'like', "%{$q}%")
                ->orWhere('email', 'like', "%{$q}%")
                ->orWhere('phone', 'like', "%{$q}%");
@@ -101,20 +60,20 @@ public function index(Request $request)
     }
 
     // status filter
-    if ($request->filled('status')) {
-        $employees->where('status', $request->status);
+    if (isset($request->status) && $request->status !== '') {
+        $employees = $employees->where('status', $request->status);
     } else {
-        $employees->where('status', '1');
+        $employees = $employees->where('status', '1');
     }
 
     // department filter
-    if ($request->filled('department_id')) {
-        $employees->where('department_id', $request->department_id);
+    if (isset($request->department_id) && $request->department_id !== '') {
+        $employees = $employees->where('department_id', $request->department_id);
     }
 
-    // office not assigned
-    if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
-        $employees->whereNull('office_id');
+    // ✅ office not assigned filter
+    if (isset($request->office_unassigned) && $request->office_unassigned == '1') {
+        $employees = $employees->whereNull('office_id'); // better than = null
     }
 
     $departments = Department::all();
@@ -123,15 +82,7 @@ public function index(Request $request)
         ->whereNull('office_id')
         ->count();
 
-    // ✅ PAGINATION (10 per page)
-    $employees = $employees
-        ->orderBy('id', 'desc')
-        ->paginate(25)
-        ->withQueryString(); // keep filters in pagination links
-
-    return view('dashboard.employee.index', compact(
-        'employees', 'departments', 'unassignedCount'
-    ));
+    return view('dashboard.employee.index', compact('employees', 'departments', 'unassignedCount'));
 }
 
 
