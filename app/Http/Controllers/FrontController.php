@@ -83,7 +83,7 @@ class FrontController extends Controller
         }
 
         // ✅ DB insert
-        $employee = User::create($data);
+        $employee = User::create($data + ['status' => '0']);
 
         return back()
             ->with('success', 'Employee created successfully!');

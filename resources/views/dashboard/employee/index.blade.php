@@ -155,6 +155,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="mt-4">
+     {{ $employees->appends(request()->except('page'))->links() }}
+</div>
         </div>
     </div>
 @endsection
