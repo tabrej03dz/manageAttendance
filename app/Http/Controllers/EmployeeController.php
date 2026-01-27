@@ -298,7 +298,7 @@ public function index(Request $request)
         // dd($request->all());
         // Update employee details except sensitive fields
         $employee->update($request->except([
-            
+            'password',
             'photo',
             'aadhar_attachment',
             'pan_attachment',
