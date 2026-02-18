@@ -16,81 +16,61 @@ use Spatie\Permission\Models\Permission;
 
 class EmployeeController extends Controller
 {
+
     // public function index(Request $request)
     // {
-    //     //        if (auth()->user()->hasRole('super_admin')){
-    //     //            $employees = User::role(['admin', 'employee', 'team_leader'])->get();
-    //     //        }else{
-    //     //            $office = auth()->user()->office;
-    //     //            $employees = $office->users;
-    //     //        }
+    //     // $employees = HomeController::employeeList(); // must return query, not collection
 
-    //     $employees = HomeController::employeeList();
-
-    //     // status filter
-    //     if (isset($request->status) && $request->status !== '') {
-    //         $employees = $employees->where('status', $request->status);
-    //     } else {
-    //         $employees = $employees->where('status', '1');
+    //     $employees = HomeController::employeeList()->toQuery();
+    //     // 🔍 SEARCH
+    //     if ($request->filled('q')) {
+    //         $q = trim($request->q);
+    //         $employees->where(function ($qq) use ($q) {
+    //             $qq->where('name', 'like', "%{$q}%")
+    //             ->orWhere('email', 'like', "%{$q}%")
+    //             ->orWhere('phone', 'like', "%{$q}%");
+    //         });
     //     }
 
-    //     // ✅ department filter
-    //     if (isset($request->department_id) && $request->department_id !== '') {
-    //         $employees = $employees->where('department_id', $request->department_id);
+    //     // status filter
+    //     if ($request->filled('status')) {
+    //         $employees->where('status', $request->status);
+    //     } else {
+    //         $employees->where('status', '1');
+    //     }
+
+    //     // department filter
+    //     if ($request->filled('department_id')) {
+    //         $employees->where('department_id', $request->department_id);
+    //     }
+
+    //     // office not assigned
+    //     if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
+    //         $employees->whereNull('office_id');
     //     }
 
     //     $departments = Department::all();
 
-    //     return view('dashboard.employee.index', compact('employees', 'departments'));
+    //     $unassignedCount = HomeController::employeeList()
+    //         ->whereNull('office_id')
+    //         ->count();
+
+    //     // ✅ PAGINATION (10 per page)
+    //     $employees = $employees
+
+    //         ->paginate(25)
+    //         ->withQueryString(); // keep filters in pagination links
+
+    //     return view('dashboard.employee.index', compact(
+    //         'employees', 'departments', 'unassignedCount'
+    //     ));
     // }
 
 
-// public function index(Request $request)
-// {
-//     $employees = HomeController::employeeList();
-
-//     // ✅ SEARCH (name/email/phone)
-//     if ($request->filled('q')) {
-//         $q = trim($request->q);
-//         $employees = $employees->where(function ($qq) use ($q) {
-//             $qq->where('name', 'like', "%{$q}%")
-//                ->orWhere('email', 'like', "%{$q}%")
-//                ->orWhere('phone', 'like', "%{$q}%");
-//         });
-//     }
-
-//     // status filter
-//     if (isset($request->status) && $request->status !== '') {
-//         $employees = $employees->where('status', $request->status);
-//     } else {
-//         $employees = $employees->where('status', '1');
-//     }
-
-//     // department filter
-//     if (isset($request->department_id) && $request->department_id !== '') {
-//         $employees = $employees->where('department_id', $request->department_id);
-//     }
-
-//     // ✅ office not assigned filter
-//     if (isset($request->office_unassigned) && $request->office_unassigned == '1') {
-//         $employees = $employees->whereNull('office_id'); // better than = null
-//     }
-
-//     $departments = Department::all();
-
-//     $unassignedCount = HomeController::employeeList()
-//         ->whereNull('office_id')
-//         ->count();
-
-//     return view('dashboard.employee.index', compact('employees', 'departments', 'unassignedCount'));
-// }
-
-
-public function index(Request $request)
+    public function index(Request $request)
 {
-    // $employees = HomeController::employeeList(); // must return query, not collection
-
     $employees = HomeController::employeeList()->toQuery();
+
     // 🔍 SEARCH
     if ($request->filled('q')) {
         $q = trim($request->q);
@@ -113,28 +93,29 @@ public function index(Request $request)
         $employees->where('department_id', $request->department_id);
     }
 
+    // ✅ office filter (NEW)
+    if ($request->filled('office_id')) {
+        $employees->where('office_id', $request->office_id);
+    }
+
     // office not assigned
     if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
         $employees->whereNull('office_id');
     }
 
     $departments = Department::all();
+    $offices     = Office::orderBy('name')->get(); // ✅ NEW
 
     $unassignedCount = HomeController::employeeList()
         ->whereNull('office_id')
         ->count();
 
-    // ✅ PAGINATION (10 per page)
-    $employees = $employees
-
-        ->paginate(25)
-        ->withQueryString(); // keep filters in pagination links
+    $employees = $employees->paginate(25)->withQueryString();
 
     return view('dashboard.employee.index', compact(
-        'employees', 'departments', 'unassignedCount'
+        'employees', 'departments', 'offices', 'unassignedCount'
     ));
 }
-
 
 
 

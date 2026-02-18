@@ -1,163 +1,248 @@
 @extends('dashboard.layout.root')
 @section('content')
 
-    <style>
-        #more-options {
-            max-height: 0;
-            overflow: hidden;
-        }
-    </style>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<div class="p-4 sm:p-6">
+    {{-- Card --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200">
+        {{-- Header + Filters --}}
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Employees</h1>
+                    <p class="text-sm text-gray-500 mt-1">Search, filter and manage employees</p>
+                </div>
 
-    <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">Employees</h1>
+                <div class="flex flex-wrap items-center gap-2">
+                    @can('create employee')
+                        <a href="{{ route('employee.create') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition">
+                            <span class="material-icons text-base">add</span> Create
+                        </a>
+                    @endcan
 
-            <form action="{{ route('employee.index') }}" method="GET"
-                class="d-flex flex-column flex-md-row align-items-stretch">
+                    <a href="{{ route('employee.index', array_merge(request()->except('office_id'), ['office_unassigned' => 1, 'status' => '0'])) }}"
+                       class="relative inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold transition
+                       {{ request('office_unassigned') == '1' ? 'bg-gray-900 text-white border-gray-900' : 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100' }}">
+                        <span class="material-icons text-base">assignment_late</span>
+                        Register Request
 
-                {{-- ✅ SEARCH --}}
-                <input type="text" name="q" value="{{ request('q') }}"
-                    placeholder="Search name / email / phone"
-                    class="form-control mb-2 mb-md-0 mr-md-2" />
+                        @if(!empty($unassignedCount) && $unassignedCount > 0)
+                            <span class="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center
+                                         bg-red-600 text-white text-xs font-bold rounded-full shadow">
+                                {{ $unassignedCount }}
+                            </span>
+                        @endif
+                    </a>
 
-                <select name="status" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
-                    <option value="">Status</option>
-                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
-                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
-                </select>
+                    @canany(['show departments', 'Show Departments'])
+                        <a href="{{ route('departments.index') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-900 text-white font-semibold shadow hover:bg-black transition">
+                            <span class="material-icons text-base">apartment</span> Departments
+                        </a>
+                    @endcanany
+                </div>
+            </div>
 
-                <select name="department_id" onchange="this.form.submit()" class="form-control mb-2 mb-md-0 mr-md-2">
-                    <option value="">Choose Department</option>
-                    @foreach($departments as $department)
-                        <option value="{{ $department->id }}"
-                            {{ request('department_id') == $department->id ? 'selected' : '' }}>
-                            {{ $department->name }}
-                        </option>
-                    @endforeach
-                </select>
+            {{-- Filters Row --}}
+            <form action="{{ route('employee.index') }}" method="GET" class="mt-4">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    {{-- Search --}}
+                    <div class="md:col-span-4">
+                        <label class="text-xs font-semibold text-gray-600">Search</label>
+                        <input type="text" name="q" value="{{ request('q') }}"
+                               placeholder="Search name / email / phone"
+                               class="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400" />
+                    </div>
 
-                <button type="submit" class="btn btn-success mb-2">Search</button>
 
-                <a href="{{ route('employee.index') }}" class="btn btn-info mb-2 ml-2">Clear</a>
+
+
+
+                    {{-- Status --}}
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-semibold text-gray-600">Status</label>
+                        <select name="status"
+                                class="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400">
+                            <option value="">All</option>
+                            <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                            <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+
+                    {{-- Department --}}
+                    <div class="md:col-span-3">
+                        <label class="text-xs font-semibold text-gray-600">Department</label>
+                        <select name="department_id"
+                                class="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400">
+                            <option value="">All</option>
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}" {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Office --}}
+                    <div class="md:col-span-3">
+                        <label class="text-xs font-semibold text-gray-600">Office</label>
+                        <select name="office_id"
+                                class="mt-1 w-full h-11 rounded-lg border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400">
+                            <option value="">All</option>
+                            @foreach($offices as $office)
+                                <option value="{{ $office->id }}" {{ request('office_id') == $office->id ? 'selected' : '' }}>
+                                    {{ $office->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Buttons --}}
+                    <div class="md:col-span-12 flex flex-wrap items-center gap-2 pt-1">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition">
+                            <span class="material-icons text-base">search</span> Apply
+                        </button>
+
+                        <a href="{{ route('employee.index') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition">
+                            <span class="material-icons text-base">refresh</span> Clear
+                        </a>
+                    </div>
+                </div>
             </form>
-
-
-            @can('create employee')
-            <a href="{{route('employee.create')}}"
-                class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                Create
-            </a>
-
-            @endcan
-
-            <a href="{{ route('employee.index', array_merge(request()->all(), ['office_unassigned' => 1, 'status' => '0'])) }}"
-                class="relative btn mb-2 ml-2
-                {{ request('office_unassigned') == '1' ? 'btn-dark' : 'btn-warning' }}">
-
-                Register Request
-
-                @if($unassignedCount > 0)
-                    <span class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow">
-                        {{ $unassignedCount }}
-                    </span>
-                @endif
-            </a>
-
-
-
-            @canany(['show departments', 'Show Departments'])
-                <a href="{{route('departments.index')}}"
-                   class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                    Departments
-                </a>
-            @endcanany
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-lg shadow-md">
-                <thead>
-                    <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                        <th class="py-3 px-6 text-left">#</th>
-                        <th class="py-3 px-6 text-left">Name</th>
-                        <th class="py-3 px-6 text-left">Email</th>
-                        <th class="py-3 px-6 text-left">Phone</th>
-                        <th class="py-3 px-6 text-left">Image</th>
-                        <th class="py-3 px-6 text-left">Office</th>
-                        <th class="py-3 px-6 text-left">Department</th>
-                        <th class="py-3 px-6 text-left">Status</th>
-                        <th class="py-3 px-6 text-left">Location R</th>
-                        <th class="py-3 px-6 text-left">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-600 text-sm font-light">
-                    @foreach($employees as $employee)
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
-                        <td class="py-3 px-6 text-left">{{$employee->name}}</td>
-                        <td class="py-3 px-6 text-left">{{$employee->email}}</td>
-                        <td class="py-3 px-6 text-left">{{$employee->phone}}</td>
-                        <td class="py-3 px-6 text-left">
-                            <img src="{{$employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/50'}}" alt="{{$employee->name}}" class="rounded-full w-12 h-12">
-                        </td>
-                        <td class="py-3 px-6 text-left">{{$employee->office?->name}}</td>
-                        <td class="py-3 px-6 text-left">{{$employee->department?->name ?? 'N/A'}}</td>
-                        <td class="py-3 px-6 text-left">
-                            @can('change status of employee')
-                            <a href="{{route('employee.status', ['employee' => $employee->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
-                                @if($employee->status == '1')
-                                    bg-green-100 text-green-800">Active
-                                @else
-                                    bg-red-100 text-red-800">Inactive
-                                @endif
-                            </a>
-                            @endcan
-                        </td>
-                        <td class="py-3 px-6 text-left">{{$employee->location_required}}</td>
-                        <td class="py-3 px-6 text-left flex space-x-2">
-                            @can('edit employee')
-                            <a title="Edit" href="{{ route('employee.edit', ['employee' => $employee->id]) }}"
-                                class="bg-blue-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-blue-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
-                                <span class="material-icons">edit</span>
-                            </a>
-                            @endcan
-                            @can('delete employee')
-                            <form action="{{ route('employee.delete', ['employee' => $employee->id]) }}" method="post">
-                                @csrf
-                                <button title="Delete" type="submit"
-                                    class="bg-red-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50">
-                                    <span class="material-icons">delete</span>
-                                </button>
-                            </form>
-                            @endcan
-                            @can('show profile of employee')
-                            <a title="Profile" href="{{ route('employee.profile', ['user' => $employee->id]) }}"
-                                class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                <span class="material-icons">account_circle</span>
-                            </a>
-                            @endcan
-                            @role('super_admin|admin|owner')
-                                <a title="Salary Setup" href="{{ route('salary.setupForm', ['employee' => $employee->id]) }}"
-                                   class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                    <span class="material-icons">payments</span>
-                                </a>
-                            @endrole
-                            @can('show permissions of employee')
-                                <a title="Permissions" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
-                                   class="bg-green-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-green-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50">
-                                    <span class="material-icons">admin_panel_settings</span>
-                                </a>
-                            @endcan
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        {{-- Table --}}
+        <div class="p-4 sm:p-6">
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                        <tr class="text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                            <th class="px-4 py-3">#</th>
+                            <th class="px-4 py-3">Employee</th>
+                            <th class="px-4 py-3">Contact</th>
+                            <th class="px-4 py-3">Office</th>
+                            <th class="px-4 py-3">Department</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Location R</th>
+                            <th class="px-4 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($employees as $employee)
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ ($employees->currentPage()-1) * $employees->perPage() + $loop->iteration }}
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <img
+                                            src="{{ $employee->photo ? asset('storage/'. $employee->photo) : 'https://via.placeholder.com/80' }}"
+                                            alt="{{ $employee->name }}"
+                                            class="w-10 h-10 rounded-full object-cover border border-gray-200">
+                                        <div>
+                                            <div class="text-sm font-semibold text-gray-900">{{ $employee->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $employee->email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ $employee->phone }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ $employee->office?->name ?? '—' }}
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ $employee->department?->name ?? 'N/A' }}
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    @can('change status of employee')
+                                        <a href="{{ route('employee.status', ['employee' => $employee->id]) }}"
+                                           class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold
+                                           {{ $employee->status == '1' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $employee->status == '1' ? 'Active' : 'Inactive' }}
+                                        </a>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold
+                                           {{ $employee->status == '1' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            {{ $employee->status == '1' ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    @endcan
+                                </td>
+
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ $employee->location_required }}
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center justify-end gap-2">
+                                        @can('edit employee')
+                                            <a title="Edit" href="{{ route('employee.edit', ['employee' => $employee->id]) }}"
+                                               class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                                                <span class="material-icons text-base">edit</span>
+                                            </a>
+                                        @endcan
+
+                                        @can('delete employee')
+                                            <form action="{{ route('employee.delete', ['employee' => $employee->id]) }}" method="post"
+                                                  onsubmit="return confirm('Delete this employee?')">
+                                                @csrf
+                                                <button title="Delete" type="submit"
+                                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+                                                    <span class="material-icons text-base">delete</span>
+                                                </button>
+                                            </form>
+                                        @endcan
+
+                                        @can('show profile of employee')
+                                            <a title="Profile" href="{{ route('employee.profile', ['user' => $employee->id]) }}"
+                                               class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                                                <span class="material-icons text-base">account_circle</span>
+                                            </a>
+                                        @endcan
+
+                                        @role('super_admin|admin|owner')
+                                            <a title="Salary Setup" href="{{ route('salary.setupForm', ['employee' => $employee->id]) }}"
+                                               class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-900 text-white hover:bg-black transition">
+                                                <span class="material-icons text-base">payments</span>
+                                            </a>
+                                        @endrole
+
+                                        @can('show permissions of employee')
+                                            <a title="Permissions" href="{{ route('employee.permission', ['user' => $employee->id]) }}"
+                                               class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition">
+                                                <span class="material-icons text-base">admin_panel_settings</span>
+                                            </a>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">
+                                    No employees found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Pagination --}}
             <div class="mt-4">
-     {{ $employees->appends(request()->except('page'))->links() }}
-</div>
+                {{ $employees->appends(request()->except('page'))->links() }}
+            </div>
         </div>
     </div>
+</div>
 @endsection

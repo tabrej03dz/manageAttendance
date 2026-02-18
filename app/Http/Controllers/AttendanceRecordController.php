@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttendanceRecord;
 use App\Models\User;
+use App\Models\Office;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -25,19 +26,6 @@ class AttendanceRecordController extends Controller
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
         }
-
-//        if ($request->start){
-//            $startOfMonth = Carbon::parse($request->start);
-//        }else{
-//            $startOfMonth = Carbon::now()->startOfMonth();
-//        }
-//        $monthStart = $startOfMonth->toDateTimeLocalString();
-//
-//        if ($request->end){
-//            $endOfMonth = Carbon::parse($request->end);
-//        }else{
-//            $endOfMonth = Carbon::now()->endOfMonth();
-//        }
         if($request->employee){
             $user = User::find($request->employee);
         }else{
@@ -54,17 +42,12 @@ class AttendanceRecordController extends Controller
         }
         $attendanceRecords = $attendanceRecords->get();
 
-//        if (auth()->user()->hasRole('super_admin')){
-//
-//            $users = User::role(['admin', 'employee'])->get();
-//        }else{
-//            $office = auth()->user()->office;
-////            dd($office->users);
-//            $users = $office->users;
-//        }
         $users = HomeController::employeeList();
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user',  'month'));
     }
+
+
+
 
 
     public function checkIn(Request $request, User $user = null) {
