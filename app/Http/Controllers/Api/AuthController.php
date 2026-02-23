@@ -20,11 +20,15 @@ class AuthController extends Controller
     {
         // Validate input
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|string',
             'password' => 'required|string|min:6',
         ]);
+
+        $login = $request->email;
         // Attempt to authenticate the user
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $login)
+            ->orWhere('phone', $login)
+            ->first();
 //        return response($user);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
