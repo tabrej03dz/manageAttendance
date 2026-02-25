@@ -88,27 +88,5 @@ class HomeController extends Controller
         ]);
     }
 
-    public function roleAndPermissions(Request $request)
-    {
-        $user = $request->user();
-
-        // Spatie roles/permissions helpers
-        $roles = method_exists($user, 'getRoleNames') ? $user->getRoleNames() : collect();
-        $permissions = method_exists($user, 'getAllPermissions')
-            ? $user->getAllPermissions()->pluck('name')
-            : collect();
-
-        return response()->json([
-            'success' => true,
-            'user' => [
-                'id'    => $user->id,
-                'name'  => $user->name ?? null,
-                'email' => $user->email ?? null,
-                'phone' => $user->phone ?? null,
-            ],
-            'roles' => $roles->values(),
-            'permissions' => $permissions->values(),
-        ]);
-    }
 
 }

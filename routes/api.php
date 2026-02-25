@@ -85,7 +85,6 @@ Route::group(['middleware' => "auth:sanctum"], function(){
        Route::post('delete/{id}', 'destroy')->name('delete');
     });
 
-    Route::get('role-and-permissions', [HomeController::class, 'roleAndPermissions']);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
