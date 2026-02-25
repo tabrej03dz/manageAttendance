@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AttendanceRecordController;
 use \App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HomeController;
 use \App\Http\Controllers\Api\LeaveController;
 use \App\Http\Controllers\Api\ReportController;
 
@@ -83,6 +84,8 @@ Route::group(['middleware' => "auth:sanctum"], function(){
        Route::post('update/{id}', 'update')->name('update');
        Route::post('delete/{id}', 'destroy')->name('delete');
     });
+
+    Route::get('role-and-permissions', [HomeController::class, 'roleAndPermissions']);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
