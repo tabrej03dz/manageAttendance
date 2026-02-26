@@ -21,6 +21,7 @@ use \App\Http\Controllers\Api\ReportController;
 */
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 
 
@@ -87,6 +88,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
 
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('delete-account', [AuthController::class, 'deleteAccount']);
 });
 
 

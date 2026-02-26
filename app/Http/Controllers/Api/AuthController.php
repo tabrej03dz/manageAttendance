@@ -8,14 +8,56 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Auth;
-
-
-
+use Illuminate\Support\Facades\DB;
 
 
 
 class AuthController extends Controller
 {
+
+
+    public function register(Request $request)
+    {
+
+        // ✅ Validate input
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|max:255|unique:users,email',
+            'phone'    => 'nullable|string|max:20|unique:users,phone',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+        
+
+
+        // ✅ Create user
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'phone'    => $request->phone,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // ✅ Optional: default role assign
+        // Spatie permission use kar rahe ho to
+        $user->assignRole('employee'); // change role if needed
+
+        // ✅ Create token
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        // ✅ Get roles & permissions
+        $roles = $user->getRoleNames();
+        $permissions = $user->getAllPermissions();
+
+        // ✅ Response
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => $user,
+            'token' => $token,
+            'roles' => $roles,
+            'permissions' => $permissions,
+        ], 201);
+    }
+
     public function login(Request $request)
     {
         // Validate input
@@ -29,7 +71,7 @@ class AuthController extends Controller
         $user = User::where('email', $login)
             ->orWhere('phone', $login)
             ->first();
-//        return response($user);
+        //  return response($user);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
@@ -54,6 +96,71 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully',
         ], 200);
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        // ✅ Validate password
+        $request->validate([
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = $request->user();
+
+        // ✅ Check password
+        if (!Hash::check($request->password, $user->password)) {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Password is incorrect'
+            ], 401);
+
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            // ✅ Delete all tokens (logout everywhere)
+            $user->tokens()->delete();
+
+            // ✅ OPTIONAL: Delete related data (if exists in your system)
+
+            // Example:
+            // $user->attendanceRecords()->delete();
+            // $user->leaveRequests()->delete();
+            // $user->notifications()->delete();
+
+
+            // ✅ Delete user
+            $user->delete();
+
+
+            DB::commit();
+
+
+            return response()->json([
+
+                'status' => true,
+                'message' => 'Account deleted successfully'
+
+            ], 200);
+
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+
+                'status' => false,
+                'message' => 'Account delete failed',
+                'error' => $e->getMessage()
+
+            ], 500);
+
+        }
+
     }
 
 
