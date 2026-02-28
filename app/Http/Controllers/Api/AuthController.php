@@ -58,37 +58,87 @@ class AuthController extends Controller
         ], 201);
     }
 
+    // public function login(Request $request)
+    // {
+    //     // Validate input
+    //     $request->validate([
+    //         'email' => 'required|string',
+    //         'password' => 'required|string|min:6',
+    //     ]);
+
+    //     $login = $request->email;
+    //     // Attempt to authenticate the user
+    //     $user = User::where('email', $login)
+    //         ->orWhere('phone', $login)
+    //         ->first();
+    //     //  return response($user);
+
+    //     if (!$user || !Hash::check($request->password, $user->password)) {
+    //         return response()->json(['message' => 'Invalid credentials'], 401);
+    //     }
+
+    //     // Generate a token for the user
+    //     $token = $user->createToken('authToken')->plainTextToken;
+    //     $user->office = $user->office;
+    //     $roles = $user->getRoleNames();
+    //     $permissions = $user->getAllPermissions();
+    //     return response()->json([
+    //         'user' => $user,
+    //         'token' => $token,
+    //         'roles' => $roles,
+    //         'permissions' => $permissions,
+    //     ], 200);
+    // }
+
+
     public function login(Request $request)
     {
-        // Validate input
         $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string|min:6',
+            'email'    => ['required','string'],   // email ya phone dono aayega is field me
+            'password' => ['required','string','min:6'],
         ]);
 
-        $login = $request->email;
-        // Attempt to authenticate the user
-        $user = User::where('email', $login)
+        $login = trim((string) $request->email);
+
+        $user = User::query()
+            ->where('email', $login)
             ->orWhere('phone', $login)
             ->first();
-        //  return response($user);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
-        // Generate a token for the user
+        // ✅ token
         $token = $user->createToken('authToken')->plainTextToken;
-        $user->office = $user->office;
-        $roles = $user->getRoleNames();
-        $permissions = $user->getAllPermissions();
+
+        // ✅ office load (agar relation hai)
+        $user->load('office');
+
+        // ✅ roles & permissions (names only)
+        $roles = $user->getRoleNames()->values(); // ["employee"]
+        $permissions = $user->getAllPermissions()->pluck('name')->values(); // ["check-in", "check-out"]
+
+        // ✅ user object ko clean rakho (duplicate relations hide)
+        $userData = $user->makeHidden([
+            'roles',
+            'permissions',
+            'password',
+            'remember_token',
+        ])->toArray();
+
+        // ✅ single place pe roles/permissions attach
+        $userData['roles'] = $roles;
+        $userData['permissions'] = $permissions;
+
         return response()->json([
-            'user' => $user,
+            'user'  => $userData,
             'token' => $token,
-            'roles' => $roles,
-            'permissions' => $permissions,
         ], 200);
     }
+
 
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
