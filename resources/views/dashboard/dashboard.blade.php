@@ -471,7 +471,7 @@
             </p>
           </div>
 
-          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" aria-label="Close">
+          <button type="button" class="btn btn-sm btn-light" onclick="document.querySelector('.modal-backdrop')?.click()" aria-label="Close">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -503,9 +503,9 @@
         </div>
 
         <div class="mt-3 text-center">
-          <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
+            <button type="button" onclick="document.querySelector('.modal-backdrop')?.click()">
             Not now
-          </button>
+            </button>
         </div>
       </div>
 
@@ -537,5 +537,6 @@
         }, 300);
     });
     </script>
+
 
 @endsection
