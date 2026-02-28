@@ -471,9 +471,12 @@
             </p>
           </div>
 
-          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" aria-label="Close">
+          <button type="button"
+                    class="btn btn-sm btn-light js-close-app-modal"
+                    data-bs-dismiss="modal" data-dismiss="modal"
+                    aria-label="Close">
             <i class="fas fa-times"></i>
-          </button>
+            </button>
         </div>
       </div>
 
@@ -503,9 +506,11 @@
         </div>
 
         <div class="mt-3 text-center">
-          <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
+            <button type="button"
+                    class="btn btn-outline-secondary w-100 js-close-app-modal"
+                    data-bs-dismiss="modal" data-dismiss="modal">
             Not now
-          </button>
+            </button>
         </div>
       </div>
 
@@ -517,25 +522,49 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        // ✅ Mobile detection (sirf mobile par)
-        const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobile) return;
+    // ✅ Mobile only
+    const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) return;
 
-        const el = document.getElementById("appUpdateModal");
-        if (!el) return;
+    const el = document.getElementById("appUpdateModal");
+    if (!el) return;
 
-        // ✅ Bootstrap 5 modal (har baar show)
-        const modal = new bootstrap.Modal(el, {
-            backdrop: true,    // outside click close
-            keyboard: true     // ESC close
+    let bs5Instance = null;
+
+    // ✅ Bootstrap 5 support
+    if (window.bootstrap && bootstrap.Modal) {
+        bs5Instance = bootstrap.Modal.getOrCreateInstance(el, {
+            backdrop: true,
+            keyboard: true
         });
+        setTimeout(() => bs5Instance.show(), 200);
+    }
 
-        setTimeout(() => {
-            modal.show();
-        }, 300);
+    // ✅ Bootstrap 4 support (jQuery)
+    if (!bs5Instance && window.jQuery && typeof jQuery(el).modal === "function") {
+        setTimeout(() => jQuery(el).modal('show'), 200);
+    }
+
+    // ✅ FORCE CLOSE (works in both BS4 & BS5)
+    document.querySelectorAll(".js-close-app-modal").forEach(btn => {
+        btn.addEventListener("click", function () {
+            if (bs5Instance) {
+                bs5Instance.hide();
+            } else if (window.jQuery && typeof jQuery(el).modal === "function") {
+                jQuery(el).modal('hide');
+            } else {
+                // fallback (just in case)
+                el.classList.remove('show');
+                el.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+            }
+        });
     });
+
+});
 </script>
 
 @endsection
