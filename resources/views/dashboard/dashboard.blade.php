@@ -471,7 +471,7 @@
             </p>
           </div>
 
-          <button type="button" class="btn btn-sm btn-light" onclick="document.querySelector('.modal-backdrop')?.click()" aria-label="Close">
+          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" aria-label="Close">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -503,9 +503,9 @@
         </div>
 
         <div class="mt-3 text-center">
-            <button type="button" onclick="document.querySelector('.modal-backdrop')?.click()">
+          <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
             Not now
-            </button>
+          </button>
         </div>
       </div>
 
@@ -538,35 +538,40 @@
     });
     </script>
 
-<script>
+    <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const modalEl = document.getElementById("appUpdateModal");
-    if (!modalEl) return;
+    const modal = document.getElementById("appUpdateModal");
+    if (!modal) return;
 
-    // sab close buttons select karo
-    const closeButtons = modalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+    const closeButtons = modal.querySelectorAll('[data-bs-dismiss="modal"]');
 
+    function closeModal() {
+
+        // hide modal
+        modal.classList.remove("show");
+        modal.style.display = "none";
+        modal.setAttribute("aria-hidden", "true");
+        modal.removeAttribute("aria-modal");
+
+        // remove backdrop
+        document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+
+        // enable scroll
+        document.body.classList.remove("modal-open");
+        document.body.style.removeProperty("overflow");
+        document.body.style.removeProperty("padding-right");
+    }
+
+    // close button click
     closeButtons.forEach(btn => {
-        btn.addEventListener("click", function () {
-
-            // backdrop pe click simulate karo
-            const backdrop = document.querySelector(".modal-backdrop");
-
-            if (backdrop) {
-                backdrop.click(); // ✅ same outside click event trigger
-            } else {
-                // fallback direct hide
-                modalEl.classList.remove("show");
-                modalEl.style.display = "none";
-                document.body.classList.remove("modal-open");
-
-                document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-            }
-
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            closeModal();
         });
     });
 
 });
 </script>
+
 @endsection
