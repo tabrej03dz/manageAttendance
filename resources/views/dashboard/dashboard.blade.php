@@ -419,4 +419,133 @@
             </div>
         </div>
     </section>
+
+{{-- ✅ Mobile App Install/Update Popup (Show only on Mobile) --}}
+<style>
+  .app-update-modal .modal-content{
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .app-update-hero{
+    background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(220,53,69,.10));
+    padding: 18px 18px 10px 18px;
+  }
+  .app-update-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.7);
+  }
+  .store-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-decoration:none;
+  }
+  .store-btn small{ display:block; font-weight:600; opacity:.85; }
+  .store-btn .label{ line-height:1.05; text-align:left; }
+</style>
+
+<div class="modal fade app-update-modal" id="appUpdateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="app-update-hero">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <div class="app-update-badge">
+              <i class="fas fa-mobile-alt"></i>
+              Victory Attendance App
+            </div>
+            <h5 class="mt-3 mb-1 fw-bold">Update / Install Required</h5>
+            <p class="mb-0 text-muted" style="font-size:14px;">
+              Best experience ke liye please app ko install ya latest version me update karein.
+            </p>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-12">
+            <a class="store-btn btn btn-dark" target="_blank" rel="noopener"
+               href="https://play.google.com/store/apps/details?id=com.realvictorygroup.attendancepro2026&pcampaignid=web_share">
+              <i class="fab fa-google-play" style="font-size:20px;"></i>
+              <span class="label">
+                <small>Get it on</small>
+                Google Play
+              </span>
+            </a>
+          </div>
+
+          <div class="col-12">
+            <a class="store-btn btn btn-primary" target="_blank" rel="noopener"
+               href="https://apps.apple.com/in/app/victory-attendance-salary/id6759782174">
+              <i class="fab fa-apple" style="font-size:22px;"></i>
+              <span class="label">
+                <small>Download on the</small>
+                App Store
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <div class="mt-3 text-center">
+          <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
+            Not now
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer justify-content-center" style="font-size:12px; opacity:.75;">
+        By continuing, you agree to use the latest version for best performance.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    // ✅ Detect Mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // ✅ Show once per day (change to 7 days if you want)
+    const key = "rvg_app_update_popup_last_shown";
+    const last = localStorage.getItem(key);
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    if (!isMobile) return;
+
+    if (!last || (now - parseInt(last, 10)) > oneDay) {
+      // Bootstrap 5 modal
+      const el = document.getElementById('appUpdateModal');
+      if (!el) return;
+
+      // Delay thoda sa, page load smooth
+      setTimeout(() => {
+        try {
+          const modal = new bootstrap.Modal(el, { backdrop: 'static', keyboard: true });
+          modal.show();
+          localStorage.setItem(key, String(now));
+        } catch (e) {
+          console.log("Modal error:", e);
+        }
+      }, 700);
+    }
+  })();
+</script>
+
 @endsection
