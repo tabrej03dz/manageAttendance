@@ -538,5 +538,35 @@
     });
     </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const modalEl = document.getElementById("appUpdateModal");
+    if (!modalEl) return;
+
+    // sab close buttons select karo
+    const closeButtons = modalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+
+    closeButtons.forEach(btn => {
+        btn.addEventListener("click", function () {
+
+            // backdrop pe click simulate karo
+            const backdrop = document.querySelector(".modal-backdrop");
+
+            if (backdrop) {
+                backdrop.click(); // ✅ same outside click event trigger
+            } else {
+                // fallback direct hide
+                modalEl.classList.remove("show");
+                modalEl.style.display = "none";
+                document.body.classList.remove("modal-open");
+
+                document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+            }
+
+        });
+    });
+
+});
+</script>
 @endsection
