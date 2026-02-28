@@ -522,49 +522,83 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
+    // ✅ Desktop testing: URL me ?popup=1 add kar do
+    const force = new URLSearchParams(window.location.search).get('popup') === '1';
 
-    // ✅ Mobile only
+    // ✅ Mobile detect
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (!isMobile) return;
+    if (!isMobile && !force) return;
 
     const el = document.getElementById("appUpdateModal");
     if (!el) return;
 
-    let bs5Instance = null;
+    // --- fallback show (bootstrap/jq na ho to bhi) ---
+    function forceShowModal() {
+        el.classList.add('show');
+        el.style.display = 'block';
+        el.removeAttribute('aria-hidden');
+        document.body.classList.add('modal-open');
 
-    // ✅ Bootstrap 5 support
-    if (window.bootstrap && bootstrap.Modal) {
-        bs5Instance = bootstrap.Modal.getOrCreateInstance(el, {
-            backdrop: true,
-            keyboard: true
-        });
-        setTimeout(() => bs5Instance.show(), 200);
+        // backdrop add
+        if (!document.querySelector('.modal-backdrop')) {
+            const bd = document.createElement('div');
+            bd.className = 'modal-backdrop fade show';
+            document.body.appendChild(bd);
+        }
     }
 
-    // ✅ Bootstrap 4 support (jQuery)
-    if (!bs5Instance && window.jQuery && typeof jQuery(el).modal === "function") {
-        setTimeout(() => jQuery(el).modal('show'), 200);
+    // --- fallback hide ---
+    function forceHideModal() {
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
     }
 
-    // ✅ FORCE CLOSE (works in both BS4 & BS5)
-    document.querySelectorAll(".js-close-app-modal").forEach(btn => {
-        btn.addEventListener("click", function () {
-            if (bs5Instance) {
-                bs5Instance.hide();
-            } else if (window.jQuery && typeof jQuery(el).modal === "function") {
-                jQuery(el).modal('hide');
-            } else {
-                // fallback (just in case)
-                el.classList.remove('show');
-                el.style.display = 'none';
-                document.body.classList.remove('modal-open');
-                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-            }
-        });
-    });
+    // ✅ Try show with BS5 / BS4, else fallback
+    function showModal() {
+        // Bootstrap 5
+        if (window.bootstrap && bootstrap.Modal) {
+            const inst = bootstrap.Modal.getOrCreateInstance(el, { backdrop: true, keyboard: true });
+            inst.show();
 
-});
+            // close buttons (extra safety)
+            document.querySelectorAll(".js-close-app-modal").forEach(btn => {
+                btn.onclick = () => inst.hide();
+            });
+            return true;
+        }
+
+        // Bootstrap 4 (jQuery)
+        if (window.jQuery && typeof jQuery(el).modal === "function") {
+            jQuery(el).modal('show');
+
+            document.querySelectorAll(".js-close-app-modal").forEach(btn => {
+                btn.onclick = () => jQuery(el).modal('hide');
+            });
+            return true;
+        }
+
+        // fallback
+        forceShowModal();
+        document.querySelectorAll(".js-close-app-modal").forEach(btn => {
+            btn.onclick = () => forceHideModal();
+        });
+        return true;
+    }
+
+    // ✅ Wait/retry (bootstrap/js late load ho sakta hai)
+    let tries = 0;
+    const timer = setInterval(() => {
+        tries++;
+        const ok = showModal();
+        if (ok || tries >= 20) { // ~2 seconds max
+            clearInterval(timer);
+        }
+    }, 100);
+
+})();
 </script>
-
 @endsection
