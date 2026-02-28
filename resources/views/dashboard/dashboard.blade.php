@@ -517,35 +517,25 @@
 </div>
 
 <script>
-  (function () {
-    // ✅ Detect Mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    document.addEventListener("DOMContentLoaded", function () {
 
-    // ✅ Show once per day (change to 7 days if you want)
-    const key = "rvg_app_update_popup_last_shown";
-    const last = localStorage.getItem(key);
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
+        // ✅ Mobile detection (sirf mobile par)
+        const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (!isMobile) return;
 
-    if (!isMobile) return;
+        const el = document.getElementById("appUpdateModal");
+        if (!el) return;
 
-    if (!last || (now - parseInt(last, 10)) > oneDay) {
-      // Bootstrap 5 modal
-      const el = document.getElementById('appUpdateModal');
-      if (!el) return;
+        // ✅ Bootstrap 5 modal (har baar show)
+        const modal = new bootstrap.Modal(el, {
+            backdrop: true,    // outside click close
+            keyboard: true     // ESC close
+        });
 
-      // Delay thoda sa, page load smooth
-      setTimeout(() => {
-        try {
-          const modal = new bootstrap.Modal(el, { backdrop: 'static', keyboard: true });
-          modal.show();
-          localStorage.setItem(key, String(now));
-        } catch (e) {
-          console.log("Modal error:", e);
-        }
-      }, 700);
-    }
-  })();
+        setTimeout(() => {
+            modal.show();
+        }, 300);
+    });
 </script>
 
 @endsection
