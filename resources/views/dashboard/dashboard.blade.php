@@ -421,7 +421,7 @@
     </section>
 
 {{-- ✅ Mobile App Install/Update Popup (Show only on Mobile) --}}
-<style>
+{{-- <style>
   .app-update-modal .modal-content{
     border-radius: 16px;
     overflow: hidden;
@@ -572,6 +572,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-</script>
+</script> --}}
 
 @endsection
