@@ -47,6 +47,7 @@
         #contentToPrint .summary-table th {
             font-weight: 700 !important;
         }
+
     </style>
 
     <div class="pb-20">
@@ -372,9 +373,14 @@
                     </div>
 
                     <!-- ========== 2) PRINT VIEW – PER EMPLOYEE BLOCK, 3 PER PAGE ========== -->
-                    <div id="contentToPrint" class="mt-4 d-none">
+                    <div id="contentToPrint" class="d-none">
                         <h4 class="text-center mb-3">
-                            Monthly Attendance – {{ $dates->first()->date->format('M-Y') }}
+                            Monthly Attendance –
+                            @if($dates->first()->date->format('Y-m') == $dates->last()->date->format('Y-m'))
+                                {{ $dates->first()->date->format('M-Y') }}
+                            @else
+                                {{ $dates->first()->date->format('M-Y') }} to {{ $dates->last()->date->format('M-Y') }}
+                            @endif
                         </h4>
 
                         @foreach($users as $user)
@@ -524,55 +530,16 @@
                                                         $leave  = $leaveMap->get($user->id . '_' . $dateKey);
                                                         $off    = $offMap->get($user->office_id . '_' . $dateKey);
 
-                                                        // Summary counters
-                                                        if ($record) {
-                                                            $p_workingDays++;
-
-                                                            if (!($record->check_in && $record->check_out)) {
-                                                                $p_halfDayCount++;
-                                                            }
-
-                                                            if ($record->late) {
-                                                                $p_lateCount++;
-                                                                $p_lateTime += $record->late;
-                                                            }
-
-                                                            if (
-                                                                $record->check_out &&
-                                                                \Carbon\Carbon::parse($record->check_out)->format('H:i') <
-                                                                \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
-                                                            ) {
-                                                                $p_goneBeforeTimeCount++;
-                                                                $checkOutTime = \Carbon\Carbon::parse($record->check_out)->format('H:i');
-                                                                $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
-                                                                $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
-                                                                    ->diffInMinutes($userCheckOutTime);
-                                                            }
-                                                        }
-
-                                                        if ($leave) {
-                                                            if ($leave->approve_as == 'paid') {
-                                                                $p_paidLeave++;
-                                                            } else {
-                                                                $p_unpaidLeave++;
-                                                            }
-                                                            $p_leaveDays++;
-                                                        }
-
+                                                        $cellTextOut = '-';
                                                         if ($off) {
-                                                            $p_offDays++;
-                                                        }
-
-                                                        $cellTextIn = '-';
-                                                        if ($off) {
-                                                            $cellTextIn = 'OFF';
+                                                            $cellTextOut = 'OFF';
                                                         } elseif ($leave) {
-                                                            $cellTextIn = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
-                                                        } elseif ($record && $record->check_in) {
-                                                            $cellTextIn = $record->check_in->format('h:i A');
+                                                            $cellTextOut = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                                        } elseif ($record && $record->check_out) {
+                                                            $cellTextOut = $record->check_out->format('h:i A');
                                                         }
                                                     @endphp
-                                                    <td>{{ $cellTextIn }}</td>
+                                                    <td>{{ $cellTextOut }}</td>
                                                 @endforeach
                                             </tr>
 
@@ -780,7 +747,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     {{-- PDF – A4 portrait, 3 employees per page, no split --}}
-    <script>
+    {{-- <script>
         function printDivAsPDF() {
             const { jsPDF } = window.jspdf;
 
@@ -915,7 +882,130 @@
 
             processEmployee(0);
         }
-    </script>
+    </script> --}}
+<script>
+    function printDivAsPDF() {
+        const { jsPDF } = window.jspdf;
+
+        const webWrapper = document.getElementById('webTableWrapper');
+        const printDiv   = document.getElementById('contentToPrint');
+
+        if (!printDiv) {
+            alert('Print container not found');
+            return;
+        }
+
+        const employeeBlocks = printDiv.querySelectorAll('.employee-block');
+        if (!employeeBlocks.length) {
+            alert('No employee blocks to print');
+            return;
+        }
+
+        const overlay = document.getElementById('pdfProgressOverlay');
+        const bar     = document.getElementById('pdfProgressBar');
+        const text    = document.getElementById('pdfProgressText');
+
+        const oldTitle = document.title;
+        document.title = "Generating PDF...";
+
+        if (webWrapper) webWrapper.classList.add('d-none');
+        printDiv.classList.remove('d-none');
+
+        if (overlay) {
+            overlay.classList.remove('d-none');
+            overlay.classList.add('d-flex');
+        }
+        if (bar) {
+            bar.style.width = '0%';
+            bar.setAttribute('aria-valuenow', '0');
+        }
+        if (text) {
+            text.textContent = '0%';
+        }
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth  = 210;
+        const pageHeight = 297;
+
+        const marginX = 10;
+        const marginY = 10;
+
+        const usableWidth  = pageWidth - marginX * 2;
+        const usableHeight = pageHeight - marginY * 2;
+
+        const slotsPerPage = 3;
+        const slotHeight   = usableHeight / slotsPerPage;
+
+        const CANVAS_OPTIONS = {
+            scale: 1,
+            useCORS: true,
+            logging: false
+        };
+
+        const totalBlocks = employeeBlocks.length;
+
+        function updateProgress(doneCount) {
+            const percent = Math.min(100, Math.round((doneCount / totalBlocks) * 100));
+            if (bar) {
+                bar.style.width = percent + '%';
+                bar.setAttribute('aria-valuenow', percent.toString());
+            }
+            if (text) {
+                text.textContent = percent + '%';
+            }
+        }
+
+        const processEmployee = (index) => {
+            if (index >= totalBlocks) {
+                pdf.save("attendance_{{ $dates->first()->date->format('M-Y') }}_to_{{ $dates->last()->date->format('M-Y') }}.pdf");
+
+                if (webWrapper) webWrapper.classList.remove('d-none');
+                printDiv.classList.add('d-none');
+                document.title = oldTitle;
+
+                if (overlay) {
+                    overlay.classList.remove('d-flex');
+                    overlay.classList.add('d-none');
+                }
+                return;
+            }
+
+            const block = employeeBlocks[index];
+            updateProgress(index);
+
+            html2canvas(block, CANVAS_OPTIONS).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
+                const scaleX = usableWidth / canvas.width;
+                const scaleY = slotHeight / canvas.height;
+                const scale  = Math.min(scaleX, scaleY, 1);
+
+                const imgWidth  = canvas.width * scale;
+                const imgHeight = canvas.height * scale;
+
+                const employeeIndexOnPage = index % slotsPerPage;
+
+                if (employeeIndexOnPage === 0 && index !== 0) {
+                    pdf.addPage();
+                }
+
+                const posY = marginY + employeeIndexOnPage * slotHeight + (slotHeight - imgHeight) / 2;
+                const posX = marginX + (usableWidth - imgWidth) / 2;
+
+                pdf.addImage(imgData, "JPEG", posX, posY, imgWidth, imgHeight);
+
+                updateProgress(index + 1);
+                setTimeout(() => processEmployee(index + 1), 0);
+            }).catch(() => {
+                updateProgress(index + 1);
+                setTimeout(() => processEmployee(index + 1), 0);
+            });
+        };
+
+        processEmployee(0);
+    }
+</script>
 
     {{-- Excel – export using hidden excelTable --}}
     <script>
@@ -937,19 +1027,19 @@
     </script>
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        new TomSelect('#employee_id', {
-            create: false,
-            allowEmptyOption: true,
-            placeholder: 'Search employee...',
-            maxOptions: 2000,
-            plugins: ['clear_button'],
-            sortField: {
-                field: "text",
-                direction: "asc"
-            }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new TomSelect('#employee_id', {
+                create: false,
+                allowEmptyOption: true,
+                placeholder: 'Search employee...',
+                maxOptions: 2000,
+                plugins: ['clear_button'],
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                }
+            });
         });
-    });
-</script>
+    </script>
 @endsection
