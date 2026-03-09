@@ -2,6 +2,9 @@
 
 @section('content')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     <style>
         .break:hover .position-absolute {
             display: block !important;
@@ -96,7 +99,7 @@
 
                             <div class="mr-md-2 mb-2">
                                 <label class="mb-1 d-block">Employee</label>
-                                <select name="employee_id" class="form-control">
+                                <select name="employee_id" id="employee_id" class="form-control">
                                     <option value="">Choose Employee</option>
                                     @foreach($allEmployees as $emp)
                                         <option value="{{ $emp->id }}"
@@ -932,4 +935,21 @@
             XLSX.writeFile(workbook, "attendance_{{ $dates->first()->date->format('M-Y') }}_to_{{ $dates->last()->date->format('M-Y') }}.xlsx");
         }
     </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#employee_id', {
+            create: false,
+            allowEmptyOption: true,
+            placeholder: 'Search employee...',
+            maxOptions: 2000,
+            plugins: ['clear_button'],
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
+    });
+</script>
 @endsection
