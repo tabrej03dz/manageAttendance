@@ -98,7 +98,7 @@
                                 <label class="mb-1 d-block">Employee</label>
                                 <select name="employee_id" class="form-control">
                                     <option value="">Choose Employee</option>
-                                    @foreach(\App\Http\Controllers\HomeController::employeeList() as $emp)
+                                    @foreach($allEmployees as $emp)
                                         <option value="{{ $emp->id }}"
                                             {{ request('employee_id') == $emp->id ? 'selected' : '' }}>
                                             {{ $emp->name }}
@@ -218,7 +218,7 @@
                                                 </td>
 
                                                 @foreach ($dates as $dateObj)
-                                                    @php
+                                                    {{-- @php
                                                         $d = \Carbon\Carbon::parse($dateObj->date);
 
                                                         $record = $attendanceRecords
@@ -266,6 +266,50 @@
                                                             ->where('office_id', $user->office_id)
                                                             ->where('is_off', '1')
                                                             ->first();
+                                                        if ($off) {
+                                                            $offDays++;
+                                                        }
+                                                    @endphp --}}
+
+                                                    @php
+                                                        $d = \Carbon\Carbon::parse($dateObj->date);
+                                                        $dateKey = $d->format('Y-m-d');
+
+                                                        $record = $attendanceMap->get($user->id . '_' . $dateKey);
+                                                        $leave  = $leaveMap->get($user->id . '_' . $dateKey);
+                                                        $off    = $offMap->get($user->office_id . '_' . $dateKey);
+
+                                                        if ($record) {
+                                                            $workingDays++;
+                                                            if (!($record->check_in && $record->check_out)) {
+                                                                $halfDayCount++;
+                                                            }
+                                                            if ($record->late) {
+                                                                $lateCount++;
+                                                                $lateTime += $record->late;
+                                                            }
+                                                            if (
+                                                                $record->check_out &&
+                                                                \Carbon\Carbon::parse($record->check_out)->format('H:i') <
+                                                                \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
+                                                            ) {
+                                                                $goneBeforeTimeCount++;
+                                                                $checkOutTime = \Carbon\Carbon::parse($record->check_out)->format('H:i');
+                                                                $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
+                                                                $goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
+                                                                    ->diffInMinutes($userCheckOutTime);
+                                                            }
+                                                        }
+
+                                                        if ($leave) {
+                                                            if ($leave->approve_as == 'paid') {
+                                                                $paidLeave++;
+                                                            } else {
+                                                                $unpaidLeave++;
+                                                            }
+                                                            $leaveDays++;
+                                                        }
+
                                                         if ($off) {
                                                             $offDays++;
                                                         }
@@ -383,7 +427,7 @@
                                             <tr>
                                                 <td><strong>C-In</strong></td>
                                                 @foreach($dateChunk as $dateObj)
-                                                    @php
+                                                    {{-- @php
                                                         $d = \Carbon\Carbon::parse($dateObj->date);
 
                                                         $record = $attendanceRecords
@@ -439,6 +483,64 @@
                                                             ) {
                                                                 $p_goneBeforeTimeCount++;
                                                                 $checkOutTime = \Carbon\Carbon::parse($record?->check_out)->format('H:i');
+                                                                $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
+                                                                $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
+                                                                    ->diffInMinutes($userCheckOutTime);
+                                                            }
+                                                        }
+
+                                                        if ($leave) {
+                                                            if ($leave->approve_as == 'paid') {
+                                                                $p_paidLeave++;
+                                                            } else {
+                                                                $p_unpaidLeave++;
+                                                            }
+                                                            $p_leaveDays++;
+                                                        }
+
+                                                        if ($off) {
+                                                            $p_offDays++;
+                                                        }
+
+                                                        $cellTextIn = '-';
+                                                        if ($off) {
+                                                            $cellTextIn = 'OFF';
+                                                        } elseif ($leave) {
+                                                            $cellTextIn = $leave->approve_as == 'paid' ? 'Paid Leave' : 'Leave';
+                                                        } elseif ($record && $record->check_in) {
+                                                            $cellTextIn = $record->check_in->format('h:i A');
+                                                        }
+                                                    @endphp --}}
+
+
+                                                    @php
+                                                        $d = \Carbon\Carbon::parse($dateObj->date);
+                                                        $dateKey = $d->format('Y-m-d');
+
+                                                        $record = $attendanceMap->get($user->id . '_' . $dateKey);
+                                                        $leave  = $leaveMap->get($user->id . '_' . $dateKey);
+                                                        $off    = $offMap->get($user->office_id . '_' . $dateKey);
+
+                                                        // Summary counters
+                                                        if ($record) {
+                                                            $p_workingDays++;
+
+                                                            if (!($record->check_in && $record->check_out)) {
+                                                                $p_halfDayCount++;
+                                                            }
+
+                                                            if ($record->late) {
+                                                                $p_lateCount++;
+                                                                $p_lateTime += $record->late;
+                                                            }
+
+                                                            if (
+                                                                $record->check_out &&
+                                                                \Carbon\Carbon::parse($record->check_out)->format('H:i') <
+                                                                \Carbon\Carbon::parse($user->check_out_time)->format('H:i')
+                                                            ) {
+                                                                $p_goneBeforeTimeCount++;
+                                                                $checkOutTime = \Carbon\Carbon::parse($record->check_out)->format('H:i');
                                                                 $userCheckOutTime = \Carbon\Carbon::parse($user->check_out_time);
                                                                 $p_goneBeforeTime += \Carbon\Carbon::createFromFormat('H:i', $checkOutTime)
                                                                     ->diffInMinutes($userCheckOutTime);
