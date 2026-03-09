@@ -242,4 +242,45 @@ class AuthController extends Controller
             'permissions' => $permissions,
         ], 200);
     }
+
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'current_password' => ['required','string','min:6'],
+            'password'         => ['required','string','min:6','confirmed'], // password_confirmation required
+        ]);
+
+        // ✅ current password match?
+        if (!Hash::check($data['current_password'], $user->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Current password is incorrect',
+            ], 422);
+        }
+
+        // ✅ same password prevent (optional but good)
+        if (Hash::check($data['password'], $user->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'New password cannot be same as current password',
+            ], 422);
+        }
+
+        // ✅ update password
+        $user->password = Hash::make($data['password']);
+        $user->save();
+
+        // ✅ logout from all devices (optional)
+        // $user->tokens()->delete();
+
+        // ✅ OR only current token revoke (optional)
+        // $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password changed successfully',
+        ], 200);
+    }
 }

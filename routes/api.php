@@ -89,6 +89,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('delete-account', [AuthController::class, 'deleteAccount']);
+    Route::post('change-password', [AuthController::class, 'changePassword']);
 });
 
 
