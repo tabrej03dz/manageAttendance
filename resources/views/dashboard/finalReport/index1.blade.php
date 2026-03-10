@@ -100,13 +100,117 @@
             border: 1px solid #ced4da !important;
             z-index: 9999;
         }
+
+
+        .report-filter-card {
+            background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+            border: 1px solid #e9eef5;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .filter-group {
+            min-width: 180px;
+            flex: 0 0 180px;
+        }
+
+        .filter-group.filter-employee {
+            min-width: 240px;
+            flex: 0 0 240px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .filter-actions {
+            display: flex;
+            align-items: end;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .report-action-buttons {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .report-action-buttons .btn {
+            min-width: 135px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .report-filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .report-filter-form .form-control,
+        .report-filter-form .ts-wrapper .ts-control {
+            min-height: 42px;
+            border-radius: 10px !important;
+            background: #fff !important;
+            border: 1px solid #d7dee7 !important;
+            box-shadow: none !important;
+        }
+
+        .report-filter-form .form-control:focus,
+        .report-filter-form .ts-wrapper.focus .ts-control,
+        .report-filter-form .ts-wrapper .ts-control:focus {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.12) !important;
+        }
+
+        .ts-wrapper {
+            width: 100%;
+        }
+
+        .ts-wrapper .ts-control {
+            padding: 6px 10px !important;
+        }
+
+        .ts-dropdown {
+            background: #fff !important;
+            border: 1px solid #d7dee7 !important;
+            border-radius: 10px !important;
+            z-index: 9999;
+        }
+
+        @media (max-width: 991.98px) {
+            .filter-group,
+            .filter-group.filter-employee {
+                min-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            .filter-actions,
+            .report-action-buttons {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .report-action-buttons .btn {
+                min-width: unset;
+                width: 100%;
+            }
+        }
     </style>
 
     <div class="pb-20">
         <div class="content">
             <div class="container-fluid p-4">
 
-                <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+                {{-- <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
                     <div class="col-12 col-md-6 mb-2">
                         <form action="{{ route('reports.index') }}" method="GET"
                             class="d-flex flex-column flex-md-row align-items-stretch flex-wrap gap-2">
@@ -180,6 +284,94 @@
                         <button onclick="exportToExcel()" class="btn btn-success text-white mb-2 mb-md-0">
                             Export to Excel
                         </button>
+                    </div>
+                </div> --}}
+
+                <div class="report-filter-card p-3 p-md-4 mb-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-xl-8">
+                            <form action="{{ route('reports.index') }}" method="GET" class="report-filter-form">
+                                @csrf
+
+                                <div class="filter-group">
+                                    <label class="filter-label">From Month</label>
+                                    <input type="month"
+                                        name="from_month"
+                                        value="{{ request('from_month', $fromMonth ?? now()->format('Y-m')) }}"
+                                        class="form-control">
+                                </div>
+
+                                <div class="filter-group">
+                                    <label class="filter-label">To Month</label>
+                                    <input type="month"
+                                        name="to_month"
+                                        value="{{ request('to_month', $toMonth ?? now()->format('Y-m')) }}"
+                                        class="form-control">
+                                </div>
+
+                                <div class="filter-group">
+                                    <label class="filter-label">Status</label>
+                                    <select name="status" class="form-control">
+                                        <option value="">All Status</option>
+                                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                </div>
+
+                                <div class="filter-group">
+                                    <label class="filter-label">Department</label>
+                                    <select name="department_id" class="form-control">
+                                        <option value="">Choose Department</option>
+                                        @foreach($departments as $department)
+                                            <option value="{{ $department->id }}"
+                                                {{ request('department_id') == $department->id ? 'selected' : '' }}>
+                                                {{ $department->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="filter-group filter-employee">
+                                    <label class="filter-label">Employee</label>
+                                    <select name="employee_id" id="employee_id" class="form-control">
+                                        <option value="">Choose Employee</option>
+                                        @foreach($allEmployees as $emp)
+                                            <option value="{{ $emp->id }}"
+                                                {{ request('employee_id') == $emp->id ? 'selected' : '' }}>
+                                                {{ $emp->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="filter-actions">
+                                    <button type="submit" class="btn btn-primary px-4">Filter</button>
+                                    <a href="{{ route('reports.index') }}" class="btn btn-outline-secondary px-4">Clear</a>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-12 col-xl-4">
+                            <div class="report-action-buttons">
+                                <a href="{{ route('attendance.form', ['form_type' => 'check_in']) }}"
+                                    class="btn btn-primary text-white">
+                                    Check In
+                                </a>
+
+                                <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
+                                    class="btn btn-danger text-white">
+                                    Check Out
+                                </a>
+
+                                <button class="btn btn-warning text-white" onclick="printDivAsPDF()">
+                                    Download PDF
+                                </button>
+
+                                <button onclick="exportToExcel()" class="btn btn-success text-white">
+                                    Export Excel
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
