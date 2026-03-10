@@ -73,6 +73,33 @@
             top: 0;
             z-index: 20;
         }
+
+
+        .ts-wrapper {
+            width: 100%;
+        }
+
+        .ts-wrapper .ts-control {
+            background: #fff !important;
+            border: 1px solid #ced4da !important;
+            min-height: 38px;
+            box-shadow: none !important;
+        }
+
+        .ts-wrapper.single .ts-control,
+        .ts-wrapper.multi .ts-control {
+            background: #fff !important;
+        }
+
+        .ts-control input {
+            background: #fff !important;
+        }
+
+        .ts-dropdown {
+            background: #fff !important;
+            border: 1px solid #ced4da !important;
+            z-index: 9999;
+        }
     </style>
 
     <div class="pb-20">
