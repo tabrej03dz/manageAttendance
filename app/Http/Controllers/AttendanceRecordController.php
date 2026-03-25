@@ -15,37 +15,117 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class AttendanceRecordController extends Controller
 {
 
-    public function index(Request $request){
 
-        if ($request->month){
+    private function activeOfficeId(Request $request): ?int
+    {
+        return $request->user()?->activeOfficeId();
+    }
+
+    private function officeEmployeeIds(Request $request): array
+    {
+        $officeId = $this->activeOfficeId($request);
+
+        if (!$officeId) {
+            return [];
+        }
+
+        return User::where('office_id', $officeId)->pluck('id')->toArray();
+    }
+
+
+
+    // public function index(Request $request){
+
+    //     if ($request->month){
+    //         $month = $request->month;
+    //         $startOfMonth = Carbon::parse($request->month . '-01');
+    //         $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
+    //     }else{
+    //         $month = Carbon::now()->format('Y-m');
+    //         $startOfMonth = Carbon::now()->startOfMonth();
+    //         $endOfMonth = Carbon::now()->endOfMonth();
+    //     }
+    //     if($request->employee){
+    //         $user = User::find($request->employee);
+    //     }else{
+    //         $user = null;
+    //     }
+
+    //     $dates = new Collection();
+    //     $attendanceRecords = AttendanceRecord::query();
+    //     for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+    //         $dates->push((object)[
+    //             'date' => $date->copy(),
+    //         ]);
+    //         $attendanceRecords->orWhereDate('check_in', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
+    //     }
+    //     $attendanceRecords = $attendanceRecords->get();
+
+    //     $users = HomeController::employeeList();
+    //     return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user',  'month'));
+    // }
+
+
+    public function index(Request $request)
+    {
+        if ($request->month) {
             $month = $request->month;
-            $startOfMonth = Carbon::parse($request->month . '-01');
+            $startOfMonth = Carbon::parse($request->month . '-01')->startOfMonth();
             $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
-        }else{
+        } else {
             $month = Carbon::now()->format('Y-m');
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
         }
-        if($request->employee){
-            $user = User::find($request->employee);
-        }else{
+
+        $officeId = $this->activeOfficeId($request);
+        $employeeIds = $this->officeEmployeeIds($request);
+
+        if (empty($employeeIds)) {
+            $dates = collect();
+            $attendanceRecords = collect();
+            $users = collect();
             $user = null;
+
+            return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
+        }
+
+        $user = null;
+
+        if ($request->employee) {
+            $user = User::where('office_id', $officeId)
+                ->where('id', $request->employee)
+                ->first();
+        }
+
+        // normal employee only self
+        if (!$request->user()->hasRole('super_admin') && !$request->user()->hasRole('owner')) {
+            $user = $request->user();
         }
 
         $dates = new Collection();
-        $attendanceRecords = AttendanceRecord::query();
-        for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+        for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
             $dates->push((object)[
                 'date' => $date->copy(),
             ]);
-            $attendanceRecords->orWhereDate('check_in', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
         }
-        $attendanceRecords = $attendanceRecords->get();
 
-        $users = HomeController::employeeList();
-        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user',  'month'));
+        $attendanceRecords = AttendanceRecord::query()
+            ->whereBetween('check_in', [
+                $startOfMonth->copy()->startOfDay(),
+                $endOfMonth->copy()->endOfDay()
+            ])
+            ->whereIn('user_id', $user ? [$user->id] : $employeeIds)
+            ->orderBy('check_in')
+            ->get();
+
+        $users = User::where('office_id', $officeId)
+            ->where('status', '1')
+            ->orderBy('name')
+            ->get();
+
+        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
     }
-
 
 
 
@@ -66,6 +146,13 @@ class AttendanceRecordController extends Controller
         }
         if ($user->location_required === 'yes' && (!$request->latitude || !$request->longitude)) {
             return view('dashboard.settingInstruction');
+        }
+
+        // new check
+        $activeOfficeId = $request->user()->activeOfficeId();
+
+        if ($activeOfficeId && (int) $user->office_id !== (int) $activeOfficeId) {
+            abort(403, 'This employee does not belong to the selected office.');
         }
 
 
@@ -167,6 +254,17 @@ class AttendanceRecordController extends Controller
         if ($user->location_required === 'yes' && (!$request->latitude || !$request->longitude)) {
             return view('dashboard.settingInstruction');
         }
+
+
+        //  new checks
+        $activeOfficeId = $request->user()->activeOfficeId();
+
+        if ($activeOfficeId && (int) $user->office_id !== (int) $activeOfficeId) {
+            abort(403, 'This employee does not belong to the selected office.');
+        }
+
+
+
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
@@ -288,33 +386,75 @@ class AttendanceRecordController extends Controller
 
 
 
+    // public function dayWise(Request $request)
+    // {
+    //     $date = $request->date ?? today();
+
+    //     // Get all employees
+    //     $employees = HomeController::employeeList();
+
+    //     // Convert to Laravel Collection if not already
+    //     $employees = collect($employees);
+
+    //     // Load attendance for the selected date
+    //     $attendances = AttendanceRecord::whereDate('created_at', $date)->get()->keyBy('user_id');
+
+    //     // Attach attendance status to each employee
+    //     $employees = $employees->map(function ($employee) use ($attendances) {
+    //         $employee->has_attendance = $attendances->has($employee->id); // or $employee->user_id
+    //         return $employee;
+    //     });
+
+    //     // Sort: those with attendance first
+
+
+    //     $employees = isset($request->status) ? $employees->where('status', $request->status)->sortByDesc('has_attendance')->values() : $employees->sortByDesc('has_attendance')->values();
+
+    //     // Paginate
+    //     $perPage = 20;
+    //     $currentPage = Paginator::resolveCurrentPage();
+    //     $paginatedEmployees = new LengthAwarePaginator(
+    //         $employees->forPage($currentPage, $perPage),
+    //         $employees->count(),
+    //         $perPage,
+    //         $currentPage,
+    //         ['path' => Paginator::resolveCurrentPath()]
+    //     );
+
+    //     return view('dashboard.attendance.dayWise', [
+    //         'employees' => $paginatedEmployees,
+    //         'date' => $date,
+    //     ]);
+    // }
+
+
     public function dayWise(Request $request)
     {
         $date = $request->date ?? today();
+        $officeId = $this->activeOfficeId($request);
+        $employeeIds = $this->officeEmployeeIds($request);
 
-        // Get all employees
-        $employees = HomeController::employeeList();
+        $employees = User::where('office_id', $officeId)
+            ->orderBy('name')
+            ->get();
 
-        // Convert to Laravel Collection if not already
-        $employees = collect($employees);
+        $attendances = AttendanceRecord::whereDate('created_at', $date)
+            ->whereIn('user_id', $employeeIds)
+            ->get()
+            ->keyBy('user_id');
 
-        // Load attendance for the selected date
-        $attendances = AttendanceRecord::whereDate('created_at', $date)->get()->keyBy('user_id');
-
-        // Attach attendance status to each employee
         $employees = $employees->map(function ($employee) use ($attendances) {
-            $employee->has_attendance = $attendances->has($employee->id); // or $employee->user_id
+            $employee->has_attendance = $attendances->has($employee->id);
             return $employee;
         });
 
-        // Sort: those with attendance first
+        $employees = isset($request->status)
+            ? $employees->where('status', $request->status)->sortByDesc('has_attendance')->values()
+            : $employees->sortByDesc('has_attendance')->values();
 
-
-        $employees = isset($request->status) ? $employees->where('status', $request->status)->sortByDesc('has_attendance')->values() : $employees->sortByDesc('has_attendance')->values();
-
-        // Paginate
         $perPage = 20;
         $currentPage = Paginator::resolveCurrentPage();
+
         $paginatedEmployees = new LengthAwarePaginator(
             $employees->forPage($currentPage, $perPage),
             $employees->count(),
@@ -369,24 +509,61 @@ class AttendanceRecordController extends Controller
         return view('dashboard.attendance.noteForm', compact('type',  'record'));
     }
 
-    public function manualEntryForm(){
-        $employees = HomeController::employeeList();
+    // public function manualEntryForm(){
+    //     $employees = HomeController::employeeList();
+    //     return view('dashboard.attendance.manualEntryForm', compact('employees'));
+    // }
+
+    public function manualEntryForm(Request $request)
+    {
+        $officeId = $this->activeOfficeId($request);
+
+        $employees = User::where('office_id', $officeId)
+            ->where('status', '1')
+            ->orderBy('name')
+            ->get();
+
         return view('dashboard.attendance.manualEntryForm', compact('employees'));
     }
 
-    public function store(Request $request){
+    // public function store(Request $request){
+    //     $request->validate([
+    //         'employee_id' => 'required',
+    //         'date' => 'required',
+    //         'check_in' => 'required',
+    //         'check_out' => 'required',
+    //     ]);
+
+
+    //     AttendanceRecord::create([
+    //         'user_id' => $request->employee_id,
+    //         'check_in' => $request->date.' '.$request->check_in,
+    //         'check_out' => $request->date.' '.$request->check_out,
+    //     ]);
+
+    //     return back()->with('success', 'Attendance record created successfully');
+    // }
+
+
+    public function store(Request $request)
+    {
+        $officeId = $this->activeOfficeId($request);
+
         $request->validate([
-            'employee_id' => 'required',
-            'date' => 'required',
+            'employee_id' => 'required|exists:users,id',
+            'date' => 'required|date',
             'check_in' => 'required',
             'check_out' => 'required',
         ]);
 
+        $employee = User::where('office_id', $officeId)
+            ->where('id', $request->employee_id)
+            ->firstOrFail();
 
         AttendanceRecord::create([
-            'user_id' => $request->employee_id,
-            'check_in' => $request->date.' '.$request->check_in,
-            'check_out' => $request->date.' '.$request->check_out,
+            'user_id' => $employee->id,
+            'check_in' => $request->date . ' ' . $request->check_in,
+            'check_out' => $request->date . ' ' . $request->check_out,
         ]);
 
         return back()->with('success', 'Attendance record created successfully');

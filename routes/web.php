@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\NewUserLeadController;
+use App\Http\Controllers\OfficeAccessController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,8 +64,8 @@ Route::controller(RequestDemoController::class)->group(function(){
 Auth::routes();
 
 Route::middleware('auth')->group(function (){
-//Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
+    //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
 
 
     Route::prefix('attendance')->name('attendance.')->controller(App\Http\Controllers\AttendanceRecordController::class)->group(function(){
@@ -142,6 +143,13 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::get('status/{office}', [OfficeController::class, 'status'])->name('status');
        Route::get('detail/{office}', [OfficeController::class, 'detail'])->name('detail');
     });
+
+
+     Route::post('/office/switch/{office}', [OfficeAccessController::class, 'switchOffice'])
+        ->name('office.switch');
+
+    Route::post('/office/clear-switch', [OfficeAccessController::class, 'clearSwitch'])
+        ->name('office.clearSwitch');
 
     Route::prefix('off_policy')->name('off_policy.')->controller(\App\Http\Controllers\OfficeOffPolicyController::class)->group(function(){
        Route::get('/', 'index')->name('index');
@@ -272,6 +280,10 @@ Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard
        Route::post('store', 'store')->name('store');
        Route::post('status/{halfDay}', 'status')->name('status');
     });
+
+
+
+
 
 
     // hello how are you mera naam hai jolly

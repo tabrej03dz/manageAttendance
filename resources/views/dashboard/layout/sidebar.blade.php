@@ -88,6 +88,62 @@
                     </li>
                 @endcan
 
+                @role('super_admin')
+                    @php
+                        $sidebarOffices = \App\Models\Office::orderBy('name')->get();
+                        $activeOfficeId = session('active_office_id');
+                        $activeOfficeName = session('active_office_name');
+                    @endphp
+
+                    <li class="nav-item has-treeview {{ request()->routeIs('office.switch') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-random"></i>
+                            <p>
+                                Office Switch
+                                @if($activeOfficeName)
+                                    <small class="ml-2 text-warning">({{ $activeOfficeName }})</small>
+                                @endif
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            @foreach($sidebarOffices as $office)
+                                <li class="nav-item">
+                                    <form action="{{ route('office.switch', $office->id) }}" method="POST" style="display:block;">
+                                        @csrf
+                                        <button type="submit"
+                                            class="nav-link w-100 text-left border-0 bg-transparent {{ (int)$activeOfficeId === (int)$office->id ? 'active' : '' }}"
+                                            style="width:100%; cursor:pointer;">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                {{ $office->name }}
+                                                @if((int)$activeOfficeId === (int)$office->id)
+                                                    <span class="badge badge-success ml-2">Active</span>
+                                                @endif
+                                            </p>
+                                        </button>
+                                    </form>
+                                </li>
+                            @endforeach
+
+                            @if($activeOfficeId)
+                                <li class="nav-item">
+                                    <form action="{{ route('office.clearSwitch') }}" method="POST" style="display:block;">
+                                        @csrf
+                                        <button type="submit"
+                                            class="nav-link w-100 text-left border-0 bg-transparent text-danger"
+                                            style="width:100%; cursor:pointer;">
+                                            <i class="fas fa-sign-out-alt nav-icon"></i>
+                                            <p>Exit Office View</p>
+                                        </button>
+                                    </form>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endrole
+
 {{--                    @role('super_admin|admin|owner')--}}
 {{--                    <li class="nav-item">--}}
 {{--                        <a href="{{ route('off_policy.index') }}"--}}

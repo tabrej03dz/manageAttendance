@@ -1,5 +1,23 @@
 @extends('dashboard.layout.root')
 @section('content')
+
+
+        @if(auth()->user()->hasRole('super_admin') && session('active_office_id'))
+            <div class="mb-4 flex items-center justify-between bg-purple-100 border border-purple-300 text-purple-800 px-4 py-3 rounded-lg">
+                <div>
+                    Viewing as Office:
+                    <strong>{{ session('active_office_name') }}</strong>
+                </div>
+
+                <form action="{{ route('office.clearSwitch') }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                        Exit Office View
+                    </button>
+                </form>
+            </div>
+        @endif
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Offices</h1>
@@ -67,6 +85,16 @@
                                 <span class="material-icons">add</span>
                             </a>
                                 @endcan
+
+                                @if(auth()->user()->hasRole('super_admin'))
+                                    <form action="{{ route('office.switch', $office->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" title="View as this office"
+                                            class="bg-purple-500 text-white font-semibold p-2 rounded-lg shadow-md hover:bg-purple-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50">
+                                            <span class="material-icons">login</span>
+                                        </button>
+                                    </form>
+                                @endif
                         </td>
                     </tr>
                     @endforeach

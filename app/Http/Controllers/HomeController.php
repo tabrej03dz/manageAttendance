@@ -130,37 +130,81 @@ class HomeController extends Controller
     }
 
 
+    // static function employeeList()
+    // {
+    //     $user = auth()->user();
+    //     if ($user->hasRole('super_admin|admin')) {
+    //         if ($user->hasRole('super_admin')) {
+    //             $employees = User::all();
+    //         } else {
+    //             $office = $user->office;
+    //             $employees = $office->users;
+    //         }
+    //     } elseif ($user->hasRole('owner')) {
+    //         $officeIds = Office::where('owner_id', $user->id)->pluck('id');
+    //         $employees = User::whereIn('office_id', $officeIds)->get();
+    //     } else {
+    //     //   if ($user->hasRole('team_leader')) {
+    //             $employees = $user->members;
+    //             $record = User::where('id', $user->id)->first();
+    //             $employees->push($record);
+
+
+
+    //             // Recursively get all members under this leader
+    //             $employees = $user->getAllTeamMembers();
+
+    //             // Include the current team leader in the list
+    //             $employees->push($user);
+    //     //            } else {
+    //     //                $employees = User::where('id', $user->id)->get();
+    //     //            }
+    //     }
+    //     return $employees;
+    // }
+
     static function employeeList()
     {
         $user = auth()->user();
-        if ($user->hasRole('super_admin|admin')) {
-            if ($user->hasRole('super_admin')) {
-                $employees = User::all();
-            } else {
-                $office = $user->office;
-                $employees = $office->users;
-            }
-        } elseif ($user->hasRole('owner')) {
-            $officeIds = Office::where('owner_id', $user->id)->pluck('id');
-            $employees = User::whereIn('office_id', $officeIds)->get();
-        } else {
-//            if ($user->hasRole('team_leader')) {
-                $employees = $user->members;
-                $record = User::where('id', $user->id)->first();
-                $employees->push($record);
 
-
-
-                // Recursively get all members under this leader
-                $employees = $user->getAllTeamMembers();
-
-                // Include the current team leader in the list
-                $employees->push($user);
-//            } else {
-//                $employees = User::where('id', $user->id)->get();
-//            }
+        if (!$user) {
+            return collect();
         }
-        return $employees;
+
+        $activeOfficeId = $user->activeOfficeId();
+
+        // super admin / admin / owner => selected/current office ke users
+        if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+            if (!$activeOfficeId) {
+                return collect();
+            }
+
+            return User::where('office_id', $activeOfficeId)
+                ->orderBy('name')
+                ->get();
+        }
+
+        // team leader ya normal role
+        if ($user->hasRole('team_leader')) {
+            $employees = $user->getAllTeamMembers();
+
+            $employees = $employees->filter(function ($member) use ($activeOfficeId) {
+                return (int) $member->office_id === (int) $activeOfficeId;
+            });
+
+            if ((int) $user->office_id === (int) $activeOfficeId) {
+                $employees->push($user);
+            }
+
+            return $employees->unique('id')->values();
+        }
+
+        // normal employee => sirf khud
+        if ((int) $user->office_id === (int) $activeOfficeId) {
+            return collect([$user]);
+        }
+
+        return collect();
     }
 
     static function latitudeInDMS($decimal)
