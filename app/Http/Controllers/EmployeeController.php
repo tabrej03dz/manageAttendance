@@ -18,51 +18,85 @@ class EmployeeController extends Controller
 {
 
 
-    private function activeOfficeId(Request $request): ?int
-    {
-        return $request->user()?->activeOfficeId();
-    }
+private function activeOfficeId(Request $request): ?int
+{
+    return $request->user()?->activeOfficeId();
+}
 
-    private function allowedOfficeIds(Request $request): array
-    {
-        $user = $request->user();
+private function allowedOfficeIds(Request $request): array
+{
+    $user = $request->user();
 
-        if (!$user) {
-            return [];
-        }
-
-        if ($user->hasRole('super_admin')) {
-            $officeId = $user->activeOfficeId();
-            return $officeId ? [$officeId] : [];
-        }
-
-        if ($user->hasRole('owner')) {
-            $officeId = $user->activeOfficeId();
-            return $officeId ? [$officeId] : [];
-        }
-
-        if ($user->hasRole('admin')) {
-            return $user->office_id ? [$user->office_id] : [];
-        }
-
-        if ($user->office_id) {
-            return [$user->office_id];
-        }
-
+    if (!$user) {
         return [];
     }
 
-    private function officeEmployeesQuery(Request $request)
-    {
-        $officeIds = $this->allowedOfficeIds($request);
-
-        return User::query()->when(!empty($officeIds), function ($q) use ($officeIds) {
-            $q->whereIn('office_id', $officeIds);
-        }, function ($q) {
-            $q->whereRaw('1 = 0');
-        });
+    if ($user->hasRole('super_admin')) {
+        $officeId = $user->activeOfficeId();
+        return $officeId ? [$officeId] : [];
     }
 
+    if ($user->hasRole('owner')) {
+        $officeId = $user->activeOfficeId();
+        return $officeId ? [$officeId] : [];
+    }
+
+    if ($user->hasRole('admin')) {
+        return $user->office_id ? [$user->office_id] : [];
+    }
+
+    if ($user->office_id) {
+        return [$user->office_id];
+    }
+
+    return [];
+}
+
+private function officeEmployeesQuery(Request $request)
+{
+    $officeIds = $this->allowedOfficeIds($request);
+
+    return User::query()->when(!empty($officeIds), function ($q) use ($officeIds) {
+        $q->whereIn('office_id', $officeIds);
+    }, function ($q) {
+        $q->whereRaw('1 = 0');
+    });
+}
+
+private function sortEmployeesHierarchically($employees)
+{
+    $employees = collect($employees);
+
+    $grouped = $employees->groupBy('team_leader_id');
+    $sorted = collect();
+
+    $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
+        if (!isset($grouped[$leaderId])) {
+            return;
+        }
+
+        foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
+            $sorted->push($employee);
+            $appendChildren($employee->id);
+        }
+    };
+
+    if (isset($grouped[null])) {
+        foreach ($grouped[null]->sortBy('name') as $employee) {
+            $sorted->push($employee);
+            $appendChildren($employee->id);
+        }
+    }
+
+    $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
+
+    foreach ($remaining->sortBy('name') as $employee) {
+        $sorted->push($employee);
+        $appendChildren($employee->id);
+    }
+
+    return $sorted->unique('id')->values();
+}
 
 
     // public function index(Request $request)
@@ -166,60 +200,83 @@ class EmployeeController extends Controller
     // }
 
 
-    public function index(Request $request)
-    {
-        $employees = $this->officeEmployeesQuery($request);
+public function index(Request $request)
+{
+    $query = $this->officeEmployeesQuery($request);
 
-        if ($request->filled('q')) {
-            $q = trim($request->q);
-            $employees->where(function ($qq) use ($q) {
-                $qq->where('name', 'like', "%{$q}%")
-                    ->orWhere('email', 'like', "%{$q}%")
-                    ->orWhere('phone', 'like', "%{$q}%");
-            });
-        }
-
-        if ($request->filled('status')) {
-            $employees->where('status', $request->status);
-        } else {
-            $employees->where('status', '1');
-        }
-
-        if ($request->filled('department_id')) {
-            $employees->where('department_id', $request->department_id);
-        }
-
-        // super admin ke liye office dropdown tabhi kaam kare jab selected office scope me ho
-        if ($request->filled('office_id')) {
-            $employees->where('office_id', $request->office_id);
-        }
-
-        if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
-            $employees->whereNull('office_id');
-        }
-
-        $officeIds = $this->allowedOfficeIds($request);
-
-        $departments = Department::all();
-        $offices = Office::when(!empty($officeIds), function ($q) use ($officeIds) {
-                $q->whereIn('id', $officeIds);
-            })
-            ->orderBy('name')
-            ->get();
-
-        $unassignedCount = (clone $this->officeEmployeesQuery($request))
-            ->whereNull('office_id')
-            ->count();
-
-        $employees = $employees->orderBy('name')->paginate(25)->withQueryString();
-
-        return view('dashboard.employee.index', compact(
-            'employees',
-            'departments',
-            'offices',
-            'unassignedCount'
-        ));
+    if ($request->filled('q')) {
+        $q = trim($request->q);
+        $query->where(function ($qq) use ($q) {
+            $qq->where('name', 'like', "%{$q}%")
+                ->orWhere('email', 'like', "%{$q}%")
+                ->orWhere('phone', 'like', "%{$q}%");
+        });
     }
+
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    } else {
+        $query->where('status', '1');
+    }
+
+    if ($request->filled('department_id')) {
+        $query->where('department_id', $request->department_id);
+    }
+
+    $allowedOfficeIds = $this->allowedOfficeIds($request);
+
+    if ($request->filled('office_id')) {
+        $requestedOfficeId = (int) $request->office_id;
+
+        if (in_array($requestedOfficeId, $allowedOfficeIds)) {
+            $query->where('office_id', $requestedOfficeId);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
+        $query->whereNull('office_id');
+    }
+
+    $employees = $query->get();
+
+    // hierarchy order preserve
+    $employees = $this->sortEmployeesHierarchically($employees);
+
+    $departments = Department::all();
+
+    $offices = Office::when(!empty($allowedOfficeIds), function ($q) use ($allowedOfficeIds) {
+            $q->whereIn('id', $allowedOfficeIds);
+        })
+        ->orderBy('name')
+        ->get();
+
+    $unassignedCount = (clone $this->officeEmployeesQuery($request))
+        ->whereNull('office_id')
+        ->count();
+
+    $perPage = 25;
+    $currentPage = Paginator::resolveCurrentPage();
+
+    $paginatedEmployees = new LengthAwarePaginator(
+        $employees->forPage($currentPage, $perPage)->values(),
+        $employees->count(),
+        $perPage,
+        $currentPage,
+        [
+            'path' => Paginator::resolveCurrentPath(),
+            'query' => $request->query(),
+        ]
+    );
+
+    return view('dashboard.employee.index', [
+        'employees' => $paginatedEmployees,
+        'departments' => $departments,
+        'offices' => $offices,
+        'unassignedCount' => $unassignedCount,
+    ]);
+}
 
 
 
