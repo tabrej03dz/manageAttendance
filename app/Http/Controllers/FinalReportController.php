@@ -168,6 +168,166 @@ class FinalReportController extends Controller
 
 
 
+    // public function index(Request $request)
+    // {
+    //     $fromMonth = $request->filled('from_month')
+    //         ? $request->from_month
+    //         : Carbon::now()->format('Y-m');
+
+    //     $toMonth = $request->filled('to_month')
+    //         ? $request->to_month
+    //         : Carbon::now()->format('Y-m');
+
+    //     $startOfMonth = Carbon::parse($fromMonth . '-01')->startOfMonth()->startOfDay();
+    //     $endOfMonth   = Carbon::parse($toMonth . '-01')->endOfMonth()->endOfDay();
+
+    //     if ($startOfMonth->gt($endOfMonth)) {
+    //         [$startOfMonth, $endOfMonth] = [$endOfMonth, $startOfMonth];
+    //         [$fromMonth, $toMonth] = [$toMonth, $fromMonth];
+    //     }
+
+    //     $dates = collect();
+    //     $loopDate = $startOfMonth->copy();
+
+    //     while ($loopDate->lte($endOfMonth)) {
+    //         $dates->push((object)[
+    //             'date' => $loopDate->copy(),
+    //         ]);
+    //         $loopDate->addDay();
+    //     }
+
+    //     // Month-wise grouping
+    //     $monthGroups = $dates->groupBy(function ($item) {
+    //         return $item->date->format('Y-m');
+    //     })->map(function ($monthDates, $monthKey) {
+    //         $officeDays = 0;
+    //         $sundayCount = 0;
+
+    //         foreach ($monthDates as $dateObj) {
+    //             $d = Carbon::parse($dateObj->date);
+
+    //             if ($d->isSunday()) {
+    //                 $sundayCount++;
+    //             } else {
+    //                 $officeDays++;
+    //             }
+    //         }
+
+    //         return (object)[
+    //             'month_key'    => $monthKey,
+    //             'month_label'  => Carbon::parse($monthKey . '-01')->format('M-Y'),
+    //             'dates'        => $monthDates->values(),
+    //             'officeDays'   => $officeDays,
+    //             'sundayCount'  => $sundayCount,
+    //         ];
+    //     })->values();
+
+    //     $allEmployees = HomeController::employeeList()->values();
+    //     $users = $allEmployees;
+
+    //     if ($request->filled('status')) {
+    //         $users = $users->where('status', $request->status);
+    //     } else {
+    //         $users = $users->where('status', '1');
+    //     }
+
+    //     if ($request->filled('department_id')) {
+    //         $users = $users->where('department_id', $request->department_id);
+    //     }
+
+    //     if ($request->filled('employee_id')) {
+    //         $users = $users->where('id', $request->employee_id);
+    //     }
+
+    //     $users = $users->values();
+
+    //     $employeeIds = $users->pluck('id')->filter()->values();
+    //     $officeIds   = $users->pluck('office_id')->filter()->unique()->values();
+
+    //     // Attendance preload
+    //     $attendanceRecords = AttendanceRecord::query()
+    //         ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+    //         ->when($employeeIds->isNotEmpty(), function ($q) use ($employeeIds) {
+    //             $q->whereIn('user_id', $employeeIds);
+    //         }, function ($q) {
+    //             $q->whereRaw('1 = 0');
+    //         })
+    //         ->get();
+
+    //     $attendanceMap = $attendanceRecords->keyBy(function ($record) {
+    //         return $record->user_id . '_' . $record->created_at->format('Y-m-d');
+    //     });
+
+    //     // Leaves preload
+    //     $leaves = Leave::query()
+    //         ->when($employeeIds->isNotEmpty(), function ($q) use ($employeeIds) {
+    //             $q->whereIn('user_id', $employeeIds);
+    //         }, function ($q) {
+    //             $q->whereRaw('1 = 0');
+    //         })
+    //         ->whereDate('start_date', '<=', $endOfMonth->toDateString())
+    //         ->whereDate('end_date', '>=', $startOfMonth->toDateString())
+    //         ->get();
+
+    //     $leaveMap = collect();
+
+    //     foreach ($leaves as $leave) {
+    //         $leaveStart = Carbon::parse($leave->start_date)->startOfDay();
+    //         $leaveEnd   = Carbon::parse($leave->end_date)->endOfDay();
+
+    //         if ($leaveStart->lt($startOfMonth)) {
+    //             $leaveStart = $startOfMonth->copy();
+    //         }
+
+    //         if ($leaveEnd->gt($endOfMonth)) {
+    //             $leaveEnd = $endOfMonth->copy();
+    //         }
+
+    //         $cursor = $leaveStart->copy();
+
+    //         while ($cursor->lte($leaveEnd)) {
+    //             $leaveMap->put(
+    //                 $leave->user_id . '_' . $cursor->format('Y-m-d'),
+    //                 $leave
+    //             );
+    //             $cursor->addDay();
+    //         }
+    //     }
+
+    //     // Off preload
+    //     $offs = Off::query()
+    //         ->when($officeIds->isNotEmpty(), function ($q) use ($officeIds) {
+    //             $q->whereIn('office_id', $officeIds);
+    //         }, function ($q) {
+    //             $q->whereRaw('1 = 0');
+    //         })
+    //         ->where('is_off', '1')
+    //         ->whereDate('date', '>=', $startOfMonth->toDateString())
+    //         ->whereDate('date', '<=', $endOfMonth->toDateString())
+    //         ->get();
+
+    //     $offMap = $offs->keyBy(function ($off) {
+    //         return $off->office_id . '_' . Carbon::parse($off->date)->format('Y-m-d');
+    //     });
+
+    //     $departments = Department::all();
+
+    //     return view('dashboard.finalReport.index1', [
+    //         'dates'             => $dates,
+    //         'monthGroups'       => $monthGroups,
+    //         'attendanceRecords' => $attendanceRecords,
+    //         'attendanceMap'     => $attendanceMap,
+    //         'leaveMap'          => $leaveMap,
+    //         'offMap'            => $offMap,
+    //         'users'             => $users,
+    //         'allEmployees'      => $allEmployees,
+    //         'fromMonth'         => $fromMonth,
+    //         'toMonth'           => $toMonth,
+    //         'departments'       => $departments,
+    //     ]);
+    // }
+
+
     public function index(Request $request)
     {
         $fromMonth = $request->filled('from_month')
@@ -196,7 +356,6 @@ class FinalReportController extends Controller
             $loopDate->addDay();
         }
 
-        // Month-wise grouping
         $monthGroups = $dates->groupBy(function ($item) {
             return $item->date->format('Y-m');
         })->map(function ($monthDates, $monthKey) {
@@ -222,7 +381,9 @@ class FinalReportController extends Controller
             ];
         })->values();
 
-        $allEmployees = HomeController::employeeList()->values();
+        // office-wise + hierarchical employee list
+        $allEmployees = collect(HomeController::employeeList())->values();
+
         $users = $allEmployees;
 
         if ($request->filled('status')) {
@@ -241,21 +402,21 @@ class FinalReportController extends Controller
 
         $users = $users->values();
 
-        $employeeIds = $users->pluck('id')->filter()->values();
+        $employeeIds = $users->pluck('id')->filter()->unique()->values();
         $officeIds   = $users->pluck('office_id')->filter()->unique()->values();
 
         // Attendance preload
         $attendanceRecords = AttendanceRecord::query()
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->when($employeeIds->isNotEmpty(), function ($q) use ($employeeIds) {
                 $q->whereIn('user_id', $employeeIds);
             }, function ($q) {
                 $q->whereRaw('1 = 0');
             })
+            ->whereBetween('check_in', [$startOfMonth, $endOfMonth])
             ->get();
 
         $attendanceMap = $attendanceRecords->keyBy(function ($record) {
-            return $record->user_id . '_' . $record->created_at->format('Y-m-d');
+            return $record->user_id . '_' . Carbon::parse($record->check_in)->format('Y-m-d');
         });
 
         // Leaves preload
@@ -294,7 +455,7 @@ class FinalReportController extends Controller
             }
         }
 
-        // Off preload
+        // Office offs preload
         $offs = Off::query()
             ->when($officeIds->isNotEmpty(), function ($q) use ($officeIds) {
                 $q->whereIn('office_id', $officeIds);
