@@ -173,18 +173,23 @@ class HomeController extends Controller
 
         $activeOfficeId = $user->activeOfficeId();
 
-        // super admin / admin / owner => selected/current office ke users
-        if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
-            if (!$activeOfficeId) {
-                return collect();
-            }
-
-            return User::where('office_id', $activeOfficeId)
-                ->orderBy('name')
-                ->get();
+        if (!$activeOfficeId) {
+            return collect();
         }
 
-        // team leader ya normal role
+        // super admin / admin / owner
+        if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+
+            $employees = User::where('office_id', $activeOfficeId)
+                ->orderByRaw('CASE WHEN team_leader_id IS NULL THEN 0 ELSE 1 END')
+                ->orderBy('team_leader_id')
+                ->orderBy('name')
+                ->get();
+
+            return self::sortEmployeesHierarchically($employees);
+        }
+
+        // team leader
         if ($user->hasRole('team_leader')) {
             $employees = $user->getAllTeamMembers();
 
@@ -196,10 +201,10 @@ class HomeController extends Controller
                 $employees->push($user);
             }
 
-            return $employees->unique('id')->values();
+            return self::sortEmployeesHierarchically($employees->unique('id')->values());
         }
 
-        // normal employee => sirf khud
+        // normal employee
         if ((int) $user->office_id === (int) $activeOfficeId) {
             return collect([$user]);
         }
