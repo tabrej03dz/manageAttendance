@@ -201,6 +201,43 @@ class HomeController extends Controller
         return collect();
     }
 
+
+
+    static function sortEmployeesHierarchically($employees)
+    {
+        $employees = collect($employees);
+
+        $grouped = $employees->groupBy('team_leader_id');
+        $sorted = collect();
+
+        $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
+            if (!isset($grouped[$leaderId])) {
+                return;
+            }
+
+            foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
+                $sorted->push($employee);
+                $appendChildren($employee->id);
+            }
+        };
+
+        if (isset($grouped[null])) {
+            foreach ($grouped[null]->sortBy('name') as $employee) {
+                $sorted->push($employee);
+                $appendChildren($employee->id);
+            }
+        }
+
+        $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
+
+        foreach ($remaining->sortBy('name') as $employee) {
+            $sorted->push($employee);
+            $appendChildren($employee->id);
+        }
+
+        return $sorted->unique('id')->values();
+    }
+
     static function latitudeInDMS($decimal)
     {
         // Determine if the latitude is in the Northern or Southern Hemisphere
