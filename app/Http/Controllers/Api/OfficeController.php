@@ -9,36 +9,72 @@ use Illuminate\Http\Request;
 
 class OfficeController extends Controller
 {
-    public function index(Request $request)
-    {
-        try {
-            $user = $request->user();
+    // public function index(Request $request)
+    // {
+    //     try {
+    //         $user = $request->user();
 
-           if ($user->hasRole('super_admin')) {
-               // Fetch all offices for super admin
-               $offices = Office::all();
-           } elseif ($user->hasRole('owner')) {
-               // Fetch offices owned by the user
-               $offices = Office::where('owner_id', $user->id)->get();
-           } else {
-               // Fetch the specific office associated with the user
-               $offices = Office::where('id', $user->office_id)->get();
-           }
+    //        if ($user->hasRole('super_admin')) {
+    //            // Fetch all offices for super admin
+    //            $offices = Office::all();
+    //        } elseif ($user->hasRole('owner')) {
+    //            // Fetch offices owned by the user
+    //            $offices = Office::where('owner_id', $user->id)->get();
+    //        } else {
+    //            // Fetch the specific office associated with the user
+    //            $offices = Office::where('id', $user->office_id)->get();
+    //        }
             
 
-            // Return the list of offices as a JSON response
-            return response()->json([
-                'message' => 'Offices retrieved successfully.',
-                'offices' => $offices,
-            ], 200);
+    //         // Return the list of offices as a JSON response
+    //         return response()->json([
+    //             'message' => 'Offices retrieved successfully.',
+    //             'offices' => $offices,
+    //         ], 200);
 
-        } catch (\Exception $e) {
-            // Handle unexpected errors
-            return response()->json([
-                'error' => 'An error occurred: ' . $e->getMessage(),
-            ], 500);
+    //     } catch (\Exception $e) {
+    //         // Handle unexpected errors
+    //         return response()->json([
+    //             'error' => 'An error occurred: ' . $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
+    public function index(Request $request)
+{
+    try {
+        $user = $request->user();
+
+        if ($user->hasRole('super_admin')) {
+            // Fetch all offices for super admin
+            $offices = Office::orderByRaw("status = 'active' DESC")
+                ->orderBy('id', 'desc')
+                ->get();
+        } elseif ($user->hasRole('owner')) {
+            // Fetch offices owned by the user
+            $offices = Office::where('owner_id', $user->id)
+                ->orderByRaw("status = 'active' DESC")
+                ->orderBy('id', 'desc')
+                ->get();
+        } else {
+            // Fetch the specific office associated with the user
+            $offices = Office::where('id', $user->office_id)
+                ->orderByRaw("status = 'active' DESC")
+                ->orderBy('id', 'desc')
+                ->get();
         }
+
+        return response()->json([
+            'message' => 'Offices retrieved successfully.',
+            'offices' => $offices,
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'An error occurred: ' . $e->getMessage(),
+        ], 500);
     }
+}
 
     public function store(Request $request)
     {
