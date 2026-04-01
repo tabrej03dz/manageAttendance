@@ -594,23 +594,59 @@ public function index(Request $request)
     //     return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders', 'departments'));
     // }
 
+    // public function edit(Request $request, User $employee)
+    // {
+    //     $activeOfficeId = $request->user()->activeOfficeId();
+
+    //     if (!$activeOfficeId) {
+    //         return back()->with('error', 'Please select an office first.');
+    //     }
+
+    //     if ((int) $employee->office_id !== (int) $activeOfficeId) {
+    //         abort(403, 'This employee does not belong to the selected office.');
+    //     }
+
+    //     $offices = Office::where('id', $activeOfficeId)->get();
+
+    //     $teamLeaders = User::where('office_id', $activeOfficeId)
+    //         ->role('team_leader')
+    //         ->get();
+
+    //     $departments = Department::all();
+
+    //     return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders', 'departments'));
+    // }
+
+
     public function edit(Request $request, User $employee)
     {
-        $activeOfficeId = $request->user()->activeOfficeId();
+        $user = $request->user();
 
-        if (!$activeOfficeId) {
-            return back()->with('error', 'Please select an office first.');
+        if ($user->hasRole('super_admin')) {
+            $offices = Office::orderBy('name')->get();
+
+            $teamLeaders = User::whereHas('roles', function ($q) {
+                    $q->where('name', 'team_leader');
+                })
+                ->with('office')
+                ->get();
+        } else {
+            $activeOfficeId = $user->activeOfficeId();
+
+            if (!$activeOfficeId) {
+                return back()->with('error', 'Please select an office first.');
+            }
+
+            if ((int) $employee->office_id !== (int) $activeOfficeId) {
+                abort(403, 'This employee does not belong to the selected office.');
+            }
+
+            $offices = Office::where('id', $activeOfficeId)->get();
+
+            $teamLeaders = User::where('office_id', $activeOfficeId)
+                ->role('team_leader')
+                ->get();
         }
-
-        if ((int) $employee->office_id !== (int) $activeOfficeId) {
-            abort(403, 'This employee does not belong to the selected office.');
-        }
-
-        $offices = Office::where('id', $activeOfficeId)->get();
-
-        $teamLeaders = User::where('office_id', $activeOfficeId)
-            ->role('team_leader')
-            ->get();
 
         $departments = Department::all();
 
