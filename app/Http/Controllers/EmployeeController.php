@@ -312,21 +312,65 @@ public function index(Request $request)
 
 
 
+    // public function create(Request $request)
+    // {
+    //     $user = $request->user();
+    //     $activeOfficeId = $user->activeOfficeId();
+
+    //     if (!$activeOfficeId) {
+    //         return back()->with('error', 'Please select an office first.');
+    //     }
+
+    //     if ($user->hasRole('super_admin')) {
+    //         $offices = Office::where('id', $activeOfficeId)->get();
+    //         $teamLeaders = User::where('office_id', $activeOfficeId)
+    //             ->role('team_leader')
+    //             ->get();
+    //     } else {
+    //         $owner = $user->hasRole('owner') ? $user : optional($user->office)->owner;
+
+    //         if ($owner) {
+    //             $plan = Plan::where('user_id', $owner->id)->latest()->first();
+
+    //             $employeeCount = User::where('office_id', $activeOfficeId)->count();
+
+    //             if ($plan && $employeeCount >= $plan->number_of_employees) {
+    //                 return back()->with('error', 'Your employee creation limit exceeded!');
+    //             }
+    //         }
+
+    //         $offices = Office::where('id', $activeOfficeId)->get();
+
+    //         $teamLeaders = User::where('office_id', $activeOfficeId)
+    //             ->role('team_leader')
+    //             ->get();
+    //     }
+
+    //     $departments = Department::all();
+
+    //     return view('dashboard.employee.create', compact('offices', 'teamLeaders', 'departments'));
+    // }
+
+
     public function create(Request $request)
     {
         $user = $request->user();
-        $activeOfficeId = $user->activeOfficeId();
-
-        if (!$activeOfficeId) {
-            return back()->with('error', 'Please select an office first.');
-        }
 
         if ($user->hasRole('super_admin')) {
-            $offices = Office::where('id', $activeOfficeId)->get();
-            $teamLeaders = User::where('office_id', $activeOfficeId)
-                ->role('team_leader')
+            $offices = Office::orderBy('name')->get();
+
+            $teamLeaders = User::whereHas('roles', function ($q) {
+                    $q->where('name', 'team_leader');
+                })
+                ->with('office')
                 ->get();
         } else {
+            $activeOfficeId = $user->activeOfficeId();
+
+            if (!$activeOfficeId) {
+                return back()->with('error', 'Please select an office first.');
+            }
+
             $owner = $user->hasRole('owner') ? $user : optional($user->office)->owner;
 
             if ($owner) {
@@ -350,7 +394,6 @@ public function index(Request $request)
 
         return view('dashboard.employee.create', compact('offices', 'teamLeaders', 'departments'));
     }
-
 
     // public function store(EmployeeRequest $request)
     // {
