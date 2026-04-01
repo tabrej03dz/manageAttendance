@@ -474,13 +474,113 @@ public function index(Request $request)
     // }
 
 
+    // public function store(EmployeeRequest $request)
+    // {
+    //     $user = $request->user();
+    //     $activeOfficeId = $user->activeOfficeId();
+
+    //     if (!$activeOfficeId) {
+    //         return back()->with('error', 'Please select an office first.')->withInput();
+    //     }
+
+    //     $existingEmployee = User::where('email', $request->email)->first();
+    //     if ($existingEmployee) {
+    //         return back()->withErrors(['email' => 'Email already exists.'])->withInput();
+    //     }
+
+    //     $checkInTime = Carbon::parse($request->check_in_time);
+    //     $checkOutTime = Carbon::parse($request->check_out_time);
+
+    //     // force selected office
+    //     $employee = User::create($request->except('joining_date', 'office_id') + [
+    //         'office_id' => $activeOfficeId,
+    //         'password' => Hash::make('password'),
+    //     ]);
+
+    //     if ($request->file('photo')) {
+    //         $file = $request->file('photo')->store('public/photos');
+    //         $employee->photo = str_replace('public/', '', $file);
+    //     }
+
+    //     if ($request->file('aadhar_attachment')) {
+    //         $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
+    //         $employee->aadhar_attachment = str_replace('public/', '', $file);
+    //     }
+
+    //     if ($request->file('pan_attachment')) {
+    //         $file = $request->file('pan_attachment')->store('public/pan_attachments');
+    //         $employee->pan_attachment = str_replace('public/', '', $file);
+    //     }
+
+    //     if ($request->file('other_attachment')) {
+    //         $file = $request->file('other_attachment')->store('public/other_attachments');
+    //         $employee->other_attachment = str_replace('public/', '', $file);
+    //     }
+
+    //     $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
+    //     $employee->joining_date = $request->joining_date;
+    //     $employee->save();
+
+    //     if ($request->role) {
+    //         $employee->assignRole($request->role);
+    //     } else {
+    //         $employee->assignRole('employee');
+    //     }
+
+    //     $basic_salary = $request->basic_salary ?? 0;
+    //     $house_rent_allowance = $request->house_rent_allowance ?? 0;
+    //     $transport_allowance = $request->transport_allowance ?? 0;
+    //     $medical_allowance = $request->medical_allowance ?? 0;
+    //     $special_allowance = $request->special_allowance ?? 0;
+    //     $dearness_allowance = $request->dearness_allowance ?? 0;
+    //     $relieving_charge = $request->relieving_charge ?? 0;
+    //     $additional_allowance = $request->additional_allowance ?? 0;
+
+    //     $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance + $dearness_allowance + $relieving_charge + $additional_allowance;
+
+    //     UserSalary::create([
+    //         'user_id' => $employee->id,
+    //         'basic_salary' => $basic_salary,
+    //         'house_rent_allowance' => $house_rent_allowance,
+    //         'transport_allowance' => $transport_allowance,
+    //         'medical_allowance' => $medical_allowance,
+    //         'special_allowance' => $special_allowance,
+    //         'dearness_allowance' => $dearness_allowance,
+    //         'relieving_charge' => $relieving_charge,
+    //         'additional_allowance' => $additional_allowance,
+    //         'total_salary' => $total_salary,
+    //     ]);
+
+    //     return redirect('employee')->with('success', 'Employee Registered successfully');
+    // }
+
     public function store(EmployeeRequest $request)
     {
         $user = $request->user();
-        $activeOfficeId = $user->activeOfficeId();
 
-        if (!$activeOfficeId) {
-            return back()->with('error', 'Please select an office first.')->withInput();
+        if ($user->hasRole('super_admin')) {
+            $targetOfficeId = $request->office_id;
+
+            if (!$targetOfficeId) {
+                return back()->with('error', 'Please select an office first.')->withInput();
+            }
+        } else {
+            $targetOfficeId = $user->activeOfficeId();
+
+            if (!$targetOfficeId) {
+                return back()->with('error', 'Please select an office first.')->withInput();
+            }
+
+            $owner = $user->hasRole('owner') ? $user : optional($user->office)->owner;
+
+            if ($owner) {
+                $plan = Plan::where('user_id', $owner->id)->latest()->first();
+                $employeeCount = User::where('office_id', $targetOfficeId)->count();
+
+                if ($plan && $employeeCount >= $plan->number_of_employees) {
+                    return back()->with('error', 'Your employee creation limit exceeded!')->withInput();
+                }
+            }
         }
 
         $existingEmployee = User::where('email', $request->email)->first();
@@ -491,9 +591,24 @@ public function index(Request $request)
         $checkInTime = Carbon::parse($request->check_in_time);
         $checkOutTime = Carbon::parse($request->check_out_time);
 
-        // force selected office
-        $employee = User::create($request->except('joining_date', 'office_id') + [
-            'office_id' => $activeOfficeId,
+        $employee = User::create($request->except([
+            'joining_date',
+            'office_id',
+            'photo',
+            'aadhar_attachment',
+            'pan_attachment',
+            'other_attachment',
+            'role',
+            'basic_salary',
+            'house_rent_allowance',
+            'transport_allowance',
+            'medical_allowance',
+            'special_allowance',
+            'dearness_allowance',
+            'relieving_charge',
+            'additional_allowance',
+        ]) + [
+            'office_id' => $targetOfficeId,
             'password' => Hash::make('password'),
         ]);
 
@@ -536,7 +651,14 @@ public function index(Request $request)
         $relieving_charge = $request->relieving_charge ?? 0;
         $additional_allowance = $request->additional_allowance ?? 0;
 
-        $total_salary = $basic_salary + $house_rent_allowance + $transport_allowance + $medical_allowance + $special_allowance + $dearness_allowance + $relieving_charge + $additional_allowance;
+        $total_salary = $basic_salary
+            + $house_rent_allowance
+            + $transport_allowance
+            + $medical_allowance
+            + $special_allowance
+            + $dearness_allowance
+            + $relieving_charge
+            + $additional_allowance;
 
         UserSalary::create([
             'user_id' => $employee->id,
@@ -940,128 +1062,128 @@ public function index(Request $request)
 
 
     public function update(Request $request, User $employee)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    if ($user->hasRole('super_admin')) {
-        $targetOfficeId = $request->office_id;
-    } else {
-        $targetOfficeId = $user->activeOfficeId();
+        if ($user->hasRole('super_admin')) {
+            $targetOfficeId = $request->office_id;
+        } else {
+            $targetOfficeId = $user->activeOfficeId();
 
-        if (!$targetOfficeId) {
-            return back()->with('error', 'Please select an office first.');
-        }
+            if (!$targetOfficeId) {
+                return back()->with('error', 'Please select an office first.');
+            }
 
-        if ((int) $employee->office_id !== (int) $targetOfficeId) {
-            abort(403, 'This employee does not belong to the selected office.');
-        }
-    }
-
-    $employee->update($request->except([
-        'password',
-        'photo',
-        'aadhar_attachment',
-        'pan_attachment',
-        'other_attachment',
-        'joining_date',
-        'office_id',
-    ]));
-
-    if ($request->filled('password')) {
-        $employee->password = Hash::make($request->password);
-    }
-
-    if ($request->file('photo')) {
-        if ($employee->photo) {
-            $file = public_path('storage/' . $employee->photo);
-            if (file_exists($file)) {
-                unlink($file);
+            if ((int) $employee->office_id !== (int) $targetOfficeId) {
+                abort(403, 'This employee does not belong to the selected office.');
             }
         }
 
-        $file = $request->file('photo')->store('public/photos');
-        $employee->photo = str_replace('public/', '', $file);
-    }
+        $employee->update($request->except([
+            'password',
+            'photo',
+            'aadhar_attachment',
+            'pan_attachment',
+            'other_attachment',
+            'joining_date',
+            'office_id',
+        ]));
 
-    if ($request->file('aadhar_attachment')) {
-        if ($employee->aadhar_attachment) {
-            $file = public_path('storage/' . $employee->aadhar_attachment);
-            if (file_exists($file)) {
-                unlink($file);
-            }
+        if ($request->filled('password')) {
+            $employee->password = Hash::make($request->password);
         }
 
-        $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
-        $employee->aadhar_attachment = str_replace('public/', '', $file);
-    }
-
-    if ($request->file('pan_attachment')) {
-        if ($employee->pan_attachment) {
-            $file = public_path('storage/' . $employee->pan_attachment);
-            if (file_exists($file)) {
-                unlink($file);
+        if ($request->file('photo')) {
+            if ($employee->photo) {
+                $file = public_path('storage/' . $employee->photo);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
             }
+
+            $file = $request->file('photo')->store('public/photos');
+            $employee->photo = str_replace('public/', '', $file);
         }
 
-        $file = $request->file('pan_attachment')->store('public/pan_attachments');
-        $employee->pan_attachment = str_replace('public/', '', $file);
-    }
-
-    if ($request->file('other_attachment')) {
-        if ($employee->other_attachment) {
-            $file = public_path('storage/' . $employee->other_attachment);
-            if (file_exists($file)) {
-                unlink($file);
+        if ($request->file('aadhar_attachment')) {
+            if ($employee->aadhar_attachment) {
+                $file = public_path('storage/' . $employee->aadhar_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
             }
+
+            $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
+            $employee->aadhar_attachment = str_replace('public/', '', $file);
         }
 
-        $file = $request->file('other_attachment')->store('public/other_attachments');
-        $employee->other_attachment = str_replace('public/', '', $file);
+        if ($request->file('pan_attachment')) {
+            if ($employee->pan_attachment) {
+                $file = public_path('storage/' . $employee->pan_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            $file = $request->file('pan_attachment')->store('public/pan_attachments');
+            $employee->pan_attachment = str_replace('public/', '', $file);
+        }
+
+        if ($request->file('other_attachment')) {
+            if ($employee->other_attachment) {
+                $file = public_path('storage/' . $employee->other_attachment);
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+
+            $file = $request->file('other_attachment')->store('public/other_attachments');
+            $employee->other_attachment = str_replace('public/', '', $file);
+        }
+
+        $employee->joining_date = $request->joining_date;
+        $employee->office_id = $targetOfficeId;
+
+        if ($request->role) {
+            $employee->syncRoles($request->role);
+        }
+
+        $employee->save();
+
+        $basicSalary = $request->basic_salary ?? 0;
+        $dearnessAllowance = $request->dearness_allowance ?? 0;
+        $relievingCharge = $request->relieving_charge ?? 0;
+        $additionalAllowance = $request->additional_allowance ?? 0;
+        $providentFund = $request->provident_fund ?? 0;
+        $esic = $request->employee_state_insurance_corporation ?? 0;
+
+        $userSalary = UserSalary::where('user_id', $employee->id)->first();
+
+        if ($userSalary) {
+            $userSalary->update([
+                'basic_salary' => $basicSalary,
+                'dearness_allowance' => $dearnessAllowance,
+                'relieving_charge' => $relievingCharge,
+                'additional_allowance' => $additionalAllowance,
+                'provident_fund' => $providentFund,
+                'employee_state_insurance_corporation' => $esic,
+                'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
+            ]);
+        } else {
+            UserSalary::create([
+                'user_id' => $employee->id,
+                'basic_salary' => $basicSalary,
+                'dearness_allowance' => $dearnessAllowance,
+                'relieving_charge' => $relievingCharge,
+                'additional_allowance' => $additionalAllowance,
+                'provident_fund' => $providentFund,
+                'employee_state_insurance_corporation' => $esic,
+                'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
+            ]);
+        }
+
+        return redirect('employee')->with('success', 'Record Updated successfully');
     }
-
-    $employee->joining_date = $request->joining_date;
-    $employee->office_id = $targetOfficeId;
-
-    if ($request->role) {
-        $employee->syncRoles($request->role);
-    }
-
-    $employee->save();
-
-    $basicSalary = $request->basic_salary ?? 0;
-    $dearnessAllowance = $request->dearness_allowance ?? 0;
-    $relievingCharge = $request->relieving_charge ?? 0;
-    $additionalAllowance = $request->additional_allowance ?? 0;
-    $providentFund = $request->provident_fund ?? 0;
-    $esic = $request->employee_state_insurance_corporation ?? 0;
-
-    $userSalary = UserSalary::where('user_id', $employee->id)->first();
-
-    if ($userSalary) {
-        $userSalary->update([
-            'basic_salary' => $basicSalary,
-            'dearness_allowance' => $dearnessAllowance,
-            'relieving_charge' => $relievingCharge,
-            'additional_allowance' => $additionalAllowance,
-            'provident_fund' => $providentFund,
-            'employee_state_insurance_corporation' => $esic,
-            'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
-        ]);
-    } else {
-        UserSalary::create([
-            'user_id' => $employee->id,
-            'basic_salary' => $basicSalary,
-            'dearness_allowance' => $dearnessAllowance,
-            'relieving_charge' => $relievingCharge,
-            'additional_allowance' => $additionalAllowance,
-            'provident_fund' => $providentFund,
-            'employee_state_insurance_corporation' => $esic,
-            'total_salary' => $basicSalary + $dearnessAllowance + $relievingCharge + $additionalAllowance,
-        ]);
-    }
-
-    return redirect('employee')->with('success', 'Record Updated successfully');
-}
 
 
     // public function delete(User $employee)
