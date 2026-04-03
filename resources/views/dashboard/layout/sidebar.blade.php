@@ -88,13 +88,27 @@
                     </li>
                 @endcan
 
-                @role('super_admin')
-                    @php
+                @php
+                    $authUser = auth()->user();
+                    $sidebarOffices = collect();
+                    $activeOfficeId = null;
+                    $activeOfficeName = null;
+
+                    if ($authUser->hasRole('super_admin')) {
                         $sidebarOffices = \App\Models\Office::orderBy('name')->get();
                         $activeOfficeId = session('active_office_id');
                         $activeOfficeName = session('active_office_name');
-                    @endphp
+                    } elseif ($authUser->hasRole('owner')) {
+                        $sidebarOffices = \App\Models\Office::where('owner_id', $authUser->id)
+                            ->orderBy('name')
+                            ->get();
 
+                        $activeOfficeId = session('active_office_id', $authUser->office_id);
+                        $activeOfficeName = optional($sidebarOffices->firstWhere('id', $activeOfficeId))->name;
+                    }
+                @endphp
+
+                @if($authUser->hasRole('super_admin') || $authUser->hasRole('owner'))
                     <li class="nav-item has-treeview {{ request()->routeIs('office.switch') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-random"></i>
@@ -142,7 +156,7 @@
                             @endif
                         </ul>
                     </li>
-                @endrole
+                @endif
 
 {{--                    @role('super_admin|admin|owner')--}}
 {{--                    <li class="nav-item">--}}
