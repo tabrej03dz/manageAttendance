@@ -46,60 +46,127 @@ class SalaryController extends Controller
 
 
 
-    public function index(Request $request)
-    {
-        if ($request->filled('month')) {
-            $month = $request->month;
-            $startOfMonth = Carbon::parse($month . '-01')->startOfMonth();
-            $endOfMonth   = Carbon::parse($month . '-01')->endOfMonth();
-        } else {
-            $month = now()->format('Y-m');
-            $startOfMonth = now()->copy()->startOfMonth();
-            $endOfMonth   = now()->copy()->endOfMonth();
-        }
+    // public function index(Request $request)
+    // {
+    //     if ($request->filled('month')) {
+    //         $month = $request->month;
+    //         $startOfMonth = Carbon::parse($month . '-01')->startOfMonth();
+    //         $endOfMonth   = Carbon::parse($month . '-01')->endOfMonth();
+    //     } else {
+    //         $month = now()->format('Y-m');
+    //         $startOfMonth = now()->copy()->startOfMonth();
+    //         $endOfMonth   = now()->copy()->endOfMonth();
+    //     }
 
-        $dates = new Collection();
-        $loopDate = $startOfMonth->copy();
+    //     $dates = new Collection();
+    //     $loopDate = $startOfMonth->copy();
 
-        while ($loopDate->lte($endOfMonth)) {
-            $dates->push((object)[
-                'date' => $loopDate->copy(),
-            ]);
-            $loopDate->addDay();
-        }
+    //     while ($loopDate->lte($endOfMonth)) {
+    //         $dates->push((object)[
+    //             'date' => $loopDate->copy(),
+    //         ]);
+    //         $loopDate->addDay();
+    //     }
 
-        // yaha get() hata diya
-        $users = HomeController::employeeList()->where('status', '1');
+    //     // yaha get() hata diya
+    //     $users = HomeController::employeeList()->where('status', '1');
 
-        $userIds = $users->pluck('id')->toArray();
+    //     $userIds = $users->pluck('id')->toArray();
 
-        $attendanceRecords = AttendanceRecord::whereIn('user_id', $userIds)
-            ->where(function ($query) use ($startOfMonth, $endOfMonth) {
-                $query->whereBetween('check_in', [
-                    $startOfMonth->copy()->startOfDay(),
-                    $endOfMonth->copy()->endOfDay()
-                ])->orWhereBetween('check_out', [
-                    $startOfMonth->copy()->startOfDay(),
-                    $endOfMonth->copy()->endOfDay()
-                ]);
-            })
-            ->get();
+    //     $attendanceRecords = AttendanceRecord::whereIn('user_id', $userIds)
+    //         ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+    //             $query->whereBetween('check_in', [
+    //                 $startOfMonth->copy()->startOfDay(),
+    //                 $endOfMonth->copy()->endOfDay()
+    //             ])->orWhereBetween('check_out', [
+    //                 $startOfMonth->copy()->startOfDay(),
+    //                 $endOfMonth->copy()->endOfDay()
+    //             ]);
+    //         })
+    //         ->get();
 
-        $advancePayments = AdvancePayment::whereIn('user_id', $userIds)
-            ->whereMonth('date', $startOfMonth->month)
-            ->whereYear('date', $startOfMonth->year)
-            ->get();
+    //     $advancePayments = AdvancePayment::whereIn('user_id', $userIds)
+    //         ->whereMonth('date', $startOfMonth->month)
+    //         ->whereYear('date', $startOfMonth->year)
+    //         ->get();
 
-        return view('dashboard.salary.calculator', compact(
-            'dates',
-            'attendanceRecords',
-            'users',
-            'month',
-            'advancePayments',
-            'startOfMonth',
-            'endOfMonth'
-        ));
+    //     return view('dashboard.salary.calculator', compact(
+    //         'dates',
+    //         'attendanceRecords',
+    //         'users',
+    //         'month',
+    //         'advancePayments',
+    //         'startOfMonth',
+    //         'endOfMonth'
+    //     ));
+    // }
+
+
+
+public function index(Request $request)
+{
+    if ($request->filled('month')) {
+        $month = $request->month;
+        $startOfMonth = Carbon::parse($month . '-01')->startOfMonth();
+        $endOfMonth   = Carbon::parse($month . '-01')->endOfMonth();
+    } else {
+        $month = now()->format('Y-m');
+        $startOfMonth = now()->copy()->startOfMonth();
+        $endOfMonth   = now()->copy()->endOfMonth();
     }
+
+    $applyLateDeduction = $request->boolean('apply_late');
+    $applyEarlyExitDeduction = $request->boolean('apply_early_exit');
+
+    $lateDayThreshold = (int) $request->get('late_day_threshold', 3);
+    if ($lateDayThreshold <= 0) {
+        $lateDayThreshold = 3;
+    }
+
+    $dates = new Collection();
+    $loopDate = $startOfMonth->copy();
+
+    while ($loopDate->lte($endOfMonth)) {
+        $dates->push((object)[
+            'date' => $loopDate->copy(),
+        ]);
+        $loopDate->addDay();
+    }
+
+    $users = HomeController::employeeList()->where('status', '1');
+
+    $userIds = $users->pluck('id')->toArray();
+
+    $attendanceRecords = AttendanceRecord::whereIn('user_id', $userIds)
+        ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+            $query->whereBetween('check_in', [
+                $startOfMonth->copy()->startOfDay(),
+                $endOfMonth->copy()->endOfDay()
+            ])->orWhereBetween('check_out', [
+                $startOfMonth->copy()->startOfDay(),
+                $endOfMonth->copy()->endOfDay()
+            ]);
+        })
+        ->get();
+
+    $advancePayments = AdvancePayment::whereIn('user_id', $userIds)
+        ->whereMonth('date', $startOfMonth->month)
+        ->whereYear('date', $startOfMonth->year)
+        ->get();
+
+    return view('dashboard.salary.calculator', compact(
+        'dates',
+        'attendanceRecords',
+        'users',
+        'month',
+        'advancePayments',
+        'startOfMonth',
+        'endOfMonth',
+        'applyLateDeduction',
+        'applyEarlyExitDeduction',
+        'lateDayThreshold'
+    ));
+}
 
 
     public function status(Salary $salary){
