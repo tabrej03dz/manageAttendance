@@ -50,7 +50,8 @@
                             <th>Paid Leave</th>
                             <th>Unpaid Leave</th>
                             <th>Off</th>
-                            <th>Sunday</th>
+                            <th>Total Sunday</th>
+                            <th>Payable Sunday</th>
                             <th>Absent</th>
                             <th>Payable Days</th>
                             <th>Per Day Salary</th>
@@ -61,144 +62,149 @@
                         </thead>
 
                         <tbody>
-                            @forelse ($users as $user)
-                                @php
-                                    $advancePayment = $advancePayments->where('user_id', $user->id)->sum('amount');
+                        @forelse ($users as $user)
+                            @php
+                                $advancePayment = $advancePayments->where('user_id', $user->id)->sum('amount');
 
-                                    $officeDays = 0;
-                                    $presentDays = 0;
-                                    $halfDays = 0;
-                                    $paidLeave = 0;
-                                    $unpaidLeave = 0;
-                                    $offDays = 0;
-                                    $sundayCount = 0;
+                                $officeDays = 0;
+                                $presentDays = 0;
+                                $halfDays = 0;
+                                $paidLeave = 0;
+                                $unpaidLeave = 0;
+                                $offDays = 0;
+                                $sundayCount = 0;
 
-                                    foreach ($dates as $dateObj) {
-                                        $d = \Carbon\Carbon::parse($dateObj->date);
+                                foreach ($dates as $dateObj) {
+                                    $d = \Carbon\Carbon::parse($dateObj->date);
 
-                                        $isSunday = $d->isSunday();
-                                        if ($isSunday) {
-                                            $sundayCount++;
+                                    $isSunday = $d->isSunday();
+                                    if ($isSunday) {
+                                        $sundayCount++;
+                                    } else {
+                                        $officeDays++;
+                                    }
+
+                                    $record = $attendanceRecords
+                                        ->where('user_id', $user->id)
+                                        ->first(function ($record) use ($d) {
+                                            if (!$record->check_in) {
+                                                return false;
+                                            }
+
+                                            return \Carbon\Carbon::parse($record->check_in)->format('Y-m-d') === $d->format('Y-m-d');
+                                        });
+
+                                    $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
+                                        ->whereDate('end_date', '>=', $d)
+                                        ->where('user_id', $user->id)
+                                        ->where('status', 'approved')
+                                        ->first();
+
+                                    $off = \App\Models\Off::whereDate('date', $d)
+                                        ->where('office_id', $user->office_id)
+                                        ->where('is_off', '1')
+                                        ->first();
+
+                                    if ($record) {
+                                        if ($record->check_in && $record->check_out) {
+                                            $presentDays++;
                                         } else {
-                                            $officeDays++;
-                                        }
-
-                                        $record = $attendanceRecords
-                                            ->where('user_id', $user->id)
-                                            ->first(function ($record) use ($d) {
-                                                if (!$record->check_in) {
-                                                    return false;
-                                                }
-
-                                                return \Carbon\Carbon::parse($record->check_in)->format('Y-m-d') === $d->format('Y-m-d');
-                                            });
-
-                                        $leave = \App\Models\Leave::whereDate('start_date', '<=', $d)
-                                            ->whereDate('end_date', '>=', $d)
-                                            ->where('user_id', $user->id)
-                                            ->where('status', 'approved')
-                                            ->first();
-
-                                        $off = \App\Models\Off::whereDate('date', $d)
-                                            ->where('office_id', $user->office_id)
-                                            ->where('is_off', '1')
-                                            ->first();
-
-                                        if ($record) {
-                                            if ($record->check_in && $record->check_out) {
-                                                $presentDays++;
-                                            } else {
-                                                $halfDays++;
-                                            }
-                                        }
-
-                                        if ($leave) {
-                                            if ($leave->approve_as === 'paid') {
-                                                $paidLeave++;
-                                            } else {
-                                                $unpaidLeave++;
-                                            }
-                                        }
-
-                                        if ($off) {
-                                            $offDays++;
+                                            $halfDays++;
                                         }
                                     }
 
-                                    $absentDays = max(
-                                        0,
-                                        $officeDays - ($presentDays + $halfDays + $paidLeave + $unpaidLeave + $offDays)
-                                    );
+                                    if ($leave) {
+                                        if ($leave->approve_as === 'paid') {
+                                            $paidLeave++;
+                                        } else {
+                                            $unpaidLeave++;
+                                        }
+                                    }
 
-                                    $employeeSalary = (float) ($user->userSalary->total_salary ?? $user->salary ?? 0);
+                                    if ($off) {
+                                        $offDays++;
+                                    }
+                                }
 
-                                    $payableDays = $presentDays + ($halfDays * 0.5) + $paidLeave + $offDays + $sundayCount;
-                                    $perDaySalary = $officeDays > 0 ? ($employeeSalary / $officeDays) : 0;
-                                    $grossSalary = $perDaySalary * $payableDays;
-                                    $deduction = (float) $advancePayment;
-                                    $netSalary = $grossSalary - $deduction;
-                                @endphp
+                                // हर 6 present day पर 1 Sunday payable
+                                // लेकिन month के actual Sundays से ज्यादा नहीं
+                                $payableSunday = min(floor($presentDays / 6), $sundayCount);
 
-                                <tr class="salary-row"
-                                    data-office-days="{{ $officeDays }}"
-                                    data-present-days="{{ $presentDays }}"
-                                    data-half-days="{{ $halfDays }}"
-                                    data-paid-leave="{{ $paidLeave }}"
-                                    data-unpaid-leave="{{ $unpaidLeave }}"
-                                    data-off-days="{{ $offDays }}"
-                                    data-sunday-count="{{ $sundayCount }}"
-                                    data-absent-days="{{ $absentDays }}"
-                                    data-advance="{{ $advancePayment }}">
+                                $absentDays = max(
+                                    0,
+                                    $officeDays - ($presentDays + $halfDays + $paidLeave + $unpaidLeave + $offDays)
+                                );
 
-                                    <td class="fw-bold sticky left-0 bg-light text-left" style="z-index: 10; min-width:180px;">
-                                        <div>{{ $user->name }}</div>
-                                        <small class="text-muted">{{ $user->email ?? ($user->phone ?? '') }}</small>
-                                    </td>
+                                $employeeSalary = (float) ($user->userSalary->total_salary ?? $user->salary ?? 0);
 
-                                    <td class="advance-cell">{{ number_format($advancePayment, 2, '.', '') }}</td>
+                                $payableDays = $presentDays + ($halfDays * 0.5) + $paidLeave + $offDays + $payableSunday;
+                                $perDaySalary = $officeDays > 0 ? ($employeeSalary / $officeDays) : 0;
+                                $grossSalary = $perDaySalary * $payableDays;
+                                $deduction = (float) $advancePayment;
+                                $netSalary = $grossSalary - $deduction;
+                            @endphp
 
-                                    <td style="min-width: 160px;">
-                                        <input type="number"
-                                            class="form-control monthly-salary text-center"
-                                            step="0.01"
-                                            min="0"
-                                            value="{{ number_format($employeeSalary, 2, '.', '') }}">
-                                    </td>
+                            <tr class="salary-row"
+                                data-office-days="{{ $officeDays }}"
+                                data-present-days="{{ $presentDays }}"
+                                data-half-days="{{ $halfDays }}"
+                                data-paid-leave="{{ $paidLeave }}"
+                                data-unpaid-leave="{{ $unpaidLeave }}"
+                                data-off-days="{{ $offDays }}"
+                                data-sunday-count="{{ $sundayCount }}"
+                                data-payable-sunday="{{ $payableSunday }}"
+                                data-absent-days="{{ $absentDays }}"
+                                data-advance="{{ $advancePayment }}">
 
-                                    <td class="office-days">{{ $officeDays }}</td>
-                                    <td class="present-days">{{ $presentDays }}</td>
-                                    <td class="half-days">{{ $halfDays }}</td>
-                                    <td class="paid-leave">{{ $paidLeave }}</td>
-                                    <td class="unpaid-leave">{{ $unpaidLeave }}</td>
-                                    <td class="off-days">{{ $offDays }}</td>
-                                    <td class="sunday-count">{{ $sundayCount }}</td>
-                                    <td class="absent-days">{{ $absentDays }}</td>
-                                    <td class="payable-days">{{ number_format($payableDays, 2, '.', '') }}</td>
-                                    <td class="per-day-salary">{{ number_format($perDaySalary, 2, '.', '') }}</td>
-                                    <td class="gross-salary">{{ number_format($grossSalary, 2, '.', '') }}</td>
-                                    <td class="deduction">{{ number_format($deduction, 2, '.', '') }}</td>
-                                    <td class="net-salary font-weight-bold text-success">{{ number_format($netSalary, 2, '.', '') }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="16" class="text-center py-4">No employees found.</td>
-                                </tr>
-                            @endforelse
+                                <td class="fw-bold sticky left-0 bg-light text-left" style="z-index: 10; min-width:180px;">
+                                    <div>{{ $user->name }}</div>
+                                    <small class="text-muted">{{ $user->email ?? ($user->phone ?? '') }}</small>
+                                </td>
+
+                                <td class="advance-cell">{{ number_format($advancePayment, 2, '.', '') }}</td>
+
+                                <td style="min-width: 160px;">
+                                    <input type="number"
+                                           class="form-control monthly-salary text-center"
+                                           step="0.01"
+                                           min="0"
+                                           value="{{ number_format($employeeSalary, 2, '.', '') }}">
+                                </td>
+
+                                <td class="office-days">{{ $officeDays }}</td>
+                                <td class="present-days">{{ $presentDays }}</td>
+                                <td class="half-days">{{ $halfDays }}</td>
+                                <td class="paid-leave">{{ $paidLeave }}</td>
+                                <td class="unpaid-leave">{{ $unpaidLeave }}</td>
+                                <td class="off-days">{{ $offDays }}</td>
+                                <td class="sunday-count">{{ $sundayCount }}</td>
+                                <td class="payable-sunday">{{ $payableSunday }}</td>
+                                <td class="absent-days">{{ $absentDays }}</td>
+                                <td class="payable-days">{{ number_format($payableDays, 2, '.', '') }}</td>
+                                <td class="per-day-salary">{{ number_format($perDaySalary, 2, '.', '') }}</td>
+                                <td class="gross-salary">{{ number_format($grossSalary, 2, '.', '') }}</td>
+                                <td class="deduction">{{ number_format($deduction, 2, '.', '') }}</td>
+                                <td class="net-salary font-weight-bold text-success">{{ number_format($netSalary, 2, '.', '') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="17" class="text-center py-4">No employees found.</td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>
 
                 <div class="mt-3 p-3 bg-light rounded shadow-sm">
                     <strong>Formula:</strong><br>
-                    Payable Days = Present + (Half Day × 0.5) + Paid Leave + Off + Sunday<br>
+                    Payable Sunday = Present Days / 6 (maximum actual Sundays in month)<br>
+                    Payable Days = Present + (Half Day × 0.5) + Paid Leave + Off + Payable Sunday<br>
                     Gross Salary = Per Day Salary × Payable Days<br>
                     Net Salary = Gross Salary - Advance
                 </div>
             </div>
         </div>
     </div>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -230,12 +236,17 @@
 
             const monthlySalary = toNumber(monthlySalaryInput.value);
 
-            const payableDays = presentDays + (halfDays * 0.5) + paidLeave + offDays + sundayCount;
+            // हर 6 present day पर 1 Sunday payable
+            // actual Sunday count से ज्यादा नहीं
+            const payableSunday = Math.min(Math.floor(presentDays / 6), sundayCount);
+
+            const payableDays = presentDays + (halfDays * 0.5) + paidLeave + offDays + payableSunday;
             const perDaySalary = officeDays > 0 ? (monthlySalary / officeDays) : 0;
             const grossSalary = perDaySalary * payableDays;
             const deduction = advance;
             const netSalary = grossSalary - deduction;
 
+            row.querySelector('.payable-sunday').textContent = payableSunday;
             row.querySelector('.payable-days').textContent = formatNumber(payableDays);
             row.querySelector('.per-day-salary').textContent = formatNumber(perDaySalary);
             row.querySelector('.gross-salary').textContent = formatNumber(grossSalary);
