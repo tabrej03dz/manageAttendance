@@ -226,89 +226,89 @@ class AttendanceRecordController extends Controller
 
 
     public function monthlyRecord(Request $request)
-{
-    $request->validate([
-        'user_id' => 'nullable|exists:users,id',
-        'month'   => 'nullable|date_format:Y-m',
-    ]);
-
-    $loggedInUser = $request->user();
-
-    $user = $request->filled('user_id')
-        ? User::find($request->user_id)
-        : $loggedInUser;
-
-    if (!$user) {
-        return response()->json(['error' => 'User not found.'], 404);
-    }
-
-    // Role check fix
-    $employees = null;
-    if ($loggedInUser->hasRole(['super_admin', 'admin', 'owner', 'team_leader'])) {
-        $employees = HomeController::employeeList($loggedInUser);
-    }
-
-    $month = $request->month ?: now()->format('Y-m');
-
-    $startOfMonth = Carbon::createFromFormat('Y-m-d', $month . '-01')->startOfMonth()->startOfDay();
-    $endOfMonth   = Carbon::createFromFormat('Y-m-d', $month . '-01')->endOfMonth()->endOfDay();
-
-    $query = AttendanceRecord::where('user_id', $user->id);
-
-    // Agar table me attendance_date ya date column hai to usko use karo
-    if (\Schema::hasColumn('attendance_records', 'attendance_date')) {
-        $query->whereBetween('attendance_date', [
-            $startOfMonth->toDateString(),
-            $endOfMonth->toDateString()
+    {
+        $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'month'   => 'nullable|date_format:Y-m',
         ]);
 
-        $attendanceRecords = $query->get()->groupBy(function ($record) {
-            return Carbon::parse($record->attendance_date)->format('Y-m-d');
-        });
-    } elseif (\Schema::hasColumn('attendance_records', 'date')) {
-        $query->whereBetween('date', [
-            $startOfMonth->toDateString(),
-            $endOfMonth->toDateString()
+        $loggedInUser = $request->user();
+
+        $user = $request->filled('user_id')
+            ? User::find($request->user_id)
+            : $loggedInUser;
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found.'], 404);
+        }
+
+        // Role check fix
+        $employees = null;
+        if ($loggedInUser->hasRole(['super_admin', 'admin', 'owner', 'team_leader'])) {
+            $employees = HomeController::employeeList($loggedInUser);
+        }
+
+        $month = $request->month ?: now()->format('Y-m');
+
+        $startOfMonth = Carbon::createFromFormat('Y-m-d', $month . '-01')->startOfMonth()->startOfDay();
+        $endOfMonth   = Carbon::createFromFormat('Y-m-d', $month . '-01')->endOfMonth()->endOfDay();
+
+        $query = AttendanceRecord::where('user_id', $user->id);
+
+        // Agar table me attendance_date ya date column hai to usko use karo
+        if (\Schema::hasColumn('attendance_records', 'attendance_date')) {
+            $query->whereBetween('attendance_date', [
+                $startOfMonth->toDateString(),
+                $endOfMonth->toDateString()
+            ]);
+
+            $attendanceRecords = $query->get()->groupBy(function ($record) {
+                return Carbon::parse($record->attendance_date)->format('Y-m-d');
+            });
+        } elseif (\Schema::hasColumn('attendance_records', 'date')) {
+            $query->whereBetween('date', [
+                $startOfMonth->toDateString(),
+                $endOfMonth->toDateString()
+            ]);
+
+            $attendanceRecords = $query->get()->groupBy(function ($record) {
+                return Carbon::parse($record->date)->format('Y-m-d');
+            });
+        } else {
+            // fallback on created_at
+            $query->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+
+            $attendanceRecords = $query->get()->groupBy(function ($record) {
+                return $record->created_at->format('Y-m-d');
+            });
+        }
+
+        $dates = collect();
+        $loopDate = $startOfMonth->copy();
+
+        while ($loopDate->lte($endOfMonth)) {
+            $key = $loopDate->toDateString();
+
+            $dates->push([
+                'date'   => $key,
+                'record' => $attendanceRecords->has($key)
+                    ? $attendanceRecords[$key]->first()
+                    : null,
+            ]);
+
+            $loopDate->addDay();
+        }
+
+        return response()->json([
+            'employees'  => $employees,
+            'user'       => [
+                'id'   => $user->id,
+                'name' => $user->name,
+            ],
+            'month'      => $month,
+            'attendance' => $dates->values(),
         ]);
-
-        $attendanceRecords = $query->get()->groupBy(function ($record) {
-            return Carbon::parse($record->date)->format('Y-m-d');
-        });
-    } else {
-        // fallback on created_at
-        $query->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
-
-        $attendanceRecords = $query->get()->groupBy(function ($record) {
-            return $record->created_at->format('Y-m-d');
-        });
     }
-
-    $dates = collect();
-    $loopDate = $startOfMonth->copy();
-
-    while ($loopDate->lte($endOfMonth)) {
-        $key = $loopDate->toDateString();
-
-        $dates->push([
-            'date'   => $key,
-            'record' => $attendanceRecords->has($key)
-                ? $attendanceRecords[$key]->first()
-                : null,
-        ]);
-
-        $loopDate->addDay();
-    }
-
-    return response()->json([
-        'employees'  => $employees,
-        'user'       => [
-            'id'   => $user->id,
-            'name' => $user->name,
-        ],
-        'month'      => $month,
-        'attendance' => $dates->values(),
-    ]);
-}
 
     public function UserNote(Request $request,$record = null, $type = null)
     {
