@@ -126,8 +126,8 @@
                                     }
                                 }
 
-                                // हर 6 present day पर 1 Sunday payable
-                                // लेकिन month के actual Sundays से ज्यादा नहीं
+                                // har 6 present day par 1 Sunday payable
+                                // but actual Sunday se jyada nahi
                                 $payableSunday = min(floor($presentDays / 6), $sundayCount);
 
                                 $absentDays = max(
@@ -138,7 +138,10 @@
                                 $employeeSalary = (float) ($user->userSalary->total_salary ?? $user->salary ?? 0);
 
                                 $payableDays = $presentDays + ($halfDays * 0.5) + $paidLeave + $offDays + $payableSunday;
-                                $perDaySalary = $officeDays > 0 ? ($employeeSalary / $officeDays) : 0;
+
+                                // IMPORTANT CHANGE: per day salary monthly / 30
+                                $perDaySalary = $employeeSalary > 0 ? ($employeeSalary / 30) : 0;
+
                                 $grossSalary = $perDaySalary * $payableDays;
                                 $deduction = (float) $advancePayment;
                                 $netSalary = $grossSalary - $deduction;
@@ -197,6 +200,7 @@
 
                 <div class="mt-3 p-3 bg-light rounded shadow-sm">
                     <strong>Formula:</strong><br>
+                    Per Day Salary = Monthly Salary / 30<br>
                     Payable Sunday = Present Days / 6 (maximum actual Sundays in month)<br>
                     Payable Days = Present + (Half Day × 0.5) + Paid Leave + Off + Payable Sunday<br>
                     Gross Salary = Per Day Salary × Payable Days<br>
@@ -226,22 +230,24 @@
         function recalculateRow(row) {
             const monthlySalaryInput = row.querySelector('.monthly-salary');
 
-            const officeDays   = toNumber(row.dataset.officeDays);
-            const presentDays  = toNumber(row.dataset.presentDays);
-            const halfDays     = toNumber(row.dataset.halfDays);
-            const paidLeave    = toNumber(row.dataset.paidLeave);
-            const offDays      = toNumber(row.dataset.offDays);
-            const sundayCount  = toNumber(row.dataset.sundayCount);
-            const advance      = toNumber(row.dataset.advance);
+            const presentDays = toNumber(row.dataset.presentDays);
+            const halfDays = toNumber(row.dataset.halfDays);
+            const paidLeave = toNumber(row.dataset.paidLeave);
+            const offDays = toNumber(row.dataset.offDays);
+            const sundayCount = toNumber(row.dataset.sundayCount);
+            const advance = toNumber(row.dataset.advance);
 
             const monthlySalary = toNumber(monthlySalaryInput.value);
 
-            // हर 6 present day पर 1 Sunday payable
-            // actual Sunday count से ज्यादा नहीं
+            // har 6 present day par 1 Sunday payable
+            // actual Sunday count se jyada nahi
             const payableSunday = Math.min(Math.floor(presentDays / 6), sundayCount);
 
             const payableDays = presentDays + (halfDays * 0.5) + paidLeave + offDays + payableSunday;
-            const perDaySalary = officeDays > 0 ? (monthlySalary / officeDays) : 0;
+
+            // IMPORTANT CHANGE: per day salary monthly / 30
+            const perDaySalary = monthlySalary > 0 ? (monthlySalary / 30) : 0;
+
             const grossSalary = perDaySalary * payableDays;
             const deduction = advance;
             const netSalary = grossSalary - deduction;
