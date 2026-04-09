@@ -46,6 +46,7 @@ Route::group(['middleware' => "auth:sanctum"], function(){
 
     Route::prefix('salary')->name('salary.')->group(function(){
         Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
+         Route::get('calculator', [App\Http\Controllers\Api\SalaryController::class, 'salaryCalculate']);
     });
 
     Route::prefix('break')->name('break.')->group(function(){
