@@ -113,7 +113,8 @@ class SalaryController extends Controller
 
 
 
-    public function salaryCalculate(Request $request)
+
+         public function salaryCalculate(Request $request)
     {
         try {
             if ($request->filled('month')) {
@@ -142,21 +143,7 @@ class SalaryController extends Controller
                 $loopDate->addDay();
             }
 
-            // API ke liye direct users query
-            $usersQuery = User::query()->where('status', '1');
-
-            // optional office filter
-            if ($request->filled('office_id')) {
-                $usersQuery->where('office_id', $request->office_id);
-            }
-
-            // optional single user filter
-            if ($request->filled('user_id')) {
-                $usersQuery->where('id', $request->user_id);
-            }
-
-            $users = $usersQuery->get();
-
+            $users = HomeController::employeeList()->where('status', '1');
             $userIds = $users->pluck('id')->toArray();
 
             $attendanceRecords = AttendanceRecord::whereIn('user_id', $userIds)
@@ -282,7 +269,7 @@ class SalaryController extends Controller
                     $officeDays - ($presentDays + $halfDays + $paidLeave + $unpaidLeave + $offDays)
                 );
 
-                $employeeSalary = (float) ($user->salary ?? 0);
+                $employeeSalary = (float) ($user->userSalary->total_salary ?? $user->salary ?? 0);
 
                 $payableDays = $presentDays + ($halfDays * 0.5) + $paidLeave + $offDays + $payableSunday;
 
@@ -314,6 +301,15 @@ class SalaryController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'office_id' => $user->office_id,
+
+                    'salary_input' => [
+                        'monthly_salary' => round($employeeSalary, 2),
+                        'office_minutes_per_day' => $officeMinutesPerDay,
+                        'late_day_threshold' => $lateDayThreshold,
+                        'apply_late_deduction' => $applyLateDeduction,
+                        'apply_early_exit_deduction' => $applyEarlyExitDeduction,
+                    ],
+
                     'attendance_summary' => [
                         'office_days' => $officeDays,
                         'present_days' => $presentDays,
@@ -326,21 +322,24 @@ class SalaryController extends Controller
                         'absent_days' => $absentDays,
                         'payable_days' => round($payableDays, 2),
                     ],
+
                     'late_summary' => [
                         'late_days' => $lateDays,
                         'late_minutes' => $lateMinutes,
-                        'late_salary_days' => $lateSalaryDays,
                         'late_time_hhmm' => $this->minutesToHHMM($lateMinutes),
+                        'late_salary_days' => $lateSalaryDays,
                     ],
+
                     'early_exit_summary' => [
                         'early_exit_days' => $earlyExitDays,
                         'early_exit_minutes' => $earlyExitMinutes,
                         'early_exit_time_hhmm' => $this->minutesToHHMM($earlyExitMinutes),
                     ],
+
                     'salary_breakdown' => [
-                        'monthly_salary' => round($employeeSalary, 2),
                         'advance' => round($advancePayment, 2),
                         'per_day_salary' => round($perDaySalary, 2),
+                        'per_minute_salary' => round($perMinuteSalary, 4),
                         'gross_salary' => round($grossSalary, 2),
                         'late_deduction' => round($lateDeduction, 2),
                         'early_exit_deduction' => round($earlyExitDeduction, 2),
@@ -360,8 +359,6 @@ class SalaryController extends Controller
                     'apply_late_deduction' => $applyLateDeduction,
                     'apply_early_exit_deduction' => $applyEarlyExitDeduction,
                     'late_day_threshold' => $lateDayThreshold,
-                    'office_id' => $request->office_id,
-                    'user_id' => $request->user_id,
                 ],
                 'total_employees' => count($data),
                 'data' => $data,
