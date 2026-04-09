@@ -1,6 +1,72 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    <style>
+        .salary-table-wrapper {
+            max-height: 78vh;
+            overflow: auto;
+            position: relative;
+        }
+
+        #contentToPrint {
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: max-content;
+        }
+
+        #contentToPrint thead th {
+            position: sticky;
+            top: 0;
+            z-index: 15;
+            white-space: nowrap;
+        }
+
+        /* 1st sticky column: Employee */
+        #contentToPrint .sticky-col-1 {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            min-width: 210px;
+            white-space: nowrap;
+        }
+
+        /* 2nd sticky column: Monthly Salary */
+        #contentToPrint .sticky-col-2 {
+            position: sticky;
+            left: 210px; /* Employee column width */
+            z-index: 19;
+            min-width: 160px;
+            white-space: nowrap;
+        }
+
+        /* header colors keep proper */
+        #contentToPrint thead .sticky-col-1,
+        #contentToPrint thead .sticky-col-2 {
+            background: #007bff !important;
+            color: #fff !important;
+        }
+
+        /* body colors keep proper */
+        #contentToPrint tbody .sticky-col-1 {
+            background: #f8f9fa !important;
+        }
+
+        #contentToPrint tbody .sticky-col-2 {
+            background: #ffffff !important;
+        }
+
+        /* prevent overlap visual issue */
+        #contentToPrint th,
+        #contentToPrint td {
+            vertical-align: middle;
+        }
+
+        #contentToPrint tbody .sticky-col-1,
+        #contentToPrint tbody .sticky-col-2 {
+            box-shadow: 1px 0 0 #dee2e6;
+        }
+    </style>
+
     <div class="pb-20"
          data-apply-late-deduction="{{ $applyLateDeduction ? 1 : 0 }}"
          data-apply-early-exit-deduction="{{ $applyEarlyExitDeduction ? 1 : 0 }}"
@@ -12,21 +78,21 @@
                 <div class="row align-items-center mb-4 p-3 bg-light rounded shadow-sm">
                     <div class="col-12">
                         <form action="{{ route('salary.index') }}" method="GET"
-                            class="d-flex flex-column flex-md-row align-items-stretch flex-wrap">
+                              class="d-flex flex-column flex-md-row align-items-stretch flex-wrap">
 
                             <input type="month"
-                                name="month"
-                                value="{{ $month }}"
-                                class="form-control mb-2 mb-md-0 mr-md-2"
-                                style="max-width: 220px;">
+                                   name="month"
+                                   value="{{ $month }}"
+                                   class="form-control mb-2 mb-md-0 mr-md-2"
+                                   style="max-width: 220px;">
 
                             <input type="number"
-                                name="late_day_threshold"
-                                value="{{ $lateDayThreshold }}"
-                                min="1"
-                                class="form-control mb-2 mb-md-0 mr-md-2"
-                                style="max-width: 260px;"
-                                placeholder="Late days threshold">
+                                   name="late_day_threshold"
+                                   value="{{ $lateDayThreshold }}"
+                                   min="1"
+                                   class="form-control mb-2 mb-md-0 mr-md-2"
+                                   style="max-width: 260px;"
+                                   placeholder="Late days threshold">
 
                             <button type="submit" class="btn btn-primary mb-2 mr-2">
                                 Filter
@@ -102,13 +168,13 @@
                     @endif
                 </div>
 
-                <div class="table-responsive mt-3" style="max-height: 78vh; overflow-y: auto;">
+                <div class="salary-table-wrapper mt-3">
                     <table id="contentToPrint" class="table table-bordered table-hover align-middle text-center">
-                        <thead class="bg-primary text-white sticky-top">
+                        <thead class="bg-primary text-white">
                         <tr>
-                            <th class="sticky left-0 bg-primary" style="z-index: 20; min-width: 210px;">Employee</th>
+                            <th class="sticky-col-1" style="z-index: 21;">Employee</th>
                             <th>Advance</th>
-                            <th>Monthly Salary</th>
+                            <th class="sticky-col-2" style="z-index: 20;">Monthly Salary</th>
                             <th>Office Days</th>
                             <th>Present</th>
                             <th>Half Day</th>
@@ -287,14 +353,14 @@
                                 data-early-exit-minutes="{{ $earlyExitMinutes }}"
                                 data-office-minutes-per-day="{{ $officeMinutesPerDay }}">
 
-                                <td class="fw-bold sticky left-0 bg-light text-left" style="z-index: 10; min-width:210px;">
+                                <td class="fw-bold sticky-col-1 text-left" style="z-index: 11;">
                                     <div>{{ $user->name }}</div>
                                     <small class="text-muted">{{ $user->email ?? ($user->phone ?? '') }}</small>
                                 </td>
 
                                 <td class="advance-cell">{{ number_format($advancePayment, 2, '.', '') }}</td>
 
-                                <td style="min-width: 160px;">
+                                <td class="sticky-col-2" style="z-index: 10;">
                                     <input type="number"
                                            class="form-control monthly-salary text-center"
                                            step="0.01"
