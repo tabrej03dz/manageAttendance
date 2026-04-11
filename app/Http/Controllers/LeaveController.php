@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\LeaveRequest;
 use App\Mail\LeaveResponse;
+use App\Models\EmployeeRoster;
 use App\Models\LeaveImage;
 use App\Models\User;
 use Carbon\Carbon;
@@ -149,7 +150,7 @@ class LeaveController extends Controller
 
 
 
-private function activeOfficeId(Request $request): ?int
+    private function activeOfficeId(Request $request): ?int
     {
         return $request->user()?->activeOfficeId();
     }
@@ -172,7 +173,11 @@ private function activeOfficeId(Request $request): ?int
     {
         $employeeIds = $this->allowedEmployeeIds($request);
 
-        $query = Leave::query()->whereIn('user_id', $employeeIds);
+        $query = Leave::with([
+                'user:id,name',
+                'responsesBy:id,name',
+            ])
+            ->whereIn('user_id', $employeeIds);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -182,10 +187,16 @@ private function activeOfficeId(Request $request): ?int
             $query->where('user_id', $request->employee_id);
         }
 
-        $leaves = $query->orderBy('start_date', 'desc')->get();
+        // Descending order me latest leave upar
+        $leaves = $query
+            ->orderByDesc('start_date')
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('dashboard.leave.index', compact('leaves'));
     }
+
 
     public function create(Request $request, $employeeId = null)
     {
@@ -275,20 +286,66 @@ private function activeOfficeId(Request $request): ?int
         return back()->with('success', 'Leave request taken successfully and notification sent.');
     }
 
+    // public function status(Request $request, Leave $leave, $status, $type = null)
+    // {
+    //     $this->ensureLeaveInScope($request, $leave);
+
+    //     $leave->update([
+    //         'status' => $status,
+    //         'responses_by' => auth()->id(),
+    //         'approve_as' => $type,
+    //     ]);
+
+    //     Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
+
+    //     return back()->with('success', 'Status updated successfully');
+    // }
+
     public function status(Request $request, Leave $leave, $status, $type = null)
-    {
-        $this->ensureLeaveInScope($request, $leave);
+{
+    $this->ensureLeaveInScope($request, $leave);
 
-        $leave->update([
-            'status' => $status,
-            'responses_by' => auth()->id(),
-            'approve_as' => $type,
-        ]);
+    $leave->update([
+        'status'       => $status,
+        'responses_by' => auth()->id(),
+        'approve_as'   => $type,
+    ]);
 
-        Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
+    // Agar leave approve hui hai to employee_roster me leave entry create karo
+    if ($status === 'approved') {
+        $startDate = Carbon::parse($leave->start_date);
+        $endDate   = Carbon::parse($leave->end_date ?? $leave->start_date);
 
-        return back()->with('success', 'Status updated successfully');
+        while ($startDate->lte($endDate)) {
+            EmployeeRoster::firstOrCreate(
+                [
+                    'employee_id' => $leave->user_id,
+                    'duty_date'    => $startDate->toDateString(),
+                ],
+                [
+                    'office_id'    => $leave->office_id,
+                    'status'       => 'leave',
+                    'leave_id'     => $leave->id,
+                    'shift_name'   => null,
+                    'shift_start'  => null,
+                    'shift_end'    => null,
+                    'remarks'      => 'Leave approved',
+                    'created_by'   => auth()->id(),
+                ]
+            );
+
+            $startDate->addDay();
+        }
     }
+
+    // $email = $leave->user->email1 ?? $leave->user->email;
+
+    // if (!empty($email)) {
+    //     Mail::to($email)->send(new LeaveResponse($leave));
+    // }
+
+    return back()->with('success', 'Status updated successfully');
+}
 
     public function show(Request $request, $id)
     {
