@@ -15,6 +15,175 @@ class EmployeeRosterController extends Controller
      * Roster list page
      * GET: /employee-rosters
      */
+    // public function index(Request $request)
+    // {
+    //     $request->validate([
+    //         'month' => ['nullable', 'date_format:Y-m'],
+    //     ]);
+
+    //     $month = $request->month ?: now()->format('Y-m');
+
+    //     $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+    //     $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+
+    //     $employees = User::query()
+    //         ->where('status', '1')
+    //         ->orderBy('name')
+    //         ->get(['id', 'name', 'email', 'photo']);
+
+    //     $rosters = EmployeeRoster::query()
+    //         ->whereBetween('duty_date', [$start->toDateString(), $end->toDateString()])
+    //         ->get()
+    //         ->groupBy('employee_id');
+
+    //     $days = [];
+    //     foreach (CarbonPeriod::create($start, $end) as $date) {
+    //         $days[] = [
+    //             'date'     => $date->toDateString(),
+    //             'day'      => $date->format('d'),
+    //             'day_name' => $date->format('D'),
+    //             'is_today' => $date->isToday(),
+    //         ];
+    //     }
+
+    //     $rows = [];
+
+    //     foreach ($employees as $employee) {
+    //         $employeeRosters = $rosters->get($employee->id, collect())->keyBy(function ($item) {
+    //             return Carbon::parse($item->duty_date)->toDateString();
+    //         });
+
+    //         $items = [];
+    //         foreach ($days as $day) {
+    //             $record = $employeeRosters->get($day['date']);
+
+    //             $items[] = [
+    //                 'date'   => $day['date'],
+    //                 'status' => $record->status ?? 'working',
+    //             ];
+    //         }
+
+    //         $rows[] = [
+    //             'employee' => $employee,
+    //             'items'    => $items,
+    //         ];
+    //     }
+
+    //     return view('rosters.index', compact('month', 'days', 'rows'));
+    // }
+
+    //     public function ajaxUpsert(Request $request)
+    // {
+    //     $request->validate([
+    //         'employee_id' => ['required', 'exists:users,id'],
+    //         'duty_date'   => ['required', 'date'],
+    //         'status'      => ['required', Rule::in(['working', 'off', 'half_day', 'leave'])],
+    //     ]);
+
+    //     $roster = EmployeeRoster::updateOrCreate(
+    //         [
+    //             'employee_id' => $request->employee_id,
+    //             'duty_date'   => $request->duty_date,
+    //         ],
+    //         [
+    //             'status'     => $request->status,
+    //             'created_by' => auth()->id(),
+    //         ]
+    //     );
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Roster saved successfully.',
+    //         'data'    => [
+    //             'id'          => $roster->id,
+    //             'employee_id' => $roster->employee_id,
+    //             'duty_date'   => $roster->duty_date,
+    //             'status'      => $roster->status,
+    //         ],
+    //     ]);
+    // }
+
+
+    private function activeOfficeId(Request $request): ?int
+    {
+        return $request->user()?->activeOfficeId();
+    }
+
+    private function allowedOfficeIds(Request $request): array
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return [];
+        }
+
+        if ($user->hasRole('super_admin')) {
+            $officeId = $user->activeOfficeId();
+            return $officeId ? [$officeId] : [];
+        }
+
+        if ($user->hasRole('owner')) {
+            $officeId = $user->activeOfficeId();
+            return $officeId ? [$officeId] : [];
+        }
+
+        if ($user->hasRole('admin')) {
+            return $user->office_id ? [$user->office_id] : [];
+        }
+
+        if ($user->office_id) {
+            return [$user->office_id];
+        }
+
+        return [];
+    }
+
+    private function officeEmployeesQuery(Request $request)
+    {
+        $officeIds = $this->allowedOfficeIds($request);
+
+        return User::query()->when(!empty($officeIds), function ($q) use ($officeIds) {
+            $q->whereIn('office_id', $officeIds);
+        }, function ($q) {
+            $q->whereRaw('1 = 0');
+        });
+    }
+
+    private function sortEmployeesHierarchically($employees)
+    {
+        $employees = collect($employees);
+
+        $grouped = $employees->groupBy('team_leader_id');
+        $sorted = collect();
+
+        $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
+            if (!isset($grouped[$leaderId])) {
+                return;
+            }
+
+            foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
+                $sorted->push($employee);
+                $appendChildren($employee->id);
+            }
+        };
+
+        if (isset($grouped[null])) {
+            foreach ($grouped[null]->sortBy('name') as $employee) {
+                $sorted->push($employee);
+                $appendChildren($employee->id);
+            }
+        }
+
+        $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
+
+        foreach ($remaining->sortBy('name') as $employee) {
+            $sorted->push($employee);
+            $appendChildren($employee->id);
+        }
+
+        return $sorted->unique('id')->values();
+    }
+
     public function index(Request $request)
     {
         $request->validate([
@@ -26,13 +195,22 @@ class EmployeeRosterController extends Controller
         $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
 
-        $employees = User::query()
-            ->where('status', '1')
-            ->orderBy('name')
-            ->get(['id', 'name', 'email', 'photo']);
+        // employee list same style as EmployeeController
+        $employeesQuery = $this->officeEmployeesQuery($request);
+
+        // default active employees only
+        $employeesQuery->where('status', '1');
+
+        $employees = $employeesQuery
+            ->select(['id', 'name', 'email', 'photo', 'office_id', 'team_leader_id'])
+            ->get();
+
+        // same hierarchy order
+        $employees = $this->sortEmployeesHierarchically($employees);
 
         $rosters = EmployeeRoster::query()
             ->whereBetween('duty_date', [$start->toDateString(), $end->toDateString()])
+            ->whereIn('employee_id', $employees->pluck('id'))
             ->get()
             ->groupBy('employee_id');
 
@@ -80,6 +258,16 @@ class EmployeeRosterController extends Controller
             'status'      => ['required', Rule::in(['working', 'off', 'half_day', 'leave'])],
         ]);
 
+        // security: selected employee must belong to allowed offices
+        $allowedEmployeeIds = $this->officeEmployeesQuery($request)->pluck('id')->toArray();
+
+        if (!in_array((int) $request->employee_id, $allowedEmployeeIds, true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This employee does not belong to your allowed office.',
+            ], 403);
+        }
+
         $roster = EmployeeRoster::updateOrCreate(
             [
                 'employee_id' => $request->employee_id,
@@ -102,6 +290,11 @@ class EmployeeRosterController extends Controller
             ],
         ]);
     }
+
+
+
+
+
 
 
     /**
