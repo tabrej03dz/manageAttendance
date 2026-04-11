@@ -178,6 +178,16 @@
                 @endcan
 
 
+                    <li class="nav-item">
+                        <a href="{{ route('rosters.index') }}"
+                            class="nav-link {{ request()->routeIs('off*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>Roaster</p>
+                        </a>
+                    </li>
+
+
+
                 @can('show policies')
                     <li class="nav-item">
                         <a href="{{ route('policy.index') }}"

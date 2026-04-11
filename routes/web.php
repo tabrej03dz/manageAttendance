@@ -18,6 +18,7 @@ use App\Http\Controllers\RequestDemoController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\EmployeeRosterController;
 use App\Http\Controllers\NewUserLeadController;
 use App\Http\Controllers\OfficeAccessController;
 
@@ -280,6 +281,20 @@ Route::middleware('auth')->group(function (){
        Route::post('store', 'store')->name('store');
        Route::post('status/{halfDay}', 'status')->name('status');
     });
+
+Route::middleware(['auth'])->prefix('rosters')->name('rosters.')->group(function () {
+    Route::post('/store', [EmployeeRosterController::class, 'store'])->name('store');
+    Route::post('/bulk-store', [EmployeeRosterController::class, 'bulkStore'])->name('bulk-store');
+    Route::get('/monthly', [EmployeeRosterController::class, 'monthly'])->name('monthly');
+    Route::get('/employee/{employee}', [EmployeeRosterController::class, 'employeeRoster'])->name('employee');
+    Route::get('/month-grid', [EmployeeRosterController::class, 'monthGrid'])->name('month-grid');
+    Route::get('/today-status', [EmployeeRosterController::class, 'todayStatus'])->name('today-status');
+    Route::post('/generate-month', [EmployeeRosterController::class, 'generateMonth'])->name('generate-month');
+    Route::post('/delete', [EmployeeRosterController::class, 'delete'])->name('delete');
+
+     Route::get('/', [EmployeeRosterController::class, 'index'])->name('index');
+    Route::post('/ajax-upsert', [EmployeeRosterController::class, 'ajaxUpsert'])->name('ajax-upsert');
+});
 
 
 
