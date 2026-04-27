@@ -13,23 +13,23 @@ use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
-//     public function index(Request $request)
-//     {
-//         $user = $request->user(); // Get the authenticated user
-//         $employees = HomeController::employeeList($user); // Fetch the employee list
+    // public function index(Request $request)
+    // {
+    //     $user = $request->user(); // Get the authenticated user
+    //     $employees = HomeController::employeeList($user); // Fetch the employee list
 
-//         foreach ($employees as $employee){
-//             $employee->role = $employee->roles->first();
-//         }
-//         return response()->json([
-//             'status' => 'success',
-//             'message' => 'Data retrieved successfully',
-//             'data' => [
-//                 'user' => $user,
-//                 'employees' => $employees,
-//             ]
-//         ], 200); // Return a 200 HTTP status code
-//     }
+    //     foreach ($employees as $employee){
+    //         $employee->role = $employee->roles->first();
+    //     }
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Data retrieved successfully',
+    //         'data' => [
+    //             'user' => $user,
+    //             'employees' => $employees,
+    //         ]
+    //     ], 200); // Return a 200 HTTP status code
+    // }
 
 //     public function store(Request $request)
 //     {
@@ -315,7 +315,94 @@ class EmployeeController extends Controller
 
 
 
-private function resolveOfficeId(Request $request, $user)
+    // private function resolveOfficeId(Request $request, $user)
+    // {
+    //     if ($request->filled('office_id')) {
+    //         return (int) $request->office_id;
+    //     }
+
+    //     if (method_exists($user, 'activeOfficeId')) {
+    //         return (int) ($user->activeOfficeId() ?: 0);
+    //     }
+
+    //     return (int) ($user->office_id ?: 0);
+    // }
+
+    // /**
+    //  * Role-based + office-based employee query
+    //  */
+    // private function employeeQuery(Request $request)
+    // {
+    //     $user = $request->user();
+    //     $officeId = $this->resolveOfficeId($request, $user);
+
+    //     $query = User::with(['roles', 'userSalary']);
+
+    //     if ($officeId) {
+    //         $query->where('office_id', $officeId);
+    //     }
+
+    //     // Role base filter jaise abhi ho raha hai
+    //     if ($user->hasRole('super_admin')) {
+    //         // super admin selected office ka sab dekh sakta hai
+    //     } elseif ($user->hasRole('owner') || $user->hasRole('admin')) {
+    //         // office ke andar ke employees
+    //         if ($officeId) {
+    //             $query->where('office_id', $officeId);
+    //         }
+    //     } elseif ($user->hasRole('team_leader')) {
+    //         // apna + apni team ke records
+    //         $allowedIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
+    //         $allowedIds[] = $user->id;
+
+    //         $query->whereIn('id', $allowedIds);
+
+    //         if ($officeId) {
+    //             $query->where('office_id', $officeId);
+    //         }
+    //     } else {
+    //         // normal employee sirf apna hi record dekhe
+    //         $query->where('id', $user->id);
+
+    //         if ($officeId) {
+    //             $query->where('office_id', $officeId);
+    //         }
+    //     }
+
+    //     return $query;
+    // }
+
+    // public function index(Request $request)
+    // {
+    //     $user = $request->user();
+    //     $officeId = $this->resolveOfficeId($request, $user);
+
+    //     if (!$officeId && !$user->hasRole('super_admin')) {
+    //         return response()->json([
+    //             'status' => 'error',
+    //             'message' => 'Office not found.',
+    //         ], 422);
+    //     }
+
+    //     $employees = $this->employeeQuery($request)->latest()->get();
+
+    //     foreach ($employees as $employee) {
+    //         $employee->role = $employee->roles->first();
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Data retrieved successfully',
+    //         'data' => [
+    //             'user' => $user,
+    //             'office_id' => $officeId,
+    //             'employees' => $employees,
+    //         ]
+    //     ], 200);
+    // }
+
+
+    private function resolveOfficeId(Request $request, $user): int
     {
         if ($request->filled('office_id')) {
             return (int) $request->office_id;
@@ -328,9 +415,6 @@ private function resolveOfficeId(Request $request, $user)
         return (int) ($user->office_id ?: 0);
     }
 
-    /**
-     * Role-based + office-based employee query
-     */
     private function employeeQuery(Request $request)
     {
         $user = $request->user();
@@ -338,35 +422,73 @@ private function resolveOfficeId(Request $request, $user)
 
         $query = User::with(['roles', 'userSalary']);
 
-        if ($officeId) {
-            $query->where('office_id', $officeId);
+        /**
+         * Super Admin
+         * - office_id selected hai to us office ke users
+         * - office_id nahi hai to all users
+         */
+        if ($user->hasRole('super_admin')) {
+            if ($officeId) {
+                $query->where('office_id', $officeId);
+            }
+
+            return $query;
         }
 
-        // Role base filter jaise abhi ho raha hai
-        if ($user->hasRole('super_admin')) {
-            // super admin selected office ka sab dekh sakta hai
-        } elseif ($user->hasRole('owner') || $user->hasRole('admin')) {
-            // office ke andar ke employees
+        /**
+         * Admin
+         * - sirf apne office ke users
+         */
+        if ($user->hasRole('admin')) {
+            $query->where('office_id', $officeId);
+
+            return $query;
+        }
+
+        /**
+         * Owner
+         * - owner ke saare offices ke users
+         * - agar office_id selected hai to sirf us office ka data
+         */
+        if ($user->hasRole('owner')) {
+            $ownerOfficeIds = Office::where('owner_id', $user->id)->pluck('id')->toArray();
+
+            if ($officeId && in_array($officeId, $ownerOfficeIds)) {
+                $query->where('office_id', $officeId);
+            } else {
+                $query->whereIn('office_id', $ownerOfficeIds);
+            }
+
+            return $query;
+        }
+
+        /**
+         * Team Leader
+         * - apna record
+         * - apni team ke members
+         * - office wise filter bhi lagega
+         */
+        if ($user->hasRole('team_leader')) {
+            $memberIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
+            $memberIds[] = $user->id;
+
+            $query->whereIn('id', $memberIds);
+
             if ($officeId) {
                 $query->where('office_id', $officeId);
             }
-        } elseif ($user->hasRole('team_leader')) {
-            // apna + apni team ke records
-            $allowedIds = User::where('parent_id', $user->id)->pluck('id')->toArray();
-            $allowedIds[] = $user->id;
 
-            $query->whereIn('id', $allowedIds);
+            return $query;
+        }
 
-            if ($officeId) {
-                $query->where('office_id', $officeId);
-            }
-        } else {
-            // normal employee sirf apna hi record dekhe
-            $query->where('id', $user->id);
+        /**
+         * Normal Employee
+         * - sirf apna record
+         */
+        $query->where('id', $user->id);
 
-            if ($officeId) {
-                $query->where('office_id', $officeId);
-            }
+        if ($officeId) {
+            $query->where('office_id', $officeId);
         }
 
         return $query;
@@ -377,18 +499,21 @@ private function resolveOfficeId(Request $request, $user)
         $user = $request->user();
         $officeId = $this->resolveOfficeId($request, $user);
 
-        if (!$officeId && !$user->hasRole('super_admin')) {
+        if (!$officeId && !$user->hasRole(['super_admin', 'owner'])) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Office not found.',
             ], 422);
         }
 
-        $employees = $this->employeeQuery($request)->latest()->get();
+        $employees = $this->employeeQuery($request)
+            ->latest()
+            ->get();
 
-        foreach ($employees as $employee) {
+        $employees->transform(function ($employee) {
             $employee->role = $employee->roles->first();
-        }
+            return $employee;
+        });
 
         return response()->json([
             'status' => 'success',
@@ -400,6 +525,7 @@ private function resolveOfficeId(Request $request, $user)
             ]
         ], 200);
     }
+
 
     public function store(Request $request)
     {
