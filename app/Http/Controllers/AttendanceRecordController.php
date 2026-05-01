@@ -33,39 +33,6 @@ class AttendanceRecordController extends Controller
     }
 
 
-
-    // public function index(Request $request){
-
-    //     if ($request->month){
-    //         $month = $request->month;
-    //         $startOfMonth = Carbon::parse($request->month . '-01');
-    //         $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
-    //     }else{
-    //         $month = Carbon::now()->format('Y-m');
-    //         $startOfMonth = Carbon::now()->startOfMonth();
-    //         $endOfMonth = Carbon::now()->endOfMonth();
-    //     }
-    //     if($request->employee){
-    //         $user = User::find($request->employee);
-    //     }else{
-    //         $user = null;
-    //     }
-
-    //     $dates = new Collection();
-    //     $attendanceRecords = AttendanceRecord::query();
-    //     for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
-    //         $dates->push((object)[
-    //             'date' => $date->copy(),
-    //         ]);
-    //         $attendanceRecords->orWhereDate('check_in', $date)->where('user_id', $user ? $user->id : auth()->user()->id);
-    //     }
-    //     $attendanceRecords = $attendanceRecords->get();
-
-    //     $users = HomeController::employeeList();
-    //     return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user',  'month'));
-    // }
-
-
     public function index(Request $request)
     {
         if ($request->month) {
@@ -126,9 +93,6 @@ class AttendanceRecordController extends Controller
 
         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
     }
-
-
-
 
     public function checkIn(Request $request, User $user = null) {
         $request->validate([
@@ -270,8 +234,8 @@ class AttendanceRecordController extends Controller
             $duration = Carbon::now()->diffInMinutes($record->check_in);
             $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->longitude, 'check_out_by' => auth()->user()->id]);
         }else{
-//            $duration = $user->office_time / 2;
-//            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+            //  $duration = $user->office_time / 2;
+            //  $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
             return back()->with('error', 'Error, You can\'t check-out without check-in');
         }
         if ($request->file('image')){
@@ -362,70 +326,6 @@ class AttendanceRecordController extends Controller
 //        }
         return view('dashboard.attendance.form', compact('formType', 'user'));
     }
-
-//    public function dayWise(Request $request){
-//        if ($request->date){
-//            $date = $request->date;
-//        }else{
-//            $date = today();
-//        }
-//        $employees = HomeController::employeeList();
-//
-//        $perPage = 20;
-//        $currentPage = Paginator::resolveCurrentPage();
-//        $employees = new LengthAwarePaginator(
-//            $employees->forPage($currentPage, $perPage), // Get items for current page
-//            $employees->count(),
-//            $perPage,
-//            $currentPage,
-//            ['path' => Paginator::resolveCurrentPath()]
-//        );
-//
-//        return view('dashboard.attendance.dayWise', compact('employees', 'date'));
-//    }
-
-
-
-    // public function dayWise(Request $request)
-    // {
-    //     $date = $request->date ?? today();
-
-    //     // Get all employees
-    //     $employees = HomeController::employeeList();
-
-    //     // Convert to Laravel Collection if not already
-    //     $employees = collect($employees);
-
-    //     // Load attendance for the selected date
-    //     $attendances = AttendanceRecord::whereDate('created_at', $date)->get()->keyBy('user_id');
-
-    //     // Attach attendance status to each employee
-    //     $employees = $employees->map(function ($employee) use ($attendances) {
-    //         $employee->has_attendance = $attendances->has($employee->id); // or $employee->user_id
-    //         return $employee;
-    //     });
-
-    //     // Sort: those with attendance first
-
-
-    //     $employees = isset($request->status) ? $employees->where('status', $request->status)->sortByDesc('has_attendance')->values() : $employees->sortByDesc('has_attendance')->values();
-
-    //     // Paginate
-    //     $perPage = 20;
-    //     $currentPage = Paginator::resolveCurrentPage();
-    //     $paginatedEmployees = new LengthAwarePaginator(
-    //         $employees->forPage($currentPage, $perPage),
-    //         $employees->count(),
-    //         $perPage,
-    //         $currentPage,
-    //         ['path' => Paginator::resolveCurrentPath()]
-    //     );
-
-    //     return view('dashboard.attendance.dayWise', [
-    //         'employees' => $paginatedEmployees,
-    //         'date' => $date,
-    //     ]);
-    // }
 
 
     public function dayWise(Request $request)
