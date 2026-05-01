@@ -496,7 +496,6 @@ class EmployeeController extends Controller
     public function update(Request $request, User $employee)
     {
         $user = $request->user();
-
         // =========================
         // TARGET OFFICE RESOLUTION
         // =========================

@@ -253,12 +253,22 @@
 
                         <div class="col-md-6">
                             <p>Location Required</p>
+
                             <div>
-                                <input type="radio" class="" value="1" id="location_required_yes" name="location_required">
+                                <input type="radio"
+                                    value="yes"
+                                    id="location_required_yes"
+                                    name="location_required"
+                                    {{ old('location_required', $employee->location_required ?? 'no') == 'yes' ? 'checked' : '' }}>
                                 <label for="location_required_yes" class="form-label">Yes</label>
                             </div>
+
                             <div>
-                                <input type="radio" class="" value="0" id="location_required_no" name="location_required" checked>
+                                <input type="radio"
+                                    value="no"
+                                    id="location_required_no"
+                                    name="location_required"
+                                    {{ old('location_required', $employee->location_required ?? 'no') == 'no' ? 'checked' : '' }}>
                                 <label for="location_required_no" class="form-label">No</label>
                             </div>
                         </div>
