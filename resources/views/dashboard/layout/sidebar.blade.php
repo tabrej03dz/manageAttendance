@@ -206,6 +206,15 @@
                             <p>Reports</p>
                         </a>
                     </li>
+
+
+                    <li class="nav-item">
+                        <a href="{{ route('old-attendance.index') }}"
+                            class="nav-link {{ request()->routeIs('reports*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>Reports</p>
+                        </a>
+                    </li>
                 @endcan
 
 

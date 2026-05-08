@@ -94,33 +94,40 @@
                                    style="max-width: 260px;"
                                    placeholder="Late days threshold">
 
-                            <button type="submit" class="btn btn-primary mb-2 mr-2">
-                                Filter
-                            </button>
+                            <input type="hidden" name="apply_late" id="apply_late" value="{{ $applyLateDeduction ? 1 : 0 }}">
+<input type="hidden" name="apply_early_exit" id="apply_early_exit" value="{{ $applyEarlyExitDeduction ? 1 : 0 }}">
 
-                            @if($applyLateDeduction)
-                                <input type="hidden" name="apply_early_exit" value="{{ $applyEarlyExitDeduction ? 1 : 0 }}">
-                                <button type="submit" name="apply_late" value="0" class="btn btn-warning mb-2 mr-2">
-                                    Remove Late Deduction
-                                </button>
-                            @else
-                                <input type="hidden" name="apply_early_exit" value="{{ $applyEarlyExitDeduction ? 1 : 0 }}">
-                                <button type="submit" name="apply_late" value="1" class="btn btn-danger mb-2 mr-2">
-                                    Apply Late Deduction
-                                </button>
-                            @endif
+<button type="submit" class="btn btn-primary mb-2 mr-2">
+    Filter
+</button>
 
-                            @if($applyEarlyExitDeduction)
-                                <input type="hidden" name="apply_late" value="{{ $applyLateDeduction ? 1 : 0 }}">
-                                <button type="submit" name="apply_early_exit" value="0" class="btn btn-warning mb-2 mr-2">
-                                    Remove Early Exit Deduction
-                                </button>
-                            @else
-                                <input type="hidden" name="apply_late" value="{{ $applyLateDeduction ? 1 : 0 }}">
-                                <button type="submit" name="apply_early_exit" value="1" class="btn btn-dark mb-2 mr-2">
-                                    Apply Early Exit Deduction
-                                </button>
-                            @endif
+@if($applyLateDeduction)
+    <button type="submit"
+            class="btn btn-warning mb-2 mr-2"
+            onclick="document.getElementById('apply_late').value='0'">
+        Remove Late Deduction
+    </button>
+@else
+    <button type="submit"
+            class="btn btn-danger mb-2 mr-2"
+            onclick="document.getElementById('apply_late').value='1'">
+        Apply Late Deduction
+    </button>
+@endif
+
+@if($applyEarlyExitDeduction)
+    <button type="submit"
+            class="btn btn-warning mb-2 mr-2"
+            onclick="document.getElementById('apply_early_exit').value='0'">
+        Remove Early Exit Deduction
+    </button>
+@else
+    <button type="submit"
+            class="btn btn-dark mb-2 mr-2"
+            onclick="document.getElementById('apply_early_exit').value='1'">
+        Apply Early Exit Deduction
+    </button>
+@endif
 
                             <a href="{{ route('salary.index') }}" class="btn btn-info mb-2">
                                 Clear

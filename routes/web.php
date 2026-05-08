@@ -21,6 +21,7 @@ use App\Http\Controllers\AttendanceRecordController;
 use App\Http\Controllers\EmployeeRosterController;
 use App\Http\Controllers\NewUserLeadController;
 use App\Http\Controllers\OfficeAccessController;
+use App\Http\Controllers\OldRecordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -281,6 +282,23 @@ Route::middleware('auth')->group(function (){
        Route::post('store', 'store')->name('store');
        Route::post('status/{halfDay}', 'status')->name('status');
     });
+
+
+
+        Route::get('/old-attendance-records', [OldRecordController::class, 'index'])
+            ->name('old-attendance.index');
+
+        Route::get('/old-attendance-records/{record}', [OldRecordController::class, 'show'])
+            ->name('old-attendance.show');
+
+        Route::delete('/old-attendance-records/{record}', [OldRecordController::class, 'destroy'])
+            ->name('old-attendance.destroy');
+
+        Route::delete('/old-attendance-records-delete-all', [OldRecordController::class, 'destroyOldRecords'])
+            ->name('old-attendance.destroy-old-records');
+
+
+
 
 Route::middleware(['auth'])->prefix('rosters')->name('rosters.')->group(function () {
     Route::post('/store', [EmployeeRosterController::class, 'store'])->name('store');
