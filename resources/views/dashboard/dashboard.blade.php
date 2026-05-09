@@ -516,7 +516,7 @@
   </div>
 </div>
 
-<script>
+{{-- <script>
     document.addEventListener("DOMContentLoaded", function () {
 
         // ✅ Mobile detection (sirf mobile par)
@@ -536,9 +536,9 @@
             modal.show();
         }, 300);
     });
-    </script>
+    </script> --}}
 
-    <script>
+    {{-- <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const modal = document.getElementById("appUpdateModal");
@@ -571,6 +571,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+});
+</script> --}}
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".js-store-link").forEach(function (link) {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            window.location.href = this.href;
+        });
+    });
 });
 </script>
 
