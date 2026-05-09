@@ -592,22 +592,22 @@
             </p>
           </div>
 
-          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">
+          <button type="button" class="btn btn-sm btn-light app-modal-close">
             <i class="fas fa-times"></i>
-          </button>
+        </button>
         </div>
       </div>
 
       <div class="modal-body">
        <a class="btn btn-primary w-100 py-3 fw-bold"
-   href="https://realvictorygroups.com/application"
-   target="_blank"
-   rel="noopener noreferrer">
-  Go to Website
-</a>
+            href="https://realvictorygroups.com/application"
+            target="_blank"
+            rel="noopener noreferrer">
+            Go to Website
+        </a>
 
-        <button type="button" class="btn btn-outline-secondary w-100 mt-3" data-bs-dismiss="modal">
-          Not now
+        <button type="button" class="btn btn-outline-secondary w-100 mt-3 app-modal-close">
+            Not now
         </button>
       </div>
 
@@ -618,25 +618,47 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const el = document.getElementById("appUpdateModal");
 
-    if (isMobile) {
-        const el = document.getElementById("appUpdateModal");
-        if (el && typeof bootstrap !== "undefined") {
-            const modal = new bootstrap.Modal(el, {
-                backdrop: true,
-                keyboard: true
-            });
+    if (!el) return;
 
-            setTimeout(function () {
-                modal.show();
-            }, 300);
-        }
+    let modalInstance = null;
+
+    if (isMobile && typeof bootstrap !== "undefined") {
+        modalInstance = new bootstrap.Modal(el, {
+            backdrop: true,
+            keyboard: true
+        });
+
+        setTimeout(function () {
+            modalInstance.show();
+        }, 300);
     }
 
-    document.querySelectorAll(".external-browser-link").forEach(function (link) {
-        link.addEventListener("click", function (e) {
+    function closeAppModal() {
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+
+        el.classList.remove("show");
+        el.style.display = "none";
+        el.setAttribute("aria-hidden", "true");
+        el.removeAttribute("aria-modal");
+        el.removeAttribute("role");
+
+        document.querySelectorAll(".modal-backdrop").forEach(function (backdrop) {
+            backdrop.remove();
+        });
+
+        document.body.classList.remove("modal-open");
+        document.body.style.removeProperty("overflow");
+        document.body.style.removeProperty("padding-right");
+    }
+
+    document.querySelectorAll(".app-modal-close").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
             e.preventDefault();
-            window.location.href = this.href;
+            closeAppModal();
         });
     });
 });
