@@ -422,7 +422,7 @@
 
 {{-- ✅ Mobile App Install/Update Popup (Show only on Mobile) --}}
 {{-- ✅ Mobile App Install/Update Popup --}}
-<style>
+{{-- <style>
   .app-update-modal .modal-content{
     border-radius: 16px;
     overflow: hidden;
@@ -531,39 +531,107 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    // ✅ Sirf mobile devices par popup show hoga
+        // ✅ Sirf mobile devices par popup show hoga
+        const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            const el = document.getElementById("appUpdateModal");
+
+            if (el && typeof bootstrap !== "undefined") {
+                const modal = new bootstrap.Modal(el, {
+                    backdrop: true,
+                    keyboard: true
+                });
+
+                setTimeout(function () {
+                    modal.show();
+                }, 300);
+            }
+        }
+
+        // ✅ Store buttons click handling
+        document.querySelectorAll(".js-store-link").forEach(function (link) {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                const url = this.getAttribute("href");
+
+                // WebView me intent:// nahi chalega, normal https open hoga
+                window.location.href = url;
+            });
+        });
+
+    });
+</script> --}}
+
+
+{{-- ✅ Mobile Website Redirect Popup --}}
+<style>
+  .app-update-modal .modal-content{
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .app-update-hero{
+    background: linear-gradient(135deg, rgba(13,110,253,.12), rgba(220,53,69,.10));
+    padding: 18px;
+  }
+</style>
+
+<div class="modal fade app-update-modal" id="appUpdateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+
+      <div class="app-update-hero">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <h5 class="mb-1 fw-bold">Go to Website</h5>
+            <p class="mb-0 text-muted" style="font-size:14px;">
+              Application page open karne ke liye website par jayein.
+            </p>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <a class="btn btn-primary w-100 py-3 fw-bold"
+           href="https://realvictorygroups.com/application">
+          Go to Website
+        </a>
+
+        <button type="button" class="btn btn-outline-secondary w-100 mt-3" data-bs-dismiss="modal">
+          Not now
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (isMobile) {
-        const el = document.getElementById("appUpdateModal");
+    if (!isMobile) return;
 
-        if (el && typeof bootstrap !== "undefined") {
-            const modal = new bootstrap.Modal(el, {
-                backdrop: true,
-                keyboard: true
-            });
+    const el = document.getElementById("appUpdateModal");
+    if (!el || typeof bootstrap === "undefined") return;
 
-            setTimeout(function () {
-                modal.show();
-            }, 300);
-        }
-    }
-
-    // ✅ Store buttons click handling
-    document.querySelectorAll(".js-store-link").forEach(function (link) {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-
-            const url = this.getAttribute("href");
-
-            // WebView me intent:// nahi chalega, normal https open hoga
-            window.location.href = url;
-        });
+    const modal = new bootstrap.Modal(el, {
+        backdrop: true,
+        keyboard: true
     });
 
+    setTimeout(function () {
+        modal.show();
+    }, 300);
 });
 </script>
+
 
 @endsection
