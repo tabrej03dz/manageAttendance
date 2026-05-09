@@ -421,6 +421,7 @@
     </section>
 
 {{-- ✅ Mobile App Install/Update Popup (Show only on Mobile) --}}
+{{-- ✅ Mobile App Install/Update Popup --}}
 <style>
   .app-update-modal .modal-content{
     border-radius: 16px;
@@ -435,10 +436,10 @@
     align-items:center;
     gap:8px;
     font-weight:700;
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.7);
+    font-size:14px;
+    padding:8px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.7);
   }
   .store-btn{
     display:flex;
@@ -446,18 +447,26 @@
     justify-content:center;
     gap:10px;
     width:100%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    font-weight: 700;
+    padding:12px 14px;
+    border-radius:12px;
+    font-weight:700;
     text-decoration:none;
   }
-  .store-btn small{ display:block; font-weight:600; opacity:.85; }
-  .store-btn .label{ line-height:1.05; text-align:left; }
+  .store-btn small{
+    display:block;
+    font-weight:600;
+    opacity:.85;
+  }
+  .store-btn .label{
+    line-height:1.05;
+    text-align:left;
+  }
 </style>
 
 <div class="modal fade app-update-modal" id="appUpdateModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content shadow">
+      
       <div class="app-update-hero">
         <div class="d-flex align-items-start justify-content-between">
           <div>
@@ -465,7 +474,9 @@
               <i class="fas fa-mobile-alt"></i>
               Victory Attendance App
             </div>
+
             <h5 class="mt-3 mb-1 fw-bold">Update / Install Required</h5>
+
             <p class="mb-0 text-muted" style="font-size:14px;">
               Best experience ke liye please app ko install ya latest version me update karein.
             </p>
@@ -479,9 +490,10 @@
 
       <div class="modal-body">
         <div class="row g-2">
+
           <div class="col-12">
-            <a class="store-btn btn btn-dark" 
-               href="https://play.google.com/store/apps/details?id=com.realvictorygroup.attendancepro2026&pcampaignid=web_share">
+            <a class="store-btn btn btn-dark js-store-link"
+               href="https://play.google.com/store/apps/details?id=com.realvictorygroup.attendancepro2026">
               <i class="fab fa-google-play" style="font-size:20px;"></i>
               <span class="label">
                 <small>Get it on</small>
@@ -491,7 +503,7 @@
           </div>
 
           <div class="col-12">
-            <a class="store-btn btn btn-primary" 
+            <a class="store-btn btn btn-primary js-store-link"
                href="https://apps.apple.com/in/app/victory-attendance-salary/id6759782174">
               <i class="fab fa-apple" style="font-size:22px;"></i>
               <span class="label">
@@ -500,6 +512,7 @@
               </span>
             </a>
           </div>
+
         </div>
 
         <div class="mt-3 text-center">
@@ -512,78 +525,44 @@
       <div class="modal-footer justify-content-center" style="font-size:12px; opacity:.75;">
         By continuing, you agree to use the latest version for best performance.
       </div>
+
     </div>
   </div>
 </div>
 
-{{-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        // ✅ Mobile detection (sirf mobile par)
-        const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobile) return;
-
-        const el = document.getElementById("appUpdateModal");
-        if (!el) return;
-
-        // ✅ Bootstrap 5 modal (har baar show)
-        const modal = new bootstrap.Modal(el, {
-            backdrop: true,    // outside click close
-            keyboard: true     // ESC close
-        });
-
-        setTimeout(() => {
-            modal.show();
-        }, 300);
-    });
-    </script> --}}
-
-    {{-- <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const modal = document.getElementById("appUpdateModal");
-    if (!modal) return;
-
-    const closeButtons = modal.querySelectorAll('[data-bs-dismiss="modal"]');
-
-    function closeModal() {
-
-        // hide modal
-        modal.classList.remove("show");
-        modal.style.display = "none";
-        modal.setAttribute("aria-hidden", "true");
-        modal.removeAttribute("aria-modal");
-
-        // remove backdrop
-        document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-
-        // enable scroll
-        document.body.classList.remove("modal-open");
-        document.body.style.removeProperty("overflow");
-        document.body.style.removeProperty("padding-right");
-    }
-
-    // close button click
-    closeButtons.forEach(btn => {
-        btn.addEventListener("click", function (e) {
-            e.preventDefault();
-            closeModal();
-        });
-    });
-
-});
-</script> --}}
-
-
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+    // ✅ Sirf mobile devices par popup show hoga
+    const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        const el = document.getElementById("appUpdateModal");
+
+        if (el && typeof bootstrap !== "undefined") {
+            const modal = new bootstrap.Modal(el, {
+                backdrop: true,
+                keyboard: true
+            });
+
+            setTimeout(function () {
+                modal.show();
+            }, 300);
+        }
+    }
+
+    // ✅ Store buttons click handling
     document.querySelectorAll(".js-store-link").forEach(function (link) {
         link.addEventListener("click", function (e) {
             e.preventDefault();
-            window.location.href = this.href;
+
+            const url = this.getAttribute("href");
+
+            // WebView me intent:// nahi chalega, normal https open hoga
+            window.location.href = url;
         });
     });
+
 });
 </script>
 
