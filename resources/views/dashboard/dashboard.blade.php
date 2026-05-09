@@ -480,7 +480,7 @@
       <div class="modal-body">
         <div class="row g-2">
           <div class="col-12">
-            <a class="store-btn btn btn-dark" target="_blank" rel="noopener"
+            <a class="store-btn btn btn-dark" 
                href="https://play.google.com/store/apps/details?id=com.realvictorygroup.attendancepro2026&pcampaignid=web_share">
               <i class="fab fa-google-play" style="font-size:20px;"></i>
               <span class="label">
@@ -491,7 +491,7 @@
           </div>
 
           <div class="col-12">
-            <a class="store-btn btn btn-primary" target="_blank" rel="noopener"
+            <a class="store-btn btn btn-primary" 
                href="https://apps.apple.com/in/app/victory-attendance-salary/id6759782174">
               <i class="fab fa-apple" style="font-size:22px;"></i>
               <span class="label">
