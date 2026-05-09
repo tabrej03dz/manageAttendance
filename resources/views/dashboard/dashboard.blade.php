@@ -599,10 +599,12 @@
       </div>
 
       <div class="modal-body">
-        <a class="btn btn-primary w-100 py-3 fw-bold"
-           href="https://realvictorygroups.com/application">
-          Go to Website
-        </a>
+       <a class="btn btn-primary w-100 py-3 fw-bold"
+   href="https://realvictorygroups.com/application"
+   target="_blank"
+   rel="noopener noreferrer">
+  Go to Website
+</a>
 
         <button type="button" class="btn btn-outline-secondary w-100 mt-3" data-bs-dismiss="modal">
           Not now
@@ -617,19 +619,26 @@
 document.addEventListener("DOMContentLoaded", function () {
     const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    if (!isMobile) return;
+    if (isMobile) {
+        const el = document.getElementById("appUpdateModal");
+        if (el && typeof bootstrap !== "undefined") {
+            const modal = new bootstrap.Modal(el, {
+                backdrop: true,
+                keyboard: true
+            });
 
-    const el = document.getElementById("appUpdateModal");
-    if (!el || typeof bootstrap === "undefined") return;
+            setTimeout(function () {
+                modal.show();
+            }, 300);
+        }
+    }
 
-    const modal = new bootstrap.Modal(el, {
-        backdrop: true,
-        keyboard: true
+    document.querySelectorAll(".external-browser-link").forEach(function (link) {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            window.location.href = this.href;
+        });
     });
-
-    setTimeout(function () {
-        modal.show();
-    }, 300);
 });
 </script>
 
