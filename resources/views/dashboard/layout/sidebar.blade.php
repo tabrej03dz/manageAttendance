@@ -208,6 +208,10 @@
                     </li>
 
 
+                    
+                @endcan
+
+                @can('show old records')
                     <li class="nav-item">
                         <a href="{{ route('old-attendance.index') }}"
                             class="nav-link {{ request()->routeIs('reports*') ? 'active' : '' }}">
