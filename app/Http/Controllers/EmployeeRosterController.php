@@ -11,99 +11,6 @@ use Carbon\CarbonPeriod;
 
 class EmployeeRosterController extends Controller
 {
-    /**
-     * Roster list page
-     * GET: /employee-rosters
-     */
-    // public function index(Request $request)
-    // {
-    //     $request->validate([
-    //         'month' => ['nullable', 'date_format:Y-m'],
-    //     ]);
-
-    //     $month = $request->month ?: now()->format('Y-m');
-
-    //     $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-    //     $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
-
-    //     $employees = User::query()
-    //         ->where('status', '1')
-    //         ->orderBy('name')
-    //         ->get(['id', 'name', 'email', 'photo']);
-
-    //     $rosters = EmployeeRoster::query()
-    //         ->whereBetween('duty_date', [$start->toDateString(), $end->toDateString()])
-    //         ->get()
-    //         ->groupBy('employee_id');
-
-    //     $days = [];
-    //     foreach (CarbonPeriod::create($start, $end) as $date) {
-    //         $days[] = [
-    //             'date'     => $date->toDateString(),
-    //             'day'      => $date->format('d'),
-    //             'day_name' => $date->format('D'),
-    //             'is_today' => $date->isToday(),
-    //         ];
-    //     }
-
-    //     $rows = [];
-
-    //     foreach ($employees as $employee) {
-    //         $employeeRosters = $rosters->get($employee->id, collect())->keyBy(function ($item) {
-    //             return Carbon::parse($item->duty_date)->toDateString();
-    //         });
-
-    //         $items = [];
-    //         foreach ($days as $day) {
-    //             $record = $employeeRosters->get($day['date']);
-
-    //             $items[] = [
-    //                 'date'   => $day['date'],
-    //                 'status' => $record->status ?? 'working',
-    //             ];
-    //         }
-
-    //         $rows[] = [
-    //             'employee' => $employee,
-    //             'items'    => $items,
-    //         ];
-    //     }
-
-    //     return view('rosters.index', compact('month', 'days', 'rows'));
-    // }
-
-    //     public function ajaxUpsert(Request $request)
-    // {
-    //     $request->validate([
-    //         'employee_id' => ['required', 'exists:users,id'],
-    //         'duty_date'   => ['required', 'date'],
-    //         'status'      => ['required', Rule::in(['working', 'off', 'half_day', 'leave'])],
-    //     ]);
-
-    //     $roster = EmployeeRoster::updateOrCreate(
-    //         [
-    //             'employee_id' => $request->employee_id,
-    //             'duty_date'   => $request->duty_date,
-    //         ],
-    //         [
-    //             'status'     => $request->status,
-    //             'created_by' => auth()->id(),
-    //         ]
-    //     );
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Roster saved successfully.',
-    //         'data'    => [
-    //             'id'          => $roster->id,
-    //             'employee_id' => $roster->employee_id,
-    //             'duty_date'   => $roster->duty_date,
-    //             'status'      => $roster->status,
-    //         ],
-    //     ]);
-    // }
-
-
     private function activeOfficeId(Request $request): ?int
     {
         return $request->user()?->activeOfficeId();
@@ -184,71 +91,266 @@ class EmployeeRosterController extends Controller
         return $sorted->unique('id')->values();
     }
 
-    public function index(Request $request)
-    {
-        $request->validate([
-            'month' => ['nullable', 'date_format:Y-m'],
-        ]);
+    // public function index(Request $request)
+    // {
+    //     $request->validate([
+    //         'month' => ['nullable', 'date_format:Y-m'],
+    //     ]);
 
-        $month = $request->month ?: now()->format('Y-m');
+    //     $month = $request->month ?: now()->format('Y-m');
 
-        $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-        $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+    //     $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+    //     $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
 
-        // employee list same style as EmployeeController
-        $employeesQuery = $this->officeEmployeesQuery($request);
+    //     // employee list same style as EmployeeController
+    //     $employeesQuery = $this->officeEmployeesQuery($request);
 
-        // default active employees only
-        $employeesQuery->where('status', '1');
+    //     // default active employees only
+    //     $employeesQuery->where('status', '1');
 
-        $employees = $employeesQuery
-            ->select(['id', 'name', 'email', 'photo', 'office_id', 'team_leader_id'])
+    //     $employees = $employeesQuery
+    //         ->select(['id', 'name', 'email', 'photo', 'office_id', 'team_leader_id'])
+    //         ->get();
+
+    //     // same hierarchy order
+    //     $employees = $this->sortEmployeesHierarchically($employees);
+
+    //     $rosters = EmployeeRoster::query()
+    //         ->whereBetween('duty_date', [$start->toDateString(), $end->toDateString()])
+    //         ->whereIn('employee_id', $employees->pluck('id'))
+    //         ->get()
+    //         ->groupBy('employee_id');
+
+    //     $days = [];
+    //     foreach (CarbonPeriod::create($start, $end) as $date) {
+    //         $days[] = [
+    //             'date'     => $date->toDateString(),
+    //             'day'      => $date->format('d'),
+    //             'day_name' => $date->format('D'),
+    //             'is_today' => $date->isToday(),
+    //         ];
+    //     }
+
+    //     $rows = [];
+
+    //     foreach ($employees as $employee) {
+    //         $employeeRosters = $rosters->get($employee->id, collect())->keyBy(function ($item) {
+    //             return Carbon::parse($item->duty_date)->toDateString();
+    //         });
+
+    //         $items = [];
+    //         foreach ($days as $day) {
+    //             $record = $employeeRosters->get($day['date']);
+
+    //             $items[] = [
+    //                 'date'   => $day['date'],
+    //                 'status' => $record->status ?? 'working',
+    //             ];
+    //         }
+
+    //         $rows[] = [
+    //             'employee' => $employee,
+    //             'items'    => $items,
+    //         ];
+    //     }
+
+    //     return view('rosters.index', compact('month', 'days', 'rows'));
+    // }
+
+//     public function index(Request $request)
+// {
+//     $request->validate([
+//         'month' => ['nullable', 'date_format:Y-m'],
+//     ]);
+
+//     $month = $request->month ?: now()->format('Y-m');
+
+//     $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+//     $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+
+//     // EmployeeController jaisa office wise employee query
+//     $employeesQuery = $this->officeEmployeesQuery($request);
+
+//     // Default active employees only
+//     $employees = $employeesQuery
+//         ->where('status', '1')
+//         ->select([
+//             'id',
+//             'name',
+//             'email',
+//             'photo',
+//             'office_id',
+//             'team_leader_id',
+//         ])
+//         ->get();
+
+//     // EmployeeController jaisi hierarchy sorting
+//     $employees = $this->sortEmployeesHierarchically($employees);
+
+//     $employeeIds = $employees->pluck('id');
+
+//     $rosters = EmployeeRoster::query()
+//         ->whereBetween('duty_date', [
+//             $start->toDateString(),
+//             $end->toDateString(),
+//         ])
+//         ->whereIn('employee_id', $employeeIds)
+//         ->get()
+//         ->groupBy('employee_id');
+
+//     $days = [];
+
+//     foreach (CarbonPeriod::create($start, $end) as $date) {
+//         $days[] = [
+//             'date'     => $date->toDateString(),
+//             'day'      => $date->format('d'),
+//             'day_name' => $date->format('D'),
+//             'is_today' => $date->isToday(),
+//         ];
+//     }
+
+//     $rows = [];
+
+//     foreach ($employees as $employee) {
+//         $employeeRosters = $rosters
+//             ->get($employee->id, collect())
+//             ->keyBy(function ($item) {
+//                 return Carbon::parse($item->duty_date)->toDateString();
+//             });
+
+//         $items = [];
+
+//         foreach ($days as $day) {
+//             $record = $employeeRosters->get($day['date']);
+
+//             $items[] = [
+//                 'date'   => $day['date'],
+//                 'status' => $record->status ?? 'working',
+//             ];
+//         }
+
+//         $rows[] = [
+//             'employee' => $employee,
+//             'items'    => $items,
+//         ];
+//     }
+
+//     return view('rosters.index', compact('month', 'days', 'rows'));
+// }
+
+public function index(Request $request)
+{
+    $request->validate([
+        'month' => ['nullable', 'date_format:Y-m'],
+    ]);
+
+    $month = $request->month ?: now()->format('Y-m');
+
+    $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+    $end   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+
+    $user = $request->user();
+    $activeOfficeId = $user?->activeOfficeId();
+
+    if (!$user || !$activeOfficeId) {
+        $employees = collect();
+    } elseif ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+
+        $employees = User::where('office_id', $activeOfficeId)
+            ->where('status', '1')
+            ->select([
+                'id',
+                'name',
+                'email',
+                'photo',
+                'office_id',
+                'team_leader_id',
+            ])
             ->get();
 
-        // same hierarchy order
         $employees = $this->sortEmployeesHierarchically($employees);
 
-        $rosters = EmployeeRoster::query()
-            ->whereBetween('duty_date', [$start->toDateString(), $end->toDateString()])
-            ->whereIn('employee_id', $employees->pluck('id'))
-            ->get()
-            ->groupBy('employee_id');
+    } elseif ($user->hasRole('team_leader')) {
 
-        $days = [];
-        foreach (CarbonPeriod::create($start, $end) as $date) {
-            $days[] = [
-                'date'     => $date->toDateString(),
-                'day'      => $date->format('d'),
-                'day_name' => $date->format('D'),
-                'is_today' => $date->isToday(),
-            ];
+        $employees = $user->getAllTeamMembers()
+            ->filter(function ($member) use ($activeOfficeId) {
+                return (int) $member->office_id === (int) $activeOfficeId
+                    && (string) $member->status === '1';
+            });
+
+        if (
+            (int) $user->office_id === (int) $activeOfficeId &&
+            (string) $user->status === '1'
+        ) {
+            $employees->push($user);
         }
 
-        $rows = [];
+        $employees = $this->sortEmployeesHierarchically(
+            $employees->unique('id')->values()
+        );
 
-        foreach ($employees as $employee) {
-            $employeeRosters = $rosters->get($employee->id, collect())->keyBy(function ($item) {
+    } else {
+
+        if (
+            (int) $user->office_id === (int) $activeOfficeId &&
+            (string) $user->status === '1'
+        ) {
+            $employees = collect([$user]);
+        } else {
+            $employees = collect();
+        }
+    }
+
+    $employeeIds = $employees->pluck('id');
+
+    $rosters = EmployeeRoster::query()
+        ->whereBetween('duty_date', [
+            $start->toDateString(),
+            $end->toDateString(),
+        ])
+        ->whereIn('employee_id', $employeeIds)
+        ->get()
+        ->groupBy('employee_id');
+
+    $days = [];
+
+    foreach (CarbonPeriod::create($start, $end) as $date) {
+        $days[] = [
+            'date'     => $date->toDateString(),
+            'day'      => $date->format('d'),
+            'day_name' => $date->format('D'),
+            'is_today' => $date->isToday(),
+        ];
+    }
+
+    $rows = [];
+
+    foreach ($employees as $employee) {
+        $employeeRosters = $rosters
+            ->get($employee->id, collect())
+            ->keyBy(function ($item) {
                 return Carbon::parse($item->duty_date)->toDateString();
             });
 
-            $items = [];
-            foreach ($days as $day) {
-                $record = $employeeRosters->get($day['date']);
+        $items = [];
 
-                $items[] = [
-                    'date'   => $day['date'],
-                    'status' => $record->status ?? 'working',
-                ];
-            }
+        foreach ($days as $day) {
+            $record = $employeeRosters->get($day['date']);
 
-            $rows[] = [
-                'employee' => $employee,
-                'items'    => $items,
+            $items[] = [
+                'date'   => $day['date'],
+                'status' => $record->status ?? 'working',
             ];
         }
 
-        return view('rosters.index', compact('month', 'days', 'rows'));
+        $rows[] = [
+            'employee' => $employee,
+            'items'    => $items,
+        ];
     }
+
+    return view('rosters.index', compact('month', 'days', 'rows'));
+}
 
     public function ajaxUpsert(Request $request)
     {
