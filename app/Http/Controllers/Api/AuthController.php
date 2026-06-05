@@ -140,6 +140,123 @@ class AuthController extends Controller
     }
 
 
+//     public function login(Request $request)
+// {
+//     $request->validate([
+//         'email'    => ['required', 'string'], // email ya phone
+//         'password' => ['nullable', 'string', 'min:6'],
+//     ]);
+
+//     $login = trim((string) $request->email);
+
+//     $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+//     $user = User::with('office')
+//         ->where($field, $login)
+//         ->where('status', '1')
+//         ->first();
+
+//     if (!$user) {
+//         return response()->json([
+//             'message' => 'Invalid credentials'
+//         ], 401);
+//     }
+
+//     $otpEnabled = optional($user->office)->otp_enable == 1;
+
+//     // OTP enabled + phone login = password check nahi hoga
+//     if ($otpEnabled && $field === 'phone') {
+//         $otp = rand(1000, 9999);
+
+//         $user->update([
+//             'otp' => $otp,
+//         ]);
+
+//         $this->sendLoginOtp($user->phone, $otp);
+
+//         return response()->json([
+//             'message' => 'OTP sent successfully',
+//             'otp_required' => true,
+//             'user_id' => $user->id,
+//         ], 200);
+//     }
+
+//     // OTP disabled = email/phone + password login
+//     if (!$request->filled('password') || !Hash::check($request->password, $user->password)) {
+//         return response()->json([
+//             'message' => 'Invalid credentials'
+//         ], 401);
+//     }
+
+//     return $this->sendLoginSuccessResponse($user);
+// }
+
+
+
+// public function verifyLoginOtp(Request $request)
+// {
+//     $request->validate([
+//         'user_id' => ['required', 'exists:users,id'],
+//         'otp'     => ['required', 'digits:4'],
+//     ]);
+
+//     $user = User::with('office')
+//         ->where('status', '1')
+//         ->find($request->user_id);
+
+//     if (!$user) {
+//         return response()->json([
+//             'message' => 'Invalid user'
+//         ], 401);
+//     }
+
+//     if (!$user->otp) {
+//         return response()->json([
+//             'message' => 'OTP not found. Please login again.'
+//         ], 422);
+//     }
+
+//     if ((string) $user->otp !== (string) $request->otp) {
+//         return response()->json([
+//             'message' => 'Invalid OTP'
+//         ], 422);
+//     }
+
+//     $user->update([
+//         'otp' => null,
+//     ]);
+
+//     return $this->sendLoginSuccessResponse($user);
+// }
+
+
+//     private function sendLoginSuccessResponse($user)
+//     {
+//         $token = $user->createToken('authToken')->plainTextToken;
+
+//         $user->load('office');
+
+//         $roles = $user->getRoleNames()->values();
+
+//         $permissions = $user->getAllPermissions()->pluck('name')->values();
+
+//         $userData = $user->makeHidden([
+//             'roles',
+//             'permissions',
+//             'password',
+//             'remember_token',
+//         ])->toArray();
+
+//         $userData['roles'] = $roles;
+//         $userData['permissions'] = $permissions;
+
+//         return response()->json([
+//             'user'  => $userData,
+//             'token' => $token,
+//         ], 200);
+//     }
+
+
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
 

@@ -20,7 +20,9 @@ use \App\Http\Controllers\Api\ReportController;
 |
 */
 
-Route::post('login', [AuthController::class, 'login'])->name('login');
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login/verify-otp', [AuthController::class, 'verifyLoginOtp']);
 Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 

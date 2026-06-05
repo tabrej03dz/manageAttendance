@@ -39,6 +39,7 @@ class OfficeController extends Controller
             'longitude' => 'required',
             'radius' => '',
             'number_of_employees' => '',
+            'otp_enable' => 'nullable|boolean',
         ]);
         Office::create($request->all());
         return redirect('office')->with('success', 'Office Created successfully');
@@ -58,6 +59,7 @@ class OfficeController extends Controller
             'number_of_employees' => '',
             'price_per_employee' => '',
             'under_radius_required' => '',
+            'otp_enable' => 'nullable|boolean',
         ]);
 
         $office->update($request->all());

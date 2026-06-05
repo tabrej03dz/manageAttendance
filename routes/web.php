@@ -65,6 +65,10 @@ Route::controller(RequestDemoController::class)->group(function(){
 
 Auth::routes();
 
+Route::get('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'showOtpForm'])->name('login.otp');
+Route::post('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'verifyOtp'])->name('login.otp.verify');
+
+
 Route::middleware('auth')->group(function (){
     //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
