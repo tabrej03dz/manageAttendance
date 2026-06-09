@@ -130,6 +130,69 @@
               </div>
             </div>
 
+            {{-- RELATIONS (Office & Department Select Fields) --}}
+            <div>
+              <div class="flex items-center justify-between gap-3 mb-5">
+                <h3 class="text-lg font-semibold text-slate-900">Office / Department / Team</h3>
+                <span class="h-[1px] flex-1 bg-slate-200"></span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                
+                {{-- Office Select Field --}}
+                <div>
+                  <label class="text-sm font-medium text-slate-700">Office <span class="text-red-500">*</span></label>
+                  @if(isset($offices) && $offices->count() > 0)
+                    <select name="office_id" class="{{ $select }}" required>
+                      <option value="">-- Select Office --</option>
+                      @foreach($offices as $o)
+                        <option value="{{ $o->id }}" @selected(old('office_id') == $o->id)>
+                          {{ $o->name }}
+                        </option>
+                      @endforeach
+                    </select>
+                  @else
+                    <input type="number" name="office_id" value="{{ old('office_id') }}" class="{{ $input }}" placeholder="Enter Office ID manually">
+                  @endif
+                </div>
+
+                {{-- Department Select Field --}}
+                <div>
+                  <label class="text-sm font-medium text-slate-700">Department <span class="text-red-500">*</span></label>
+                  @if(isset($departments) && $departments->count() > 0)
+                    <select name="department_id" class="{{ $select }}" required>
+                      <option value="">-- Select Department --</option>
+                      @foreach($departments as $d)
+                        <option value="{{ $d->id }}" @selected(old('department_id') == $d->id)>
+                          {{ $d->name }}
+                        </option>
+                      @endforeach
+                    </select>
+                  @else
+                    <input type="number" name="department_id" value="{{ old('department_id') }}" class="{{ $input }}" placeholder="Enter Department ID manually">
+                  @endif
+                </div>
+
+                {{-- Team Leader Select Field (Optional) --}}
+                {{-- <div>
+                  <label class="text-sm font-medium text-slate-700">Team Leader</label>
+                  @if(isset($teamLeaders) && $teamLeaders->count() > 0)
+                    <select name="team_leader_id" class="{{ $select }}">
+                      <option value="">-- Select Team Leader (Optional) --</option>
+                      @foreach($teamLeaders as $tl)
+                        <option value="{{ $tl->id }}" @selected(old('team_leader_id') == $tl->id)>
+                          {{ $tl->name }} ({{ $tl->designation ?? 'No Title' }})
+                        </option>
+                      @endforeach
+                    </select>
+                  @else
+                    <input type="number" name="team_leader_id" value="{{ old('team_leader_id') }}" class="{{ $input }}" placeholder="Leader ID (Optional)">
+                  @endif
+                </div> --}}
+
+              </div>
+            </div>
+
             {{-- JOB DETAILS --}}
             <div>
               <div class="flex items-center justify-between gap-3 mb-5">

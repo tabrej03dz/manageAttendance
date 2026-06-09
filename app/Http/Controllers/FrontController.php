@@ -17,7 +17,9 @@ class FrontController extends Controller
 
     public function employeeForm()
     {
-        return view('mainpage.employee_form');
+        $offices = \App\Models\Office::all();
+        $departments = \App\Models\Department::all();
+        return view('mainpage.employee_form', compact('offices', 'departments'));
     }
 
     public function employeeRegister(Request $request){
