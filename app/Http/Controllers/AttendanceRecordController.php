@@ -328,6 +328,59 @@ class AttendanceRecordController extends Controller
     }
 
 
+    // public function dayWise(Request $request)
+    // {
+    //     $date = $request->date ?? today();
+
+    //     // office-wise + hierarchical employee list
+    //     $employees = HomeController::employeeList();
+
+    //     // collection ensure
+    //     $employees = collect($employees);
+
+    //     // sirf selected office ke employees ke ids
+    //     $employeeIds = $employees->pluck('id')->toArray();
+
+    //     // selected date ki attendance
+    //     $attendances = AttendanceRecord::whereDate('created_at', $date)
+    //         ->whereIn('user_id', $employeeIds)
+    //         ->get()
+    //         ->keyBy('user_id');
+
+    //     // attendance flag attach
+    //     $employees = $employees->map(function ($employee) use ($attendances) {
+    //         $employee->has_attendance = $attendances->has($employee->id);
+    //         return $employee;
+    //     });
+
+    //     // status filter
+    //     if ($request->filled('status')) {
+    //         $employees = $employees->where('status', $request->status)->values();
+    //     }
+
+    //     // attendance wale upar, lekin hierarchy bhi zyada na toote
+    //     $employees = $employees->sortByDesc(function ($employee) {
+    //         return $employee->has_attendance;
+    //     })->values();
+
+    //     // paginate
+    //     $perPage = 20;
+    //     $currentPage = Paginator::resolveCurrentPage();
+
+    //     $paginatedEmployees = new LengthAwarePaginator(
+    //         $employees->forPage($currentPage, $perPage)->values(),
+    //         $employees->count(),
+    //         $perPage,
+    //         $currentPage,
+    //         ['path' => Paginator::resolveCurrentPath(), 'query' => request()->query()]
+    //     );
+
+    //     return view('dashboard.attendance.dayWise', [
+    //         'employees' => $paginatedEmployees,
+    //         'date' => $date,
+    //     ]);
+    // }
+
     public function dayWise(Request $request)
     {
         $date = $request->date ?? today();
@@ -335,10 +388,14 @@ class AttendanceRecordController extends Controller
         // office-wise + hierarchical employee list
         $employees = HomeController::employeeList();
 
-        // collection ensure
-        $employees = collect($employees);
+        // collection ensure + inactive employees remove
+        $employees = collect($employees)
+            ->filter(function ($employee) {
+                return isset($employee->status) && $employee->status === '1';
+            })
+            ->values();
 
-        // sirf selected office ke employees ke ids
+        // sirf active employees ke ids
         $employeeIds = $employees->pluck('id')->toArray();
 
         // selected date ki attendance
@@ -358,7 +415,7 @@ class AttendanceRecordController extends Controller
             $employees = $employees->where('status', $request->status)->values();
         }
 
-        // attendance wale upar, lekin hierarchy bhi zyada na toote
+        // attendance wale upar
         $employees = $employees->sortByDesc(function ($employee) {
             return $employee->has_attendance;
         })->values();
@@ -372,7 +429,10 @@ class AttendanceRecordController extends Controller
             $employees->count(),
             $perPage,
             $currentPage,
-            ['path' => Paginator::resolveCurrentPath(), 'query' => request()->query()]
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'query' => request()->query()
+            ]
         );
 
         return view('dashboard.attendance.dayWise', [
