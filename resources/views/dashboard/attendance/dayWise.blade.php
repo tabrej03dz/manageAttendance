@@ -8,66 +8,40 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <div class="pb-10">
     <div class="bg-gray-100 p-4 rounded-lg shadow-md">
-        <!-- Mobile View -->
-        <div class="md:hidden space-y-4">
-            <form action="{{ route('attendance.day-wise') }}">
-            <div class="space-y-4">
-                <div class="flex flex-col w-full">
-                    <label for="to-date-mobile" class="mb-1 text-sm font-medium text-gray-700">Select Date:</label>
-                    <input type="date" id="to-date-mobile" name="date"
-                        class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Select To Date">
+        {{-- Filter Section --}}
+        <div class="bg-gray-100 p-4 rounded-lg shadow-md">
+            <form action="{{ route('attendance.day-wise') }}" method="GET">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
 
-                    <label for="status" class="mb-1 text-sm font-medium text-gray-700">Status:</label>
-                    <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                    <input type="date" id="to-date-mobile" name="date"
-                           class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Select To Date">
-                </div>
-            </div>
-            <div class="flex flex-col space-y-2">
-                <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full">Filter</button>
-                <button
-                    class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full">Clear</button>
-            </div>
-            </form>
-        </div>
+                    {{-- Date --}}
+                    <div class="md:col-span-8">
+                        <label for="attendance-date" class="block mb-1 text-sm font-medium text-gray-700">
+                            Select Date:
+                        </label>
 
-        <!-- Web View (enhanced) -->
-        <div class="hidden md:block">
-            <form action="{{ route('attendance.day-wise') }}">
-                <div class="flex items-end space-x-4">
-                    <div class="flex-grow flex space-x-4">
-                        <div class="flex-1">
-                            <label for="to-date-web" class="block mb-1 text-sm font-medium text-gray-700">Select
-                                Date:</label>
-                            <input type="date" id="to-date-web" name="date"
-                                class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Select To Date">
-
-                        </div>
+                        <input type="date"
+                            id="attendance-date"
+                            name="date"
+                            value="{{ request('date', $date ?? now()->toDateString()) }}"
+                            class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
-                    <div class="flex-grow flex space-x-4">
-                        <div class="flex-1">
-                            <label for="status" class="block mb-1 text-sm font-medium text-gray-700">Status:</label>
-                            <select name="status" id="status" class="border-gray-300 rounded-md shadow-sm p-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-
-                        </div>
-                    </div>
-                    <div class="flex space-x-2">
+                    {{-- Filter Button --}}
+                    <div class="md:col-span-2">
                         <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out">Filter</button>
-                        <button
-                            class="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out">Clear</button>
+                                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full">
+                            Filter
+                        </button>
                     </div>
+
+                    {{-- Clear Button --}}
+                    <div class="md:col-span-2">
+                        <a href="{{ route('attendance.day-wise') }}"
+                        class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full block text-center">
+                            Clear
+                        </a>
+                    </div>
+
                 </div>
             </form>
         </div>
