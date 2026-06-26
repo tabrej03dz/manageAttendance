@@ -10,7 +10,7 @@
                  <div>
                     
 
-                     <a href="{{ route('mainpage') }}"><img src="{{ asset('asset/img/logo (2).png') }}" alt=""
+                     <a href="{{ route('mainpage') }}"><img src="{{ asset('asset/img/RVG HRMS COLOUR ICON.png') }}" alt=""
                              class="h-24 w-24">
                      </a>
                  </div>

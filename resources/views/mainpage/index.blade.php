@@ -1,91 +1,6 @@
 @extends('mainpage.components.main')
 @section('content')
     <div class="app-container">
-
-        <!-- =======================
-            *** Main/Hero Section *** 2xl:max-w-full
-            ======================== -->
-        {{-- <main class="bg-gradient-to-tr from-[#fa0240] to-[#0837f4] z-50 relative">
-            <div
-                class="absolute inset-0 -z-40 h-full w-full bg-transparent bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-[size:6rem_4rem]">
-            </div>
-
-            <div
-                class="w-full xl:max-w-7xl mx-auto py-28 px-6 md:px-16 2xl:px-0 block lg:flex md:flex-row-reverse items-center justify-between static z-50">
-                <!-- Right Side -->
-                <div class="lg:mb-0 mb-14">
-                    <center>
-                        <img class="shrink-0" src="{{ asset('mainasset/img/mainBg.png') }}" loading="lazy" alt="hero image...">
-                    </center>
-                </div>
-
-                <!-- Left Side -->
-                <div class="place-items-center">
-                    <div class="place-items-center lg:place-items-start text-center lg:text-start lg:max-w-2xl mx-auto">
-                        <h1
-                            class="w-full text-3xl md:text-4xl xl:text-6xl text-pretty text-white font-futuraMd font-bold leading-none md:leading-tight">
-                            Attendance simplified, anywhere anytime
-                        </h1>
-                        <div class="tracking-wide px-8 py-8">
-                            <ul
-                                class="text-white text-2xl font-futuraLg [&_li]:flex [&_li]:items-center [&_li]:justify-center lg:[&_li]:justify-start lg:[&_li]:text-start [&_li]:py-1 [&_img]:size-6 [&_img]:mr-3 [&_img]:hidden lg:[&_img]:block">
-                                <li>
-                                    <img src="{{ asset('mainasset/img/mainCheck.png') }}" loading="lazy"
-                                        alt="..list_image...">
-                                    <p>Mark Attendance with Geotagging</p>
-                                </li>
-                                <li class="py-0">
-                                    <img src="{{ asset('mainasset/img/mainCheck.png') }}" loading="lazy"
-                                        alt="..list_image...">
-                                    <p>Location Tracking</p>
-                                </li>
-                                <li>
-                                    <img src="{{ asset('mainasset/img/mainCheck.png') }}" loading="lazy"
-                                        alt="..list_image...">
-                                    <p>Geofencing</p>
-                                </li>
-                                <li class="py-0">
-                                    <img src="{{ asset('mainasset/img/mainCheck.png') }}" loading="lazy"
-                                        alt="..list_image...">
-                                    <p>Leave Management</p>
-                                </li>
-                                <li>
-                                    <img src="{{ asset('mainasset/img/mainCheck.png') }}" loading="lazy"
-                                        alt="..list_image...">
-                                    <p>Multi-lingual</p>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="w-full">
-                            <a class="px-14 py-3 font-sans text-xl tracking-tight rounded-full duration-150 ease-linear border-2 border-white text-white bg-countryBtn hover:bg-universal hover:text-white"
-                                href="{{ route('reqDemo') }}">Request a Demo</a>
-                        </div>
-
-                        <div class="text-white py-8 mt-4">
-                            <span class="text-2xl">Try it yourself. Download now.</span>
-                        </div>
-
-
-                    </div>
-                </div>
-            </div>
-
-            <!--Main shap divider -->
-            <div class="custom-shape-divider-bottom-1732367268">
-                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
-                    preserveAspectRatio="none">
-                    <path
-                        d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z"
-                        opacity=".25" class="shape-fill"></path>
-                    <path
-                        d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z"
-                        opacity=".5" class="shape-fill"></path>
-                    <path
-                        d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"
-                        class="shape-fill"></path>
-                </svg>
-            </div>
-        </main> --}}
         <div class="relative h-screen">
             <!-- Background Image with Overlay -->
             <div class="absolute inset-0">
@@ -129,39 +44,6 @@
             </div>
           </div>
 
-
-
-        <!-- =======================
-            *** Branding Section ***
-            ======================== -->
-
-
-        {{-- <section class="w-full xl:max-w-7xl mx-auto py-16 px-6 md:px-16  2xl:px-0">
-            <marquee behavior="scroll-smooth" direction="ltr">
-                <div class="slide gap-8 *:cursor-pointer flex justify-center items-center xl:justify-between ">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40 ">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand"  class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (2).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools.png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                    <img src="{{ asset('asset/img/output-onlinepngtools (1).png') }}" loading="lazy" alt="brand" class="h-40 w-40">
-                </div>
-            </marquee>
-        </section> --}}
 
 
             {{-- ABOUT --}}
