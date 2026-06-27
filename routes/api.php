@@ -23,7 +23,7 @@ use \App\Http\Controllers\Api\ReportController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/login/verify-otp', [AuthController::class, 'verifyLoginOtp']);
-Route::post('register', [AuthController::class, 'register'])->name('register');
+Route::post('register', [AuthController::class, 'register']);
 Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 
 
@@ -36,62 +36,62 @@ Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 
 Route::group(['middleware' => "auth:sanctum"], function(){
 
-    Route::prefix('attendance')->name('attendance.')->group(function (){
-        Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn'])->name('check_in');
-        Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut'])->name('check_out');
-        Route::get('day_wise', [AttendanceRecordController::class, 'dayWise'])->name('day_wise');
-        Route::get('record', [AttendanceRecordController::class, 'monthlyRecord'])->name('record');
-        Route::post('user/note/{record?}/{type?}', [AttendanceRecordController::class, 'userNote'])->name('userNote');
+    Route::prefix('attendance')->group(function (){
+        Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn']);
+        Route::post('check_out/{user?}', [AttendanceRecordController::class, 'checkOut']);
+        Route::get('day_wise', [AttendanceRecordController::class, 'dayWise']);
+        Route::get('record', [AttendanceRecordController::class, 'monthlyRecord']);
+        Route::post('user/note/{record?}/{type?}', [AttendanceRecordController::class, 'userNote']);
 //        Route::get('user/record/of_single_date')
     });
-    Route::get('dashboard', [\App\Http\Controllers\Api\HomeController::class, 'dashboard'])->name('dashboard');
+    Route::get('dashboard', [\App\Http\Controllers\Api\HomeController::class, 'dashboard']);
 
-    Route::prefix('salary')->name('salary.')->group(function(){
-        Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index'])->name('index');
+    Route::prefix('salary')->group(function(){
+        Route::get('/', [\App\Http\Controllers\Api\SalaryController::class, 'index']);
          Route::get('calculator', [App\Http\Controllers\Api\SalaryController::class, 'salaryCalculate']);
          Route::post('/calculate-employee-salary', [App\Http\Controllers\Api\SalaryController::class, 'calculateEmployeeSalary']);
     });
 
-    Route::prefix('break')->name('break.')->group(function(){
-        Route::get('/', [\App\Http\Controllers\Api\BreakController::class, 'index'])->name('index');
-        Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start'])->name('start');
-        Route::post('stop/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop'])->name('stop');
-        Route::get('latest/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'latestBreak'])->name('latest');
-        Route::get('employee', [\App\Http\Controllers\Api\BreakController::class, 'employeeBreak'])->name('employee');
+    Route::prefix('break')->group(function(){
+        Route::get('/', [\App\Http\Controllers\Api\BreakController::class, 'index']);
+        Route::post('start/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'start']);
+        Route::post('stop/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'stop']);
+        Route::get('latest/{employee?}', [\App\Http\Controllers\Api\BreakController::class, 'latestBreak']);
+        Route::get('employee', [\App\Http\Controllers\Api\BreakController::class, 'employeeBreak']);
 
     });
 
-    Route::prefix('leave')->name('leave.')->group(function(){
-        Route::get('/', [LeaveController::class, 'index'])->name('index');
-        Route::post('request', [LeaveController::class, 'store'])->name('request');
-        Route::patch('status', [LeaveController::class, 'status'])->name('status');
-        Route::get('show/{leave}', [LeaveController::class, 'show'])->name('show');
-        Route::get('check', [LeaveController::class, 'getLeaveByDate'])->name('check');
+    Route::prefix('leave')->group(function(){
+        Route::get('/', [LeaveController::class, 'index']);
+        Route::post('request', [LeaveController::class, 'store']);
+        Route::patch('status', [LeaveController::class, 'status']);
+        Route::get('show/{leave}', [LeaveController::class, 'show']);
+        Route::get('check', [LeaveController::class, 'getLeaveByDate']);
     });
 
-    Route::prefix('report')->name('prefix.')->group(function(){
-       Route::get('/', [ReportController::class, 'index'])->name('index');
-    });
-
-
-    Route::prefix('employee')->name('employee.')->controller(\App\Http\Controllers\Api\EmployeeController::class)->group(function(){
-        Route::get('/', 'index')->name('index');
-        Route::post('store', 'store')->name('store');
-        Route::post('update/{id}', 'update')->name('update');
-        Route::post('delete', 'delete')->name('delete');
-    });
-
-    Route::get('teamLeaders', [\App\Http\Controllers\Api\EmployeeController::class, 'teamLeaders'])->name('teamLeaders');
-
-    Route::prefix('office')->name('office.')->controller(App\Http\Controllers\Api\OfficeController::class)->group(function(){
-       Route::get('index', 'index')->name('index');
-       Route::post('store', 'store')->name('store');
-       Route::post('update/{id}', 'update')->name('update');
-       Route::post('delete/{id}', 'destroy')->name('delete');
+    Route::prefix('report')->group(function(){
+       Route::get('/', [ReportController::class, 'index']);
     });
 
 
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::prefix('employee')->controller(\App\Http\Controllers\Api\EmployeeController::class)->group(function(){
+        Route::get('/', 'index');
+        Route::post('store', 'store');
+        Route::post('update/{id}', 'update');
+        Route::post('delete', 'delete');
+    });
+
+    Route::get('teamLeaders', [\App\Http\Controllers\Api\EmployeeController::class, 'teamLeaders']);
+
+    Route::prefix('office')->controller(App\Http\Controllers\Api\OfficeController::class)->group(function(){
+       Route::get('index', 'index');
+       Route::post('store', 'store');
+       Route::post('update/{id}', 'update');
+       Route::post('delete/{id}', 'destroy');
+    });
+
+
+    Route::post('logout', [AuthController::class, 'logout']);
     Route::post('delete-account', [AuthController::class, 'deleteAccount']);
     Route::post('change-password', [AuthController::class, 'changePassword']);
 });

@@ -237,4 +237,6 @@ class LoginController extends Controller
 
         @file_get_contents($url);
     }
+
+
 }
