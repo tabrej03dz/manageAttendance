@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RVG HRMS - Smart Attendance Management</title>
+    <link rel="icon" type="image/png" href="{{ asset('asset/img/favicon.png') }}">
 
     <meta name="description"
           content="RVG HRMS is a smart attendance, HRMS, leave, salary and employee management software by Real Victory Groups.">
