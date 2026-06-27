@@ -4,7 +4,6 @@
 <div class="min-vh-100 d-flex align-items-center justify-content-center bg-white py-5">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.8.1/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -61,7 +60,7 @@
 
         .login-header p {
             margin: 8px 0 0;
-            color: rgba(255, 255, 255, .8);
+            color: rgba(255, 255, 255, .85);
             font-size: 14px;
         }
 
@@ -95,33 +94,22 @@
             color: #fff;
             opacity: .95;
         }
-
-        .theme-link {
-            color: var(--rvg-pink);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .theme-link:hover {
-            color: var(--rvg-purple);
-        }
-
-        #eye-icon {
-            cursor: pointer;
-            color: var(--rvg-purple);
-        }
     </style>
 
     <div class="login-wrapper px-3">
 
-        {{-- Logo --}}
         <div class="text-center">
             <div class="logo-box">
                 <img src="{{ asset('asset/img/RVG HRMS COLOUR ICON.png') }}" alt="RVG HRMS Logo">
             </div>
         </div>
 
-        {{-- Errors --}}
+        @if (session('success'))
+            <div class="alert alert-success rounded-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="alert alert-danger rounded-4">
                 <ul class="mb-0 ps-3">
@@ -132,11 +120,10 @@
             </div>
         @endif
 
-        {{-- Login Card --}}
         <div class="login-card">
             <div class="login-header">
                 <h1>Login Page</h1>
-                <p>Login to your RVG HRMS account</p>
+                <p>Enter your mobile number to receive OTP</p>
             </div>
 
             <div class="p-4">
@@ -145,70 +132,25 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-bold" style="color:#2b214a;">
-                            Email or Mobile No
+                            Mobile Number
                         </label>
+
                         <input type="text"
                                class="form-control"
-                               placeholder="Email or Mobile No"
-                               name="username"
-                               value="{{ old('username') }}"
+                               placeholder="Enter Mobile Number"
+                               name="phone"
+                               value="{{ old('phone') }}"
+                               maxlength="10"
                                required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold" style="color:#2b214a;">
-                            Password
-                        </label>
-
-                        <div class="position-relative">
-                            <input type="password"
-                                   id="password"
-                                   class="form-control pe-5"
-                                   placeholder="Password"
-                                   name="password"
-                                   required>
-
-                            <span id="eye-icon"
-                                  class="position-absolute top-50 end-0 translate-middle-y pe-3">
-                                <i class="bi bi-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-
                     <button type="submit" class="btn login-btn w-100 mt-3">
-                        Login
+                        Send OTP
                     </button>
-
-                    @if (Route::has('password.request'))
-                        <div class="text-center mt-4">
-                            <a href="{{ route('password.request') }}" class="theme-link">
-                                Forgot Your Password?
-                            </a>
-                        </div>
-                    @endif
                 </form>
             </div>
         </div>
 
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const eyeIcon = document.getElementById('eye-icon');
-            const passwordField = document.getElementById('password');
-
-            if (eyeIcon && passwordField) {
-                eyeIcon.addEventListener('click', function () {
-                    if (passwordField.type === 'password') {
-                        passwordField.type = 'text';
-                        eyeIcon.innerHTML = '<i class="bi bi-eye-slash"></i>';
-                    } else {
-                        passwordField.type = 'password';
-                        eyeIcon.innerHTML = '<i class="bi bi-eye"></i>';
-                    }
-                });
-            }
-        });
-    </script>
 </div>
 @endsection

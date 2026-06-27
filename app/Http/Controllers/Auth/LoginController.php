@@ -114,69 +114,109 @@ class LoginController extends Controller
     // }
 
 
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'username' => 'required|string',
+    //         'password' => 'nullable|string',
+    //     ]);
+
+    //     $input = $request->username;
+
+    //     $field = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+    //     $user = User::with('office')
+    //         ->where($field, $input)
+    //         ->where('status', '1')
+    //         ->first();
+
+    //     if (!$user) {
+    //         throw ValidationException::withMessages([
+    //             'username' => ['Invalid login details.'],
+    //         ]);
+    //     }
+
+    //     $otpEnabled = optional($user->office)->otp_enable == 1;
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Case 1: Office OTP enabled + user login by phone
+    //     | Password check nahi hoga, direct OTP jayega
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     if ($otpEnabled && $field === 'phone') {
+    //         $otp = rand(1000, 9999);
+
+    //         session([
+    //             'login_otp_user_id' => $user->id,
+    //             'login_otp' => $otp,
+    //             'login_remember' => $request->boolean('remember'),
+    //             'login_otp_time' => now()->timestamp,
+    //         ]);
+
+    //         $this->sendLoginOtp($user->phone, $otp);
+
+    //         return redirect()->route('login.otp')
+    //             ->with('success', 'OTP sent to your registered mobile number.');
+    //     }
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Case 2: Office OTP disabled
+    //     | Email/phone + password se direct login
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     if (!$request->filled('password') || !Hash::check($request->password, $user->password)) {
+    //         throw ValidationException::withMessages([
+    //             'username' => ['Invalid login details.'],
+    //         ]);
+    //     }
+
+    //     Auth::login($user, $request->boolean('remember'));
+
+    //     $request->session()->regenerate();
+
+    //     return redirect()->intended($this->redirectPath());
+    // }
+
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'nullable|string',
+            'phone' => [
+                'required',
+                'digits:10',
+                'regex:/^[6-9][0-9]{9}$/',
+            ],
+        ], [
+            'phone.required' => 'Mobile number required hai.',
+            'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
+            'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
         ]);
 
-        $input = $request->username;
+        $phone = $request->phone;
 
-        $field = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-
-        $user = User::with('office')
-            ->where($field, $input)
+        $user = User::where('phone', $phone)
             ->where('status', '1')
             ->first();
 
         if (!$user) {
             throw ValidationException::withMessages([
-                'username' => ['Invalid login details.'],
+                'phone' => ['Invalid mobile number ya user inactive hai.'],
             ]);
         }
 
-        $otpEnabled = optional($user->office)->otp_enable == 1;
+        $otp = rand(100000, 999999);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Case 1: Office OTP enabled + user login by phone
-        | Password check nahi hoga, direct OTP jayega
-        |--------------------------------------------------------------------------
-        */
-        if ($otpEnabled && $field === 'phone') {
-            $otp = rand(1000, 9999);
+        session([
+            'login_otp_user_id' => $user->id,
+            'login_otp'         => $otp,
+            'login_otp_time'    => now()->timestamp,
+        ]);
 
-            session([
-                'login_otp_user_id' => $user->id,
-                'login_otp' => $otp,
-                'login_remember' => $request->boolean('remember'),
-                'login_otp_time' => now()->timestamp,
-            ]);
+        $this->sendLoginOtp($user->phone, $otp);
 
-            $this->sendLoginOtp($user->phone, $otp);
-
-            return redirect()->route('login.otp')
-                ->with('success', 'OTP sent to your registered mobile number.');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Case 2: Office OTP disabled
-        | Email/phone + password se direct login
-        |--------------------------------------------------------------------------
-        */
-        if (!$request->filled('password') || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'username' => ['Invalid login details.'],
-            ]);
-        }
-
-        Auth::login($user, $request->boolean('remember'));
-
-        $request->session()->regenerate();
-
-        return redirect()->intended($this->redirectPath());
+        return redirect()->route('login.otp')
+            ->with('success', 'OTP aapke registered mobile number par bhej diya gaya hai.');
     }
 
     public function showOtpForm()
@@ -223,8 +263,8 @@ class LoginController extends Controller
     {
         $msg = "Dear Customer, {$otp} this is your login verification OTP. Please do not share with anyone. Best Regards, Real Victory Groups https://realvictorygroups.com/";
 
-        $url = "https://kutility.org/app/smsapi/index.php?" . http_build_query([
-            'key' => '5620360CF8C9B4',
+        $url = env('KUTILITY_URL') . http_build_query([
+            'key' => env('KUTILITY_KEY'),
             'campaign' => '12754',
             'routeid' => '7',
             'type' => 'text',
