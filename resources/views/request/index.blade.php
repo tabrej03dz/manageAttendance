@@ -51,6 +51,7 @@
                                     <th>PinCode</th>
                                     <th>Employee Size</th>
                                     <th>Designation</th>
+                                    <th>Requested At</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -66,6 +67,7 @@
                                         <td>{{ $appointment->pin_code }}</td>
                                         <td>{{ $appointment->emp_size }}</td>
                                         <td>{{ $appointment->designation }}</td>
+                                        <td>{{ $appointment->created_at->format('d M y') }}</td>
                                         <td>
                                             <a href="{{ route('request.delete', $appointment->id) }}"
                                                 class="btn btn-danger btn-sm">
