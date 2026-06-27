@@ -126,7 +126,7 @@
                         @endif
 
                         <form id="simpleUserForm"
-                              action="{{ route('request.store') }}"
+                              action="{{ route('request.demo.store') }}"
                               method="post"
                               class="space-y-5">
                             @csrf
@@ -313,7 +313,7 @@
                     $('.error-compan_name, .error-owner_name, .error-number, .error-email, .error-pin_code, .error-company_address, .error-emp_size, .error-designation').text('');
 
                     $.ajax({
-                        url: "{{ route('request.store') }}",
+                        url: "{{ route('request.demo.store') }}",
                         type: "POST",
                         data: formData,
                         dataType: "json",

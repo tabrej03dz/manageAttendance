@@ -9,7 +9,7 @@ class NewUserLeadController extends Controller
 {
     public function store(StoreNewUserLeadRequest $request)
     {
-        dd($request);
+        // dd($request);
         $lead = NewUserLead::create($request->validated());
 
         return response()->json([

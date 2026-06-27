@@ -50,12 +50,10 @@ Route::controller(\App\Http\Controllers\FrontController::class)->group(function(
     Route::post('employee-register', 'employeeRegister')->name('employee-register');
 });
 
-Route::controller(RequestDemoController::class)->group(function(){
+Route::controller(RequestDemoController::class)->group(function () {
     Route::get('request/index', 'index')->name('request.index');
-    Route::post('reqest/store', 'store')->name('request.store');
+    Route::post('request/store', 'store')->name('request.demo.store');
     Route::get('request/delete/{appointment}', 'delete')->name('request.delete');
-    // Route::get('/', '')->name('blogDetailsPage');
-    // Route::get('/', '')->name('reqDemo');
 });
 
 

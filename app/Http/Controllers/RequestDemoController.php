@@ -30,18 +30,38 @@ class RequestDemoController extends Controller
     }
 
 
+    // public function store(RequestDemoRequest $request)
+    // {
+    //     dd($request->all());
+    //     $requestDemo = RequestDemo::create($request->all());
+
+    //     if ($request->has('email') && $request->email) {
+    //         Mail::to($request->email)->send(new RequestDemoMail($requestDemo));
+    //     }
+
+    //     Mail::to('realvictorygroups@gmail.com')->send(new AdminNewRequestDemoMail($requestDemo));
+
+    //     return response()->json(['success' => true, 'message' => 'Request demo submitted successfully!']);
+    // }
+
     public function store(RequestDemoRequest $request)
-    {
-        $requestDemo = RequestDemo::create($request->all());
+{
+    $data = $request->validated();
 
-        if ($request->has('email') && $request->email) {
-            Mail::to($request->email)->send(new RequestDemoMail($requestDemo));
-        }
+    $requestDemo = RequestDemo::create($data);
 
-        Mail::to('realvictorygroups@gmail.com')->send(new AdminNewRequestDemoMail($requestDemo));
-
-        return response()->json(['success' => true, 'message' => 'Request demo submitted successfully!']);
+    if (!empty($data['email'])) {
+        Mail::to($data['email'])->send(new RequestDemoMail($requestDemo));
     }
+
+    Mail::to('realvictorygroups@gmail.com')
+        ->send(new AdminNewRequestDemoMail($requestDemo));
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Request demo submitted successfully!'
+    ]);
+}
 
 
     public function delete(RequestDemo $appointment)
