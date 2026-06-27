@@ -12,6 +12,16 @@
 
     <meta name="theme-color" content="#2b214a">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-947XSCW7NB"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-947XSCW7NB');
+    </script>
+
     {{-- Tailwind CSS --}}
     <script src="https://cdn.tailwindcss.com"></script>
 
