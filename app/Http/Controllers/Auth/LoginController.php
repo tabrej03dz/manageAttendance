@@ -231,7 +231,7 @@ class LoginController extends Controller
     public function verifyOtp(Request $request)
     {
         $request->validate([
-            'otp' => 'required|digits:4',
+            'otp' => 'required|digits:6',
         ]);
 
         if (!session('login_otp_user_id')) {
