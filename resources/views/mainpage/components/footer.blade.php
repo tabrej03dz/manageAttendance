@@ -225,10 +225,12 @@
                 </p>
 
                 <p class="text-sm font-semibold text-white/60">
-                    Designed for
+                    Designed By
+                    <a href="https://realvictorygroups.com/">
                     <span class="font-black bg-gradient-to-r from-[#1f7df2] via-[#ff4fa0] to-[#e00063] bg-clip-text text-transparent">
-                        Smart Workforce Management
+                        Real Victory Grous &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
                     </span>
+                    </a>
                 </p>
             </div>
         </div>

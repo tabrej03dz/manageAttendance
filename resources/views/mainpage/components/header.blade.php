@@ -2,8 +2,7 @@
 *** Header/Navbar Section ***
 ======================== -->
 <header id="home"
-    class="sticky top-0 left-0 z-[9999999] w-full border-b border-slate-200/70 bg-white/85 shadow-lg shadow-slate-900/5 backdrop-blur-2xl">
-
+    class="sticky top-0 left-0 z-[999999] w-full border-b border-slate-200/70 bg-white/85 shadow-lg shadow-slate-900/5 backdrop-blur-2xl">
     <div class="mx-auto flex h-[92px] w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {{-- LOGO --}}
@@ -89,149 +88,193 @@
         </nav>
 
         {{-- MOBILE ACTIONS --}}
-        <div class="flex items-center gap-3 lg:hidden">
+        <div class="relative z-[100000000] flex items-center gap-3 lg:hidden">
             <a href="{{ route('login') }}"
-               class="rounded-full bg-gradient-to-r from-[#1f7df2] via-[#7f35b2] to-[#e00063] px-5 py-2.5 text-sm font-black text-white shadow-lg shadow-[#e00063]/20">
+            class="rounded-full bg-gradient-to-r from-[#1f7df2] via-[#7f35b2] to-[#e00063] px-5 py-2.5 text-sm font-black text-white shadow-lg shadow-[#e00063]/20">
                 Login
             </a>
 
             <button id="hamburger"
                 type="button"
-                class="group relative flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#e00063]/40"
+                onclick="toggleMobileMenu(event)"
+                class="relative z-[100000001] flex h-12 w-12 items-center justify-center rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-[#e00063]/40"
                 aria-label="Open menu">
 
-                <span class="absolute h-[2px] w-6 -translate-y-2 rounded-full bg-[#2b214a] transition duration-300 group-[.active]:translate-y-0 group-[.active]:rotate-45"></span>
-                <span class="absolute h-[2px] w-6 rounded-full bg-[#2b214a] transition duration-300 group-[.active]:opacity-0"></span>
-                <span class="absolute h-[2px] w-6 translate-y-2 rounded-full bg-[#2b214a] transition duration-300 group-[.active]:translate-y-0 group-[.active]:-rotate-45"></span>
+                <span class="line1 absolute h-[2px] w-6 -translate-y-2 rounded-full bg-[#2b214a] transition duration-300"></span>
+                <span class="line2 absolute h-[2px] w-6 rounded-full bg-[#2b214a] transition duration-300"></span>
+                <span class="line3 absolute h-[2px] w-6 translate-y-2 rounded-full bg-[#2b214a] transition duration-300"></span>
             </button>
         </div>
     </div>
 
     {{-- MOBILE MENU --}}
-    <div id="navbarSlide"
-         class="fixed inset-x-0 top-[92px] z-[9999998] hidden h-[calc(100vh-92px)] bg-slate-950/40 backdrop-blur-sm lg:hidden">
+    {{-- MOBILE MENU --}}
+<div id="navbarSlide"
+     onclick="closeMobileMenuOnOverlay(event)"
+     class="fixed inset-x-0 top-[92px] z-[999998] hidden h-[calc(100vh-92px)] bg-slate-950/60 backdrop-blur-sm lg:hidden">
+    <div id="mobileMenuBox"
+         class="h-full w-[86%] max-w-sm overflow-y-auto rounded-r-[2.5rem] bg-white p-6 shadow-2xl">
 
-        <div class="h-full w-[86%] max-w-sm overflow-y-auto rounded-r-[2.5rem] bg-white p-6 shadow-2xl">
-
-            <div class="mb-8 flex items-center gap-3">
-                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow ring-1 ring-slate-200">
-                    <img src="{{ asset('asset/img/RVG HRMS COLOUR ICON.png') }}"
-                         alt="RVG HRMS"
-                         class="h-11 w-11 object-contain">
-                </div>
-
-                <div>
-                    <h2 class="text-lg font-black text-[#2b214a]">RVG HRMS</h2>
-                    <p class="text-xs font-bold uppercase tracking-[.2em] text-[#e00063]">
-                        Smart Attendance
-                    </p>
-                </div>
+        <div class="mb-8 flex items-center gap-3">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow ring-1 ring-slate-200">
+                <img src="{{ asset('asset/img/RVG HRMS COLOUR ICON.png') }}"
+                     alt="RVG HRMS"
+                     class="h-11 w-11 object-contain">
             </div>
 
-            <ul class="space-y-2 text-base font-black text-[#2b214a]">
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl bg-[#e00063]/10 px-5 py-4 text-[#e00063]"
-                       href="{{ route('mainpage') }}">
-                        Home <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="#attendNow">
-                        Why RVG <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="#benefit">
-                        Benefits <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="#review">
-                        Reviews <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="#price">
-                        Pricing <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="{{ route('reqDemo') }}">
-                        Request Demo <span>→</span>
-                    </a>
-                </li>
-
-                <li>
-                    <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
-                       href="{{ route('employee-form') }}">
-                        Register as Employee <span>→</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="mt-8 rounded-[2rem] bg-gradient-to-br from-[#1f7df2] via-[#7f35b2] to-[#e00063] p-5 text-white shadow-xl">
-                <p class="text-sm font-black uppercase tracking-[.25em] text-white/80">
-                    Contact Us
+            <div>
+                <h2 class="text-lg font-black text-[#2b214a]">RVG HRMS</h2>
+                <p class="text-xs font-bold uppercase tracking-[.2em] text-[#e00063]">
+                    Smart Attendance
                 </p>
-
-                <a class="mt-4 block text-2xl font-black"
-                   href="tel:+917753800444">
-                    +91 7753800444
-                </a>
-
-                <a class="mt-2 block text-sm font-bold text-white/85"
-                   href="mailto:info@realvictorygroups.com">
-                    info@realvictorygroups.com
-                </a>
-
-                <a href="{{ route('reqDemo') }}"
-                   class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-black uppercase tracking-wide text-[#e00063]">
-                    Request Demo
-                </a>
             </div>
         </div>
+
+        <ul class="space-y-2 text-base font-black text-[#2b214a]">
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl bg-[#e00063]/10 px-5 py-4 text-[#e00063]"
+                   href="{{ route('mainpage') }}">
+                    Home <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="#attendNow">
+                    Why RVG <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="#benefit">
+                    Benefits <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="#review">
+                    Reviews <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="#price">
+                    Pricing <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="{{ route('reqDemo') }}">
+                    Request Demo <span>→</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="navLink flex items-center justify-between rounded-2xl px-5 py-4 transition hover:bg-[#e00063]/10 hover:text-[#e00063]"
+                   href="{{ route('employee-form') }}">
+                    Register as Employee <span>→</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-8 rounded-[2rem] bg-gradient-to-br from-[#1f7df2] via-[#7f35b2] to-[#e00063] p-5 text-white shadow-xl">
+            <p class="text-sm font-black uppercase tracking-[.25em] text-white/80">
+                Contact Us
+            </p>
+
+            <a class="mt-4 block text-2xl font-black"
+               href="tel:+917753800444">
+                +91 7753800444
+            </a>
+
+            <a class="mt-2 block text-sm font-bold text-white/85"
+               href="mailto:info@realvictorygroups.com">
+                info@realvictorygroups.com
+            </a>
+
+            <a href="{{ route('reqDemo') }}"
+               class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-black uppercase tracking-wide text-[#e00063]">
+                Request Demo
+            </a>
+        </div>
     </div>
+</div>
+
+
 </header>
 
-{{-- MOBILE MENU SCRIPT --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    function toggleMobileMenu(event) {
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
         const hamburger = document.getElementById('hamburger');
         const navbarSlide = document.getElementById('navbarSlide');
-        const navLinks = document.querySelectorAll('.navLink');
 
-        if (hamburger && navbarSlide) {
-            hamburger.addEventListener('click', function () {
-                navbarSlide.classList.toggle('hidden');
-                hamburger.classList.toggle('active');
-                document.body.classList.toggle('overflow-hidden');
-            });
+        if (!hamburger || !navbarSlide) return;
 
-            navLinks.forEach(function (link) {
-                link.addEventListener('click', function () {
-                    navbarSlide.classList.add('hidden');
-                    hamburger.classList.remove('active');
-                    document.body.classList.remove('overflow-hidden');
-                });
-            });
+        const isOpen = hamburger.getAttribute('data-open') === 'true';
 
-            navbarSlide.addEventListener('click', function (e) {
-                if (e.target === navbarSlide) {
-                    navbarSlide.classList.add('hidden');
-                    hamburger.classList.remove('active');
-                    document.body.classList.remove('overflow-hidden');
-                }
-            });
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            openMobileMenu();
+        }
+    }
+
+    function openMobileMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const navbarSlide = document.getElementById('navbarSlide');
+
+        if (!hamburger || !navbarSlide) return;
+
+        hamburger.setAttribute('data-open', 'true');
+
+        navbarSlide.classList.remove('hidden');
+        navbarSlide.style.display = 'block';
+
+        hamburger.querySelector('.line1').style.transform = 'translateY(0) rotate(45deg)';
+        hamburger.querySelector('.line2').style.opacity = '0';
+        hamburger.querySelector('.line3').style.transform = 'translateY(0) rotate(-45deg)';
+
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeMobileMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const navbarSlide = document.getElementById('navbarSlide');
+
+        if (!hamburger || !navbarSlide) return;
+
+        hamburger.setAttribute('data-open', 'false');
+
+        navbarSlide.classList.add('hidden');
+        navbarSlide.style.display = 'none';
+
+        hamburger.querySelector('.line1').style.transform = 'translateY(-8px) rotate(0deg)';
+        hamburger.querySelector('.line2').style.opacity = '1';
+        hamburger.querySelector('.line3').style.transform = 'translateY(8px) rotate(0deg)';
+
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function closeMobileMenuOnOverlay(event) {
+        const navbarSlide = document.getElementById('navbarSlide');
+
+        if (event.target === navbarSlide) {
+            closeMobileMenu();
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        if (event.target.closest('.navLink')) {
+            closeMobileMenu();
         }
     });
 </script>
