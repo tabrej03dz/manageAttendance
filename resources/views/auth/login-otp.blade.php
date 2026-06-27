@@ -19,7 +19,7 @@
 
                 <div class="mb-3">
                     <label>Enter OTP</label>
-                    <input type="text" name="otp" class="form-control" maxlength="4" required>
+                    <input type="text" name="otp" class="form-control" maxlength="6" required>
                 </div>
 
                 <button class="btn btn-primary w-100">Verify & Login</button>
