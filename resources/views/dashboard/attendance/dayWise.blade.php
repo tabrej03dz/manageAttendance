@@ -108,25 +108,22 @@
                                                 {{ $record?->check_in?->format('h:i:s A') }}
                                             </td>
                                             <td class="px-4 py-4">
-                                                {{-- @if ($record)
-                                                    <a href="{{ $record->check_in_image ? asset('storage/' . $record->check_in_image) : ''  }}"
-                                                        target="_blank">
-                                                        <img src="{{ $record->check_in_image ? asset('storage/' . $record->check_in_image) : 'https://attendance.realvictorygroups.com/storage/'.$record->check_in_image }}"
-                                                            alt="Check-in Image"
-                                                            class="w-12 h-12 object-cover rounded-lg shadow-sm">
-                                                    </a>
-                                                @endif --}}
-
                                                 @if ($record && $record->check_in_image)
                                                     @php
                                                         $imagePath = ltrim($record->check_in_image, '/');
 
                                                         if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
                                                             $checkInImageUrl = $imagePath;
-                                                        } elseif (str_contains($imagePath, 'attendance/old') || $record->created_at < '2026-06-29') {
-                                                            $checkInImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $imagePath;
                                                         } else {
-                                                            $checkInImageUrl = asset('storage/' . $imagePath);
+                                                            $cleanPath = str_replace('storage/', '', $imagePath);
+
+                                                            $currentFilePath = public_path('storage/' . $cleanPath);
+
+                                                            if (file_exists($currentFilePath)) {
+                                                                $checkInImageUrl = asset('storage/' . $cleanPath);
+                                                            } else {
+                                                                $checkInImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $cleanPath;
+                                                            }
                                                         }
                                                     @endphp
 
@@ -185,12 +182,23 @@
                                                     @php
                                                         $imagePath = ltrim($record->check_out_image, '/');
 
+                                                        // Agar DB me full URL saved hai
                                                         if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
                                                             $checkOutImageUrl = $imagePath;
-                                                        } elseif (str_contains($imagePath, 'attendance/old') || $record->created_at < '2026-06-29') {
-                                                            $checkOutImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $imagePath;
                                                         } else {
-                                                            $checkOutImageUrl = asset('storage/' . $imagePath);
+                                                            // Agar path me storage/ already saved hai to remove kar do
+                                                            $cleanPath = str_replace('storage/', '', $imagePath);
+
+                                                            // Current domain/server me image file check karo
+                                                            $currentFilePath = public_path('storage/' . $cleanPath);
+
+                                                            if (file_exists($currentFilePath)) {
+                                                                // Current domain se image
+                                                                $checkOutImageUrl = asset('storage/' . $cleanPath);
+                                                            } else {
+                                                                // Current me nahi mila to old domain se image
+                                                                $checkOutImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $cleanPath;
+                                                            }
                                                         }
                                                     @endphp
 
