@@ -205,10 +205,27 @@
                                                 {{ $record?->late ? App\Http\Controllers\HomeController::getTime($record->late) : 'N/A' }}
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
-                                                @if ($record)
-                                                <a href="{{asset('storage/' . $record?->check_in_image)}}" target="_blank">
-                                                    <img src="{{ asset('storage/' . $record?->check_in_image) }}"
-                                                        alt="Check-in" class="w-10 h-10 rounded-full">
+                                                @if ($record && $record->check_in_image)
+                                                    @php
+                                                        $imagePath = ltrim($record->check_in_image, '/');
+
+                                                        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                                                            $checkInImageUrl = $imagePath;
+                                                        } else {
+                                                            $cleanPath = str_replace('storage/', '', $imagePath);
+
+                                                            if (file_exists(public_path('storage/' . $cleanPath))) {
+                                                                $checkInImageUrl = asset('storage/' . $cleanPath);
+                                                            } else {
+                                                                $checkInImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $cleanPath;
+                                                            }
+                                                        }
+                                                    @endphp
+
+                                                    <a href="{{ $checkInImageUrl }}" target="_blank">
+                                                        <img src="{{ $checkInImageUrl }}"
+                                                            alt="Check-in"
+                                                            class="w-10 h-10 rounded-full object-cover">
                                                     </a>
                                                 @endif
                                             </td>
@@ -226,10 +243,27 @@
                                             <td class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_out)->format('H:i:s') > Carbon\Carbon::parse($record?->user->check_out_time)->format('H:i:s') ? 'green' : 'red' }}-700">
                                                 {{ $record?->check_out?->format('h:i:s A') }}</td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
-                                                @if ($record)
-                                                <a href="{{asset('storage/' . $record?->check_out_image)}}" target="_blank">
-                                                    <img src="{{ asset('storage/' . $record?->check_out_image) }}"
-                                                        alt="Check-in" class="w-10 h-10 rounded-full">
+                                                @if ($record && $record->check_out_image)
+                                                    @php
+                                                        $imagePath = ltrim($record->check_out_image, '/');
+
+                                                        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                                                            $checkOutImageUrl = $imagePath;
+                                                        } else {
+                                                            $cleanPath = str_replace('storage/', '', $imagePath);
+
+                                                            if (file_exists(public_path('storage/' . $cleanPath))) {
+                                                                $checkOutImageUrl = asset('storage/' . $cleanPath);
+                                                            } else {
+                                                                $checkOutImageUrl = 'https://attendance.realvictorygroups.com/storage/' . $cleanPath;
+                                                            }
+                                                        }
+                                                    @endphp
+
+                                                    <a href="{{ $checkOutImageUrl }}" target="_blank">
+                                                        <img src="{{ $checkOutImageUrl }}"
+                                                            alt="Check-out"
+                                                            class="w-10 h-10 rounded-full object-cover">
                                                     </a>
                                                 @endif
                                             </td>
