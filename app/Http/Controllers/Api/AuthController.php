@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 
 
@@ -417,5 +419,52 @@ class AuthController extends Controller
         ]);
 
         @file_get_contents($url);
+    }
+
+
+    public function profilePhotoUpdate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
+
+        // Purani photo delete karo agar storage me hai
+        if (!empty($user->photo) && Storage::disk('public')->exists($user->photo)) {
+            Storage::disk('public')->delete($user->photo);
+        }
+
+        // New photo upload
+        $path = $request->file('photo')->store('profile_photos', 'public');
+
+        $user->photo = $path;
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile photo updated successfully',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'photo' => $user->photo,
+                'photo_url' => asset('storage/' . $user->photo),
+            ],
+        ], 200);
     }
 }
