@@ -18,7 +18,7 @@
         <div class="grid gap-10 lg:grid-cols-12">
 
             {{-- Brand Info --}}
-            <div class="lg:col-span-5">
+            <div class="lg:col-span-4">
                 <a href="{{ route('mainpage') }}" class="inline-flex items-center gap-4">
                     <div class="relative">
                         <div class="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#1f7df2] via-[#7f35b2] to-[#e00063] opacity-40 blur-xl"></div>
@@ -129,7 +129,7 @@
             </div>
 
             {{-- Legal Links --}}
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-3">
                 <h3 class="text-lg font-black text-white">
                     Policies
                 </h3>
@@ -161,6 +161,54 @@
                         </a>
                     </li>
                 </ul>
+
+
+                {{-- App Download Links --}}
+                <div class="mt-6">
+                    <p class="text-sm font-black uppercase tracking-[.25em] text-[#ff4fa0]">
+                        Download App
+                    </p>
+
+                    <div class="mt-4 grid gap-3">
+                        <a href="https://apps.apple.com/in/app/real-victory-groups-daily-post/id6746252505"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-center gap-4 rounded-2xl bg-black px-5 py-4 text-white shadow-xl transition hover:-translate-y-1 hover:bg-[#111827]">
+
+                            <span class="flex h-11 w-11 items-center justify-center text-3xl">
+                                <i class="fa-brands fa-apple"></i>
+                            </span>
+
+                            <span class="leading-tight">
+                                <span class="block text-xs font-bold text-white/70">
+                                    Download on the
+                                </span>
+                                <span class="block text-xl font-black">
+                                    App Store
+                                </span>
+                            </span>
+                        </a>
+
+                        <a href="https://play.google.com/store/apps/details?id=com.rvg.chat_real_victory&pcampaignid=web_share"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex items-center gap-4 rounded-2xl bg-black px-5 py-4 text-white shadow-xl transition hover:-translate-y-1 hover:bg-[#111827]">
+
+                            <span class="flex h-11 w-11 items-center justify-center text-3xl">
+                                <i class="fa-brands fa-google-play"></i>
+                            </span>
+
+                            <span class="leading-tight">
+                                <span class="block text-xs font-bold text-white/70">
+                                    Get it on
+                                </span>
+                                <span class="block text-xl font-black">
+                                    Google Play
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
             </div>
 
             {{-- Contact Box --}}
