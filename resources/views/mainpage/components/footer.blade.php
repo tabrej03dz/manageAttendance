@@ -170,7 +170,7 @@
                     </p>
 
                     <div class="mt-4 grid gap-3">
-                        <a href="https://apps.apple.com/in/app/real-victory-groups-daily-post/id6746252505"
+                        <a href="https://apps.apple.com/in/app/victory-hrms-attendance-salary/id6759782174"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="flex items-center gap-4 rounded-2xl bg-black px-5 py-4 text-white shadow-xl transition hover:-translate-y-1 hover:bg-[#111827]">
