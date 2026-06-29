@@ -189,7 +189,7 @@
                             </span>
                         </a>
 
-                        <a href="https://play.google.com/store/apps/details?id=com.rvg.chat_real_victory&pcampaignid=web_share"
+                        <a href="https://play.google.com/store/apps/details?id=com.realvictorygroup.attendancepro2026"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="flex items-center gap-4 rounded-2xl bg-black px-5 py-4 text-white shadow-xl transition hover:-translate-y-1 hover:bg-[#111827]">
