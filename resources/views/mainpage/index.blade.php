@@ -135,7 +135,7 @@
 
                     <div class="relative rounded-[3rem] bg-white p-6 shadow-xl">
                         <img class="w-full rounded-[2.3rem] object-contain"
-                             src="{{ asset('asset/img/multitask.png') }}"
+                             src="{{ asset('asset/img/Streamlining Employee.png') }}"
                              loading="lazy"
                              alt="RVG HRMS Attendance Software">
                     </div>
