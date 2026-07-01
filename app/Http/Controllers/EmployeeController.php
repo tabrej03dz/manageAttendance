@@ -22,7 +22,11 @@ class EmployeeController extends Controller
 
     private function activeOfficeId(Request $request): ?int
     {
-        return $request->user()?->activeOfficeId();
+        if ($request->session()->has('active_office_id')) {
+            return (int) $request->session()->get('active_office_id');
+        }
+
+        return $request->user()?->office_id ? (int) $request->user()->office_id : null;
     }
 
     private function allowedOfficeIds(Request $request): array
@@ -33,22 +37,30 @@ class EmployeeController extends Controller
             return [];
         }
 
+        $activeOfficeId = $this->activeOfficeId($request);
+
         if ($user->hasRole('super_admin')) {
-            $officeId = $user->activeOfficeId();
-            return $officeId ? [$officeId] : [];
+            return $activeOfficeId ? [$activeOfficeId] : [];
         }
 
         if ($user->hasRole('owner')) {
-            $officeId = $user->activeOfficeId();
-            return $officeId ? [$officeId] : [];
+            if (!$activeOfficeId) {
+                return [];
+            }
+
+            $isOwnerOffice = Office::where('id', $activeOfficeId)
+                ->where('owner_id', $user->id)
+                ->exists();
+
+            return $isOwnerOffice ? [$activeOfficeId] : [];
         }
 
         if ($user->hasRole('admin')) {
-            return $user->office_id ? [$user->office_id] : [];
+            return $user->office_id ? [(int) $user->office_id] : [];
         }
 
         if ($user->office_id) {
-            return [$user->office_id];
+            return [(int) $user->office_id];
         }
 
         return [];

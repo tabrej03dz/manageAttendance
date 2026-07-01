@@ -40,14 +40,14 @@ class OfficeAccessController extends Controller
     {
         $user = $request->user();
 
+        $allowed = false;
+
         if ($user->hasRole('super_admin')) {
-            // super admin kisi bhi office me switch kar sakta hai
             $allowed = true;
-        } elseif ($user->hasRole('owner')) {
-            // owner sirf apne office me switch kar sake
-            $allowed = (int) $office->owner_id === (int) $user->id;
-        } else {
-            $allowed = false;
+        }
+
+        if ($user->hasRole('owner')) {
+            $allowed = (int) $office->owner_id == (int) $user->id;
         }
 
         if (!$allowed) {
@@ -66,7 +66,7 @@ class OfficeAccessController extends Controller
     {
         $user = $request->user();
 
-        if (!($user->hasRole('super_admin') || $user->hasRole('owner'))) {
+        if (!$user->hasAnyRole(['super_admin', 'owner'])) {
             abort(403, 'You are not allowed to clear office switch.');
         }
 

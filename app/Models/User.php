@@ -103,17 +103,26 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-     public function activeOfficeId()
-    {
-        if ($this->hasRole('super_admin')) {
-            return session('active_office_id');
-        }
+    //  public function activeOfficeId()
+    // {
+    //     if ($this->hasRole('super_admin')) {
+    //         return session('active_office_id');
+    //     }
 
-        if ($this->hasRole('owner')) {
-            return \App\Models\Office::where('owner_id', $this->id)->value('id');
-        }
+    //     if ($this->hasRole('owner')) {
+    //         return \App\Models\Office::where('owner_id', $this->id)->value('id');
+    //     }
 
-        return $this->office_id;
+    //     return $this->office_id;
+    // }
+
+    public function activeOfficeId(): ?int
+{
+    if (session()->has('active_office_id')) {
+        return (int) session('active_office_id');
     }
+
+    return $this->office_id ? (int) $this->office_id : null;
+}
 
 }

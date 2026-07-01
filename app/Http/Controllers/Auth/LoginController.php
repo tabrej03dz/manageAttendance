@@ -69,49 +69,7 @@ class LoginController extends Controller
         return 'username';
     }
 
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'username' => 'required|string',
-    //         'password' => 'required|string',
-    //     ]);
-
-    //     $input = $request->username;
-
-    //     $field = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-
-    //     $user = User::where($field, $input)
-    //         ->where('status', '1')
-    //         ->first();
-
-    //     if (!$user || !Hash::check($request->password, $user->password)) {
-    //         throw ValidationException::withMessages([
-    //             'username' => ['Invalid login details.'],
-    //         ]);
-    //     }
-
-    //     // Email login direct allow
-    //     if ($field === 'email') {
-    //         Auth::login($user, $request->boolean('remember'));
-    //         $request->session()->regenerate();
-    //         return redirect()->intended($this->redirectPath());
-    //     }
-
-    //     // Phone login OTP required
-    //     $otp = rand(1000, 9999);
-
-    //     session([
-    //         'login_otp_user_id' => $user->id,
-    //         'login_otp' => $otp,
-    //         'login_remember' => $request->boolean('remember'),
-    //         'login_otp_time' => now()->timestamp,
-    //     ]);
-
-    //     $this->sendLoginOtp($user->phone, $otp);
-
-    //     return redirect()->route('login.otp')
-    //         ->with('success', 'OTP sent to your registered mobile number.');
-    // }
+    
 
 
     // public function login(Request $request)
@@ -179,45 +137,90 @@ class LoginController extends Controller
     //     return redirect()->intended($this->redirectPath());
     // }
 
+
+
+
+
+
+
+
+
+
+
     public function login(Request $request)
-    {
-        $request->validate([
-            'phone' => [
-                'required',
-                'digits:10',
-                'regex:/^[6-9][0-9]{9}$/',
-            ],
-        ], [
-            'phone.required' => 'Mobile number required hai.',
-            'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
-            'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
+{
+    $request->validate([
+        'phone' => [
+            'required',
+            'digits:10',
+            'regex:/^[6-9][0-9]{9}$/',
+        ],
+    ], [
+        'phone.required' => 'Mobile number required hai.',
+        'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
+        'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
+    ]);
+
+    $phone = $request->phone;
+
+    $user = User::where('phone', $phone)
+        ->where('status', '1')
+        ->first();
+
+    if (!$user) {
+        throw ValidationException::withMessages([
+            'phone' => ['Invalid mobile number ya user inactive hai.'],
         ]);
-
-        $phone = $request->phone;
-
-        $user = User::where('phone', $phone)
-            ->where('status', '1')
-            ->first();
-
-        if (!$user) {
-            throw ValidationException::withMessages([
-                'phone' => ['Invalid mobile number ya user inactive hai.'],
-            ]);
-        }
-
-        $otp = rand(100000, 999999);
-
-        session([
-            'login_otp_user_id' => $user->id,
-            'login_otp'         => $otp,
-            'login_otp_time'    => now()->timestamp,
-        ]);
-
-        $this->sendLoginOtp($user->phone, $otp);
-
-        return redirect()->route('login.otp')
-            ->with('success', 'OTP aapke registered mobile number par bhej diya gaya hai.');
     }
+
+    // Testing ke liye direct login
+    Auth::login($user);
+
+    $request->session()->regenerate();
+
+    return redirect()->intended('/dashboard')
+        ->with('success', 'Login successful.');
+}
+
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'phone' => [
+    //             'required',
+    //             'digits:10',
+    //             'regex:/^[6-9][0-9]{9}$/',
+    //         ],
+    //     ], [
+    //         'phone.required' => 'Mobile number required hai.',
+    //         'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
+    //         'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
+    //     ]);
+
+    //     $phone = $request->phone;
+
+    //     $user = User::where('phone', $phone)
+    //         ->where('status', '1')
+    //         ->first();
+
+    //     if (!$user) {
+    //         throw ValidationException::withMessages([
+    //             'phone' => ['Invalid mobile number ya user inactive hai.'],
+    //         ]);
+    //     }
+
+    //     $otp = rand(100000, 999999);
+
+    //     session([
+    //         'login_otp_user_id' => $user->id,
+    //         'login_otp'         => $otp,
+    //         'login_otp_time'    => now()->timestamp,
+    //     ]);
+
+    //     $this->sendLoginOtp($user->phone, $otp);
+
+    //     return redirect()->route('login.otp')
+    //         ->with('success', 'OTP aapke registered mobile number par bhej diya gaya hai.');
+    // }
 
     public function showOtpForm()
     {
