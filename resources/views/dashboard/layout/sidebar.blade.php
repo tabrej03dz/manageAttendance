@@ -349,6 +349,46 @@
                     </li>
                 @endcan
 
+
+                @can('show hr documents')
+                    <li class="nav-item has-treeview {{ request()->routeIs('document-types.*') || request()->routeIs('letter-templates.*') || request()->routeIs('employee-letters.*') ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ request()->routeIs('document-types.*') || request()->routeIs('letter-templates.*') || request()->routeIs('employee-letters.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-signature"></i>
+                            <p>
+                                HR Letters
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('document-types.index') }}"
+                                class="nav-link {{ request()->routeIs('document-types.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Document Types</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('letter-templates.index') }}"
+                                class="nav-link {{ request()->routeIs('letter-templates.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Letter Templates</p>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('employee-letters.index') }}"
+                                class="nav-link {{ request()->routeIs('employee-letters.*') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Generated Letters</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endcan
+
+
                 <li class="nav-item">
                     <a href="{{ route('half-day.index') }}"
                        class="nav-link {{ request()->routeIs('half-day.index') ? 'active' : '' }}">

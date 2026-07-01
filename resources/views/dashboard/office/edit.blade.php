@@ -7,7 +7,7 @@
         <div class="page-header">
             <div>
                 <h2>Edit Office Details</h2>
-                <p>Update office location, employee, pricing and login security settings.</p>
+                <p>Update office location, logo, employee, pricing and login security settings.</p>
             </div>
         </div>
 
@@ -22,7 +22,7 @@
             </div>
         @endif
 
-        <form action="{{ route('office.update', ['office' => $office->id]) }}" method="POST">
+        <form action="{{ route('office.update', ['office' => $office->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="office-card">
@@ -36,6 +36,27 @@
                         <label class="form-label" for="name">Office Name <span>*</span></label>
                         <input type="text" class="form-control" id="name" name="name"
                                value="{{ old('name', $office->name) }}" required>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label class="form-label" for="logo">Office Logo</label>
+                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+
+                        <small class="text-muted d-block mt-1">
+                            Allowed: JPG, JPEG, PNG, WEBP. Max: 2MB
+                        </small>
+
+                        @if(!empty($office->logo))
+                            <div class="current-logo-box mt-3">
+                                <p class="current-logo-title">Current Logo</p>
+
+                                <a href="{{ asset('storage/' . $office->logo) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $office->logo) }}"
+                                         alt="Office Logo"
+                                         class="current-logo-img">
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="col-lg-6">
@@ -235,6 +256,10 @@
         background: #fff;
     }
 
+    input[type="file"].form-control {
+        padding: 10px 12px;
+    }
+
     textarea.form-control {
         height: auto;
         min-height: 95px;
@@ -243,6 +268,31 @@
     .form-control:focus {
         border-color: #dc2626;
         box-shadow: 0 0 0 4px rgba(220, 38, 38, .08);
+    }
+
+    .current-logo-box {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 12px;
+        display: inline-block;
+    }
+
+    .current-logo-title {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6b7280;
+    }
+
+    .current-logo-img {
+        width: 85px;
+        height: 85px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        padding: 4px;
     }
 
     .settings-card {

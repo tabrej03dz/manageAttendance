@@ -22,7 +22,7 @@
             </div>
         @endif
 
-        <form action="{{ route('office.store') }}" method="POST">
+        <form action="{{ route('office.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="office-card">
@@ -36,6 +36,12 @@
                         <label class="form-label">Office Name <span>*</span></label>
                         <input type="text" name="name" class="form-control"
                                value="{{ old('name') }}" placeholder="Enter office name" required>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label class="form-label">Office Logo</label>
+                        <input type="file" name="logo" class="form-control" accept="image/*">
+                        <small class="text-muted">Allowed: JPG, PNG, JPEG, WEBP. Max: 2MB</small>
                     </div>
 
                     <div class="col-lg-6">
@@ -238,6 +244,10 @@
         font-size: 14px;
         color: #111827;
         box-shadow: none;
+    }
+
+    input[type="file"].form-control {
+        padding: 10px 12px;
     }
 
     textarea.form-control {

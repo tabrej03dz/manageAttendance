@@ -22,6 +22,9 @@ use App\Http\Controllers\EmployeeRosterController;
 use App\Http\Controllers\NewUserLeadController;
 use App\Http\Controllers\OfficeAccessController;
 use App\Http\Controllers\OldRecordController;
+use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\LetterTemplateController;
+use App\Http\Controllers\EmployeeLetterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +71,25 @@ Route::post('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 've
 
 
 Route::middleware('auth')->group(function (){
+
+
+    Route::resource('document-types', DocumentTypeController::class);
+
+    Route::resource('letter-templates', LetterTemplateController::class);
+
+    Route::get('employee-letters/templates/get', [EmployeeLetterController::class, 'getTemplates'])
+        ->name('employee-letters.get-templates');
+
+    Route::get('employee-letters/user-data/{user}', [EmployeeLetterController::class, 'getUserData'])
+        ->name('employee-letters.get-user-data');
+
+    Route::get('employee-letters/{employeeLetter}/print', [EmployeeLetterController::class, 'print'])
+        ->name('employee-letters.print');
+
+    Route::resource('employee-letters', EmployeeLetterController::class);
+
+
+
     //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
 
