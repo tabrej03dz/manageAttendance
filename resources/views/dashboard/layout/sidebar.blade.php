@@ -88,26 +88,118 @@
                     </li>
                 @endcan
 
-                @php
-                    $authUser = auth()->user();
-                    $sidebarOffices = collect();
-                    $activeOfficeId = null;
-                    $activeOfficeName = null;
+@php
+    $authUser = auth()->user();
 
-                    if ($authUser->hasRole('super_admin')) {
-                        $sidebarOffices = \App\Models\Office::orderBy('name')->get();
-                        $activeOfficeId = session('active_office_id');
-                        $activeOfficeName = session('active_office_name');
-                    } elseif ($authUser->hasRole('owner')) {
-                        $sidebarOffices = \App\Models\Office::where('owner_id', $authUser->id)
-                            ->orderBy('name')
-                            ->get();
+    $sidebarOffices = collect();
+    $activeOfficeId = session('active_office_id', $authUser->office_id);
+    $activeOfficeName = null;
 
-                        $activeOfficeId = session('active_office_id', $authUser->office_id);
-                        $activeOfficeName = optional($sidebarOffices->firstWhere('id', $activeOfficeId))->name;
-                    }
-                @endphp
+    /*
+        Super Admin / Owner ko role se access milega.
+        Normal user ko "switch offices" permission se access milega.
+    */
+    $canSeeOfficeSwitch =
+        $authUser->hasRole('super_admin') ||
+        $authUser->hasRole('owner') ||
+        $authUser->can('switch offices');
 
+    if ($canSeeOfficeSwitch) {
+
+        if ($authUser->hasRole('super_admin')) {
+
+            // Super admin ko sab offices
+            $sidebarOffices = \App\Models\Office::query()
+                ->orderBy('name')
+                ->get();
+
+        } elseif ($authUser->hasRole('owner')) {
+
+            // Owner ko apni saari offices
+            $sidebarOffices = \App\Models\Office::query()
+                ->where('owner_id', $authUser->id)
+                ->orderBy('name')
+                ->get();
+
+        } else {
+
+            /*
+                Normal user with "switch offices" permission:
+                user.office_id -> office.owner_id -> owner ki offices
+            */
+            $currentOffice = $authUser->office;
+
+            if ($currentOffice && $currentOffice->owner_id) {
+                $sidebarOffices = \App\Models\Office::query()
+                    ->where('owner_id', $currentOffice->owner_id)
+                    ->orderBy('name')
+                    ->get();
+            }
+        }
+
+        $activeOfficeName = optional(
+            $sidebarOffices->firstWhere('id', $activeOfficeId)
+        )->name;
+    }
+
+    // dd($sidebarOffices->count());
+@endphp
+
+@if($canSeeOfficeSwitch && $sidebarOffices->count() > 0)
+    <li class="nav-item has-treeview {{ request()->routeIs('office.switch') ? 'menu-open' : '' }}">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-random"></i>
+            <p>
+                Office Switch
+
+                @if($activeOfficeName)
+                    <small class="ml-2 text-warning">({{ $activeOfficeName }})</small>
+                @endif
+
+                <i class="right fas fa-angle-left"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+            @foreach($sidebarOffices as $office)
+                <li class="nav-item">
+                    <form action="{{ route('office.switch', $office->id) }}" method="POST" style="display:block;">
+                        @csrf
+
+                        <button type="submit"
+                            class="nav-link w-100 text-left border-0 bg-transparent {{ (int) $activeOfficeId === (int) $office->id ? 'active' : '' }}"
+                            style="width:100%; cursor:pointer;">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>
+                                {{ $office->name }}
+
+                                @if((int) $activeOfficeId === (int) $office->id)
+                                    <span class="badge badge-success ml-2">Active</span>
+                                @endif
+                            </p>
+                        </button>
+                    </form>
+                </li>
+            @endforeach
+
+            @if(session('active_office_id'))
+                <li class="nav-item">
+                    <form action="{{ route('office.clearSwitch') }}" method="POST" style="display:block;">
+                        @csrf
+
+                        <button type="submit"
+                            class="nav-link w-100 text-left border-0 bg-transparent text-danger"
+                            style="width:100%; cursor:pointer;">
+                            <i class="fas fa-sign-out-alt nav-icon"></i>
+                            <p>Exit Office View</p>
+                        </button>
+                    </form>
+                </li>
+            @endif
+        </ul>
+    </li>
+@endif
+{{-- 
                 @if($authUser->hasRole('super_admin') || $authUser->hasRole('owner'))
                     <li class="nav-item has-treeview {{ request()->routeIs('office.switch') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
@@ -156,7 +248,7 @@
                             @endif
                         </ul>
                     </li>
-                @endif
+                @endif --}}
 
 {{--                    @role('super_admin|admin|owner')--}}
 {{--                    <li class="nav-item">--}}

@@ -117,12 +117,69 @@ class User extends Authenticatable
     // }
 
     public function activeOfficeId(): ?int
-{
-    if (session()->has('active_office_id')) {
-        return (int) session('active_office_id');
+    {
+        if (session()->has('active_office_id')) {
+            return (int) session('active_office_id');
+        }
+
+        return $this->office_id ? (int) $this->office_id : null;
     }
 
-    return $this->office_id ? (int) $this->office_id : null;
-}
+    public function switchableOffices()
+    {
+        if (!$this->can('switch offices')) {
+            return Office::query()->whereRaw('1 = 0');
+        }
+
+        if ($this->hasRole('super_admin')) {
+            return Office::query()->orderBy('name');
+        }
+
+        if ($this->hasRole('owner')) {
+            return $this->offices()->orderBy('name');
+        }
+
+        /*
+            Normal user:
+            user.office_id se current office milega.
+            current office ke owner_id se owner milega.
+            fir us owner ki saari offices milengi.
+        */
+        $currentOffice = $this->office;
+
+        if (!$currentOffice || !$currentOffice->owner_id) {
+            return Office::query()->whereRaw('1 = 0');
+        }
+
+        return Office::query()
+            ->where('owner_id', $currentOffice->owner_id)
+            ->orderBy('name');
+    }
+
+    public function canSwitchToOffice(Office $office): bool
+    {
+        if (!$this->can('switch offices')) {
+            return false;
+        }
+
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
+        if ($this->hasRole('owner')) {
+            return (int) $office->owner_id === (int) $this->id;
+        }
+
+        /*
+            Normal user sirf apne owner ki offices me switch kar sakta hai.
+        */
+        $currentOffice = $this->office;
+
+        if (!$currentOffice || !$currentOffice->owner_id) {
+            return false;
+        }
+
+        return (int) $office->owner_id === (int) $currentOffice->owner_id;
+    }
 
 }
