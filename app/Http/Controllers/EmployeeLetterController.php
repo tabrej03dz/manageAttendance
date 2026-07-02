@@ -372,4 +372,18 @@ class EmployeeLetterController extends Controller
 
         return $prefix . '-' . $date . '-' . str_pad($count, 4, '0', STR_PAD_LEFT);
     }
+
+    public function preview(EmployeeLetter $employeeLetter)
+    {
+        $employeeLetter->load([
+            'documentType',
+            'template',
+            'employee',
+            'department',
+            'office',
+            'issuedBy',
+        ]);
+
+        return view('employee_letters.preview', compact('employeeLetter'));
+    }
 }

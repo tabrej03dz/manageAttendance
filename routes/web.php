@@ -86,6 +86,9 @@ Route::middleware('auth')->group(function (){
     Route::get('employee-letters/{employeeLetter}/print', [EmployeeLetterController::class, 'print'])
         ->name('employee-letters.print');
 
+    Route::get('employee-letters/{employeeLetter}/preview', [EmployeeLetterController::class, 'preview'])
+        ->name('employee-letters.preview');
+
     Route::resource('employee-letters', EmployeeLetterController::class);
 
 

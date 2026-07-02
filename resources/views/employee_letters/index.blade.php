@@ -49,8 +49,48 @@
                                 <td class="px-4 py-3 text-sm text-gray-700">{{ $letter->department?->name ?? '—' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">{{ optional($letter->issue_date)->format('d-m-Y') }}</td>
                                 <td class="px-4 py-3"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold {{ $letter->status == 'issued' ? 'bg-green-100 text-green-800' : ($letter->status == 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">{{ ucfirst($letter->status) }}</span></td>
-                                <td class="px-4 py-3"><div class="flex items-center justify-end gap-2"><a title="View" href="{{ route('employee-letters.show', $letter) }}" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition"><span class="material-icons text-base">visibility</span></a><a title="Print" href="{{ route('employee-letters.print', $letter) }}" target="_blank" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-900 text-white hover:bg-black transition"><span class="material-icons text-base">print</span></a><form action="{{ route('employee-letters.destroy', $letter) }}" method="POST" onsubmit="return confirm('Delete this letter?')">@csrf @method('DELETE')<button title="Delete" type="submit" class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"><span class="material-icons text-base">delete</span></button></form></div></td>
-                            </tr>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center justify-end gap-2">
+
+                                        {{-- Normal Details View --}}
+                                        <a title="Details"
+                                        href="{{ route('employee-letters.show', $letter) }}"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">
+                                            <span class="material-icons text-base">visibility</span>
+                                        </a>
+
+                                        {{-- Letter Preview Like Print View --}}
+                                        <a title="Preview"
+                                        href="{{ route('employee-letters.preview', $letter) }}"
+                                        target="_blank"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                                            <span class="material-icons text-base">article</span>
+                                        </a>
+
+                                        {{-- Print --}}
+                                        <a title="Print"
+                                        href="{{ route('employee-letters.print', $letter) }}"
+                                        target="_blank"
+                                        class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-900 text-white hover:bg-black transition">
+                                            <span class="material-icons text-base">print</span>
+                                        </a>
+
+                                        {{-- Delete --}}
+                                        <form action="{{ route('employee-letters.destroy', $letter) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Delete this letter?')">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button title="Delete"
+                                                    type="submit"
+                                                    class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+                                                <span class="material-icons text-base">delete</span>
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>                            </tr>
                         @empty
                             <tr><td colspan="9" class="px-4 py-10 text-center text-sm text-gray-500">No letters found.</td></tr>
                         @endforelse

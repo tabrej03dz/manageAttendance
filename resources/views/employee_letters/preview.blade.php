@@ -98,7 +98,7 @@
         .meta {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 12px;
             font-size: 12px;
             color: #6b7280;
@@ -200,7 +200,7 @@
         Back
     </a>
 
-    <button onclick="window.print()">
+    <button type="button" onclick="window.print()">
         Print / Save PDF
     </button>
 </div>
@@ -211,33 +211,22 @@
     @include('employee_letters.partials.letter_header', ['employeeLetter' => $employeeLetter])
 
     <div class="meta">
-        {{-- <div>
-            Letter No: {{ $employeeLetter->letter_no }}
-        </div> --}}
-
-        <div class="meta">
-            <strong>Issue Date: {{ optional($employeeLetter->issue_date)->format('d-m-Y') }}</strong>
-        </div>
+        <strong>
+            Issue Date: {{ optional($employeeLetter->issue_date)->format('d-m-Y') }}
+        </strong>
     </div>
 
-    @if($employeeLetter->rendered_subject)
+    @if(!empty($previewSubject))
         <div class="subject">
-            {{ $employeeLetter->rendered_subject }}
+            {{ $previewSubject }}
         </div>
     @endif
 
     <div class="content">
-        {!! $employeeLetter->rendered_html !!}
+    {!! $previewHtml !!}
     </div>
-</div>
 
-<script>
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            window.print();
-        }, 300);
-    });
-</script>
+</div>
 
 </body>
 </html>
