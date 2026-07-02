@@ -53,11 +53,11 @@
                                     <div class="flex items-center justify-end gap-2">
 
                                         {{-- Normal Details View --}}
-                                        <a title="Details"
+                                        {{-- <a title="Details"
                                         href="{{ route('employee-letters.show', $letter) }}"
                                         class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition">
                                             <span class="material-icons text-base">visibility</span>
-                                        </a>
+                                        </a> --}}
 
                                         {{-- Letter Preview Like Print View --}}
                                         <a title="Preview"
