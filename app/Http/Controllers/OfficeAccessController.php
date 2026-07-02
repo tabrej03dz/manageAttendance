@@ -60,7 +60,7 @@ class OfficeAccessController extends Controller
         ]);
 
         return redirect()
-            ->route('home')
+            ->back()
             ->with('success', "Now viewing records for office: {$office->name}");
     }
 
@@ -78,7 +78,7 @@ class OfficeAccessController extends Controller
         ]);
 
         return redirect()
-            ->route('home')
+            ->back()
             ->with('success', 'Office view reset successfully.');
     }
 }

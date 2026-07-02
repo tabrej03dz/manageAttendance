@@ -79,39 +79,27 @@
         use Carbon\Carbon;
 
         $user = auth()->user();
-        if ($user->hasRole('super_admin')) {
-            $employeeIds = $employees->pluck('id');
-            $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
-                ->whereDate('check_in', today())
-                ->get();
-            $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
-                ->whereDate('end_date', '>=', today())
-                ->whereIn('user_id', $employeeIds)
-                ->where('status', 'approved')
-                ->get();
-        } elseif ($user->hasRole('owner')) {
-            $officeIds = $user->offices->pluck('id');
-            //$employees =$employees->whereIn('office_id', $officeIds)->get();
-            $employeeIds = $employees->whereIn('office_id', $officeIds)->pluck('id');
-            $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
-                ->whereDate('check_in', today())
-                ->get();
-            $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
-                ->whereDate('end_date', '>=', today())
-                ->whereIn('user_id', $employeeIds)
-                ->where('status', 'approved')
-                ->get();
-        } elseif ($user->hasRole('admin')) {
-            $employees = $user->office->users;
-            $employeeIds = $employees->pluck('id');
 
+        $employeeIds = $employees->pluck('id');
+
+        if (!isset($todayCheckIn)) {
             $todayCheckIn = \App\Models\AttendanceRecord::whereIn('user_id', $employeeIds)
                 ->whereDate('check_in', today())
                 ->get();
-            $leaves = App\Models\Leave::whereDate('start_date', '<=', today())
+        }
+
+        if (!isset($leaves)) {
+            $leaves = \App\Models\Leave::whereDate('start_date', '<=', today())
                 ->whereDate('end_date', '>=', today())
                 ->whereIn('user_id', $employeeIds)
                 ->where('status', 'approved')
+                ->get();
+        }
+
+        if (!isset($lastMonthPayouts)) {
+            $lastMonthPayouts = \App\Models\Salary::whereIn('user_id', $employeeIds)
+                ->whereMonth('month', Carbon::now()->subMonth()->month)
+                ->whereYear('month', Carbon::now()->subMonth()->year)
                 ->get();
         }
     @endphp

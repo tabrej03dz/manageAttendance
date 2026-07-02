@@ -163,43 +163,109 @@ class HomeController extends Controller
     //     return $employees;
     // }
 
+    // static function employeeList()
+    // {
+    //     $user = auth()->user();
+
+    //     if (!$user) {
+    //         return collect();
+    //     }
+
+    //     $activeOfficeId = $user->activeOfficeId();
+
+    //     if (!$activeOfficeId) {
+    //         return collect();
+    //     }
+
+    //     if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+    //         $employees = User::where('office_id', $activeOfficeId)->get();
+    //         return self::sortEmployeesHierarchically($employees);
+    //     }
+
+    //     if ($user->hasRole('team_leader')) {
+    //         $employees = $user->getAllTeamMembers()->filter(function ($member) use ($activeOfficeId) {
+    //             return (int) $member->office_id === (int) $activeOfficeId;
+    //         });
+
+    //         if ((int) $user->office_id === (int) $activeOfficeId) {
+    //             $employees->push($user);
+    //         }
+
+    //         return self::sortEmployeesHierarchically($employees->unique('id')->values());
+    //     }
+
+    //     if ((int) $user->office_id === (int) $activeOfficeId) {
+    //         return collect([$user]);
+    //     }
+
+    //     return collect();
+    // }
+
+
     static function employeeList()
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        if (!$user) {
-            return collect();
-        }
-
-        $activeOfficeId = $user->activeOfficeId();
-
-        if (!$activeOfficeId) {
-            return collect();
-        }
-
-        if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
-            $employees = User::where('office_id', $activeOfficeId)->get();
-            return self::sortEmployeesHierarchically($employees);
-        }
-
-        if ($user->hasRole('team_leader')) {
-            $employees = $user->getAllTeamMembers()->filter(function ($member) use ($activeOfficeId) {
-                return (int) $member->office_id === (int) $activeOfficeId;
-            });
-
-            if ((int) $user->office_id === (int) $activeOfficeId) {
-                $employees->push($user);
-            }
-
-            return self::sortEmployeesHierarchically($employees->unique('id')->values());
-        }
-
-        if ((int) $user->office_id === (int) $activeOfficeId) {
-            return collect([$user]);
-        }
-
+    if (!$user) {
         return collect();
     }
+
+    $activeOfficeId = session('active_office_id');
+
+    if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
+        $activeOfficeId = $user->office_id;
+    }
+
+    if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
+        return collect();
+    }
+
+    $activeOfficeId = (int) $activeOfficeId;
+
+    if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+        $employees = User::where('office_id', $activeOfficeId)->get();
+
+        return self::sortEmployeesHierarchically($employees);
+    }
+
+    if ($user->can('switch offices') || $user->can('switch office')) {
+        $currentOffice = $user->office;
+
+        if (!$currentOffice || !$currentOffice->owner_id) {
+            return collect();
+        }
+
+        $isAllowedOffice = Office::where('id', $activeOfficeId)
+            ->where('owner_id', $currentOffice->owner_id)
+            ->exists();
+
+        if (!$isAllowedOffice) {
+            return collect();
+        }
+
+        $employees = User::where('office_id', $activeOfficeId)->get();
+
+        return self::sortEmployeesHierarchically($employees);
+    }
+
+    if ($user->hasRole('team_leader')) {
+        $employees = $user->getAllTeamMembers()->filter(function ($member) use ($activeOfficeId) {
+            return (int) $member->office_id === (int) $activeOfficeId;
+        });
+
+        if ((int) $user->office_id === (int) $activeOfficeId) {
+            $employees->push($user);
+        }
+
+        return self::sortEmployeesHierarchically($employees->unique('id')->values());
+    }
+
+    if ((int) $user->office_id === (int) $activeOfficeId) {
+        return collect([$user]);
+    }
+
+    return collect();
+}
 
 
 
