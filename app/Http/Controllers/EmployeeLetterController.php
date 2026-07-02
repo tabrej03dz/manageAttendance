@@ -377,13 +377,57 @@ class EmployeeLetterController extends Controller
     {
         $employeeLetter->load([
             'documentType',
-            'template',
-            'employee',
-            'department',
             'office',
-            'issuedBy',
+            'department',
+            'template',
         ]);
 
-        return view('employee_letters.preview', compact('employeeLetter'));
+        $template = $employeeLetter->template;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Latest Template Preview
+        |--------------------------------------------------------------------------
+        | Yahan rendered_html saved wala nahi use hoga.
+        | Template table me jo latest content hai wahi fresh render hoga.
+        */
+
+        $previewSubject = $template?->subject ?? $employeeLetter->rendered_subject;
+        $previewHtml    = $template?->content 
+            ?? $template?->body 
+            ?? $template?->html 
+            ?? $employeeLetter->rendered_html;
+
+        $variables = [
+            '{{letter_no}}'          => $employeeLetter->letter_no,
+            '{{employee_name}}'      => $employeeLetter->employee_name,
+            '{{employee_phone}}'     => $employeeLetter->employee_phone,
+            '{{employee_email}}'     => $employeeLetter->employee_email,
+            '{{issue_date}}'         => optional($employeeLetter->issue_date)->format('d-m-Y'),
+            '{{document_type}}'      => $employeeLetter->documentType?->name,
+            '{{office_name}}'        => $employeeLetter->office?->name,
+            '{{department_name}}'    => $employeeLetter->department?->name,
+            '{{status}}'             => ucfirst($employeeLetter->status),
+
+            // Agar aapke template me single braces wale placeholders hain
+            '{letter_no}'            => $employeeLetter->letter_no,
+            '{employee_name}'        => $employeeLetter->employee_name,
+            '{employee_phone}'       => $employeeLetter->employee_phone,
+            '{employee_email}'       => $employeeLetter->employee_email,
+            '{issue_date}'           => optional($employeeLetter->issue_date)->format('d-m-Y'),
+            '{document_type}'        => $employeeLetter->documentType?->name,
+            '{office_name}'          => $employeeLetter->office?->name,
+            '{department_name}'      => $employeeLetter->department?->name,
+            '{status}'               => ucfirst($employeeLetter->status),
+        ];
+
+        $previewSubject = strtr($previewSubject ?? '', $variables);
+        $previewHtml    = strtr($previewHtml ?? '', $variables);
+
+        return view('employee_letters.preview', compact(
+            'employeeLetter',
+            'previewSubject',
+            'previewHtml'
+        ));
     }
 }
