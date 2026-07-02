@@ -20,62 +20,160 @@ class EmployeeController extends Controller
 {
 
 
-    private function activeOfficeId(Request $request): ?int
-    {
-        if ($request->session()->has('active_office_id')) {
-            return (int) $request->session()->get('active_office_id');
-        }
+    // private function activeOfficeId(Request $request): ?int
+    // {
+    //     if ($request->session()->has('active_office_id')) {
+    //         return (int) $request->session()->get('active_office_id');
+    //     }
 
-        return $request->user()?->office_id ? (int) $request->user()->office_id : null;
+    //     return $request->user()?->office_id ? (int) $request->user()->office_id : null;
+    // }
+
+    // private function allowedOfficeIds(Request $request): array
+    // {
+    //     $user = $request->user();
+
+    //     if (!$user) {
+    //         return [];
+    //     }
+
+    //     $activeOfficeId = $this->activeOfficeId($request);
+
+    //     if ($user->hasRole('super_admin')) {
+    //         return $activeOfficeId ? [$activeOfficeId] : [];
+    //     }
+
+    //     if ($user->hasRole('owner')) {
+    //         if (!$activeOfficeId) {
+    //             return [];
+    //         }
+
+    //         $isOwnerOffice = Office::where('id', $activeOfficeId)
+    //             ->where('owner_id', $user->id)
+    //             ->exists();
+
+    //         return $isOwnerOffice ? [$activeOfficeId] : [];
+    //     }
+
+    //     if ($user->hasRole('admin')) {
+    //         return $user->office_id ? [(int) $user->office_id] : [];
+    //     }
+
+    //     if ($user->office_id) {
+    //         return [(int) $user->office_id];
+    //     }
+
+    //     return [];
+    // }
+
+    // private function officeEmployeesQuery(Request $request)
+    // {
+    //     $officeIds = $this->allowedOfficeIds($request);
+
+    //     return User::query()->when(!empty($officeIds), function ($q) use ($officeIds) {
+    //         $q->whereIn('office_id', $officeIds);
+    //     }, function ($q) {
+    //         $q->whereRaw('1 = 0');
+    //     });
+    // }
+
+
+
+
+
+
+
+
+private function hasSwitchOfficeAccess($user): bool
+{
+    return $user->hasRole('super_admin')
+        || $user->hasRole('owner')
+        || $user->can('switch offices')
+        || $user->can('switch office');
+}
+
+private function activeOfficeId(Request $request): ?int
+{
+    $sessionOfficeId = $request->session()->get('active_office_id');
+
+    if ($sessionOfficeId && (int) $sessionOfficeId > 0) {
+        return (int) $sessionOfficeId;
     }
 
-    private function allowedOfficeIds(Request $request): array
-    {
-        $user = $request->user();
+    $userOfficeId = $request->user()?->office_id;
 
-        if (!$user) {
-            return [];
-        }
+    return $userOfficeId && (int) $userOfficeId > 0
+        ? (int) $userOfficeId
+        : null;
+}
 
-        $activeOfficeId = $this->activeOfficeId($request);
+private function switchableOfficeIds(Request $request): array
+{
+    $user = $request->user();
 
-        if ($user->hasRole('super_admin')) {
-            return $activeOfficeId ? [$activeOfficeId] : [];
-        }
-
-        if ($user->hasRole('owner')) {
-            if (!$activeOfficeId) {
-                return [];
-            }
-
-            $isOwnerOffice = Office::where('id', $activeOfficeId)
-                ->where('owner_id', $user->id)
-                ->exists();
-
-            return $isOwnerOffice ? [$activeOfficeId] : [];
-        }
-
-        if ($user->hasRole('admin')) {
-            return $user->office_id ? [(int) $user->office_id] : [];
-        }
-
-        if ($user->office_id) {
-            return [(int) $user->office_id];
-        }
-
+    if (!$user) {
         return [];
     }
 
-    private function officeEmployeesQuery(Request $request)
-    {
-        $officeIds = $this->allowedOfficeIds($request);
+    if ($user->hasRole('super_admin')) {
+        return Office::query()
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    }
 
-        return User::query()->when(!empty($officeIds), function ($q) use ($officeIds) {
+    if ($user->hasRole('owner')) {
+        return Office::query()
+            ->where('owner_id', $user->id)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    }
+
+    if ($user->can('switch offices') || $user->can('switch office')) {
+        $currentOffice = $user->office;
+
+        if ($currentOffice && $currentOffice->owner_id) {
+            return Office::query()
+                ->where('owner_id', $currentOffice->owner_id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->toArray();
+        }
+    }
+
+    return $user->office_id && (int) $user->office_id > 0
+        ? [(int) $user->office_id]
+        : [];
+}
+
+private function allowedOfficeIds(Request $request): array
+{
+    $switchableOfficeIds = $this->switchableOfficeIds($request);
+    $activeOfficeId = $this->activeOfficeId($request);
+
+    if ($activeOfficeId) {
+        return in_array((int) $activeOfficeId, $switchableOfficeIds, true)
+            ? [(int) $activeOfficeId]
+            : [];
+    }
+
+    return $switchableOfficeIds;
+}
+
+private function officeEmployeesQuery(Request $request)
+{
+    $officeIds = $this->allowedOfficeIds($request);
+
+    return User::query()
+        ->when(!empty($officeIds), function ($q) use ($officeIds) {
             $q->whereIn('office_id', $officeIds);
         }, function ($q) {
             $q->whereRaw('1 = 0');
         });
-    }
+}
+
+
 
     private function sortEmployeesHierarchically($employees)
     {
@@ -142,7 +240,7 @@ class EmployeeController extends Controller
         if ($request->filled('office_id')) {
             $requestedOfficeId = (int) $request->office_id;
 
-            if (in_array($requestedOfficeId, $allowedOfficeIds)) {
+            if (in_array($requestedOfficeId, $allowedOfficeIds, true)) {
                 $query->where('office_id', $requestedOfficeId);
             } else {
                 $query->whereRaw('1 = 0');
