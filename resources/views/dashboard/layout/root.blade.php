@@ -50,6 +50,8 @@
         }
     </style>
 
+    <link rel="icon" type="image/png" href="{{ asset('asset/img/favicon.png') }}">
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
