@@ -66,7 +66,7 @@ class AttendanceRecordController extends Controller
         }
 
         // normal employee only self
-        if (!$request->user()->hasRole('super_admin') && !$request->user()->hasRole('owner')) {
+        if (!$request->user()->hasRole('super_admin') && !$request->user()->hasRole('owner') && !$request->user()->hasRole('admin')) {
             $user = $request->user();
         }
 
