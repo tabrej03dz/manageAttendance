@@ -10,13 +10,51 @@ use Illuminate\Support\Facades\Storage;
 
 class OfficeController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     if (auth()->user()->hasRole('owner')) {
+    //         $offices = auth()->user()->offices;
+    //     } else {
+    //         $offices = Office::all();
+    //     }
+
+    //     return view('dashboard.office.index', compact('offices'));
+    // }
+
+
+    public function index(Request $request)
     {
-        if (auth()->user()->hasRole('owner')) {
-            $offices = auth()->user()->offices;
+        $user = auth()->user();
+
+        if ($user->hasRole('owner')) {
+            $query = $user->offices();
         } else {
-            $offices = Office::all();
+            $query = Office::query();
         }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                ->orWhere('latitude', 'like', '%' . $search . '%')
+                ->orWhere('longitude', 'like', '%' . $search . '%')
+                ->orWhere('radius', 'like', '%' . $search . '%');
+            });
+        }
+
+        // By default active offices hi aayenge
+        $status = $request->input('status', 'active');
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        if ($request->filled('under_radius_required')) {
+            $query->where('under_radius_required', $request->under_radius_required);
+        }
+
+        $offices = $query->latest()->paginate(20)->withQueryString();
 
         return view('dashboard.office.index', compact('offices'));
     }

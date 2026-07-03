@@ -30,6 +30,53 @@
             @endcan
         </div>
 
+        <form method="GET" action="{{ route('office.index') }}" class="bg-white p-4 rounded-lg shadow mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Search</label>
+                    <input type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Office name, latitude, longitude, radius"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Status</label>
+                    <select name="status"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <option value="active" {{ request('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Under Radius Required</label>
+                    <select name="under_radius_required"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        <option value="">All</option>
+                        <option value="1" {{ request('under_radius_required') === '1' ? 'selected' : '' }}>Yes</option>
+                        <option value="0" {{ request('under_radius_required') === '0' ? 'selected' : '' }}>No</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end gap-2">
+                    <button type="submit"
+                            class="bg-red-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-700">
+                        Filter
+                    </button>
+
+                    <a href="{{ route('office.index') }}"
+                    class="bg-gray-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-gray-600">
+                        Reset
+                    </a>
+                </div>
+
+            </div>
+        </form>
+
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white rounded-lg shadow-md">
                 <thead>
@@ -47,7 +94,9 @@
                 <tbody class="text-gray-600 text-sm font-light">
                    @foreach($offices as $office)
                     <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left">{{$loop->iteration}}</td>
+                        <td class="py-3 px-6 text-left">
+                            {{ $offices->firstItem() + $loop->index }}
+                        </td>
                         <td class="py-3 px-6 text-left">{{$office->name}}</td>
                         <td class="py-3 px-6 text-left">{{$office->latitude}}</td>
                         <td class="py-3 px-6 text-left">{{$office->longitude}}</td>
@@ -55,14 +104,32 @@
                         <td class="py-3 px-6 text-left">{{$office->under_radius_required == '1' ? 'yes' : 'no'}}</td>
                         <td class="py-3 px-6 text-left">
                             @can('office status change')
-                            <a href="{{route('office.status', ['office' => $office->id])}}" class="px-2 py-1 rounded-full text-xs font-semibold
-                                @if($office->status == 'active')
-                                    bg-green-100 text-green-800
-                                @else
-                                    bg-red-100 text-red-800
-                                @endif
-                                ">{{ucfirst($office->status)}}
-                            </a>
+                                <a href="{{ route('office.status', ['office' => $office->id]) }}"
+                                onclick="return confirm('Are you sure you want to change this office status?')"
+                                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold shadow-md transition duration-300
+                                        @if($office->status == 'active')
+                                            bg-green-500 text-white hover:bg-green-600
+                                        @else
+                                            bg-red-500 text-white hover:bg-red-600
+                                        @endif">
+
+                                    @if($office->status == 'active')
+                                        <span class="material-icons text-sm">check_circle</span>
+                                        Active
+                                    @else
+                                        <span class="material-icons text-sm">cancel</span>
+                                        Inactive
+                                    @endif
+                                </a>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                                    @if($office->status == 'active')
+                                        bg-green-100 text-green-800
+                                    @else
+                                        bg-red-100 text-red-800
+                                    @endif">
+                                    {{ ucfirst($office->status) }}
+                                </span>
                             @endcan
                         </td>
                         <td class="py-3 px-6 text-left flex space-x-2">
@@ -100,6 +167,9 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $offices->links() }}
+            </div>
         </div>
     </div>
 @endsection
