@@ -8,6 +8,8 @@ use App\Models\Office;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LunchBreakController extends Controller
 {
@@ -294,19 +296,57 @@ class LunchBreakController extends Controller
         return redirect('home');
     }
 
+    // public function index(Request $request)
+    // {
+    //     $date = $request->date
+    //         ? Carbon::parse($request->date)->toDateString()
+    //         : Carbon::today()->toDateString();
+
+    //     /*
+    //      * Main fix:
+    //      * Pehle HomeController::employeeList() aa raha tha.
+    //      * Usme inactive/register request wale users bhi aa rahe the.
+    //      * Ab EmployeeController jaisa office + status filter use ho raha hai.
+    //      */
+    //     $users = $this->activeEmployees($request);
+
+    //     return view('dashboard.break.index', compact('users', 'date'));
+    // }
+
     public function index(Request $request)
     {
         $date = $request->date
             ? Carbon::parse($request->date)->toDateString()
             : Carbon::today()->toDateString();
 
-        /*
-         * Main fix:
-         * Pehle HomeController::employeeList() aa raha tha.
-         * Usme inactive/register request wale users bhi aa rahe the.
-         * Ab EmployeeController jaisa office + status filter use ho raha hai.
-         */
-        $users = $this->activeEmployees($request);
+        $usersCollection = $this->activeEmployees($request);
+
+        $perPage = 10;
+        $currentPage = Paginator::resolveCurrentPage();
+
+        $users = new LengthAwarePaginator(
+            $usersCollection->forPage($currentPage, $perPage)->values(),
+            $usersCollection->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'query' => $request->query(),
+            ]
+        );
+
+        $userIds = $users->getCollection()->pluck('id')->toArray();
+
+        $breaks = LunchBreak::whereDate('created_at', $date)
+            ->whereIn('user_id', $userIds)
+            ->orderBy('created_at')
+            ->get()
+            ->groupBy('user_id');
+
+        $users->getCollection()->transform(function ($user) use ($breaks) {
+            $user->breaks = $breaks->get($user->id, collect())->values();
+            return $user;
+        });
 
         return view('dashboard.break.index', compact('users', 'date'));
     }
