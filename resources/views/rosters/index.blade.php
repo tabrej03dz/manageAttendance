@@ -7,6 +7,25 @@
 @php
     $monthDate = \Carbon\Carbon::createFromFormat('Y-m', $month);
 
+    $authUser = auth()->user();
+
+    /*
+        Permission names me spelling confusion avoid karne ke liye
+        teeno possible permission check kar diya hai.
+        Aapke database me jo exact permission hai, uske hisab se ye kaam karega.
+    */
+    $canEditRoster = false;
+
+    if ($authUser) {
+        $canEditRoster = collect([
+            'edit roster',
+            'edit roaster',
+            'edit raoster',
+        ])->contains(function ($permission) use ($authUser) {
+            return $authUser->can($permission);
+        });
+    }
+
     $dayMap = [
         'Mon' => 'Mo',
         'Tue' => 'Tu',
@@ -73,6 +92,16 @@
                     <span class="w-2 h-2 rounded-full bg-blue-500"></span> Leave
                 </span>
             </div>
+
+            @if(! $canEditRoster)
+                <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    Aapke paas roster status change karne ki permission nahi hai.
+                </div>
+            @else
+                <div class="mt-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                    Aap dusre employees ka roster status change kar sakte hain. Apna roster status change nahi kar sakte.
+                </div>
+            @endif
         </div>
 
         {{-- Editable Table --}}
@@ -101,6 +130,19 @@
 
                     <tbody>
                         @forelse($rows as $row)
+                            @php
+                                $isOwnRoster = $authUser && ((int) $row['employee']->id === (int) $authUser->id);
+                                $canChangeRosterStatus = $canEditRoster && ! $isOwnRoster;
+
+                                if (! $canEditRoster) {
+                                    $lockTitle = 'Aapke paas roster edit permission nahi hai';
+                                } elseif ($isOwnRoster) {
+                                    $lockTitle = 'Aap apna roster status change nahi kar sakte';
+                                } else {
+                                    $lockTitle = 'Change roster status';
+                                }
+                            @endphp
+
                             <tr class="hover:bg-gray-50/60">
                                 <td class="sticky left-0 z-10 bg-white border border-gray-200 px-4 py-3 align-top">
                                     <div class="flex items-center gap-3">
@@ -112,10 +154,22 @@
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">
                                                 {{ $row['employee']->name }}
+
+                                                @if($isOwnRoster)
+                                                    <span class="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">
+                                                        You
+                                                    </span>
+                                                @endif
                                             </div>
                                             <div class="text-xs text-gray-500">
                                                 ID: {{ $row['employee']->id }}
                                             </div>
+
+                                            @if($isOwnRoster && $canEditRoster)
+                                                <div class="text-[11px] text-red-500 mt-1">
+                                                    Own roster locked
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -124,9 +178,13 @@
                                     <td class="border border-gray-200 px-2 py-2 text-center">
                                         <div class="relative">
                                             <select
-                                                class="roster-status w-full h-10 rounded-lg border text-sm px-2 focus:outline-none focus:ring-2"
+                                                class="roster-status w-full h-10 rounded-lg border text-sm px-2 focus:outline-none focus:ring-2 {{ ! $canChangeRosterStatus ? 'opacity-60 cursor-not-allowed bg-gray-100' : '' }}"
                                                 data-employee-id="{{ $row['employee']->id }}"
                                                 data-duty-date="{{ $item['date'] }}"
+                                                data-can-edit="{{ $canChangeRosterStatus ? '1' : '0' }}"
+                                                data-original-value="{{ $item['status'] }}"
+                                                title="{{ $lockTitle }}"
+                                                {{ ! $canChangeRosterStatus ? 'disabled' : '' }}
                                             >
                                                 <option value="working" {{ $item['status'] === 'working' ? 'selected' : '' }}>Working</option>
                                                 <option value="off" {{ $item['status'] === 'off' ? 'selected' : '' }}>Off</option>
@@ -328,6 +386,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const selects = document.querySelectorAll('.roster-status');
     const downloadBtn = document.getElementById('downloadRosterPdf');
 
+    const authUserId = Number(@json((int) auth()->id()));
+    const canEditRoster = @json((bool) $canEditRoster);
+
     function applyStyle(select) {
         select.classList.remove(
             'border-gray-300','focus:ring-gray-200',
@@ -395,10 +456,28 @@ document.addEventListener('DOMContentLoaded', function () {
     selects.forEach(select => {
         applyStyle(select);
 
+        if (select.disabled) {
+            return;
+        }
+
         select.addEventListener('change', function () {
-            const employeeId = this.dataset.employeeId;
+            const employeeId = Number(this.dataset.employeeId);
             const dutyDate = this.dataset.dutyDate;
             const status = this.value;
+
+            if (!canEditRoster || this.dataset.canEdit !== '1') {
+                alert('Aapke paas roster status change karne ki permission nahi hai.');
+                this.value = this.dataset.originalValue;
+                applyStyle(this);
+                return;
+            }
+
+            if (employeeId === authUserId) {
+                alert('Aap apna roster status change nahi kar sakte. Sirf dusre employees ka kar sakte hain.');
+                this.value = this.dataset.originalValue;
+                applyStyle(this);
+                return;
+            }
 
             applyStyle(this);
             this.disabled = true;
@@ -425,9 +504,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 return data;
             })
             .then(() => {
+                this.dataset.originalValue = status;
                 showIndicator(this, 'Saved');
             })
             .catch(error => {
+                this.value = this.dataset.originalValue;
+                applyStyle(this);
+
                 let msg = 'Save failed';
                 if (error && error.message) {
                     msg = error.message;
