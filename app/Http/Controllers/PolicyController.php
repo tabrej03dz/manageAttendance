@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\PolicyAcceptanceNotification;
 use App\Models\Policy;
 use App\Models\Office;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Mail\PolicyAcceptanceNotification;
 use Illuminate\Support\Facades\Mail;
 
 class PolicyController extends Controller
@@ -83,17 +83,25 @@ class PolicyController extends Controller
         return view('dashboard.policy.read', compact('policy', 'employee'));
     }
 
-    public function accept(Policy $policy){
+    public function accept(Policy $policy)
+    {
         $user = auth()->user();
+
         $user->is_accepted = '1';
         $status = $user->save();
-        if ($status){
-            Mail::to($user->email1 ?? $user->email)->send(new PolicyAcceptanceNotification($policy, $user));
-            request()->session()->flash('success', 'Thanks for agreeing to our policy!');
-        }else{
-            \request()->session()->flash('error', 'Failed, Try again!');
-        }
-        return redirect('home');
 
+        if ($status) {
+            $email = $user->email1 ?? $user->email;
+
+            if (!empty($email)) {
+                Mail::to($email)->send(new PolicyAcceptanceNotification($policy, $user));
+            }
+
+            request()->session()->flash('success', 'Thanks for agreeing to our policy!');
+        } else {
+            request()->session()->flash('error', 'Failed, Try again!');
+        }
+
+        return redirect('home');
     }
 }

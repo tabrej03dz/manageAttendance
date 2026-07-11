@@ -1,6 +1,17 @@
 @extends('dashboard.layout.root')
 
 @section('content')
+    {{-- <style>
+        #more-options {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .perspective-500 {
+            perspective: 500px;
+        }
+    </style> --}}
+
     <style>
         #more-options {
             max-height: 0;
@@ -9,6 +20,23 @@
 
         .perspective-500 {
             perspective: 500px;
+        }
+
+        .reason-column {
+            width: 260px;
+            min-width: 260px;
+            max-width: 260px;
+        }
+
+        .reason-preview {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            line-height: 1.5;
+            max-height: 3rem;
         }
     </style>
 
@@ -67,7 +95,7 @@
                             <th class="py-3 px-6 text-left">End Date</th>
                             <th class="py-3 px-6 text-left">Days</th>
                             <th class="py-3 px-6 text-left">Leave Type</th>
-                            <th class="py-3 px-6 text-left">Reason</th>
+                            <th class="py-3 px-6 text-left reason-column">Reason</th>
                             <th class="py-3 px-6 text-left">Paid/Unpaid</th>
                             <th class="py-3 px-6 text-left">Status</th>
                             <th class="py-3 px-6 text-left">Response By</th>
@@ -103,10 +131,18 @@
                                     {{ $leave->leave_type }}
                                 </td>
 
-                                <td class="py-3 px-6 text-left max-w-[220px]">
-                                    <div class="truncate" title="{{ $leave->reason }}">
+                                <td class="py-3 px-6 text-left reason-column align-middle">
+                                    <div class="reason-preview"
+                                        title="{{ $leave->reason ?: '-' }}">
                                         {{ $leave->reason ?: '-' }}
                                     </div>
+
+                                    @if(strlen($leave->reason ?? '') > 100)
+                                        <a href="{{ route('leave.show', $leave->id) }}"
+                                        class="inline-block mt-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                                            View full reason
+                                        </a>
+                                    @endif
                                 </td>
 
                                 <td class="py-3 px-6 text-left">
