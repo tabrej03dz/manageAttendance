@@ -1,31 +1,360 @@
-
 {{-- Records Page  --}}
 
 @extends('dashboard.layout.root')
 
+@section('title', 'Attendance Records')
+
+@push('styles')
+<style>
+    .attendance-records-page {
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+    }
+
+    .attendance-hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #312e81;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #0f172a 0%, #172554 52%, #312e81 100%);
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.24);
+    }
+
+    .attendance-hero::before {
+        content: '';
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        right: -80px;
+        top: -120px;
+        border-radius: 999px;
+        background: rgba(99, 102, 241, 0.32);
+    }
+
+    .attendance-hero::after {
+        content: '';
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        left: 35%;
+        bottom: -150px;
+        border-radius: 999px;
+        background: rgba(6, 182, 212, 0.18);
+    }
+
+    .attendance-panel {
+        border: 1px solid #dbe3ee;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.10);
+    }
+
+    .filter-panel {
+        border: 1px solid #cbd5e1;
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .filter-label {
+        display: block;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .filter-control {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 10px 13px !important;
+        font-size: 14px;
+        font-weight: 600;
+        outline: none;
+        box-shadow: none !important;
+    }
+
+    .filter-control:focus {
+        border-color: #4f46e5 !important;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, .12) !important;
+    }
+
+    .record-button {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 17px;
+        font-size: 14px;
+        font-weight: 800;
+        text-decoration: none !important;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .record-button:hover {
+        transform: translateY(-1px);
+    }
+
+    .button-filter {
+        background: linear-gradient(135deg, #4338ca, #6366f1);
+        color: #ffffff !important;
+        box-shadow: 0 10px 20px rgba(79, 70, 229, .22);
+    }
+
+    .button-clear {
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        color: #334155 !important;
+    }
+
+    .button-pdf {
+        background: linear-gradient(135deg, #d97706, #f59e0b);
+        color: #ffffff !important;
+        box-shadow: 0 10px 20px rgba(217, 119, 6, .20);
+    }
+
+    .records-table-wrap {
+        border: 1px solid #dbe3ee;
+        border-radius: 16px;
+        overflow: auto;
+        background: #ffffff;
+        max-height: 70vh;
+    }
+
+    .records-table {
+        width: 100%;
+        min-width: 1900px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .records-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        border-bottom: 1px solid #cbd5e1;
+        background: #eaf0f8 !important;
+        color: #334155 !important;
+        padding: 13px 14px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: .06em;
+        text-align: left;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .records-table tbody td {
+        border-bottom: 1px solid #e8edf3;
+        background: #ffffff;
+        color: #334155;
+        padding: 13px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .records-table tbody tr:nth-child(even) td {
+        background: #f8fafc;
+    }
+
+    .records-table tbody tr:hover td {
+        background: #eef2ff !important;
+    }
+
+    .attendance-photo {
+        width: 42px;
+        height: 42px;
+        border: 2px solid #ffffff;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, .18);
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        max-width: 220px;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #334155;
+        padding: 5px 9px;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: normal;
+    }
+
+    .date-cell {
+        min-width: 150px;
+        color: #0f172a !important;
+        font-weight: 800 !important;
+    }
+
+    .day-note {
+        display: block;
+        margin-top: 5px;
+        white-space: normal;
+    }
+
+    .summary-panel {
+        border: 1px solid #c7d2fe;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #eef2ff, #f8fafc);
+        box-shadow: 0 10px 25px rgba(79, 70, 229, .10);
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .summary-item {
+        border: 1px solid #dbe3ee;
+        border-radius: 14px;
+        background: #ffffff;
+        padding: 14px;
+    }
+
+    .summary-item span:first-child {
+        display: block;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .summary-item span:last-child {
+        display: block;
+        margin-top: 5px;
+        color: #0f172a;
+        font-size: 19px;
+        font-weight: 900;
+    }
+
+    .empty-value {
+        color: #94a3b8;
+    }
+
+    .records-scroll::-webkit-scrollbar,
+    .records-table-wrap::-webkit-scrollbar {
+        width: 9px;
+        height: 9px;
+    }
+
+    .records-scroll::-webkit-scrollbar-thumb,
+    .records-table-wrap::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: linear-gradient(90deg, #6366f1, #0891b2);
+    }
+
+    .records-scroll::-webkit-scrollbar-track,
+    .records-table-wrap::-webkit-scrollbar-track {
+        background: #e2e8f0;
+    }
+
+    @media (max-width: 1024px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 640px) {
+        .attendance-hero {
+            border-radius: 18px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .record-button {
+            width: 100%;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
+<div class="attendance-records-page space-y-6 pb-10">
 
-<form action="{{ route('attendance.index', ['user' => $user?->id]) }}">
-    <div class="bg-gray-100 p-4 rounded-lg shadow-md flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+
+
+<section class="attendance-hero p-6 sm:p-8">
+    <div class="relative z-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white">
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+                Attendance Management
+            </div>
+
+            <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                Attendance Records
+            </h1>
+
+            <p class="mt-2 max-w-2xl text-sm font-medium leading-6 text-blue-100 sm:text-base">
+                Employee attendance, check-in, check-out, breaks, distance और monthly salary summary एक जगह देखें।
+            </p>
+        </div>
+
+        <div class="rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-white">
+            <p class="text-xs font-bold uppercase tracking-widest text-blue-200">Selected Month</p>
+            <p class="mt-1 text-xl font-extrabold">
+                {{ !empty($month) ? \Carbon\Carbon::parse($month . '-01')->format('F Y') : now()->format('F Y') }}
+            </p>
+        </div>
+    </div>
+</section>
+
+<form action="{{ route('attendance.index') }}" method="GET" class="filter-panel p-5 sm:p-6">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end">
         @role('super_admin|admin|owner')
-            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 w-full">
-                <label for="employee-select" class="text-sm font-medium text-gray-700">Select Employee:</label>
-                <select id="employee-select" name="employee" class="border-gray-300 rounded-md shadow-sm p-2 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <div class="lg:col-span-5">
+                <label for="employee-select" class="filter-label">Select Employee</label>
+                <select id="employee-select" name="employee" class="filter-control">
                     <option value="">Select an employee</option>
                     @foreach ($users as $u)
-                        <option value="{{ $u->id }}" {{ $u->id == $user?->id ? 'selected' : '' }}>{{ $u->name }}</option>
+                        <option value="{{ $u->id }}" {{ (string) $u->id === (string) $user?->id ? 'selected' : '' }}>
+                            {{ $u->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
         @endrole
-        <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 w-full">
-            <label for="month-selector" class="text-sm font-medium text-gray-700">Select Month:</label>
-            <input type="month" id="month-selector" name="month" value="{{ $month ?? '' }}" class="border-gray-300 rounded-md shadow-sm p-2 w-full sm:w-auto focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+        <div class="lg:col-span-4">
+            <label for="month-selector" class="filter-label">Select Month</label>
+            <input type="month"
+                   id="month-selector"
+                   name="month"
+                   value="{{ $month ?? now()->format('Y-m') }}"
+                   class="filter-control">
         </div>
-        <div class="flex flex-col sm:flex-row sm:space-x-2 w-full sm:w-auto">
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out w-full sm:w-auto">Filter</button>
-            <button class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-300 ease-in-out w-full sm:w-auto">Clear</button>
+
+        <div class="flex flex-col gap-2 sm:flex-row lg:col-span-3">
+            <button type="submit" class="record-button button-filter flex-1">
+                <i class="fas fa-filter"></i>
+                Filter
+            </button>
+
+            <a href="{{ route('attendance.index') }}" class="record-button button-clear flex-1">
+                <i class="fas fa-rotate-left"></i>
+                Clear
+            </a>
         </div>
     </div>
 </form>
@@ -39,16 +368,25 @@
 
 
     <!-- Attendance Records Section -->
-    <div class="bg-gray-100 min-h-screen py-10">
-        <div class="container mx-auto px-6">
-            <div class="bg-white rounded-xl shadow-xl overflow-hidden w-full md:max-w-5xl mx-auto">
-                <div class="p-8">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Attendance Records </h2>
+    <section class="attendance-panel overflow-hidden">
+        <div class="flex flex-col gap-3 border-b border-slate-200 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+                <h2 class="text-xl font-extrabold text-slate-900">Monthly Attendance Details</h2>
+                <p class="mt-1 text-sm font-medium text-slate-500">
+                    {{ $user?->name ?? auth()->user()->name }} की day-wise attendance details।
+                </p>
+            </div>
 
+            <span class="inline-flex w-max items-center gap-2 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-extrabold text-indigo-700">
+                <i class="fas fa-calendar-days"></i>
+                {{ $dates->count() }} Days
+            </span>
+        </div>
 
-                    <!-- Attendance Table -->
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white rounded-lg shadow-sm">
+        <div class="p-4 sm:p-6">
+            <!-- Attendance Table -->
+            <div class="records-table-wrap records-scroll">
+                <table class="records-table">
                             <thead>
                                 <tr class="bg-gray-100 border-b">
                                     <th
@@ -99,7 +437,7 @@
 
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody>
 
                             @php
                                 $workingDays = 0;
@@ -179,7 +517,7 @@
 
 {{--                                    @if ($leave && !$record)--}}
                                         <!-- Sample Data Row -->
-{{--                                        <tr class="hover:bg-gray-50">--}}
+{{--                                        <tr>--}}
 {{--                                            <td class="px-4 py-4 text-sm text-gray-700">--}}
 {{--                                                {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}--}}
 {{--                                            </td>--}}
@@ -190,8 +528,8 @@
 {{--                                    @else--}}
 
                                         <!-- Sample Data Row -->
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-4 text-sm text-gray-700">
+                                        <tr>
+                                            <td class="date-cell">
                                                 {{ $off ? $d->format('d-[D]') . ' ' . $off?->title . ' (OFF)' : $d->format('d-[D]') }}
                                                 <span class="text-red-700">{{$leave ? 'Leave: '.$leave->status : ''}}</span>
                                                 @if($halfDayRecord)
@@ -225,12 +563,12 @@
                                                     <a href="{{ $checkInImageUrl }}" target="_blank">
                                                         <img src="{{ $checkInImageUrl }}"
                                                             alt="Check-in"
-                                                            class="w-10 h-10 rounded-full object-cover">
+                                                            class="attendance-photo">
                                                     </a>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
-                                                <span title="{{$record?->check_in_note_status}}" class="badge bg-light text-dark" >{{$record?->check_in_note}}
+                                                <span title="{{$record?->check_in_note_status}}" class="status-pill" >{{$record?->check_in_note}}
                                                     @if($record?->check_in_note && $record->check_in_note_status == 'rejected')
                                                         <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                     @elseif($record?->check_in_note && $record->check_in_note_status == 'approved')
@@ -263,12 +601,12 @@
                                                     <a href="{{ $checkOutImageUrl }}" target="_blank">
                                                         <img src="{{ $checkOutImageUrl }}"
                                                             alt="Check-out"
-                                                            class="w-10 h-10 rounded-full object-cover">
+                                                            class="attendance-photo">
                                                     </a>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">
-                                                <span title="{{$record?->check_out_note_status}}" class="badge bg-light text-dark" >{{$record?->check_out_note}}
+                                                <span title="{{$record?->check_out_note_status}}" class="status-pill" >{{$record?->check_out_note}}
                                                     @if($record?->check_out_note && $record->check_out_note_status == 'rejected')
                                                         <i class="fas fa-times text-danger" style="margin-left: 5px;"></i>
                                                     @elseif($record?->check_out_note && $record->check_out_note_status == 'approved')
@@ -327,26 +665,39 @@
                                             <td class="px-4 py-4 text-sm text-gray-700">
                                                 {{ $record?->checkOutBy?->name }}</td>
                                             @php
-                                                $breaks = $record?->breaks
+                                                $breaks = $record?->breaks ?? collect();
                                             @endphp
-                                        @if($breaks)
-                                            <td class="px-4 py-4 text-sm text-gray-700">
-                                            <ul>
-                                            @foreach($record?->breaks as $break)
-                                                @php
-                                                    $start_time = \Carbon\Carbon::parse($break->start_time);
-                                                    $end_time = \Carbon\Carbon::parse($break->end_time);
-                                                @endphp
-                                                <li>{{ $start_time->diffInMinutes($end_time) }}</li>
-                                                <hr>
-                                            @endforeach
-                                            </ul>
+                                            <td>
+                                                @forelse($breaks as $attendanceBreak)
+                                                    @php
+                                                        $startTime = $attendanceBreak->start_time
+                                                            ? \Carbon\Carbon::parse($attendanceBreak->start_time)
+                                                            : null;
+
+                                                        $endTime = $attendanceBreak->end_time
+                                                            ? \Carbon\Carbon::parse($attendanceBreak->end_time)
+                                                            : null;
+                                                    @endphp
+
+                                                    <span class="status-pill mb-1">
+                                                        <i class="fas fa-mug-hot text-amber-600"></i>
+                                                        {{ $startTime && $endTime
+                                                            ? $startTime->diffInMinutes($endTime) . ' min'
+                                                            : 'Break running'
+                                                        }}
+                                                    </span>
+                                                @empty
+                                                    <span class="empty-value">—</span>
+                                                @endforelse
                                             </td>
-                                        @endif
 
                                             <td>
                                                 @if($record)
-                                                <a href="{{route('correctionNote.create', ['record' => $record->id])}}">Correction Note</a>
+                                                <a href="{{ route('correctionNote.create', ['record' => $record->id]) }}"
+                                                   class="inline-flex items-center gap-1 rounded-lg bg-violet-50 px-3 py-2 text-xs font-extrabold text-violet-700 hover:bg-violet-100">
+                                                    <i class="fas fa-pen-to-square"></i>
+                                                    Correction Note
+                                                </a>
                                                 @endif
                                             </td>
 
@@ -358,7 +709,10 @@
                     </div>
 
                     @php
-                    $advancePayment = App\Models\AdvancePayment::whereMonth('date', $month)->where('user_id', $currentUser)->sum('amount');
+                    $advancePayment = App\Models\AdvancePayment::whereMonth('date', \Carbon\Carbon::parse($month . '-01')->month)
+                        ->whereYear('date', \Carbon\Carbon::parse($month . '-01')->year)
+                        ->where('user_id', $currentUser->id)
+                        ->sum('amount');
                         $condition = ($d < \Carbon\Carbon::today()) && auth()->user()->hasRole(['admin', 'super_admin']) && (($currentUser->salary) > 0)
                     @endphp
                     @if ($condition)
@@ -396,53 +750,69 @@
                         @endphp
                     @endif
 
-                    <button class="btn btn-warning text-white mb-2 mb-md-0 mr-md-2" onclick="printDivAsPDF()">Download
-                             as PDF</button>
-                    <hr class="border-gray-300 border-4 my-6" />
-                    <!-- Summary Information -->
-                    <div class="mt-6 bg-red-50 p-4 rounded-lg shadow-md" id="printDiv">
-                        <h3 class="text-lg font-semibold text-gray-800">Summary Information</h3>
-                        <div class="mt-4 space-y-2">
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Office Days:</span>
-                                <span class="font-bold text-gray-800">{{ $dates->count() - ($offDays + $sundayCount) }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Working Days:</span>
-                                <span class="font-bold text-gray-800">{{ $workingDays }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Half Days:</span>
-                                <span class="font-bold text-gray-800">{{ $halfDayCount }}</span>
-                            </div>
+            </div>
 
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Leaves:</span>
-                                <span class="font-bold text-gray-800">{{ $leaveDays }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Salary:</span>
-                                <span class="font-bold text-gray-800">{{ $currentUser->salary }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Generated Salary:</span>
+            <div class="mt-6 flex justify-end">
+                <button type="button" class="record-button button-pdf" onclick="printDivAsPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    Download Summary PDF
+                </button>
+            </div>
+
+            <!-- Summary Information -->
+            <div class="summary-panel mt-6 p-5 sm:p-6" id="printDiv">
+                <div class="mb-5">
+                    <h3 class="text-xl font-extrabold text-slate-900">Summary Information</h3>
+                    <p class="mt-1 text-sm font-medium text-slate-600">
+                        Monthly attendance and salary overview
+                    </p>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span>Office Days</span>
+                        <span>{{ $dates->count() - ($offDays + $sundayCount) }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Working Days</span>
+                        <span>{{ $workingDays }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Half Days</span>
+                        <span>{{ $halfDayCount }}</span>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Leaves</span>
+                        <span>{{ $leaveDays }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Salary</span>
+                        <span>₹{{ number_format((float) $currentUser->salary, 2) }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Generated Salary</span>
+                        <span>
                             @if($condition)
-                                <span class="font-bold text-gray-800">{{ $userSalary ? $userSalary->day_wise_salary : 'Salary not generated yet!' }}</span>
+                                {{ $userSalary ? '₹' . number_format((float) $userSalary->day_wise_salary, 2) : 'Not generated' }}
+                            @else
+                                —
                             @endif
-                            </div>
-                            <div class="flex justify-between text-sm font-medium text-gray-700">
-                                <span>Advance Payment</span>
-                                <span class="font-bold text-gray-800">{{ $advancePayment }}</span>
-                            </div>
-
-                        </div>
+                        </span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Advance Payment</span>
+                        <span>₹{{ number_format((float) $advancePayment, 2) }}</span>
                     </div>
 
                 </div>
             </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -459,13 +829,13 @@
              html2canvas(element).then(canvas => {
                  var imgData = canvas.toDataURL('image/png');
 
-                 var pdf = new jsPDF('p', 'mm', 'a0');
+                 var pdf = new jsPDF('p', 'mm', 'a4');
                  var pageHeight = pdf.internal.pageSize.getHeight();
-                 var imgWidth = 841; // A4 width in mm
+                 var imgWidth = 190;
                  var imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                  var heightLeft = imgHeight;
-                 var position = 0;
+                 var position = 10;
 
                  // Add the image to the PDF page by page
                  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
