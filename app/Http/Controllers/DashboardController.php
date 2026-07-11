@@ -15,6 +15,9 @@ use Spatie\Permission\Models\Role;
 use App\Models\Leave;
 use App\Models\Salary;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+
 
 class DashboardController extends Controller
 {
@@ -22,86 +25,163 @@ class DashboardController extends Controller
 
 
 private function activeOfficeId(Request $request): ?int
-{
-    $sessionOfficeId = $request->session()->get('active_office_id');
+    {
+        $sessionOfficeId = (int) $request->session()->get('active_office_id', 0);
 
-    if ($sessionOfficeId && (int) $sessionOfficeId > 0) {
-        return (int) $sessionOfficeId;
+        if ($sessionOfficeId > 0) {
+            return $sessionOfficeId;
+        }
+
+        $user = $request->user();
+
+        // Super admin/owner ke liye session switch na ho to sab allowed offices dikhengi.
+        if (!$user || $user->hasRole('super_admin') || $user->hasRole('owner')) {
+            return null;
+        }
+
+        $userOfficeId = (int) ($user->office_id ?? 0);
+
+        return $userOfficeId > 0 ? $userOfficeId : null;
     }
 
-    $userOfficeId = $request->user()?->office_id;
+// private function switchableOfficeIds(Request $request): array
+// {
+//     $user = $request->user();
 
-    return $userOfficeId && (int) $userOfficeId > 0
-        ? (int) $userOfficeId
-        : null;
-}
+//     if (!$user) {
+//         return [];
+//     }
+
+//     // Super admin ko sab offices allowed
+//     if ($user->hasRole('super_admin')) {
+//         return Office::query()
+//             ->pluck('id')
+//             ->map(fn ($id) => (int) $id)
+//             ->toArray();
+//     }
+
+//     // Owner ko apni offices allowed
+//     if ($user->hasRole('owner')) {
+//         return Office::query()
+//             ->where('owner_id', $user->id)
+//             ->pluck('id')
+//             ->map(fn ($id) => (int) $id)
+//             ->toArray();
+//     }
+
+//     /*
+//         Normal user jiske paas switch office permission hai:
+//         user.office_id -> office.owner_id -> owner ki saari offices
+//     */
+//     if ($user->can('switch offices') || $user->can('switch office')) {
+//         $currentOffice = $user->office;
+
+//         if ($currentOffice && $currentOffice->owner_id) {
+//             return Office::query()
+//                 ->where('owner_id', $currentOffice->owner_id)
+//                 ->pluck('id')
+//                 ->map(fn ($id) => (int) $id)
+//                 ->toArray();
+//         }
+//     }
+
+//     // Normal user without switch permission
+//     return $user->office_id && (int) $user->office_id > 0
+//         ? [(int) $user->office_id]
+//         : [];
+// }
 
 private function switchableOfficeIds(Request $request): array
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    if (!$user) {
-        return [];
-    }
+        if (!$user) {
+            return [];
+        }
 
-    // Super admin ko sab offices allowed
-    if ($user->hasRole('super_admin')) {
-        return Office::query()
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->toArray();
-    }
-
-    // Owner ko apni offices allowed
-    if ($user->hasRole('owner')) {
-        return Office::query()
-            ->where('owner_id', $user->id)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->toArray();
-    }
-
-    /*
-        Normal user jiske paas switch office permission hai:
-        user.office_id -> office.owner_id -> owner ki saari offices
-    */
-    if ($user->can('switch offices') || $user->can('switch office')) {
-        $currentOffice = $user->office;
-
-        if ($currentOffice && $currentOffice->owner_id) {
+        if ($user->hasRole('super_admin')) {
             return Office::query()
-                ->where('owner_id', $currentOffice->owner_id)
                 ->pluck('id')
                 ->map(fn ($id) => (int) $id)
-                ->toArray();
+                ->all();
         }
+
+        if ($user->hasRole('owner')) {
+            return Office::query()
+                ->where('owner_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
+        if ($user->can('switch offices') || $user->can('switch office')) {
+            $ownerId = $user->office?->owner_id;
+
+            if ($ownerId) {
+                return Office::query()
+                    ->where('owner_id', $ownerId)
+                    ->pluck('id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
+        }
+
+        return $user->office_id ? [(int) $user->office_id] : [];
     }
 
-    // Normal user without switch permission
-    return $user->office_id && (int) $user->office_id > 0
-        ? [(int) $user->office_id]
-        : [];
-}
+// private function allowedOfficeIds(Request $request): array
+// {
+//     $switchableOfficeIds = $this->switchableOfficeIds($request);
+//     $activeOfficeId = $this->activeOfficeId($request);
+
+//     /*
+//         Agar office switch hua hai to sirf active office ka data dikhega.
+//     */
+//     if ($activeOfficeId) {
+//         return in_array((int) $activeOfficeId, $switchableOfficeIds, true)
+//             ? [(int) $activeOfficeId]
+//             : [];
+//     }
+
+//     /*
+//         Agar active office nahi hai to user ke allowed offices ka data.
+//     */
+//     return $switchableOfficeIds;
+// }
 
 private function allowedOfficeIds(Request $request): array
-{
-    $switchableOfficeIds = $this->switchableOfficeIds($request);
-    $activeOfficeId = $this->activeOfficeId($request);
+    {
+        $switchableOfficeIds = collect($this->switchableOfficeIds($request))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values();
 
-    /*
-        Agar office switch hua hai to sirf active office ka data dikhega.
-    */
-    if ($activeOfficeId) {
-        return in_array((int) $activeOfficeId, $switchableOfficeIds, true)
-            ? [(int) $activeOfficeId]
-            : [];
+        $activeOfficeId = $this->activeOfficeId($request);
+
+        if ($activeOfficeId) {
+            return $switchableOfficeIds->contains($activeOfficeId)
+                ? [$activeOfficeId]
+                : [];
+        }
+
+        return $switchableOfficeIds->all();
     }
 
-    /*
-        Agar active office nahi hai to user ke allowed offices ka data.
-    */
-    return $switchableOfficeIds;
-}
+    private function employeeQuery(array $officeIds)
+    {
+        return User::query()
+            ->with('office:id,name')
+            ->when(
+                !empty($officeIds),
+                fn (Builder $query) => $query->whereIn('office_id', $officeIds),
+                fn (Builder $query) => $query->whereRaw('1 = 0')
+            )
+            ->where('status', 1)
+            ->whereDoesntHave('roles', function (Builder $query) {
+                $query->whereIn('name', ['super_admin', 'owner']);
+            });
+    }
 
 
     // public static function currentMonth($startOfMont, $endOfMonth, $user){
@@ -132,6 +212,63 @@ private function allowedOfficeIds(Request $request): array
     //     }
     //     return $data;
     // }
+
+
+    private function currentMonthSummary(
+        Carbon $monthStart,
+        Carbon $periodEnd,
+        User $user,
+        array $officeIds
+    ): array {
+        $monthStart = $monthStart->copy()->startOfDay();
+        $periodEnd = $periodEnd->copy()->endOfDay();
+
+        $elapsedDays = $monthStart->diffInDays($periodEnd->copy()->startOfDay()) + 1;
+
+        $sundays = 0;
+        for ($date = $monthStart->copy(); $date->lte($periodEnd); $date->addDay()) {
+            if ($date->isSunday()) {
+                $sundays++;
+            }
+        }
+
+        $offDates = Off::query()
+            ->when(
+                !empty($officeIds),
+                fn (Builder $query) => $query->whereIn('office_id', $officeIds),
+                fn (Builder $query) => $query->whereRaw('1 = 0')
+            )
+            ->whereBetween('date', [$monthStart->toDateString(), $periodEnd->toDateString()])
+            ->pluck('date')
+            ->map(fn ($date) => Carbon::parse($date)->toDateString())
+            ->unique();
+
+        // Sunday par holiday ho to usko dobara count nahi karna hai.
+        $nonSundayOffs = $offDates
+            ->reject(fn ($date) => Carbon::parse($date)->isSunday())
+            ->count();
+
+        $presentDays = AttendanceRecord::query()
+            ->where('user_id', $user->id)
+            ->whereBetween('check_in', [$monthStart, $periodEnd])
+            ->get(['check_in'])
+            ->map(fn ($record) => Carbon::parse($record->check_in)->toDateString())
+            ->unique()
+            ->count();
+
+        $workingDays = max(0, $elapsedDays - $sundays - $nonSundayOffs);
+
+        return [
+            'days' => $elapsedDays,
+            'sundays' => $sundays,
+            'offs' => $nonSundayOffs,
+            'working_days' => $workingDays,
+            'records' => $presentDays,
+            'attendance_percentage' => $workingDays > 0
+                ? round(($presentDays / $workingDays) * 100, 1)
+                : 0,
+        ];
+    }
 
 
     public static function currentMonth($startOfMont, $endOfMonth, $user, ?int $activeOfficeId = null)
@@ -257,180 +394,327 @@ private function allowedOfficeIds(Request $request): array
     // }
 
 
+    // public function dashboard(Request $request)
+    // {
+    //     $user = auth()->user();
+
+    //     $allowedOfficeIds = collect($this->allowedOfficeIds($request))
+    //         ->filter()
+    //         ->unique()
+    //         ->values()
+    //         ->all();
+
+    //     $activeOfficeId = $this->activeOfficeId($request);
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Employees
+    //     |--------------------------------------------------------------------------
+    //     | Office switched hai to active office ke employees.
+    //     | Otherwise user ke allowed offices ke employees.
+    //     */
+    //     $employees = User::query()
+    //         ->with([
+    //             'office:id,name',
+    //         ])
+    //         ->when(
+    //             !empty($allowedOfficeIds),
+    //             fn ($query) => $query->whereIn('office_id', $allowedOfficeIds),
+    //             fn ($query) => $query->whereRaw('1 = 0')
+    //         )
+    //         ->where('status', 1)
+    //         ->get();
+
+    //     $employees = HomeController::sortEmployeesHierarchically($employees);
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Offices
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $offices = Office::query()
+    //         ->when(
+    //             !empty($allowedOfficeIds),
+    //             fn ($query) => $query->whereIn('id', $allowedOfficeIds),
+    //             fn ($query) => $query->whereRaw('1 = 0')
+    //         )
+    //         ->where('status', 1)
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     $employeeIds = $employees->pluck('id')->filter()->values();
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Logged-in user attendance and break
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $todayAttendanceRecord = AttendanceRecord::query()
+    //         ->where('user_id', $user->id)
+    //         ->whereDate('check_in', today())
+    //         ->latest('check_in')
+    //         ->first();
+
+    //     $break = $todayAttendanceRecord
+    //         ? LunchBreak::query()
+    //             ->where('attendance_record_id', $todayAttendanceRecord->id)
+    //             ->latest()
+    //             ->first()
+    //         : null;
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Today's employee attendance
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $todayCheckIn = AttendanceRecord::query()
+    //         ->with('user:id,name,email,phone,office_id')
+    //         ->whereIn('user_id', $employeeIds)
+    //         ->whereDate('check_in', today())
+    //         ->latest('check_in')
+    //         ->get()
+    //         ->unique('user_id')
+    //         ->values();
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Today's approved leaves
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $leaves = Leave::query()
+    //         ->with('user:id,name,email,phone,office_id')
+    //         ->whereIn('user_id', $employeeIds)
+    //         ->whereDate('start_date', '<=', today())
+    //         ->whereDate('end_date', '>=', today())
+    //         ->where('status', 'approved')
+    //         ->latest()
+    //         ->get();
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Last month payouts
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $lastMonth = now()->subMonth();
+
+    //     $lastMonthPayouts = Salary::query()
+    //         ->with('user:id,name,email,phone,office_id')
+    //         ->whereIn('user_id', $employeeIds)
+    //         ->whereYear('month', $lastMonth->year)
+    //         ->whereMonth('month', $lastMonth->month)
+    //         ->latest()
+    //         ->get();
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Current month data
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $data = $this->currentMonth(
+    //         now()->startOfMonth(),
+    //         now()->endOfMonth(),
+    //         $user,
+    //         $activeOfficeId
+    //     );
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Dashboard statistics
+    //     |--------------------------------------------------------------------------
+    //     */
+    //     $totalEmployees = $employees->count();
+    //     $presentEmployees = $todayCheckIn->count();
+    //     $onLeaveEmployees = $leaves->pluck('user_id')->unique()->count();
+
+    //     $absentEmployees = max(
+    //         0,
+    //         $totalEmployees - $presentEmployees - $onLeaveEmployees
+    //     );
+
+    //     $attendancePercentage = $totalEmployees > 0
+    //         ? round(($presentEmployees / $totalEmployees) * 100)
+    //         : 0;
+
+    //     $checkedOutEmployees = $todayCheckIn
+    //         ->filter(fn ($attendance) => !empty($attendance->check_out))
+    //         ->count();
+
+    //     $currentlyWorkingEmployees = $todayCheckIn
+    //         ->filter(fn ($attendance) => empty($attendance->check_out))
+    //         ->count();
+
+    //     $lateEmployees = $todayCheckIn
+    //         ->filter(function ($attendance) {
+    //             return (bool) (
+    //                 $attendance->is_late
+    //                 ?? $attendance->late
+    //                 ?? false
+    //             );
+    //         })
+    //         ->count();
+
+    //     $totalLastMonthPayout = $lastMonthPayouts->sum(function ($salary) {
+    //         return (float) (
+    //             $salary->net_salary
+    //             ?? $salary->paid_amount
+    //             ?? $salary->amount
+    //             ?? 0
+    //         );
+    //     });
+
+    //     return view('dashboard.dashboard', compact(
+    //         'offices',
+    //         'data',
+    //         'todayAttendanceRecord',
+    //         'break',
+    //         'employees',
+    //         'todayCheckIn',
+    //         'leaves',
+    //         'lastMonthPayouts',
+    //         'allowedOfficeIds',
+    //         'activeOfficeId',
+    //         'totalEmployees',
+    //         'presentEmployees',
+    //         'onLeaveEmployees',
+    //         'absentEmployees',
+    //         'attendancePercentage',
+    //         'checkedOutEmployees',
+    //         'currentlyWorkingEmployees',
+    //         'lateEmployees',
+    //         'totalLastMonthPayout'
+    //     ));
+    // }
+
     public function dashboard(Request $request)
     {
-        $user = auth()->user();
-
-        $allowedOfficeIds = collect($this->allowedOfficeIds($request))
-            ->filter()
-            ->unique()
-            ->values()
-            ->all();
-
+        $user = $request->user();
+        $today = now()->startOfDay();
+        $allowedOfficeIds = $this->allowedOfficeIds($request);
         $activeOfficeId = $this->activeOfficeId($request);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Employees
-        |--------------------------------------------------------------------------
-        | Office switched hai to active office ke employees.
-        | Otherwise user ke allowed offices ke employees.
-        */
-        $employees = User::query()
-            ->with([
-                'office:id,name',
-            ])
-            ->when(
-                !empty($allowedOfficeIds),
-                fn ($query) => $query->whereIn('office_id', $allowedOfficeIds),
-                fn ($query) => $query->whereRaw('1 = 0')
-            )
-            ->where('status', 1)
-            ->get();
-
+        $employees = $this->employeeQuery($allowedOfficeIds)->get();
         $employees = HomeController::sortEmployeesHierarchically($employees);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Offices
-        |--------------------------------------------------------------------------
-        */
         $offices = Office::query()
             ->when(
                 !empty($allowedOfficeIds),
-                fn ($query) => $query->whereIn('id', $allowedOfficeIds),
-                fn ($query) => $query->whereRaw('1 = 0')
+                fn (Builder $query) => $query->whereIn('id', $allowedOfficeIds),
+                fn (Builder $query) => $query->whereRaw('1 = 0')
             )
             ->where('status', 1)
             ->orderBy('name')
-            ->get();
+            ->get(['id', 'name', 'owner_id', 'status']);
 
-        $employeeIds = $employees->pluck('id')->filter()->values();
+        $employeeIds = $employees->pluck('id')->map(fn ($id) => (int) $id)->values();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Logged-in user attendance and break
-        |--------------------------------------------------------------------------
-        */
         $todayAttendanceRecord = AttendanceRecord::query()
             ->where('user_id', $user->id)
-            ->whereDate('check_in', today())
+            ->whereDate('check_in', $today)
             ->latest('check_in')
             ->first();
 
         $break = $todayAttendanceRecord
             ? LunchBreak::query()
                 ->where('attendance_record_id', $todayAttendanceRecord->id)
-                ->latest()
+                ->latest('id')
                 ->first()
             : null;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Today's employee attendance
-        |--------------------------------------------------------------------------
-        */
-        $todayCheckIn = AttendanceRecord::query()
-            ->with('user:id,name,email,phone,office_id')
-            ->whereIn('user_id', $employeeIds)
-            ->whereDate('check_in', today())
-            ->latest('check_in')
-            ->get()
-            ->unique('user_id')
-            ->values();
+        $todayCheckIn = $employeeIds->isEmpty()
+            ? collect()
+            : AttendanceRecord::query()
+                ->with([
+                    'user:id,name,email,phone,office_id',
+                    'user.office:id,name',
+                ])
+                ->whereIn('user_id', $employeeIds)
+                ->whereDate('check_in', $today)
+                ->orderByDesc('check_in')
+                ->get()
+                ->unique('user_id')
+                ->values();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Today's approved leaves
-        |--------------------------------------------------------------------------
-        */
-        $leaves = Leave::query()
-            ->with('user:id,name,email,phone,office_id')
-            ->whereIn('user_id', $employeeIds)
-            ->whereDate('start_date', '<=', today())
-            ->whereDate('end_date', '>=', today())
-            ->where('status', 'approved')
-            ->latest()
-            ->get();
+        $leaves = $employeeIds->isEmpty()
+            ? collect()
+            : Leave::query()
+                ->with('user:id,name,email,phone,office_id')
+                ->whereIn('user_id', $employeeIds)
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)
+                ->where('status', 'approved')
+                ->latest('id')
+                ->get()
+                ->unique('user_id')
+                ->values();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Last month payouts
-        |--------------------------------------------------------------------------
-        */
-        $lastMonth = now()->subMonth();
+        $lastMonth = now()->subMonthNoOverflow();
 
-        $lastMonthPayouts = Salary::query()
-            ->with('user:id,name,email,phone,office_id')
-            ->whereIn('user_id', $employeeIds)
-            ->whereYear('month', $lastMonth->year)
-            ->whereMonth('month', $lastMonth->month)
-            ->latest()
-            ->get();
+        $lastMonthPayouts = $employeeIds->isEmpty()
+            ? collect()
+            : Salary::query()
+                ->with('user:id,name,email,phone,office_id')
+                ->whereIn('user_id', $employeeIds)
+                ->whereYear('month', $lastMonth->year)
+                ->whereMonth('month', $lastMonth->month)
+                ->latest('id')
+                ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Current month data
-        |--------------------------------------------------------------------------
-        */
-        $data = $this->currentMonth(
-            now()->startOfMonth(),
-            now()->endOfMonth(),
-            $user,
-            $activeOfficeId
-        );
+        $presentIds = $todayCheckIn->pluck('user_id')->map(fn ($id) => (int) $id)->unique();
+        $leaveIds = $leaves->pluck('user_id')->map(fn ($id) => (int) $id)->unique();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Dashboard statistics
-        |--------------------------------------------------------------------------
-        */
-        $totalEmployees = $employees->count();
-        $presentEmployees = $todayCheckIn->count();
-        $onLeaveEmployees = $leaves->pluck('user_id')->unique()->count();
+        // Present employee ko leave/absent me count nahi karenge.
+        $effectiveLeaveIds = $leaveIds->diff($presentIds)->values();
+        $absentIds = $employeeIds->diff($presentIds)->diff($effectiveLeaveIds)->values();
 
-        $absentEmployees = max(
-            0,
-            $totalEmployees - $presentEmployees - $onLeaveEmployees
-        );
-
-        $attendancePercentage = $totalEmployees > 0
-            ? round(($presentEmployees / $totalEmployees) * 100)
-            : 0;
+        $totalEmployees = $employeeIds->count();
+        $presentEmployees = $presentIds->count();
+        $onLeaveEmployees = $effectiveLeaveIds->count();
+        $absentEmployees = $absentIds->count();
 
         $checkedOutEmployees = $todayCheckIn
-            ->filter(fn ($attendance) => !empty($attendance->check_out))
+            ->filter(fn ($record) => !empty($record->check_out))
             ->count();
 
         $currentlyWorkingEmployees = $todayCheckIn
-            ->filter(fn ($attendance) => empty($attendance->check_out))
+            ->filter(fn ($record) => empty($record->check_out))
             ->count();
 
         $lateEmployees = $todayCheckIn
-            ->filter(function ($attendance) {
-                return (bool) (
-                    $attendance->is_late
-                    ?? $attendance->late
-                    ?? false
-                );
-            })
+            ->filter(fn ($record) => (bool) ($record->is_late ?? $record->late ?? false))
             ->count();
 
+        $attendancePercentage = $totalEmployees > 0
+            ? round(($presentEmployees / $totalEmployees) * 100, 1)
+            : 0;
+
         $totalLastMonthPayout = $lastMonthPayouts->sum(function ($salary) {
-            return (float) (
-                $salary->net_salary
+            return (float) ($salary->net_salary
                 ?? $salary->paid_amount
                 ?? $salary->amount
-                ?? 0
-            );
+                ?? 0);
         });
 
+        $data = $this->currentMonthSummary(
+            now()->startOfMonth(),
+            now()->endOfDay(),
+            $user,
+            $allowedOfficeIds
+        );
+
+        $absentEmployeesList = $employees
+            ->whereIn('id', $absentIds->all())
+            ->values();
+
+        $onLeaveEmployeesList = $employees
+            ->whereIn('id', $effectiveLeaveIds->all())
+            ->values();
+
         return view('dashboard.dashboard', compact(
+            'user',
             'offices',
-            'data',
+            'employees',
             'todayAttendanceRecord',
             'break',
-            'employees',
             'todayCheckIn',
             'leaves',
             'lastMonthPayouts',
@@ -444,7 +728,10 @@ private function allowedOfficeIds(Request $request): array
             'checkedOutEmployees',
             'currentlyWorkingEmployees',
             'lateEmployees',
-            'totalLastMonthPayout'
+            'totalLastMonthPayout',
+            'data',
+            'absentEmployeesList',
+            'onLeaveEmployeesList'
         ));
     }
 
