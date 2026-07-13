@@ -526,7 +526,7 @@
                                     rows="4"
                                     maxlength="500"
                                     class="note-field"
-                                    placeholder="Example: Traffic की वजह से देर हुई, गलती से जल्दी checkout हो गया, या कोई दूसरी जानकारी..."
+                                    placeholder="Example: Traffic की वजह से देर हुई, या कोई दूसरी जानकारी..."
                                 >{{ old('note') }}</textarea>
 
                                 <span
