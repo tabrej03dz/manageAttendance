@@ -253,6 +253,7 @@
 
     <div class="attendance-page space-y-5 pb-10">
 
+        {{-- Location Warning --}}
         <div
             id="locationWarning"
             class="warning-box hidden p-4"
@@ -265,12 +266,11 @@
 
                     <div>
                         <h3 class="text-sm font-extrabold">
-                            Location बंद या unavailable है
+                            Location is turned off or unavailable
                         </h3>
 
                         <p class="mt-1 text-sm font-medium leading-6">
-                            सही verification के लिए location ON करें।
-                            Location के बिना भी attendance submit हो जाएगी।
+                            Please turn on location for accurate attendance verification.
                         </p>
 
                         @if(Route::has('setting.instruction'))
@@ -295,6 +295,7 @@
             </div>
         </div>
 
+        {{-- Validation Errors --}}
         @if ($errors->any())
             <div class="validation-box p-4">
                 <div class="flex items-start gap-3">
@@ -317,6 +318,7 @@
             </div>
         @endif
 
+        {{-- Success Message --}}
         @if(session('success'))
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
                 <i class="fas fa-circle-check mr-2"></i>
@@ -327,6 +329,7 @@
         <section class="attendance-card">
             <div class="grid grid-cols-1 lg:grid-cols-5">
 
+                {{-- Camera Section --}}
                 <div class="camera-section border-b border-slate-200 p-6 sm:p-8 lg:col-span-3 lg:border-b-0 lg:border-r">
                     <div class="text-center">
                         <p class="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
@@ -339,8 +342,6 @@
                                 : 'Mark Your Check Out'
                             }}
                         </h1>
-
-                    
                     </div>
 
                     <div
@@ -415,12 +416,13 @@
                         </button>
 
                         <p class="text-center text-xs font-semibold leading-5 text-slate-500">
-                            Camera unavailable होने पर Capture दबाते ही fallback
-                            verification image बन जाएगी।
+                            If the camera is unavailable, clicking Capture will
+                            generate a fallback verification image.
                         </p>
                     </div>
                 </div>
 
+                {{-- Attendance Details --}}
                 <div class="attendance-detail-section p-6 sm:p-8 lg:col-span-2">
                     <p class="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
                         {{ $formType === 'check_in' ? 'Check In' : 'Check Out' }}
@@ -431,8 +433,8 @@
                     </h2>
 
                     <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
-                        Camera और location unavailable होने पर भी attendance
-                        submit की जा सकती है।
+                        Attendance can still be submitted if the camera or
+                        location is unavailable.
                     </p>
 
                     <div
@@ -661,6 +663,12 @@
             let locationReady = false;
             let isSubmitting = false;
 
+            /*
+            |--------------------------------------------------------------------------
+            | Camera Status
+            |--------------------------------------------------------------------------
+            */
+
             function setCameraStatus(message, type = 'waiting') {
                 cameraStatus.className =
                     'status-badge';
@@ -696,6 +704,12 @@
                 submitButton.disabled =
                     !imageCaptured || isSubmitting;
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Camera
+            |--------------------------------------------------------------------------
+            */
 
             async function startCamera() {
                 try {
@@ -775,6 +789,12 @@
                 cameraStream = null;
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Image Capture
+            |--------------------------------------------------------------------------
+            */
+
             function saveBlobAsInput(
                 blob,
                 filename,
@@ -806,8 +826,8 @@
 
                 captureButtonText.textContent =
                     fallbackUsed
-                        ? 'Capture'
-                        : 'Capture ';
+                        ? 'Capture Again'
+                        : 'Capture Again';
 
                 updateSubmitButton();
             }
@@ -868,7 +888,7 @@
                         );
 
                         setCameraStatus(
-                            'Photo captured - live camera running',
+                            'Photo captured successfully',
                             'ready'
                         );
                     },
@@ -1012,7 +1032,7 @@
                     '#e2e8f0';
 
                 context.fillText(
-                    'System generated attendance verification',
+                    'System-generated attendance verification',
                     450,
                     665
                 );
@@ -1021,7 +1041,7 @@
                     function (blob) {
                         if (!blob) {
                             alert(
-                                'Verification image create नहीं हो पाई।'
+                                'The verification image could not be created.'
                             );
 
                             return;
@@ -1064,6 +1084,12 @@
                     }
                 }
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Distance Calculation
+            |--------------------------------------------------------------------------
+            */
 
             function degreesToRadians(degrees) {
                 return degrees *
@@ -1117,6 +1143,12 @@
                     angularDistance;
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Location
+            |--------------------------------------------------------------------------
+            */
+
             function clearLocationValues() {
                 latitudeInput.value = '';
                 longitudeInput.value = '';
@@ -1139,12 +1171,20 @@
                 locationStatus.textContent =
                     message;
 
+                locationStatus.classList.remove(
+                    'text-emerald-700'
+                );
+
                 locationStatus.classList.add(
                     'text-rose-700'
                 );
 
                 locationShortStatus.textContent =
                     'Unavailable';
+
+                locationShortStatus.classList.remove(
+                    'text-emerald-700'
+                );
 
                 locationShortStatus.classList.add(
                     'text-rose-700'
@@ -1153,8 +1193,7 @@
                 locationIcon.className =
                     'fas fa-location-dot';
 
-                distanceText.textContent =
-                    'Location के बिना भी attendance submit हो सकती है।';
+                distanceText.textContent = '';
 
                 locationWarning.classList.remove(
                     'hidden'
@@ -1264,7 +1303,7 @@
 
                 if (!navigator.geolocation) {
                     locationFailed(
-                        'Browser location supported नहीं है।'
+                        'Location is not supported by this browser.'
                     );
 
                     return;
@@ -1284,9 +1323,21 @@
                             error
                         );
 
-                        locationFailed(
-                            'Location permission denied या location unavailable है।'
-                        );
+                        let message =
+                            'Location is currently unavailable.';
+
+                        if (error.code === 1) {
+                            message =
+                                'Location permission was denied.';
+                        } else if (error.code === 2) {
+                            message =
+                                'Your current location could not be determined.';
+                        } else if (error.code === 3) {
+                            message =
+                                'The location request timed out.';
+                        }
+
+                        locationFailed(message);
                     },
 
                     {
@@ -1299,10 +1350,14 @@
 
             retryLocationButton.addEventListener(
                 'click',
-                function () {
-                    detectLocation();
-                }
+                detectLocation
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Attendance Form
+            |--------------------------------------------------------------------------
+            */
 
             attendanceForm.addEventListener(
                 'submit',
@@ -1319,7 +1374,7 @@
                         createFallbackImage();
 
                         alert(
-                            'Verification image बनाई गई है। अब दोबारा Submit दबाएँ।'
+                            'A verification image has been created. Please press Submit again.'
                         );
 
                         return;
@@ -1333,6 +1388,12 @@
                         '<i class="fas fa-spinner fa-spin"></i><span>Submitting Attendance...</span>';
                 }
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Current Time
+            |--------------------------------------------------------------------------
+            */
 
             function updateCurrentTime() {
                 const currentTime =
@@ -1364,7 +1425,6 @@
             );
 
             startCamera();
-
             detectLocation();
 
             window.addEventListener(
