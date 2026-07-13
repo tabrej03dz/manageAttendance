@@ -4,18 +4,10 @@
 
 @push('styles')
     <style>
-        .attendance-punch-page {
+        .attendance-page {
             font-family: 'Inter', sans-serif;
             color: #0f172a;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Attendance Focus Mode
-        |--------------------------------------------------------------------------
-        | This page hides the normal dashboard top header, page header and extra
-        | spacing so the camera starts immediately at the top of the screen.
-        */
 
         body.attendance-focus-mode .main-header,
         body.attendance-focus-mode .content-header,
@@ -25,74 +17,43 @@
             display: none !important;
         }
 
-        body.attendance-focus-mode .content-wrapper {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
-
-        body.attendance-focus-mode .content {
-            padding-top: 0 !important;
-        }
-
-        body.attendance-focus-mode .content-wrapper > .content {
-            padding-top: 0 !important;
-        }
-
+        body.attendance-focus-mode .content-wrapper,
+        body.attendance-focus-mode .content,
         body.attendance-focus-mode .container-fluid {
-            padding-top: 0 !important;
-        }
-
-        body.attendance-focus-mode .attendance-punch-page {
             margin-top: 0 !important;
             padding-top: 0 !important;
         }
 
-        @media (max-width: 767px) {
-            body.attendance-focus-mode .content-wrapper {
-                min-height: 100vh !important;
-            }
-
-            body.attendance-focus-mode .attendance-punch-page {
-                margin-left: -7px;
-                margin-right: -7px;
-            }
-
-            body.attendance-focus-mode .attendance-main-card {
-                border-top-left-radius: 0;
-                border-top-right-radius: 0;
-            }
-        }
-
-        .attendance-main-card {
+        .attendance-card {
             overflow: hidden;
             border: 1px solid #dbe3ee;
-            border-radius: 22px;
+            border-radius: 24px;
             background: #ffffff;
-            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
         }
 
         .camera-section {
             background:
                 radial-gradient(
                     circle at top right,
-                    rgba(99, 102, 241, 0.10),
-                    transparent 36%
+                    rgba(99, 102, 241, 0.12),
+                    transparent 35%
                 ),
                 #ffffff;
         }
 
         .camera-shell {
             position: relative;
-            width: 240px;
-            height: 240px;
-            margin-inline: auto;
+            width: 245px;
+            height: 245px;
+            margin: 0 auto;
             overflow: hidden;
             border: 8px solid #ffffff;
             border-radius: 999px;
             background: #e2e8f0;
             box-shadow:
-                0 0 0 10px rgba(79, 70, 229, 0.16),
-                0 18px 40px rgba(15, 23, 42, 0.22);
+                0 0 0 10px rgba(79, 70, 229, 0.15),
+                0 20px 42px rgba(15, 23, 42, 0.22);
         }
 
         .camera-shell video,
@@ -105,6 +66,7 @@
         }
 
         .camera-shell video {
+            display: block;
             transform: scaleX(-1);
         }
 
@@ -112,18 +74,18 @@
             display: none;
         }
 
-        .camera-shell.has-image img {
-            display: block;
+        .camera-shell.fallback-active video {
+            display: none;
         }
 
-        .camera-shell.has-image video,
-        .camera-shell.has-image .camera-placeholder {
-            display: none;
+        .camera-shell.fallback-active img {
+            display: block;
         }
 
         .camera-placeholder {
             position: absolute;
             inset: 0;
+            z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -133,13 +95,19 @@
             background: linear-gradient(135deg, #f8fafc, #e2e8f0);
         }
 
-        .camera-status {
+        .camera-shell.camera-ready .camera-placeholder,
+        .camera-shell.fallback-active .camera-placeholder {
+            display: none;
+        }
+
+        .status-badge {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 7px;
+            padding: 8px 13px;
             border-radius: 999px;
-            padding: 7px 11px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
         }
 
@@ -158,13 +126,13 @@
             color: #be123c;
         }
 
-        .action-button {
-            min-height: 50px;
+        .attendance-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 9px;
             width: 100%;
+            min-height: 50px;
             border: 0;
             border-radius: 14px;
             padding: 12px 18px;
@@ -177,30 +145,30 @@
                 opacity 0.2s ease;
         }
 
-        .action-button:hover {
+        .attendance-button:hover {
             transform: translateY(-1px);
         }
 
-        .action-button:disabled {
+        .attendance-button:disabled {
             cursor: not-allowed;
             opacity: 0.55;
             transform: none;
             box-shadow: none;
         }
 
-        .button-capture {
+        .capture-button {
             background: linear-gradient(135deg, #0f766e, #14b8a6);
             color: #ffffff !important;
-            box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
+            box-shadow: 0 12px 25px rgba(13, 148, 136, 0.24);
         }
 
-        .button-submit {
+        .submit-button {
             background: linear-gradient(135deg, #4338ca, #6366f1);
             color: #ffffff !important;
-            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.22);
+            box-shadow: 0 12px 25px rgba(79, 70, 229, 0.24);
         }
 
-        .button-reset {
+        .reset-button {
             border: 1px solid #cbd5e1;
             background: #f8fafc;
             color: #334155 !important;
@@ -208,8 +176,26 @@
 
         .location-box {
             border: 1px solid #c7d2fe;
-            border-radius: 16px;
+            border-radius: 18px;
             background: #eef2ff;
+        }
+
+        .location-box.location-success {
+            border-color: #a7f3d0;
+            background: #ecfdf5;
+        }
+
+        .location-box.location-error {
+            border-color: #fecaca;
+            background: #fff1f2;
+        }
+
+        .warning-box,
+        .validation-box {
+            border: 1px solid #fda4af;
+            border-radius: 16px;
+            background: #fff1f2;
+            color: #9f1239;
         }
 
         .info-card {
@@ -223,64 +209,38 @@
             color: #64748b;
             font-size: 11px;
             font-weight: 800;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
         }
 
         .info-value {
-            margin-top: 4px;
+            margin-top: 5px;
             color: #0f172a;
             font-size: 17px;
             font-weight: 900;
         }
 
-        .bottom-info-card {
-            position: relative;
-            overflow: hidden;
-            border: 1px solid #312e81;
-            border-radius: 20px;
-            background: linear-gradient(
-                135deg,
-                #0f172a 0%,
-                #172554 55%,
-                #312e81 100%
-            );
-            color: #ffffff;
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.20);
-        }
+        @media (max-width: 767px) {
+            body.attendance-focus-mode .attendance-page {
+                margin-right: -7px;
+                margin-left: -7px;
+            }
 
-        .bottom-info-card::after {
-            content: '';
-            position: absolute;
-            right: -70px;
-            bottom: -100px;
-            width: 210px;
-            height: 210px;
-            border-radius: 999px;
-            background: rgba(6, 182, 212, 0.18);
-        }
-
-        .permission-alert,
-        .error-box {
-            border: 1px solid #fecaca;
-            border-radius: 16px;
-            background: #fff1f2;
-            color: #9f1239;
+            .attendance-card {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
         }
 
         @media (max-width: 640px) {
-            .attendance-main-card {
-                border-radius: 18px;
-            }
-
             .camera-shell {
                 width: 205px;
                 height: 205px;
             }
 
             .camera-section,
-            .attendance-action-section {
-                padding: 20px;
+            .attendance-detail-section {
+                padding: 20px !important;
             }
         }
     </style>
@@ -291,46 +251,52 @@
         document.body.classList.add('attendance-focus-mode');
     </script>
 
-    <div class="attendance-punch-page space-y-5 pb-10">
+    <div class="attendance-page space-y-5 pb-10">
 
-        {{-- Location permission warning --}}
         <div
-            id="alert-container"
-            class="permission-alert hidden p-4"
+            id="locationWarning"
+            class="warning-box hidden p-4"
         >
             <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h3 class="text-sm font-extrabold">
-                        Location Permission Required
-                    </h3>
+                <div class="flex items-start gap-3">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600">
+                        <i class="fas fa-location-dot"></i>
+                    </div>
 
-                    <p class="mt-1 text-sm font-medium">
-                        Attendance submit करने के लिए browser location permission
-                        enable करें।
-                    </p>
+                    <div>
+                        <h3 class="text-sm font-extrabold">
+                            Location बंद या unavailable है
+                        </h3>
 
-                    <a
-                        href="{{ route('setting.instruction') }}"
-                        class="mt-2 inline-flex items-center gap-1 text-sm font-extrabold text-rose-700 underline"
-                    >
-                        <i class="fas fa-circle-info"></i>
-                        See Instructions
-                    </a>
+                        <p class="mt-1 text-sm font-medium leading-6">
+                            सही verification के लिए location ON करें।
+                            Location के बिना भी attendance submit हो जाएगी।
+                        </p>
+
+                        @if(Route::has('setting.instruction'))
+                            <a
+                                href="{{ route('setting.instruction') }}"
+                                class="mt-2 inline-flex items-center gap-1 text-sm font-extrabold text-rose-700 underline"
+                            >
+                                <i class="fas fa-circle-info"></i>
+                                Location Instructions
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
                 <button
                     type="button"
-                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-rose-600"
-                    onclick="document.getElementById('alert-container').classList.add('hidden')"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-rose-600"
+                    onclick="document.getElementById('locationWarning').classList.add('hidden')"
                 >
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
 
-        {{-- Validation errors --}}
         @if ($errors->any())
-            <div class="error-box p-4">
+            <div class="validation-box p-4">
                 <div class="flex items-start gap-3">
                     <i class="fas fa-triangle-exclamation mt-1"></i>
 
@@ -351,26 +317,30 @@
             </div>
         @endif
 
-        {{-- Camera and submit section comes first --}}
-        <section class="attendance-main-card">
+        @if(session('success'))
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+                <i class="fas fa-circle-check mr-2"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <section class="attendance-card">
             <div class="grid grid-cols-1 lg:grid-cols-5">
 
-                {{-- Camera --}}
-                <div
-                    class="camera-section border-b border-slate-200 p-6 sm:p-8 lg:col-span-3 lg:border-b-0 lg:border-r"
-                >
+                <div class="camera-section border-b border-slate-200 p-6 sm:p-8 lg:col-span-3 lg:border-b-0 lg:border-r">
                     <div class="text-center">
                         <p class="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
                             Camera Verification
                         </p>
 
                         <h1 class="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                            Capture Your Photo
+                            {{ $formType === 'check_in'
+                                ? 'Mark Your Check In'
+                                : 'Mark Your Check Out'
+                            }}
                         </h1>
 
-                        <p class="mt-2 text-sm font-medium text-slate-500">
-                            Face को circle के बीच रखें और Capture दबाएँ।
-                        </p>
+                    
                     </div>
 
                     <div
@@ -390,8 +360,8 @@
                         ></canvas>
 
                         <img
-                            id="imagePreview"
-                            alt="Captured attendance photo"
+                            id="fallbackPreview"
+                            alt="Attendance verification image"
                         >
 
                         <div class="camera-placeholder">
@@ -406,78 +376,78 @@
                     <div class="mt-5 text-center">
                         <span
                             id="cameraStatus"
-                            class="camera-status status-waiting"
+                            class="status-badge status-waiting"
                         >
-                            Waiting for camera
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Starting camera
                         </span>
                     </div>
 
                     <div class="mx-auto mt-6 max-w-md space-y-3">
                         <button
                             type="button"
-                            id="snap"
-                            class="action-button button-capture"
-                            disabled
+                            id="captureButton"
+                            class="attendance-button capture-button"
                         >
                             <i class="fas fa-camera"></i>
-                            Capture Photo
-                        </button>
 
-                        <button
-                            type="button"
-                            id="retake"
-                            class="action-button button-reset hidden"
-                        >
-                            <i class="fas fa-rotate"></i>
-                            Retake Photo
+                            <span id="captureButtonText">
+                                Capture Photo
+                            </span>
                         </button>
 
                         <button
                             type="submit"
-                            id="upload"
-                            form="uploadForm"
-                            class="action-button button-submit"
+                            id="submitButton"
+                            form="attendanceForm"
+                            class="attendance-button submit-button"
                             disabled
                         >
                             <i class="fas fa-check-circle"></i>
 
-                            Submit
-                            {{ $formType === 'check_in'
-                                ? 'Check In'
-                                : 'Check Out'
-                            }}
+                            <span>
+                                Submit
+                                {{ $formType === 'check_in'
+                                    ? 'Check In'
+                                    : 'Check Out'
+                                }}
+                            </span>
                         </button>
 
-                        <p class="text-center text-xs font-semibold text-slate-500">
-                            Photo capture और location detect होने के बाद Submit button active होगा।
+                        <p class="text-center text-xs font-semibold leading-5 text-slate-500">
+                            Camera unavailable होने पर Capture दबाते ही fallback
+                            verification image बन जाएगी।
                         </p>
                     </div>
                 </div>
 
-                {{-- Submit and location --}}
-                <div class="attendance-action-section p-6 sm:p-8 lg:col-span-2">
+                <div class="attendance-detail-section p-6 sm:p-8 lg:col-span-2">
                     <p class="text-xs font-extrabold uppercase tracking-widest text-indigo-600">
                         {{ $formType === 'check_in' ? 'Check In' : 'Check Out' }}
                     </p>
 
                     <h2 class="mt-2 text-2xl font-extrabold text-slate-900">
-                        Submit Attendance
+                        Attendance Details
                     </h2>
 
                     <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
-                        Camera section में ऊपर दिया गया Submit button photo capture
-                        और location detect होने के बाद automatically active हो जाएगा।
+                        Camera और location unavailable होने पर भी attendance
+                        submit की जा सकती है।
                     </p>
 
-                    <div class="location-box mt-5 p-4">
+                    <div
+                        id="locationBox"
+                        class="location-box mt-5 p-4"
+                    >
                         <div class="flex items-start gap-3">
-                            <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-700"
-                            >
-                                <i class="fas fa-location-dot"></i>
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-indigo-700">
+                                <i
+                                    id="locationIcon"
+                                    class="fas fa-location-dot"
+                                ></i>
                             </div>
 
-                            <div>
+                            <div class="min-w-0 flex-1">
                                 <p class="text-xs font-extrabold uppercase tracking-wider text-indigo-700">
                                     Location Status
                                 </p>
@@ -486,19 +456,28 @@
                                     id="locationStatus"
                                     class="mt-1 text-sm font-bold text-slate-700"
                                 >
-                                    Detecting your current location...
+                                    Detecting location...
                                 </p>
 
                                 <p
                                     id="distanceText"
-                                    class="mt-1 text-xs font-semibold text-slate-500"
+                                    class="mt-1 text-xs font-semibold leading-5 text-slate-500"
                                 ></p>
+
+                                <button
+                                    type="button"
+                                    id="retryLocationButton"
+                                    class="mt-3 inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-extrabold text-indigo-700 shadow-sm"
+                                >
+                                    <i class="fas fa-location-crosshairs"></i>
+                                    Retry Location
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <form
-                        id="uploadForm"
+                        id="attendanceForm"
                         class="mt-5"
                         action="{{ $formType === 'check_in'
                             ? route('attendance.check_in', ['user' => $user ?? null])
@@ -533,16 +512,36 @@
                                 id="distance"
                                 name="distance"
                             >
-                        </div>
 
+                            <input
+                                type="hidden"
+                                id="locationAvailable"
+                                name="location_available"
+                                value="0"
+                            >
+
+                            <input
+                                type="hidden"
+                                id="cameraAvailable"
+                                name="camera_available"
+                                value="0"
+                            >
+
+                            <input
+                                type="hidden"
+                                id="fallbackImageUsed"
+                                name="fallback_image_used"
+                                value="0"
+                            >
+                        </div>
                     </form>
 
                     <a
                         href="{{ route('attendance.form', ['form_type' => $formType]) }}"
-                        class="action-button button-reset mt-3"
+                        class="attendance-button reset-button mt-4"
                     >
                         <i class="fas fa-rotate-left"></i>
-                        Reset
+                        Reset Complete Form
                     </a>
 
                     <div class="mt-5 grid grid-cols-2 gap-3">
@@ -558,59 +557,144 @@
 
                         <div class="info-card">
                             <p class="info-label">
-                                Total Hours
+                                Location
                             </p>
 
-                            <p class="info-value total-hours">
-                                --:--
+                            <p
+                                id="locationShortStatus"
+                                class="info-value"
+                            >
+                                Checking
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
     </div>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const imagePreview = document.getElementById('imagePreview');
-            const cameraShell = document.getElementById('cameraShell');
-            const cameraStatus = document.getElementById('cameraStatus');
-            const snapButton = document.getElementById('snap');
-            const retakeButton = document.getElementById('retake');
-            const uploadButton = document.getElementById('upload');
-            const uploadForm = document.getElementById('uploadForm');
-            const capturedImageInput = document.getElementById('capturedImage');
-            const locationStatus = document.getElementById('locationStatus');
-            const distanceText = document.getElementById('distanceText');
-            const alertContainer = document.getElementById('alert-container');
+            const video =
+                document.getElementById('video');
 
-            const userOffice = @json(auth()->user()->office);
+            const canvas =
+                document.getElementById('canvas');
+
+            const fallbackPreview =
+                document.getElementById('fallbackPreview');
+
+            const cameraShell =
+                document.getElementById('cameraShell');
+
+            const cameraStatus =
+                document.getElementById('cameraStatus');
+
+            const captureButton =
+                document.getElementById('captureButton');
+
+            const captureButtonText =
+                document.getElementById('captureButtonText');
+
+            const submitButton =
+                document.getElementById('submitButton');
+
+            const attendanceForm =
+                document.getElementById('attendanceForm');
+
+            const capturedImageInput =
+                document.getElementById('capturedImage');
+
+            const latitudeInput =
+                document.getElementById('latitude');
+
+            const longitudeInput =
+                document.getElementById('longitude');
+
+            const distanceInput =
+                document.getElementById('distance');
+
+            const locationAvailableInput =
+                document.getElementById('locationAvailable');
+
+            const cameraAvailableInput =
+                document.getElementById('cameraAvailable');
+
+            const fallbackImageUsedInput =
+                document.getElementById('fallbackImageUsed');
+
+            const locationWarning =
+                document.getElementById('locationWarning');
+
+            const locationBox =
+                document.getElementById('locationBox');
+
+            const locationStatus =
+                document.getElementById('locationStatus');
+
+            const locationShortStatus =
+                document.getElementById('locationShortStatus');
+
+            const distanceText =
+                document.getElementById('distanceText');
+
+            const locationIcon =
+                document.getElementById('locationIcon');
+
+            const retryLocationButton =
+                document.getElementById('retryLocationButton');
+
+            const userOffice =
+                @json(auth()->user()->office);
+
+            const employeeName =
+                @json(($user ?? auth()->user())->name ?? 'Employee');
+
+            const attendanceType =
+                @json($formType === 'check_in' ? 'CHECK IN' : 'CHECK OUT');
 
             let cameraStream = null;
+            let cameraAvailable = false;
             let imageCaptured = false;
             let locationReady = false;
+            let isSubmitting = false;
 
             function setCameraStatus(message, type = 'waiting') {
-                cameraStatus.textContent = message;
-                cameraStatus.className = 'camera-status';
+                cameraStatus.className =
+                    'status-badge';
+
+                let icon =
+                    'fas fa-spinner fa-spin';
 
                 if (type === 'ready') {
-                    cameraStatus.classList.add('status-ready');
+                    cameraStatus.classList.add(
+                        'status-ready'
+                    );
+
+                    icon =
+                        'fas fa-circle-check';
                 } else if (type === 'error') {
-                    cameraStatus.classList.add('status-error');
+                    cameraStatus.classList.add(
+                        'status-error'
+                    );
+
+                    icon =
+                        'fas fa-triangle-exclamation';
                 } else {
-                    cameraStatus.classList.add('status-waiting');
+                    cameraStatus.classList.add(
+                        'status-waiting'
+                    );
                 }
+
+                cameraStatus.innerHTML =
+                    `<i class="${icon}"></i><span>${message}</span>`;
             }
 
             function updateSubmitButton() {
-                uploadButton.disabled = !(imageCaptured && locationReady);
+                submitButton.disabled =
+                    !imageCaptured || isSubmitting;
             }
 
             async function startCamera() {
@@ -620,7 +704,7 @@
                         !navigator.mediaDevices.getUserMedia
                     ) {
                         throw new Error(
-                            'Camera is not supported in this browser.'
+                            'Camera is not supported.'
                         );
                     }
 
@@ -638,11 +722,21 @@
                             audio: false
                         });
 
-                    video.srcObject = cameraStream;
+                    video.srcObject =
+                        cameraStream;
 
                     await video.play();
 
-                    snapButton.disabled = false;
+                    cameraAvailable = true;
+                    cameraAvailableInput.value = '1';
+
+                    cameraShell.classList.add(
+                        'camera-ready'
+                    );
+
+                    cameraShell.classList.remove(
+                        'fallback-active'
+                    );
 
                     setCameraStatus(
                         'Camera ready',
@@ -650,16 +744,20 @@
                     );
                 } catch (error) {
                     console.error(
-                        'Camera error:',
+                        'Camera unavailable:',
                         error
                     );
 
-                    snapButton.disabled = true;
+                    cameraAvailable = false;
+                    cameraAvailableInput.value = '0';
 
                     setCameraStatus(
-                        'Camera permission denied or unavailable',
+                        'Camera unavailable - fallback capture available',
                         'error'
                     );
+
+                    captureButtonText.textContent =
+                        'Capture Image';
                 }
             }
 
@@ -677,20 +775,58 @@
                 cameraStream = null;
             }
 
-            snapButton.addEventListener('click', function () {
+            function saveBlobAsInput(
+                blob,
+                filename,
+                fallbackUsed
+            ) {
+                const imageFile =
+                    new File(
+                        [blob],
+                        filename,
+                        {
+                            type: 'image/jpeg'
+                        }
+                    );
+
+                const dataTransfer =
+                    new DataTransfer();
+
+                dataTransfer.items.add(
+                    imageFile
+                );
+
+                capturedImageInput.files =
+                    dataTransfer.files;
+
+                imageCaptured = true;
+
+                fallbackImageUsedInput.value =
+                    fallbackUsed ? '1' : '0';
+
+                captureButtonText.textContent =
+                    fallbackUsed
+                        ? 'Capture'
+                        : 'Capture ';
+
+                updateSubmitButton();
+            }
+
+            function captureCameraPhoto() {
                 if (
                     !video.videoWidth ||
                     !video.videoHeight
                 ) {
-                    alert(
-                        'Camera is still loading. Please wait a moment.'
-                    );
+                    createFallbackImage();
 
                     return;
                 }
 
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                canvas.width =
+                    video.videoWidth;
+
+                canvas.height =
+                    video.videoHeight;
 
                 const context =
                     canvas.getContext('2d');
@@ -720,100 +856,218 @@
                 canvas.toBlob(
                     function (blob) {
                         if (!blob) {
+                            createFallbackImage();
+
+                            return;
+                        }
+
+                        saveBlobAsInput(
+                            blob,
+                            'attendance-camera-photo.jpg',
+                            false
+                        );
+
+                        setCameraStatus(
+                            'Photo captured - live camera running',
+                            'ready'
+                        );
+                    },
+                    'image/jpeg',
+                    0.90
+                );
+            }
+
+            function createFallbackImage() {
+                const fallbackCanvas =
+                    document.createElement('canvas');
+
+                fallbackCanvas.width = 900;
+                fallbackCanvas.height = 900;
+
+                const context =
+                    fallbackCanvas.getContext('2d');
+
+                const gradient =
+                    context.createLinearGradient(
+                        0,
+                        0,
+                        900,
+                        900
+                    );
+
+                gradient.addColorStop(
+                    0,
+                    '#0f172a'
+                );
+
+                gradient.addColorStop(
+                    0.55,
+                    '#312e81'
+                );
+
+                gradient.addColorStop(
+                    1,
+                    '#0f766e'
+                );
+
+                context.fillStyle =
+                    gradient;
+
+                context.fillRect(
+                    0,
+                    0,
+                    900,
+                    900
+                );
+
+                context.fillStyle =
+                    'rgba(255,255,255,0.12)';
+
+                context.beginPath();
+
+                context.arc(
+                    720,
+                    150,
+                    210,
+                    0,
+                    Math.PI * 2
+                );
+
+                context.fill();
+
+                context.textAlign =
+                    'center';
+
+                context.fillStyle =
+                    '#ffffff';
+
+                context.font =
+                    'bold 56px Arial';
+
+                context.fillText(
+                    attendanceType,
+                    450,
+                    250
+                );
+
+                context.font =
+                    'bold 42px Arial';
+
+                context.fillText(
+                    employeeName,
+                    450,
+                    350
+                );
+
+                context.font =
+                    '30px Arial';
+
+                const currentDate =
+                    new Date();
+
+                context.fillText(
+                    currentDate.toLocaleDateString(
+                        'en-IN',
+                        {
+                            weekday: 'long',
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                        }
+                    ),
+                    450,
+                    440
+                );
+
+                context.fillText(
+                    currentDate.toLocaleTimeString(
+                        'en-IN',
+                        {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true
+                        }
+                    ),
+                    450,
+                    500
+                );
+
+                context.font =
+                    'bold 28px Arial';
+
+                context.fillStyle =
+                    '#99f6e4';
+
+                context.fillText(
+                    'CAMERA UNAVAILABLE',
+                    450,
+                    610
+                );
+
+                context.font =
+                    '24px Arial';
+
+                context.fillStyle =
+                    '#e2e8f0';
+
+                context.fillText(
+                    'System generated attendance verification',
+                    450,
+                    665
+                );
+
+                fallbackCanvas.toBlob(
+                    function (blob) {
+                        if (!blob) {
                             alert(
-                                'Unable to capture photo. Please try again.'
+                                'Verification image create नहीं हो पाई।'
                             );
 
                             return;
                         }
 
-                        const imageFile = new File(
-                            [blob],
-                            'attendance-photo.png',
-                            {
-                                type: 'image/png'
-                            }
+                        saveBlobAsInput(
+                            blob,
+                            'attendance-fallback-image.jpg',
+                            true
                         );
 
-                        const dataTransfer =
-                            new DataTransfer();
-
-                        dataTransfer.items.add(
-                            imageFile
-                        );
-
-                        capturedImageInput.files =
-                            dataTransfer.files;
-
-                        imagePreview.src =
+                        fallbackPreview.src =
                             URL.createObjectURL(blob);
 
                         cameraShell.classList.add(
-                            'has-image'
-                        );
-
-                        imageCaptured = true;
-
-                        snapButton.classList.add(
-                            'hidden'
-                        );
-
-                        retakeButton.classList.remove(
-                            'hidden'
+                            'fallback-active'
                         );
 
                         setCameraStatus(
-                            'Photo captured successfully',
+                            'Fallback verification image created',
                             'ready'
                         );
-
-                        updateSubmitButton();
-
-                        stopCamera();
                     },
-                    'image/png',
-                    0.92
+                    'image/jpeg',
+                    0.90
                 );
-            });
+            }
 
-            retakeButton.addEventListener(
+            captureButton.addEventListener(
                 'click',
-                async function () {
-                    imageCaptured = false;
-
-                    capturedImageInput.value = '';
-
-                    imagePreview.removeAttribute(
-                        'src'
-                    );
-
-                    cameraShell.classList.remove(
-                        'has-image'
-                    );
-
-                    retakeButton.classList.add(
-                        'hidden'
-                    );
-
-                    snapButton.classList.remove(
-                        'hidden'
-                    );
-
-                    snapButton.disabled = true;
-
-                    setCameraStatus(
-                        'Restarting camera...',
-                        'waiting'
-                    );
-
-                    updateSubmitButton();
-
-                    await startCamera();
+                function () {
+                    if (
+                        cameraAvailable &&
+                        video.videoWidth &&
+                        video.videoHeight
+                    ) {
+                        captureCameraPhoto();
+                    } else {
+                        createFallbackImage();
+                    }
                 }
             );
 
             function degreesToRadians(degrees) {
-                return degrees * (Math.PI / 180);
+                return degrees *
+                    (Math.PI / 180);
             }
 
             function calculateDistance(
@@ -856,25 +1110,161 @@
                     2 *
                     Math.atan2(
                         Math.sqrt(calculation),
-                        Math.sqrt(
-                            1 - calculation
-                        )
+                        Math.sqrt(1 - calculation)
                     );
 
-                return earthRadius * angularDistance;
+                return earthRadius *
+                    angularDistance;
+            }
+
+            function clearLocationValues() {
+                latitudeInput.value = '';
+                longitudeInput.value = '';
+                distanceInput.value = '';
+                locationAvailableInput.value = '0';
+                locationReady = false;
+            }
+
+            function locationFailed(message) {
+                clearLocationValues();
+
+                locationBox.classList.remove(
+                    'location-success'
+                );
+
+                locationBox.classList.add(
+                    'location-error'
+                );
+
+                locationStatus.textContent =
+                    message;
+
+                locationStatus.classList.add(
+                    'text-rose-700'
+                );
+
+                locationShortStatus.textContent =
+                    'Unavailable';
+
+                locationShortStatus.classList.add(
+                    'text-rose-700'
+                );
+
+                locationIcon.className =
+                    'fas fa-location-dot';
+
+                distanceText.textContent =
+                    'Location के बिना भी attendance submit हो सकती है।';
+
+                locationWarning.classList.remove(
+                    'hidden'
+                );
+            }
+
+            function locationSuccess(
+                latitude,
+                longitude
+            ) {
+                latitudeInput.value =
+                    latitude;
+
+                longitudeInput.value =
+                    longitude;
+
+                locationAvailableInput.value =
+                    '1';
+
+                locationReady = true;
+
+                locationBox.classList.remove(
+                    'location-error'
+                );
+
+                locationBox.classList.add(
+                    'location-success'
+                );
+
+                locationStatus.textContent =
+                    'Location detected successfully';
+
+                locationStatus.classList.remove(
+                    'text-rose-700'
+                );
+
+                locationStatus.classList.add(
+                    'text-emerald-700'
+                );
+
+                locationShortStatus.textContent =
+                    'Available';
+
+                locationShortStatus.classList.remove(
+                    'text-rose-700'
+                );
+
+                locationShortStatus.classList.add(
+                    'text-emerald-700'
+                );
+
+                locationIcon.className =
+                    'fas fa-circle-check';
+
+                locationWarning.classList.add(
+                    'hidden'
+                );
+
+                const officeLatitude =
+                    parseFloat(
+                        userOffice?.latitude
+                    );
+
+                const officeLongitude =
+                    parseFloat(
+                        userOffice?.longitude
+                    );
+
+                if (
+                    !Number.isNaN(officeLatitude) &&
+                    !Number.isNaN(officeLongitude)
+                ) {
+                    const officeDistance =
+                        calculateDistance(
+                            officeLatitude,
+                            officeLongitude,
+                            latitude,
+                            longitude
+                        );
+
+                    distanceInput.value =
+                        officeDistance.toFixed(2);
+
+                    distanceText.textContent =
+                        `Office distance: ${Math.round(
+                            officeDistance
+                        )} metres`;
+                } else {
+                    distanceInput.value = '';
+
+                    distanceText.textContent =
+                        'Office location is not configured.';
+                }
             }
 
             function detectLocation() {
+                clearLocationValues();
+
+                locationStatus.textContent =
+                    'Detecting location...';
+
+                locationShortStatus.textContent =
+                    'Checking';
+
+                locationIcon.className =
+                    'fas fa-spinner fa-spin';
+
                 if (!navigator.geolocation) {
-                    locationStatus.textContent =
-                        'Geolocation is not supported by this browser.';
-
-                    locationStatus.classList.add(
-                        'text-rose-700'
-                    );
-
-                    alertContainer.classList.remove(
-                        'hidden'
+                    locationFailed(
+                        'Browser location supported नहीं है।'
                     );
 
                     return;
@@ -882,145 +1272,71 @@
 
                 navigator.geolocation.getCurrentPosition(
                     function (position) {
-                        const latitude =
-                            position.coords.latitude;
-
-                        const longitude =
-                            position.coords.longitude;
-
-                        document.getElementById(
-                            'latitude'
-                        ).value = latitude;
-
-                        document.getElementById(
-                            'longitude'
-                        ).value = longitude;
-
-                        let officeDistance = 0;
-
-                        if (
-                            userOffice &&
-                            userOffice.latitude !== null &&
-                            userOffice.longitude !== null
-                        ) {
-                            officeDistance =
-                                calculateDistance(
-                                    parseFloat(
-                                        userOffice.latitude
-                                    ),
-                                    parseFloat(
-                                        userOffice.longitude
-                                    ),
-                                    latitude,
-                                    longitude
-                                );
-                        }
-
-                        document.getElementById(
-                            'distance'
-                        ).value =
-                            officeDistance.toFixed(2);
-
-                        locationReady = true;
-
-                        locationStatus.textContent =
-                            'Location detected successfully';
-
-                        locationStatus.classList.remove(
-                            'text-rose-700'
+                        locationSuccess(
+                            position.coords.latitude,
+                            position.coords.longitude
                         );
-
-                        locationStatus.classList.add(
-                            'text-emerald-700'
-                        );
-
-                        distanceText.textContent =
-                            userOffice
-                                ? `Office distance: ${Math.round(
-                                      officeDistance
-                                  )} metres`
-                                : 'Office location is not configured.';
-
-                        updateSubmitButton();
                     },
+
                     function (error) {
                         console.error(
                             'Location error:',
                             error
                         );
 
-                        locationReady = false;
-
-                        locationStatus.textContent =
-                            'Location permission denied or location unavailable.';
-
-                        locationStatus.classList.add(
-                            'text-rose-700'
+                        locationFailed(
+                            'Location permission denied या location unavailable है।'
                         );
-
-                        distanceText.textContent =
-                            'Enable location permission and reload this page.';
-
-                        alertContainer.classList.remove(
-                            'hidden'
-                        );
-
-                        updateSubmitButton();
                     },
+
                     {
                         enableHighAccuracy: true,
-                        timeout: 15000,
+                        timeout: 10000,
                         maximumAge: 0
                     }
                 );
             }
 
-            uploadForm.addEventListener(
-                'submit',
-                function (event) {
-                    if (!imageCaptured) {
-                        event.preventDefault();
-
-                        alert(
-                            'Please capture your photo first.'
-                        );
-
-                        return;
-                    }
-
-                    if (!locationReady) {
-                        event.preventDefault();
-
-                        alert(
-                            'Please allow location access before submitting attendance.'
-                        );
-
-                        return;
-                    }
-
-                    uploadButton.disabled = true;
-
-                    uploadButton.innerHTML =
-                        '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            retryLocationButton.addEventListener(
+                'click',
+                function () {
+                    detectLocation();
                 }
             );
 
-            const currentTimeElements =
-                document.querySelectorAll(
-                    '.current-time'
-                );
+            attendanceForm.addEventListener(
+                'submit',
+                function (event) {
+                    if (isSubmitting) {
+                        event.preventDefault();
 
-            const currentDateElements =
-                document.querySelectorAll(
-                    '.current-date'
-                );
+                        return;
+                    }
+
+                    if (!imageCaptured) {
+                        event.preventDefault();
+
+                        createFallbackImage();
+
+                        alert(
+                            'Verification image बनाई गई है। अब दोबारा Submit दबाएँ।'
+                        );
+
+                        return;
+                    }
+
+                    isSubmitting = true;
+
+                    submitButton.disabled = true;
+
+                    submitButton.innerHTML =
+                        '<i class="fas fa-spinner fa-spin"></i><span>Submitting Attendance...</span>';
+                }
+            );
 
             function updateCurrentTime() {
-                const currentDateTime =
-                    new Date();
-
                 const currentTime =
-                    currentDateTime.toLocaleTimeString(
+                    new Date().toLocaleTimeString(
                         'en-IN',
                         {
                             hour: '2-digit',
@@ -1030,30 +1346,14 @@
                         }
                     );
 
-                const currentDate =
-                    currentDateTime.toLocaleDateString(
-                        'en-IN',
-                        {
-                            year: 'numeric',
-                            month: 'short',
-                            day: '2-digit',
-                            weekday: 'long'
-                        }
-                    );
-
-                currentTimeElements.forEach(
-                    function (element) {
+                document
+                    .querySelectorAll(
+                        '.current-time'
+                    )
+                    .forEach(function (element) {
                         element.textContent =
                             currentTime;
-                    }
-                );
-
-                currentDateElements.forEach(
-                    function (element) {
-                        element.textContent =
-                            currentDate;
-                    }
-                );
+                    });
             }
 
             updateCurrentTime();

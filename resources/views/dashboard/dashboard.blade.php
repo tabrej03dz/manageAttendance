@@ -589,13 +589,34 @@
     | Logged-in User Attendance Actions
     |--------------------------------------------------------------------------
     */
+    // $hasCheckedIn = !empty($todayAttendanceRecord?->check_in);
+    // $hasCheckedOut = !empty($todayAttendanceRecord?->check_out);
+    // $hasOpenBreak = $break && empty($break->end_time);
+
+    // $canCheckIn = !$hasCheckedIn;
+    // $canCheckOut = $hasCheckedIn && !$hasCheckedOut;
+    // $canUseBreak = $hasCheckedIn && !$hasCheckedOut;
+
+
+  
+
     $hasCheckedIn = !empty($todayAttendanceRecord?->check_in);
-    $hasCheckedOut = !empty($todayAttendanceRecord?->check_out);
-    $hasOpenBreak = $break && empty($break->end_time);
+
+    $hasCheckedOut = !empty(
+        $todayAttendanceRecord?->check_out
+    );
+
+    $hasOpenBreak = $break &&
+        empty($break->end_time);
 
     $canCheckIn = !$hasCheckedIn;
-    $canCheckOut = $hasCheckedIn && !$hasCheckedOut;
-    $canUseBreak = $hasCheckedIn && !$hasCheckedOut;
+
+
+    $canCheckOut = $hasCheckedIn;
+
+    $canUseBreak =
+        $hasCheckedIn &&
+        !$hasCheckedOut;
 @endphp
 
 <div class="dashboard-page space-y-6 pb-10">
@@ -786,22 +807,33 @@
 
                 {{-- Check Out --}}
                 @if($canCheckOut)
-                    <a href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
-                       class="attendance-action-button action-check-out">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Check Out</span>
+                    <a
+                        href="{{ route('attendance.form', [
+                            'form_type' => 'check_out'
+                        ]) }}"
+                        class="attendance-action-button action-check-out"
+                        title="{{ $hasCheckedOut
+                            ? 'Checkout time दोबारा update करें'
+                            : 'Mark your checkout'
+                        }}"
+                    >
+                        
+                            <i class="fas fa-sign-out-alt"></i>
+
+                            <span>
+                                Check Out
+                            </span>
                     </a>
-                @elseif($hasCheckedOut)
-                    <span class="attendance-action-button action-disabled disabled"
-                          title="You have already checked out today">
-                        <i class="fas fa-check-double"></i>
-                        <span>Checked Out</span>
-                    </span>
                 @else
-                    <span class="attendance-action-button action-disabled disabled"
-                          title="Please check in first">
+                    <span
+                        class="attendance-action-button action-disabled disabled"
+                        title="Please check in first"
+                    >
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Check Out</span>
+
+                        <span>
+                            Check Out
+                        </span>
                     </span>
                 @endif
 

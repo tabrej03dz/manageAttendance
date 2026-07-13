@@ -92,7 +92,6 @@ Route::middleware('auth')->group(function (){
     Route::resource('employee-letters', EmployeeLetterController::class);
 
 
-
     //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/home', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('home');
 
