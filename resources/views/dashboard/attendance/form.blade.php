@@ -66,13 +66,21 @@
         }
 
         .camera-shell video {
+            z-index: 1;
             display: block;
             transform: scaleX(-1);
         }
 
         .camera-shell img {
+            z-index: 2;
             display: none;
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fallback Image
+        |--------------------------------------------------------------------------
+        */
 
         .camera-shell.fallback-active video {
             display: none;
@@ -80,12 +88,33 @@
 
         .camera-shell.fallback-active img {
             display: block;
+            transform: none;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Captured Photo
+        |--------------------------------------------------------------------------
+        */
+
+        .camera-shell.photo-captured video {
+            display: none;
+        }
+
+        .camera-shell.photo-captured img {
+            display: block;
+            transform: none;
+        }
+
+        .camera-shell.photo-captured .camera-placeholder,
+        .camera-shell.fallback-active .camera-placeholder {
+            display: none;
         }
 
         .camera-placeholder {
             position: absolute;
             inset: 0;
-            z-index: 2;
+            z-index: 3;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -95,8 +124,7 @@
             background: linear-gradient(135deg, #f8fafc, #e2e8f0);
         }
 
-        .camera-shell.camera-ready .camera-placeholder,
-        .camera-shell.fallback-active .camera-placeholder {
+        .camera-shell.camera-ready .camera-placeholder {
             display: none;
         }
 
@@ -416,8 +444,8 @@
                         </button>
 
                         <p class="text-center text-xs font-semibold leading-5 text-slate-500">
-                            If the camera is unavailable, clicking Capture will
-                            generate a fallback verification image.
+                            After capturing, your photo will appear inside the circle.
+                            Press Capture Again to retake it.
                         </p>
                     </div>
                 </div>
@@ -658,10 +686,12 @@
                 @json($formType === 'check_in' ? 'CHECK IN' : 'CHECK OUT');
 
             let cameraStream = null;
+            let previewObjectUrl = null;
             let cameraAvailable = false;
             let imageCaptured = false;
             let locationReady = false;
             let isSubmitting = false;
+            let isStartingCamera = false;
 
             /*
             |--------------------------------------------------------------------------
@@ -707,12 +737,68 @@
 
             /*
             |--------------------------------------------------------------------------
+            | Preview Object URL
+            |--------------------------------------------------------------------------
+            */
+
+            function clearPreviewObjectUrl() {
+                if (previewObjectUrl) {
+                    URL.revokeObjectURL(
+                        previewObjectUrl
+                    );
+
+                    previewObjectUrl = null;
+                }
+            }
+
+            function showCapturedPreview(blob, previewClass) {
+                clearPreviewObjectUrl();
+
+                previewObjectUrl =
+                    URL.createObjectURL(blob);
+
+                fallbackPreview.src =
+                    previewObjectUrl;
+
+                cameraShell.classList.remove(
+                    'fallback-active',
+                    'photo-captured'
+                );
+
+                cameraShell.classList.add(
+                    previewClass
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
             | Camera
             |--------------------------------------------------------------------------
             */
 
             async function startCamera() {
+                if (isStartingCamera) {
+                    return;
+                }
+
+                isStartingCamera = true;
+
                 try {
+                    stopCamera();
+
+                    cameraShell.classList.remove(
+                        'fallback-active',
+                        'photo-captured',
+                        'camera-ready'
+                    );
+
+                    video.srcObject = null;
+
+                    setCameraStatus(
+                        'Starting camera',
+                        'waiting'
+                    );
+
                     if (
                         !navigator.mediaDevices ||
                         !navigator.mediaDevices.getUserMedia
@@ -748,10 +834,6 @@
                         'camera-ready'
                     );
 
-                    cameraShell.classList.remove(
-                        'fallback-active'
-                    );
-
                     setCameraStatus(
                         'Camera ready',
                         'ready'
@@ -765,33 +847,39 @@
                     cameraAvailable = false;
                     cameraAvailableInput.value = '0';
 
+                    cameraShell.classList.remove(
+                        'camera-ready'
+                    );
+
                     setCameraStatus(
                         'Camera unavailable - fallback capture available',
                         'error'
                     );
 
                     captureButtonText.textContent =
-                        'Capture Image';
+                        'Create Verification Image';
+                } finally {
+                    isStartingCamera = false;
                 }
             }
 
             function stopCamera() {
-                if (!cameraStream) {
-                    return;
+                if (cameraStream) {
+                    cameraStream
+                        .getTracks()
+                        .forEach(function (track) {
+                            track.stop();
+                        });
                 }
 
-                cameraStream
-                    .getTracks()
-                    .forEach(function (track) {
-                        track.stop();
-                    });
-
                 cameraStream = null;
+                video.srcObject = null;
+                cameraAvailable = false;
             }
 
             /*
             |--------------------------------------------------------------------------
-            | Image Capture
+            | Save Image in File Input
             |--------------------------------------------------------------------------
             */
 
@@ -825,12 +913,16 @@
                     fallbackUsed ? '1' : '0';
 
                 captureButtonText.textContent =
-                    fallbackUsed
-                        ? 'Capture Again'
-                        : 'Capture Again';
+                    'Capture Again';
 
                 updateSubmitButton();
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Capture Camera Photo
+            |--------------------------------------------------------------------------
+            */
 
             function captureCameraPhoto() {
                 if (
@@ -838,9 +930,10 @@
                     !video.videoHeight
                 ) {
                     createFallbackImage();
-
                     return;
                 }
+
+                captureButton.disabled = true;
 
                 canvas.width =
                     video.videoWidth;
@@ -852,6 +945,16 @@
                     canvas.getContext('2d');
 
                 context.save();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Mirror Captured Image
+                |--------------------------------------------------------------------------
+                |
+                | Front camera video mirrored दिखाई देता है इसलिए captured image
+                | को भी उसी तरह mirror किया जा रहा है।
+                |
+                */
 
                 context.translate(
                     canvas.width,
@@ -875,9 +978,10 @@
 
                 canvas.toBlob(
                     function (blob) {
+                        captureButton.disabled = false;
+
                         if (!blob) {
                             createFallbackImage();
-
                             return;
                         }
 
@@ -886,6 +990,27 @@
                             'attendance-camera-photo.jpg',
                             false
                         );
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Stop Live Camera
+                        |--------------------------------------------------------------------------
+                        */
+
+                        stopCamera();
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Show Captured Photo inside Circle
+                        |--------------------------------------------------------------------------
+                        */
+
+                        showCapturedPreview(
+                            blob,
+                            'photo-captured'
+                        );
+
+                        cameraAvailableInput.value = '1';
 
                         setCameraStatus(
                             'Photo captured successfully',
@@ -897,7 +1022,15 @@
                 );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Create Fallback Image
+            |--------------------------------------------------------------------------
+            */
+
             function createFallbackImage() {
+                captureButton.disabled = true;
+
                 const fallbackCanvas =
                     document.createElement('canvas');
 
@@ -1039,6 +1172,8 @@
 
                 fallbackCanvas.toBlob(
                     function (blob) {
+                        captureButton.disabled = false;
+
                         if (!blob) {
                             alert(
                                 'The verification image could not be created.'
@@ -1053,12 +1188,14 @@
                             true
                         );
 
-                        fallbackPreview.src =
-                            URL.createObjectURL(blob);
+                        stopCamera();
 
-                        cameraShell.classList.add(
+                        showCapturedPreview(
+                            blob,
                             'fallback-active'
                         );
+
+                        cameraAvailableInput.value = '0';
 
                         setCameraStatus(
                             'Fallback verification image created',
@@ -1070,9 +1207,71 @@
                 );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Reset Captured Image and Restart Camera
+            |--------------------------------------------------------------------------
+            */
+
+            async function captureAgain() {
+                imageCaptured = false;
+
+                capturedImageInput.value = '';
+
+                fallbackImageUsedInput.value = '0';
+
+                cameraAvailableInput.value = '0';
+
+                clearPreviewObjectUrl();
+
+                fallbackPreview.removeAttribute(
+                    'src'
+                );
+
+                cameraShell.classList.remove(
+                    'fallback-active',
+                    'photo-captured',
+                    'camera-ready'
+                );
+
+                captureButtonText.textContent =
+                    'Capture Photo';
+
+                updateSubmitButton();
+
+                await startCamera();
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Capture Button
+            |--------------------------------------------------------------------------
+            */
+
             captureButton.addEventListener(
                 'click',
-                function () {
+                async function () {
+                    if (isStartingCamera) {
+                        return;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Capture Again
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (imageCaptured) {
+                        await captureAgain();
+                        return;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | First Capture
+                    |--------------------------------------------------------------------------
+                    */
+
                     if (
                         cameraAvailable &&
                         video.videoWidth &&
@@ -1292,14 +1491,35 @@
             function detectLocation() {
                 clearLocationValues();
 
+                locationBox.classList.remove(
+                    'location-success',
+                    'location-error'
+                );
+
                 locationStatus.textContent =
                     'Detecting location...';
+
+                locationStatus.classList.remove(
+                    'text-emerald-700',
+                    'text-rose-700'
+                );
+
+                locationStatus.classList.add(
+                    'text-slate-700'
+                );
 
                 locationShortStatus.textContent =
                     'Checking';
 
+                locationShortStatus.classList.remove(
+                    'text-emerald-700',
+                    'text-rose-700'
+                );
+
                 locationIcon.className =
                     'fas fa-spinner fa-spin';
+
+                distanceText.textContent = '';
 
                 if (!navigator.geolocation) {
                     locationFailed(
@@ -1364,17 +1584,14 @@
                 function (event) {
                     if (isSubmitting) {
                         event.preventDefault();
-
                         return;
                     }
 
                     if (!imageCaptured) {
                         event.preventDefault();
 
-                        createFallbackImage();
-
                         alert(
-                            'A verification image has been created. Please press Submit again.'
+                            'Please capture a photo before submitting attendance.'
                         );
 
                         return;
@@ -1382,6 +1599,9 @@
 
                     isSubmitting = true;
 
+                    stopCamera();
+
+                    captureButton.disabled = true;
                     submitButton.disabled = true;
 
                     submitButton.innerHTML =
@@ -1424,13 +1644,26 @@
                 1000
             );
 
+            /*
+            |--------------------------------------------------------------------------
+            | Initial Load
+            |--------------------------------------------------------------------------
+            */
+
             startCamera();
             detectLocation();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Page Close Cleanup
+            |--------------------------------------------------------------------------
+            */
 
             window.addEventListener(
                 'beforeunload',
                 function () {
                     stopCamera();
+                    clearPreviewObjectUrl();
 
                     document.body.classList.remove(
                         'attendance-focus-mode'

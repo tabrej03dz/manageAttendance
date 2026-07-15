@@ -98,8 +98,18 @@ class OwnerController extends Controller
         return redirect('owner');
     }
 
-    public function edit(User $owner){
-        return view('dashboard.owner.edit', compact('owner'));
+    // public function edit(User $owner){
+    //     return view('dashboard.owner.edit', compact('owner'));
+    // }
+
+
+    public function edit(User $owner) {
+        if (!$owner->hasRole('owner')) {
+            abort(404); 
+        }
+        $permissions = Permission::orderBy('name')->get(); 
+        $ownerPermissions = $owner ->permissions ->pluck('name') ->toArray();
+        return view( 'dashboard.owner.edit', compact( 'owner', 'permissions', 'ownerPermissions' ) );
     }
 
     public function update(Request $request, User $owner){
