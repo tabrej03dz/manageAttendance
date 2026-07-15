@@ -16,83 +16,345 @@ class AttendanceRecordController extends Controller
 {
 
 
-    private function activeOfficeId(Request $request): ?int
-    {
-        return $request->user()?->activeOfficeId();
+private function activeOfficeId(Request $request): ?int
+{
+    $user = $request->user();
+
+    if (!$user) {
+        return null;
     }
 
-    private function officeEmployeeIds(Request $request): array
-    {
-        $officeId = $this->activeOfficeId($request);
+    /*
+     * Sabse pehle session me selected office dekhenge.
+     */
+    $sessionOfficeId = $request->session()->get('active_office_id');
 
-        if (!$officeId) {
-            return [];
+    if ($sessionOfficeId && (int) $sessionOfficeId > 0) {
+        return (int) $sessionOfficeId;
+    }
+
+    /*
+     * Normal admin/employee ka assigned office.
+     */
+    if ($user->office_id && (int) $user->office_id > 0) {
+        return (int) $user->office_id;
+    }
+
+    /*
+     * Owner ke paas users.office_id nahi ho sakta.
+     * Isliye uska first owned office default select hoga.
+     */
+    if ($user->hasRole('owner')) {
+        return Office::query()
+            ->where('owner_id', $user->id)
+            ->orderBy('id')
+            ->value('id');
+    }
+
+    /*
+     * Super admin ke liye first office fallback.
+     */
+    if ($user->hasRole('super_admin')) {
+        return Office::query()
+            ->orderBy('id')
+            ->value('id');
+    }
+
+    return null;
+}
+
+private function allowedOfficeIds(Request $request): array
+{
+    $user = $request->user();
+
+    if (!$user) {
+        return [];
+    }
+
+    /*
+     * Super admin kisi bhi office ko access kar sakta hai.
+     */
+    if ($user->hasRole('super_admin')) {
+        return Office::query()
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    }
+
+    /*
+     * Owner sirf apne offices access kar sakta hai.
+     */
+    if ($user->hasRole('owner')) {
+        return Office::query()
+            ->where('owner_id', $user->id)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    }
+
+    /*
+     * Office switch permission wale user owner ke offices access kar sakte hain.
+     */
+    if (
+        $user->can('switch offices') ||
+        $user->can('switch office')
+    ) {
+        $currentOffice = $user->office;
+
+        if ($currentOffice && $currentOffice->owner_id) {
+            return Office::query()
+                ->where('owner_id', $currentOffice->owner_id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->toArray();
         }
-
-        return User::where('office_id', $officeId)->pluck('id')->toArray();
     }
 
+    /*
+     * Normal admin/employee sirf assigned office.
+     */
+    return $user->office_id
+        ? [(int) $user->office_id]
+        : [];
+}
 
-    public function index(Request $request)
-    {
-        if ($request->month) {
-            $month = $request->month;
-            $startOfMonth = Carbon::parse($request->month . '-01')->startOfMonth();
-            $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
+private function selectedOfficeId(Request $request): ?int
+{
+    $activeOfficeId = $this->activeOfficeId($request);
+    $allowedOfficeIds = $this->allowedOfficeIds($request);
+
+    if (
+        $activeOfficeId &&
+        in_array((int) $activeOfficeId, $allowedOfficeIds, true)
+    ) {
+        return (int) $activeOfficeId;
+    }
+
+    /*
+     * Session office invalid ho to allowed offices ka first office.
+     */
+    return !empty($allowedOfficeIds)
+        ? (int) $allowedOfficeIds[0]
+        : null;
+}
+
+private function officeEmployeeIds(Request $request): array
+{
+    $officeId = $this->selectedOfficeId($request);
+
+    if (!$officeId) {
+        return [];
+    }
+
+    return User::query()
+        ->where('office_id', $officeId)
+        ->where('status', '1')
+        ->pluck('id')
+        ->map(fn ($id) => (int) $id)
+        ->toArray();
+}
+
+
+    // public function index(Request $request)
+    // {
+    //     if ($request->month) {
+    //         $month = $request->month;
+    //         $startOfMonth = Carbon::parse($request->month . '-01')->startOfMonth();
+    //         $endOfMonth = Carbon::parse($request->month . '-01')->endOfMonth();
+    //     } else {
+    //         $month = Carbon::now()->format('Y-m');
+    //         $startOfMonth = Carbon::now()->startOfMonth();
+    //         $endOfMonth = Carbon::now()->endOfMonth();
+    //     }
+
+    //     $officeId = $this->activeOfficeId($request);
+    //     $employeeIds = $this->officeEmployeeIds($request);
+
+    //     if (empty($employeeIds)) {
+    //         $dates = collect();
+    //         $attendanceRecords = collect();
+    //         $users = collect();
+    //         $user = null;
+
+    //         return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
+    //     }
+
+    //     $user = null;
+
+    //     if ($request->employee) {
+    //         $user = User::where('office_id', $officeId)
+    //             ->where('id', $request->employee)
+    //             ->first();
+    //     }
+
+    //     // normal employee only self
+    //     if (!$request->user()->hasRole('super_admin') && !$request->user()->hasRole('owner') && !$request->user()->hasRole('admin')) {
+    //         $user = $request->user();
+    //     }
+
+    //     $dates = new Collection();
+    //     for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
+    //         $dates->push((object)[
+    //             'date' => $date->copy(),
+    //         ]);
+    //     }
+
+    //     $attendanceRecords = AttendanceRecord::query()
+    //         ->whereBetween('check_in', [
+    //             $startOfMonth->copy()->startOfDay(),
+    //             $endOfMonth->copy()->endOfDay()
+    //         ])
+    //         ->whereIn('user_id', $user ? [$user->id] : $employeeIds)
+    //         ->orderBy('check_in')
+    //         ->get();
+
+    //     $users = User::where('office_id', $officeId)
+    //         ->where('status', '1')
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
+    // }
+
+
+public function index(Request $request)
+{
+    $loggedInUser = $request->user();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Selected month
+    |--------------------------------------------------------------------------
+    */
+    $month = $request->filled('month')
+        ? $request->month
+        : now()->format('Y-m');
+
+    try {
+        $selectedMonth = Carbon::createFromFormat('Y-m', $month);
+    } catch (\Throwable $e) {
+        $month = now()->format('Y-m');
+        $selectedMonth = Carbon::createFromFormat('Y-m', $month);
+    }
+
+    $startOfMonth = $selectedMonth->copy()->startOfMonth();
+    $endOfMonth = $selectedMonth->copy()->endOfMonth();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Selected office
+    |--------------------------------------------------------------------------
+    */
+    $officeId = $this->selectedOfficeId($request);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Role check
+    |--------------------------------------------------------------------------
+    */
+    $isManagement = $loggedInUser->hasAnyRole([
+        'super_admin',
+        'owner',
+        'admin',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee dropdown
+    |--------------------------------------------------------------------------
+    */
+    if ($isManagement) {
+        if ($officeId) {
+            $users = User::query()
+                ->where('office_id', $officeId)
+                ->where('status', '1')
+                ->orderBy('name')
+                ->get();
         } else {
-            $month = Carbon::now()->format('Y-m');
-            $startOfMonth = Carbon::now()->startOfMonth();
-            $endOfMonth = Carbon::now()->endOfMonth();
-        }
-
-        $officeId = $this->activeOfficeId($request);
-        $employeeIds = $this->officeEmployeeIds($request);
-
-        if (empty($employeeIds)) {
-            $dates = collect();
-            $attendanceRecords = collect();
             $users = collect();
-            $user = null;
+        }
+    } else {
+        $users = collect([$loggedInUser]);
+    }
 
-            return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
+    /*
+    |--------------------------------------------------------------------------
+    | Selected employee
+    |--------------------------------------------------------------------------
+    */
+    $user = null;
+
+    if ($isManagement) {
+        if ($request->filled('employee')) {
+            /*
+             * Employee dropdown me maujood employee hi select ho sakega.
+             */
+            $user = $users->first(function ($employee) use ($request) {
+                return (int) $employee->id === (int) $request->employee;
+            });
         }
 
-        $user = null;
-
-        if ($request->employee) {
-            $user = User::where('office_id', $officeId)
-                ->where('id', $request->employee)
-                ->first();
+        /*
+         * Employee select nahi kiya to first active employee.
+         */
+        if (!$user) {
+            $user = $users->first();
         }
+    } else {
+        $user = $loggedInUser;
+    }
 
-        // normal employee only self
-        if (!$request->user()->hasRole('super_admin') && !$request->user()->hasRole('owner') && !$request->user()->hasRole('admin')) {
-            $user = $request->user();
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Month dates
+    |--------------------------------------------------------------------------
+    */
+    $dates = collect();
 
-        $dates = new Collection();
-        for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
-            $dates->push((object)[
-                'date' => $date->copy(),
-            ]);
-        }
+    for (
+        $date = $startOfMonth->copy();
+        $date->lte($endOfMonth);
+        $date->addDay()
+    ) {
+        $dates->push((object) [
+            'date' => $date->copy(),
+        ]);
+    }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Attendance records
+    |--------------------------------------------------------------------------
+    */
+    $attendanceRecords = collect();
+
+    if ($user) {
         $attendanceRecords = AttendanceRecord::query()
+            ->with([
+                'user',
+                'checkInBy',
+                'checkOutBy',
+                'breaks',
+            ])
+            ->where('user_id', $user->id)
             ->whereBetween('check_in', [
                 $startOfMonth->copy()->startOfDay(),
-                $endOfMonth->copy()->endOfDay()
+                $endOfMonth->copy()->endOfDay(),
             ])
-            ->whereIn('user_id', $user ? [$user->id] : $employeeIds)
             ->orderBy('check_in')
             ->get();
-
-        $users = User::where('office_id', $officeId)
-            ->where('status', '1')
-            ->orderBy('name')
-            ->get();
-
-        return view('dashboard.attendance.index', compact('dates', 'attendanceRecords', 'users', 'user', 'month'));
     }
+
+    return view('dashboard.attendance.index', compact(
+        'dates',
+        'attendanceRecords',
+        'users',
+        'user',
+        'month'
+    ));
+}
+
+
 
     public function checkIn(Request $request, User $user = null) {
         $request->validate([

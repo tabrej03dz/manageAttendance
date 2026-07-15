@@ -292,6 +292,34 @@
 
 <div class="attendance-records-page space-y-6 pb-10">
 
+@php
+    /*
+    |--------------------------------------------------------------------------
+    | Safe page variables
+    |--------------------------------------------------------------------------
+    */
+    $currentUser = $user ?? null;
+    $selectedMonthDate = \Carbon\Carbon::parse(($month ?? now()->format('Y-m')) . '-01');
+
+    $workingDays = 0;
+    $leaveDays = 0;
+    $paidLeave = 0;
+    $unpaidLeave = 0;
+    $offDays = 0;
+    $lateCount = 0;
+    $lateTime = 0;
+    $goneBeforeTime = 0;
+    $goneBeforeTimeCount = 0;
+    $halfDayCount = 0;
+    $workingDuration = 0;
+    $sundayCount = 0;
+    $officeDays = 0;
+
+    $advancePayment = 0;
+    $condition = false;
+    $userSalary = null;
+@endphp
+
 
 
 <section class="attendance-hero p-6 sm:p-8">
@@ -384,6 +412,16 @@
         </div>
 
         <div class="p-4 sm:p-6">
+            @if(!$currentUser)
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-center">
+                    <div class="text-lg font-extrabold text-amber-800">
+                        No active employee found
+                    </div>
+                    <p class="mt-2 text-sm font-medium text-amber-700">
+                        Is office me koi active employee assigned nahi hai. Pehle employee ko office assign karke active karein.
+                    </p>
+                </div>
+            @else
             <!-- Attendance Table -->
             <div class="records-table-wrap records-scroll">
                 <table class="records-table">
@@ -432,32 +470,19 @@
                                         class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                         Check-out By</th>
                                     <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                    Breaks</th>
-
+                                        class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                        Breaks
+                                    </th>
+                                    <th
+                                        class="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
 
-                            @php
-                                $workingDays = 0;
-                                $leaveDays = 0;
-                                $paidLeave = 0;
-                                $unpaidLeave = 0;
-                                $offDays = 0;
-                                $lateCount = 0;
-                                $lateTime = 0;
-                                $goneBeforeTime = 0;
-                                $goneBeforeTimeCount = 0;
-                                $halfDayCount = 0;
-                                $workingDuration = 0;
-                                $sundayCount = 0;
-                                $officeDays = 0;
-                            @endphp
-
                                 @foreach ($dates as $dateObj)
                                 @php
-                                        $currentUser = $user ?? auth()->user();
                                         $d = \Carbon\Carbon::parse($dateObj->date);
                                         //dd($d->toDateString());
                                         $record = $attendanceRecords
@@ -640,7 +665,7 @@
 
                                                 @endphp
                                                 @if ($record?->check_in_latitude && $record->check_in_longitude)
-                                                <a href="{{'https://www.google.com/maps/place/'.$check_in_latitude.'+'.$check_in_longitude.'/@'.$record->check_in_latitude.','.$record->check_out_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
+                                                <a href="{{'https://www.google.com/maps/place/'.$check_in_latitude.'+'.$check_in_longitude.'/@'.$record->check_in_latitude.','.$record->check_in_longitude.',17z/data=!4m4!3m3!8m2!3d26.5004167!4d80.2878611?authuser=0&entry=ttu&g_ep=EgoyMDI0MTAyMC4xIKXMDSoASAFQAw%3D%3D'}}" target="_blank">
                                                 {{ round($record?->check_in_distance) }} m
                                                 </a>
                                                 @else
@@ -709,46 +734,55 @@
                     </div>
 
                     @php
-                    $advancePayment = App\Models\AdvancePayment::whereMonth('date', \Carbon\Carbon::parse($month . '-01')->month)
-                        ->whereYear('date', \Carbon\Carbon::parse($month . '-01')->year)
-                        ->where('user_id', $currentUser->id)
-                        ->sum('amount');
-                        $condition = ($d < \Carbon\Carbon::today()) && auth()->user()->hasRole(['admin', 'super_admin']) && (($currentUser->salary) > 0)
-                    @endphp
-                    @if ($condition)
-                        @php
+                        $advancePayment = App\Models\AdvancePayment::query()
+                            ->whereYear('date', $selectedMonthDate->year)
+                            ->whereMonth('date', $selectedMonthDate->month)
+                            ->where('user_id', $currentUser->id)
+                            ->sum('amount');
 
-                            // Retrieve existing salary record for the month
-                            $userSalary = App\Models\Salary::where('user_id', $currentUser->id)
-                                                        ->where('month', $d)
-                                                        ->first();
+                        /*
+                         * Salary sirf completed month ke liye generate hogi.
+                         * Owner ko bhi management role me include kiya gaya hai.
+                         */
+                        $condition = $selectedMonthDate->copy()->endOfMonth()->lt(\Carbon\Carbon::today())
+                            && auth()->user()->hasAnyRole(['admin', 'super_admin', 'owner'])
+                            && (float) ($currentUser->salary ?? 0) > 0;
+
+                        if ($condition) {
+                            $userSalary = App\Models\Salary::query()
+                                ->where('user_id', $currentUser->id)
+                                ->whereYear('month', $selectedMonthDate->year)
+                                ->whereMonth('month', $selectedMonthDate->month)
+                                ->first();
 
                             if (!$userSalary) {
-                                // Ensure salary and office_time are not null to avoid division errors
-                                $dailySalary = $currentUser->salary ? $currentUser->salary / 30 : 0;
-                                $hourlySalary = ($currentUser->office_time && $dailySalary > 0) ? $dailySalary / ($currentUser->office_time / 60) : 0;
+                                $dailySalary = (float) $currentUser->salary / 30;
 
-                                // Calculate salaries
-                                $salary = (($workingDays * $dailySalary) +
-                                        ($sundayCount * $dailySalary) +
-                                        ($offDays * $dailySalary) +
-                                        (($halfDayCount * $dailySalary) / 2) +
-                                        ($paidLeave * $dailySalary));
+                                $officeMinutes = (float) ($currentUser->office_time ?? 0);
+                                $officeHours = $officeMinutes > 0 ? $officeMinutes / 60 : 0;
+                                $hourlySalary = $officeHours > 0 ? $dailySalary / $officeHours : 0;
 
-                                $durationSalary = (($workingDuration / 60) * $hourlySalary) +
-                                                (($sundayCount + $offDays) * $dailySalary);
+                                $salary =
+                                    ($workingDays * $dailySalary)
+                                    + ($sundayCount * $dailySalary)
+                                    + ($offDays * $dailySalary)
+                                    + (($halfDayCount * $dailySalary) / 2)
+                                    + ($paidLeave * $dailySalary);
 
-                                // Create the salary record
+                                $durationSalary =
+                                    (($workingDuration / 60) * $hourlySalary)
+                                    + (($sundayCount + $offDays) * $dailySalary);
+
                                 $userSalary = App\Models\Salary::create([
                                     'user_id' => $currentUser->id,
-                                    'month' => $d,
+                                    'month' => $selectedMonthDate->copy()->startOfMonth(),
                                     'day_wise_salary' => $salary,
                                     'hour_wise_salary' => $durationSalary,
-                                    'status' => 'unpaid'
+                                    'status' => 'unpaid',
                                 ]);
                             }
-                        @endphp
-                    @endif
+                        }
+                    @endphp
 
             </div>
 
@@ -788,7 +822,7 @@
                     </div>
                     <div class="summary-item">
                         <span>Salary</span>
-                        <span>₹{{ number_format((float) $currentUser->salary, 2) }}</span>
+                        <span>₹{{ number_format((float) ($currentUser?->salary ?? 0), 2) }}</span>
                     </div>
                     <div class="summary-item">
                         <span>Generated Salary</span>
@@ -807,6 +841,7 @@
 
                 </div>
             </div>
+            @endif
         </div>
     </section>
 
