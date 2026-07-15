@@ -469,6 +469,86 @@
             min-height: 160px;
         }
     }
+    /*
+    |--------------------------------------------------------------------------
+    | Mobile Top Attendance Actions
+    |--------------------------------------------------------------------------
+    */
+
+    .mobile-attendance-actions {
+        display: none;
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-page {
+            padding-top: 0;
+        }
+
+        .mobile-attendance-actions {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            display: block;
+            margin: -8px -8px 14px;
+            padding: 10px 8px 12px;
+            border-bottom: 1px solid #dbe3ee;
+            background: rgba(248, 250, 252, 0.96);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .mobile-attendance-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .mobile-attendance-button {
+            display: flex;
+            min-width: 0;
+            min-height: 66px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            border: 0;
+            border-radius: 13px;
+            padding: 8px 4px;
+            color: #ffffff !important;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.15;
+            text-align: center;
+            text-decoration: none !important;
+            box-shadow: 0 8px 17px rgba(15, 23, 42, 0.16);
+        }
+
+        .mobile-attendance-button i {
+            font-size: 17px;
+        }
+
+        .mobile-attendance-button span {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .mobile-attendance-button.mobile-disabled {
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: #e2e8f0 !important;
+            opacity: 0.72;
+            box-shadow: none;
+        }
+
+        .dashboard-hero {
+            margin-top: 0;
+        }
+    }
+
 </style>
 @endpush
 
@@ -620,6 +700,94 @@
 @endphp
 
 <div class="dashboard-page space-y-6 pb-10">
+
+
+    {{-- Mobile Top Attendance Actions --}}
+    <section class="mobile-attendance-actions">
+        <div class="mobile-attendance-actions-grid">
+
+            {{-- Mobile Check In --}}
+            @if($canCheckIn)
+                <a
+                    href="{{ route('attendance.form', ['form_type' => 'check_in']) }}"
+                    class="mobile-attendance-button action-check-in"
+                >
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Check In</span>
+                </a>
+            @else
+                <span
+                    class="mobile-attendance-button mobile-disabled"
+                    title="You have already checked in today"
+                >
+                    <i class="fas fa-check-circle"></i>
+                    <span>Checked In</span>
+                </span>
+            @endif
+
+            {{-- Mobile Check Out --}}
+            @if($canCheckOut)
+                <a
+                    href="{{ route('attendance.form', ['form_type' => 'check_out']) }}"
+                    class="mobile-attendance-button action-check-out"
+                    title="{{ $hasCheckedOut
+                        ? 'Update checkout time again'
+                        : 'Mark your checkout'
+                    }}"
+                >
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Check Out</span>
+                </a>
+            @else
+                <span
+                    class="mobile-attendance-button mobile-disabled"
+                    title="Please check in first"
+                >
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Check Out</span>
+                </span>
+            @endif
+
+            {{-- Mobile Break Start / End --}}
+            @if($canUseBreak && $hasOpenBreak)
+                <a
+                    href="{{ route('break.form', [
+                        'employee' => auth()->id(),
+                        'break' => $break->id
+                    ]) }}"
+                    class="mobile-attendance-button action-break-end"
+                >
+                    <i class="fas fa-stop-circle"></i>
+                    <span>Stop Break</span>
+                </a>
+            @elseif($canUseBreak)
+                <a
+                    href="{{ route('break.form') }}"
+                    class="mobile-attendance-button action-break-start"
+                >
+                    <i class="fas fa-coffee"></i>
+                    <span>Take Break</span>
+                </a>
+            @else
+                <span
+                    class="mobile-attendance-button mobile-disabled"
+                    title="Break is available after check in and before check out"
+                >
+                    <i class="fas fa-coffee"></i>
+                    <span>Take Break</span>
+                </span>
+            @endif
+
+            {{-- Mobile Attendance Records --}}
+            <a
+                href="{{ route('attendance.index') }}"
+                class="mobile-attendance-button bg-gradient-to-br from-violet-600 to-indigo-600"
+            >
+                <i class="fas fa-calendar-check"></i>
+                <span>My Records</span>
+            </a>
+        </div>
+    </section>
 
     {{-- Header --}}
     <section class="dashboard-hero p-6 sm:p-8">
