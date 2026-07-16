@@ -357,6 +357,7 @@ class AuthController extends Controller
             'message' => 'Authenticated successfully using token',
             'roles' => $roles,
             'permissions' => $permissions,
+            'token' => $token,
         ], 200);
     }
 
