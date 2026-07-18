@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Str;
+
 class AttendanceRecordController extends Controller
 {
     // public function checkIn(Request $request, User $user = null)
@@ -102,6 +104,25 @@ class AttendanceRecordController extends Controller
 
     public function checkIn(Request $request, User $user = null)
     {
+
+        $requestId = (string) Str::uuid();
+
+        Log::info('Flutter attendance check-in request received', [
+            'request_id' => $requestId,
+            'user_id' => optional($request->user())->id,
+            'ip' => $request->ip(),
+            'has_token' => !empty($request->bearerToken()),
+            'has_image' => $request->hasFile('image'),
+            'image_size' => $request->hasFile('image')
+                ? $request->file('image')->getSize()
+                : null,
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
+            'distance' => $request->input('distance'),
+            'user_agent' => $request->userAgent(),
+            'time' => now()->toDateTimeString(),
+        ]);
+
         $validatedData = $request->validate([
             'image' => '',
             'latitude' => 'nullable|numeric',
@@ -125,18 +146,40 @@ class AttendanceRecordController extends Controller
             strtolower($user->location_required ?? 'no') === 'yes'
             && optional($user->office)->under_radius_required === '1'
         ) {
+            // if ($request->distance === null) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'Location distance is required for check-in.',
+            //     ], 403);
+            // }
+
+            // if ($request->distance > $user->office->radius) {
+            //     return response()->json([
+            //         'status' => 'error',
+            //         'message' => 'You are ' . round($request->distance) . 'm of distance from the office. You should be under ' . $user->office->radius . 'm.',
+            //     ], 403);
+            // }
+
             if ($request->distance === null) {
                 return response()->json([
                     'status' => 'error',
+                    'code' => 'DISTANCE_REQUIRED',
                     'message' => 'Location distance is required for check-in.',
-                ], 403);
+                ], 422);
             }
 
-            if ($request->distance > $user->office->radius) {
+            if ((float) $request->distance > (float) $user->office->radius) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'You are ' . round($request->distance) . 'm of distance from the office. You should be under ' . $user->office->radius . 'm.',
-                ], 403);
+                    'code' => 'OUTSIDE_OFFICE_RADIUS',
+                    'message' => 'You are ' . round((float) $request->distance) .
+                        'm away from the office. You must be within ' .
+                        $user->office->radius . 'm.',
+                    'data' => [
+                        'distance' => (float) $request->distance,
+                        'allowed_radius' => (float) $user->office->radius,
+                    ],
+                ], 422);
             }
         }
 
@@ -205,6 +248,25 @@ class AttendanceRecordController extends Controller
     }
 
     public function checkOut(Request $request, User $user = null){
+
+        $requestId = (string) Str::uuid();
+
+        Log::info('Flutter attendance check-out request received', [
+            'request_id' => $requestId,
+            'user_id' => optional($request->user())->id,
+            'ip' => $request->ip(),
+            'has_token' => !empty($request->bearerToken()),
+            'has_image' => $request->hasFile('image'),
+            'image_size' => $request->hasFile('image')
+                ? $request->file('image')->getSize()
+                : null,
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
+            'distance' => $request->input('distance'),
+            'user_agent' => $request->userAgent(),
+            'time' => now()->toDateTimeString(),
+        ]);
+
         $request->validate([
             'image' => '',
             'latitude' => '',
@@ -217,7 +279,7 @@ class AttendanceRecordController extends Controller
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())->where('user_id', $user->id)->first();
         if ($record){
             $duration = Carbon::now()->diffInMinutes($record->check_in);
-            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);
+            $record->update(['check_out' => Carbon::now(), 'duration' => $duration, 'check_out_distance' => $request->distance, 'day_type' => '__', 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->longitude, 'check_out_by' => auth()->user()->id]);
         }else{
 //            $duration = $user->office_time / 2;
 //            $record = AttendanceRecord::create(['user_id' => $user->id, 'check_out' => Carbon::now(), 'duration' => $duration , 'check_out_distance' => $request->distance, 'check_out_latitude' => $request->latitude, 'check_out_longitude' => $request->logitude, 'check_out_by' => auth()->user()->id]);

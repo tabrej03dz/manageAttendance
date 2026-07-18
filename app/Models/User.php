@@ -182,4 +182,18 @@ class User extends Authenticatable
         return (int) $office->owner_id === (int) $currentOffice->owner_id;
     }
 
+    public function activities()
+    {
+        return $this->hasMany(
+            \App\Models\UserActivity::class
+        );
+    }
+
+    public function activityPages()
+    {
+        return $this->hasMany(
+            \App\Models\UserActivityPage::class
+        );
+    }
+
 }
