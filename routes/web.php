@@ -26,6 +26,7 @@ use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\EmployeeLetterController;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\LogViewerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -365,34 +366,28 @@ Route::middleware('auth')->group(function (){
 
 
 
-    Route::get('/system-logs', function () {
+Route::prefix('logs')
+    ->name('logs.')
+    ->controller(LogViewerController::class)
+    ->group(function () {
 
-    // Sirf Super Admin ko log dekhne dena
-    $user = auth()->user();
+        Route::get('/', 'index')
+            ->name('index');
 
-    if (!$user || !$user->hasRole('super_admin')) {
-        abort(403, 'You are not authorized to view system logs.');
-    }
+        Route::get('/download/{file}', 'download')
+            ->where('file', '[A-Za-z0-9._-]+')
+            ->name('download');
 
-    $logFile = storage_path('logs/laravel.log');
+        Route::post('/clear/{file}', 'clear')
+            ->where('file', '[A-Za-z0-9._-]+')
+            ->name('clear');
 
-    if (!File::exists($logFile)) {
-        return response()->view('system-logs', [
-            'logs' => 'Laravel log file abhi available nahi hai.',
-            'logFile' => $logFile,
-        ]);
-    }
+        Route::delete('/delete/{file}', 'destroy')
+            ->where('file', '[A-Za-z0-9._-]+')
+            ->name('destroy');
 
-    /*
-     * Log file bahut bada ho sakta hai, isliye sirf
-     * last 500 lines display ki ja rahi hain.
-     */
-    $lines = file($logFile, FILE_IGNORE_NEW_LINES);
-
-    $logs = implode("\n", array_slice($lines, -500));
-
-    return view('system-logs', compact('logs', 'logFile'));
-
-})->name('system.logs');
+        Route::delete('/delete-all', 'destroyAll')
+            ->name('destroy-all');
+    });
     
 });
