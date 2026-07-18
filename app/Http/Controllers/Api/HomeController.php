@@ -14,31 +14,31 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    // public static function employeeList($user)
-    // {
+    public static function employeeList($user)
+    {
 
-    //     if ($user->hasRole('super_admin|admin')) {
-    //         if ($user->hasRole('super_admin')) {
-    //             $employees = User::all();
-    //         } else {
-    //             $office = $user->office;
-    //             $employees = $office->users;
-    //         }
-    //     } elseif ($user->hasRole('owner')) {
-    //         $officeIds = Office::where('owner_id', $user->id)->pluck('id');
-    //         $employees = User::whereIn('office_id', $officeIds)->get();
-    //     } else {
-    //         if ($user->hasRole('team_leader')) {
-    //             $employees = $user->members;
-    //             $record = User::find($user->id);
-    //             $employees->push($record);
-    //         } else {
-    //             $employees = User::where('id', $user->id)->get();
-    //         }
-    //     }
+        if ($user->hasRole('super_admin|admin')) {
+            if ($user->hasRole('super_admin')) {
+                $employees = User::all();
+            } else {
+                $office = $user->office;
+                $employees = $office->users;
+            }
+        } elseif ($user->hasRole('owner')) {
+            $officeIds = Office::where('owner_id', $user->id)->pluck('id');
+            $employees = User::whereIn('office_id', $officeIds)->get();
+        } else {
+            if ($user->hasRole('team_leader')) {
+                $employees = $user->members;
+                $record = User::find($user->id);
+                $employees->push($record);
+            } else {
+                $employees = User::where('id', $user->id)->get();
+            }
+        }
 
-    //     return $employees;
-    // }
+        return $employees;
+    }
 
 
 
