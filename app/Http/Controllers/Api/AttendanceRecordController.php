@@ -365,10 +365,9 @@ class AttendanceRecordController extends Controller
             }
         }
 
-
-//        if (!$request->latitude || !$request->longitude){
-//            return view('dashboard.settingInstruction');
-//        }
+        //        if (!$request->latitude || !$request->longitude){
+        //            return view('dashboard.settingInstruction');
+        //        }
         if (
             !empty($user->check_out_time) &&
             Carbon::parse($record->check_out)->format('H:i:s')
