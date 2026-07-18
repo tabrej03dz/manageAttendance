@@ -25,6 +25,7 @@ use App\Http\Controllers\OldRecordController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\EmployeeLetterController;
+use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -360,5 +361,38 @@ Route::middleware('auth')->group(function (){
             return 'Failed'; // You can customize this message as needed
         }
     });
+
+
+
+
+    Route::get('/system-logs', function () {
+
+    // Sirf Super Admin ko log dekhne dena
+    $user = auth()->user();
+
+    if (!$user || !$user->hasRole('super_admin')) {
+        abort(403, 'You are not authorized to view system logs.');
+    }
+
+    $logFile = storage_path('logs/laravel.log');
+
+    if (!File::exists($logFile)) {
+        return response()->view('system-logs', [
+            'logs' => 'Laravel log file abhi available nahi hai.',
+            'logFile' => $logFile,
+        ]);
+    }
+
+    /*
+     * Log file bahut bada ho sakta hai, isliye sirf
+     * last 500 lines display ki ja rahi hain.
+     */
+    $lines = file($logFile, FILE_IGNORE_NEW_LINES);
+
+    $logs = implode("\n", array_slice($lines, -500));
+
+    return view('system-logs', compact('logs', 'logFile'));
+
+})->name('system.logs');
     
 });
