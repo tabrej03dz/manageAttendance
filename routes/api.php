@@ -27,6 +27,18 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('/login-with-token', [AuthController::class, 'tokenLogin']);
 
 
+Route::get('/network-test', function (Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'API server reachable',
+        'server_time' => now()->toDateTimeString(),
+        'client_ip' => $request->ip(),
+        'forwarded_for' => $request->header('X-Forwarded-For'),
+        'cf_connecting_ip' => $request->header('CF-Connecting-IP'),
+        'user_agent' => $request->userAgent(),
+    ]);
+});
+
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
 //
