@@ -388,4 +388,229 @@ class DashboardController extends Controller
             'onLeaveEmployeesList'
         ));
     }
+
+
+    public function currentMonth($startDate, $endDate, User $user): array
+{
+    $startDate = Carbon::parse($startDate)->startOfDay();
+    $endDate = Carbon::parse($endDate)->endOfDay();
+
+    // Future dates को current time तक सीमित रखें
+    if ($endDate->greaterThan(now())) {
+        $endDate = now()->endOfDay();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | User के office IDs
+    |--------------------------------------------------------------------------
+    */
+
+    if ($user->hasRole('super_admin')) {
+        $officeIds = Office::query()
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    } elseif ($user->hasRole('owner')) {
+        $officeIds = Office::query()
+            ->where('owner_id', $user->id)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    } elseif ($user->office_id) {
+        $officeIds = [(int) $user->office_id];
+    } else {
+        $officeIds = [];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Total calendar days
+    |--------------------------------------------------------------------------
+    */
+
+    $totalDays = $startDate
+        ->copy()
+        ->startOfDay()
+        ->diffInDays($endDate->copy()->startOfDay()) + 1;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sundays
+    |--------------------------------------------------------------------------
+    */
+
+    $sundays = 0;
+
+    for (
+        $date = $startDate->copy();
+        $date->lte($endDate);
+        $date->addDay()
+    ) {
+        if ($date->isSunday()) {
+            $sundays++;
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Office holidays
+    |--------------------------------------------------------------------------
+    */
+
+    $offDates = Off::query()
+        ->when(
+            !empty($officeIds),
+            fn (Builder $query) => $query->whereIn('office_id', $officeIds),
+            fn (Builder $query) => $query->whereRaw('1 = 0')
+        )
+        ->whereDate('date', '>=', $startDate->toDateString())
+        ->whereDate('date', '<=', $endDate->toDateString())
+        ->pluck('date')
+        ->map(fn ($date) => Carbon::parse($date)->toDateString())
+        ->unique();
+
+    // Sunday को दोबारा holiday में count नहीं करेंगे
+    $nonSundayOffs = $offDates
+        ->reject(fn ($date) => Carbon::parse($date)->isSunday())
+        ->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | User attendance records
+    |--------------------------------------------------------------------------
+    */
+
+    $attendanceRecords = AttendanceRecord::query()
+        ->where('user_id', $user->id)
+        ->where(function (Builder $query) use ($startDate, $endDate) {
+            $query
+                ->whereBetween('check_in', [$startDate, $endDate])
+                ->orWhere(function (Builder $subQuery) use ($startDate, $endDate) {
+                    $subQuery
+                        ->whereNull('check_in')
+                        ->whereBetween('created_at', [$startDate, $endDate]);
+                });
+        })
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unique present days
+    |--------------------------------------------------------------------------
+    */
+
+    $presentDays = $attendanceRecords
+        ->map(function ($record) {
+            $attendanceDate = $record->check_in ?? $record->created_at;
+
+            return $attendanceDate
+                ? Carbon::parse($attendanceDate)->toDateString()
+                : null;
+        })
+        ->filter()
+        ->unique()
+        ->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Checked out, late and working counts
+    |--------------------------------------------------------------------------
+    */
+
+    $checkedOutDays = $attendanceRecords
+        ->filter(fn ($record) => !empty($record->check_out))
+        ->count();
+
+    $currentlyWorking = $attendanceRecords
+        ->filter(function ($record) {
+            return !empty($record->check_in)
+                && empty($record->check_out);
+        })
+        ->count();
+
+    $lateDays = $attendanceRecords
+        ->filter(function ($record) {
+            return (bool) ($record->is_late ?? $record->late ?? false);
+        })
+        ->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Approved leaves
+    |--------------------------------------------------------------------------
+    */
+
+    $approvedLeaves = Leave::query()
+        ->where('user_id', $user->id)
+        ->whereDate('start_date', '<=', $endDate->toDateString())
+        ->whereDate('end_date', '>=', $startDate->toDateString())
+        ->whereRaw('LOWER(status) = ?', ['approved'])
+        ->get();
+
+    $leaveDates = collect();
+
+    foreach ($approvedLeaves as $leave) {
+        $leaveStart = Carbon::parse($leave->start_date)->startOfDay();
+        $leaveEnd = Carbon::parse($leave->end_date)->startOfDay();
+
+        if ($leaveStart->lt($startDate)) {
+            $leaveStart = $startDate->copy();
+        }
+
+        if ($leaveEnd->gt($endDate)) {
+            $leaveEnd = $endDate->copy();
+        }
+
+        for (
+            $date = $leaveStart->copy();
+            $date->lte($leaveEnd);
+            $date->addDay()
+        ) {
+            if (!$date->isSunday()) {
+                $leaveDates->push($date->toDateString());
+            }
+        }
+    }
+
+    $leaveDays = $leaveDates->unique()->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Final calculation
+    |--------------------------------------------------------------------------
+    */
+
+    $workingDays = max(
+        0,
+        $totalDays - $sundays - $nonSundayOffs
+    );
+
+    $absentDays = max(
+        0,
+        $workingDays - $presentDays - $leaveDays
+    );
+
+    $attendancePercentage = $workingDays > 0
+        ? round(($presentDays / $workingDays) * 100, 1)
+        : 0;
+
+    return [
+        'start_date'            => $startDate->toDateString(),
+        'end_date'              => $endDate->toDateString(),
+        'days'                  => $totalDays,
+        'total_days'            => $totalDays,
+        'sundays'               => $sundays,
+        'offs'                  => $nonSundayOffs,
+        'working_days'          => $workingDays,
+        'records'               => $presentDays,
+        'present_days'          => $presentDays,
+        'leave_days'            => $leaveDays,
+        'absent_days'           => $absentDays,
+        'late_days'             => $lateDays,
+        'checked_out_records'   => $checkedOutDays,
+        'currently_working'     => $currentlyWorking,
+        'attendance_percentage' => $attendancePercentage,
+    ];
+}
 }
