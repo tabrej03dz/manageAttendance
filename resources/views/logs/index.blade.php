@@ -226,7 +226,7 @@
                                 </h2>
 
                                 <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                    {{ number_format($totalLines) }} lines
+                                    {{ number_format($totalEntries) }} entries
                                 </span>
 
                             </div>
@@ -310,83 +310,148 @@
                 </div>
 
                 {{-- Table --}}
-                <div class="log-scrollbar max-h-[65vh] overflow-auto">
+                <div class="log-scrollbar max-h-[68vh] overflow-auto">
                     <table class="min-w-full border-collapse">
 
-                        <thead class="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800">
-                        <tr>
-                            <th class="w-28 border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase tracking-wide dark:border-slate-700">
-                                Line
-                            </th>
+                        <thead class="sticky top-0 z-20 bg-slate-100 dark:bg-slate-800">
+                            <tr>
+                                <th class="whitespace-nowrap border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    #
+                                </th>
 
-                            <th class="border-b border-slate-200 px-4 py-3 text-left text-xs font-black uppercase tracking-wide dark:border-slate-700">
-                                Content
-                            </th>
-                        </tr>
+                                <th class="whitespace-nowrap border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    Date
+                                </th>
+
+                                <th class="whitespace-nowrap border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    Time
+                                </th>
+
+                                <th class="whitespace-nowrap border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    Environment
+                                </th>
+
+                                <th class="whitespace-nowrap border-b border-r border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    Level
+                                </th>
+
+                                <th class="min-w-[500px] border-b border-slate-200 px-4 py-3 text-left text-xs font-black uppercase dark:border-slate-700">
+                                    Message
+                                </th>
+                            </tr>
                         </thead>
 
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
 
-                        @forelse($lines as $line)
+                            @forelse($entries as $index => $entry)
 
-                            @php
-                                $content = $line['content'];
+                                @php
+                                    $level = strtoupper($entry['level']);
 
-                                $rowClass = '';
+                                    $rowClass = match ($level) {
+                                        'ERROR',
+                                        'CRITICAL',
+                                        'ALERT',
+                                        'EMERGENCY' =>
+                                            'bg-red-50/70 dark:bg-red-950/20',
 
-                                if (str_contains(strtolower($content), 'error')) {
-                                    $rowClass = 'bg-red-50 text-red-800 dark:bg-red-950/30 dark:text-red-300';
-                                } elseif (str_contains(strtolower($content), 'warning')) {
-                                    $rowClass = 'bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300';
-                                } elseif (str_contains(strtolower($content), 'success')) {
-                                    $rowClass = 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300';
-                                }
-                            @endphp
+                                        'WARNING' =>
+                                            'bg-amber-50/70 dark:bg-amber-950/20',
 
-                            <tr class="{{ $rowClass }}">
-                                <td class="border-r border-slate-200 px-4 py-3 align-top font-mono text-xs font-bold dark:border-slate-800">
-                                    {{ $line['line_number'] }}
-                                </td>
+                                        'NOTICE' =>
+                                            'bg-blue-50/70 dark:bg-blue-950/20',
 
-                                <td class="whitespace-pre-wrap break-all px-4 py-3 font-mono text-xs leading-6">
-                                    {{ $line['content'] }}
-                                </td>
-                            </tr>
+                                        'DEBUG' =>
+                                            'bg-slate-50 dark:bg-slate-900',
 
-                        @empty
+                                        default =>
+                                            'bg-white dark:bg-slate-900',
+                                    };
 
-                            <tr>
-                                <td
-                                    colspan="2"
-                                    class="px-5 py-16 text-center"
-                                >
-                                    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-                                        <svg
-                                            class="h-7 w-7 text-slate-400"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z"
-                                            />
-                                        </svg>
-                                    </div>
+                                    $badgeClass = match ($level) {
+                                        'ERROR',
+                                        'CRITICAL',
+                                        'ALERT',
+                                        'EMERGENCY' =>
+                                            'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 
-                                    <p class="mt-3 font-bold">
-                                        No log entries found
-                                    </p>
+                                        'WARNING' =>
+                                            'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
 
-                                    <p class="mt-1 text-sm text-slate-500">
-                                        Log file empty hai ya search ka result nahi mila.
-                                    </p>
-                                </td>
-                            </tr>
+                                        'NOTICE' =>
+                                            'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
 
-                        @endforelse
+                                        'DEBUG' =>
+                                            'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+
+                                        default =>
+                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+                                    };
+                                @endphp
+
+                                <tr class="{{ $rowClass }} align-top">
+
+                                    <td class="whitespace-nowrap border-r border-slate-200 px-4 py-4 text-sm font-bold dark:border-slate-800">
+                                        {{ $firstItem + $index }}
+                                    </td>
+
+                                    <td class="whitespace-nowrap border-r border-slate-200 px-4 py-4 font-mono text-xs font-bold dark:border-slate-800">
+                                        {{ $entry['date'] }}
+                                    </td>
+
+                                    <td class="whitespace-nowrap border-r border-slate-200 px-4 py-4 font-mono text-xs font-bold text-blue-700 dark:border-slate-800 dark:text-blue-300">
+                                        {{ $entry['time'] }}
+                                    </td>
+
+                                    <td class="whitespace-nowrap border-r border-slate-200 px-4 py-4 dark:border-slate-800">
+                                        <span class="rounded-full bg-purple-100 px-2.5 py-1 text-[11px] font-bold text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                                            {{ $entry['environment'] }}
+                                        </span>
+                                    </td>
+
+                                    <td class="whitespace-nowrap border-r border-slate-200 px-4 py-4 dark:border-slate-800">
+                                        <span class="rounded-full px-2.5 py-1 text-[11px] font-black {{ $badgeClass }}">
+                                            {{ $entry['level'] }}
+                                        </span>
+                                    </td>
+
+                                    <td class="px-4 py-4">
+
+                                        <div class="break-words font-mono text-xs font-semibold leading-6">
+                                            {{ $entry['message'] }}
+                                        </div>
+
+                                        @if(!empty($entry['details']))
+                                            <details class="mt-3">
+                                                <summary class="cursor-pointer select-none text-xs font-bold text-blue-600 hover:underline dark:text-blue-400">
+                                                    View complete details / stack trace
+                                                </summary>
+
+                                                <pre class="log-scrollbar mt-3 max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-xl bg-slate-950 p-4 font-mono text-[11px] leading-5 text-slate-200">{{ $entry['details'] }}</pre>
+                                            </details>
+                                        @endif
+
+                                    </td>
+                                </tr>
+
+                            @empty
+
+                                <tr>
+                                    <td
+                                        colspan="6"
+                                        class="px-5 py-16 text-center"
+                                    >
+                                        <p class="font-bold">
+                                            No log entries found
+                                        </p>
+
+                                        <p class="mt-1 text-sm text-slate-500">
+                                            File empty hai ya search se koi result nahi mila.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                            @endforelse
 
                         </tbody>
                     </table>
@@ -403,7 +468,7 @@
                             to
                             <strong>{{ $lastItem }}</strong>
                             of
-                            <strong>{{ number_format($totalLines) }}</strong>
+                            <strong>{{ number_format($totalEntries) }}</strong>
                             entries
                         </div>
 
