@@ -123,12 +123,43 @@ class AttendanceRecordController extends Controller
             'time' => now()->toDateTimeString(),
         ]);
 
-        $validatedData = $request->validate([
-            'image' => '',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'distance' => 'nullable|numeric',
-            'note' => 'nullable|string',
+        // $validatedData = $request->validate([
+        //     'image' => '',
+        //     'latitude' => 'nullable|numeric',
+        //     'longitude' => 'nullable|numeric',
+        //     'distance' => 'nullable|numeric',
+        //     'note' => 'nullable|string',
+        // ]);
+
+
+        $request->validate([
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+            'latitude' => [
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+            'longitude' => [
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+            'distance' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:100000',
+            ],
+            'note' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
         ]);
 
         if ($user === null) {
@@ -136,6 +167,14 @@ class AttendanceRecordController extends Controller
         }
 
         $user->load('office');
+
+        if (!$user->office) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'OFFICE_NOT_ASSIGNED',
+                'message' => 'No office is assigned to this employee.',
+            ], 422);
+        }
 
         /**
          * Radius check only when:
@@ -200,8 +239,16 @@ class AttendanceRecordController extends Controller
                 'check_in_by' => auth()->id(),
             ]);
 
-            if (now()->format('H:i') > $user->check_in_time->copy()->addMinutes(5)->format('H:i')) {
-                $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
+            // if (now()->format('H:i') > $user->check_in_time->copy()->addMinutes(5)->format('H:i')) {
+            //     $attendanceRecord->late = Carbon::now()->diffInMinutes(Carbon::parse($user->check_in_time));
+            // }
+
+            if (!empty($user->check_in_time)) {
+                $officeCheckInTime = Carbon::parse($user->check_in_time);
+
+                if (now()->greaterThan($officeCheckInTime->copy()->addMinutes(5))) {
+                    $attendanceRecord->late = now()->diffInMinutes($officeCheckInTime);
+                }
             }
 
             if ($request->hasFile('image')) {
@@ -288,15 +335,45 @@ class AttendanceRecordController extends Controller
                 'message' => 'Error, you cannot check-out without check-in'
             ], 400);
         }
-        if ($request->file('image')){
-            $file = $request->file('image')->store('public/images');
-            $record->check_out_image = str_replace('public/', '', $file);
-            $record->save();
+        // if ($request->file('image')){
+        //     $file = $request->file('image')->store('public/images');
+        //     $record->check_out_image = str_replace('public/', '', $file);
+        //     $record->save();
+        // }
+
+
+
+        if ($request->hasFile('image')) {
+            try {
+                $file = $request->file('image')->store('public/images');
+
+                $record->check_out_image = str_replace('public/', '', $file);
+                $record->save();
+            } catch (\Throwable $e) {
+                Log::error('Check-out image upload failed', [
+                    'request_id' => $requestId,
+                    'user_id' => $user->id,
+                    'attendance_id' => $record->id,
+                    'message' => $e->getMessage(),
+                ]);
+
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'CHECK_OUT_IMAGE_FAILED',
+                    'message' => 'Check-out image upload nahi ho saki.',
+                ], 500);
+            }
         }
+
+
 //        if (!$request->latitude || !$request->longitude){
 //            return view('dashboard.settingInstruction');
 //        }
-        if (Carbon::parse($record->check_out)->format('H:i:s') < Carbon::parse($user->check_out_time)->format('H:i:s')){
+        if (
+            !empty($user->check_out_time) &&
+            Carbon::parse($record->check_out)->format('H:i:s')
+                < Carbon::parse($user->check_out_time)->format('H:i:s')
+        ) {
             $checkOutTime = Carbon::parse($record->check_out)->format('H:i:s');
             $userCheckOutTime = Carbon::parse($user->check_out_time);
             $time = Carbon::createFromFormat('H:i:s', $checkOutTime)->diffInMinutes($userCheckOutTime);
