@@ -498,6 +498,22 @@
                     </a>
                 </li>
 
+                @role('super_admin|owner|admin|team_leader')
+                <li class="nav-item">
+                    <a
+                        href="{{ route('user-activity.index') }}"
+                        class="nav-link {{
+                            request()->routeIs('user-activity.*')
+                                ? 'active'
+                                : ''
+                        }}"
+                    >
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>User Activity</p>
+                    </a>
+                </li>
+                @endrole
+
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post" style="display:block;">
                         @csrf

@@ -719,5 +719,129 @@
 
 @stack('scripts')
 
+
+
+@if(auth()->check() && isset($currentUserActivityId))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const activityId = @json($currentUserActivityId);
+        const heartbeatUrl = @json(
+            route('user-activity.heartbeat')
+        );
+        const csrfToken = @json(csrf_token());
+        const routeName = @json(
+            request()->route()?->getName()
+        );
+
+        let lastInteractionAt = Date.now();
+        let lastHeartbeatAt = Date.now();
+
+        function markUserActive() {
+            lastInteractionAt = Date.now();
+        }
+
+        [
+            'click',
+            'mousemove',
+            'mousedown',
+            'keydown',
+            'scroll',
+            'touchstart'
+        ].forEach(function (eventName) {
+            window.addEventListener(
+                eventName,
+                markUserActive,
+                {
+                    passive: true
+                }
+            );
+        });
+
+        async function sendHeartbeat() {
+            const now = Date.now();
+
+            const inactiveSeconds = Math.floor(
+                (now - lastInteractionAt) / 1000
+            );
+
+            const heartbeatSeconds = Math.min(
+                30,
+                Math.max(
+                    1,
+                    Math.floor(
+                        (now - lastHeartbeatAt) / 1000
+                    )
+                )
+            );
+
+            const isActive =
+                document.visibilityState === 'visible' &&
+                inactiveSeconds <= 60;
+
+            lastHeartbeatAt = now;
+
+            try {
+                const response = await fetch(
+                    heartbeatUrl,
+                    {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            activity_id: activityId,
+                            route_name: routeName,
+                            page_url: window.location.href,
+                            page_title: document.title,
+                            active_seconds: heartbeatSeconds,
+                            is_active: isActive
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    console.error(
+                        'Activity heartbeat error:',
+                        response.status,
+                        await response.text()
+                    );
+                }
+            } catch (error) {
+                console.error(
+                    'Activity heartbeat failed:',
+                    error
+                );
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Page load ke 2 seconds baad first heartbeat
+        |--------------------------------------------------------------------------
+        */
+
+        setTimeout(sendHeartbeat, 2000);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Har 30 second heartbeat
+        |--------------------------------------------------------------------------
+        */
+
+        setInterval(sendHeartbeat, 30000);
+
+        document.addEventListener(
+            'visibilitychange',
+            function () {
+                sendHeartbeat();
+            }
+        );
+    });
+</script>
+@endif
+
 </body>
 </html>

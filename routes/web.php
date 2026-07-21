@@ -27,6 +27,8 @@ use App\Http\Controllers\LetterTemplateController;
 use App\Http\Controllers\EmployeeLetterController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\LogViewerController;
+use App\Http\Controllers\UserActivityController;
+use App\Http\Controllers\UserActivityPageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +74,32 @@ Route::get('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'sho
 Route::post('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'verifyOtp'])->name('login.otp.verify');
 
 
-Route::middleware('auth')->group(function (){
+Route::middleware(['auth', 'track.activity'])->group(function (){
+
+
+    Route::prefix('user-activity')
+        ->name('user-activity.')
+        ->group(function () {
+            Route::post(
+                'heartbeat',
+                [UserActivityController::class, 'heartbeat']
+            )->name('heartbeat');
+
+            Route::post(
+                'end',
+                [UserActivityController::class, 'end']
+            )->name('end');
+
+            Route::get(
+                '/',
+                [UserActivityPageController::class, 'index']
+            )->name('index');
+
+            Route::get(
+                'user/{user}',
+                [UserActivityPageController::class, 'show']
+            )->name('show');
+        });
 
 
     Route::resource('document-types', DocumentTypeController::class);

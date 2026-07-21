@@ -210,6 +210,21 @@ class DashboardController extends Controller
         $activeOfficeId = $this->activeOfficeId($request);
         $allowedOfficeIds = $this->allowedOfficeIds($request);
 
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
         /*
          * Employee page jaisa exact employee result:
          * office filter + status = 1
