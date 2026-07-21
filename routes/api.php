@@ -7,6 +7,7 @@ use \App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HomeController;
 use \App\Http\Controllers\Api\LeaveController;
 use \App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\UserActivityController;
 
 
 /*
@@ -47,6 +48,17 @@ Route::get('/network-test', function (Request $request) {
 
 
 Route::group(['middleware' => "auth:sanctum"], function(){
+
+
+    Route::post(
+        '/activity/heartbeat',
+        [UserActivityController::class, 'heartbeat']
+    );
+
+    Route::post(
+        '/activity/end',
+        [UserActivityController::class, 'end']
+    );
 
     Route::prefix('attendance')->group(function (){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn']);
