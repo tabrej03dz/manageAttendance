@@ -721,7 +721,7 @@
 
 
 
-{{-- @if(auth()->check() && isset($currentUserActivityId))
+@if(auth()->check() && isset($currentUserActivityId))
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const activityId = @json($currentUserActivityId);
@@ -841,7 +841,7 @@
         );
     });
 </script>
-@endif --}}
+@endif
 
 </body>
 </html>
