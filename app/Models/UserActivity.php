@@ -9,25 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserActivity extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'office_id',
-        'activity_uuid',
-        'laravel_session_id',
-        'started_at',
-        'last_seen_at',
-        'ended_at',
-        'active_seconds',
-        'page_views',
-        'current_route',
-        'current_url',
-        'current_page_title',
-        'ip_address',
-        'user_agent',
-        'device_type',
-        'browser',
-        'platform',
-        'status',
+    protected $guarded = [
+        'id',
     ];
 
     protected $casts = [

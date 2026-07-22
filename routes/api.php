@@ -50,15 +50,15 @@ Route::get('/network-test', function (Request $request) {
 Route::group(['middleware' => "auth:sanctum"], function(){
 
 
-    Route::post(
-        '/activity/heartbeat',
-        [UserActivityController::class, 'heartbeat']
-    );
+    // Route::post(
+    //     '/activity/heartbeat',
+    //     [UserActivityController::class, 'heartbeat']
+    // );
 
-    Route::post(
-        '/activity/end',
-        [UserActivityController::class, 'end']
-    );
+    // Route::post(
+    //     '/activity/end',
+    //     [UserActivityController::class, 'end']
+    // );
 
     Route::prefix('attendance')->group(function (){
         Route::post('check_in/{user?}', [AttendanceRecordController::class, 'checkIn']);

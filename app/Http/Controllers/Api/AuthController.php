@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
-use App\Models\UserActivity;
-use Illuminate\Support\Str;
-
-
-
 class AuthController extends Controller
 {
 
@@ -1380,10 +1375,8 @@ class AuthController extends Controller
     //     ], 200);
     // }
 
-    private function sendLoginSuccessResponse(
-        Request $request,
-        User $user
-    ) {
+    private function sendLoginSuccessResponse(Request $request, User $user) {
+
         /*
         |--------------------------------------------------------------------------
         | Device name resolve karein
@@ -1433,17 +1426,6 @@ class AuthController extends Controller
         $userData['roles'] = $roles;
         $userData['permissions'] = $permissions;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Mobile activity session
-        |--------------------------------------------------------------------------
-        */
-
-        $activity = $this->createAppActivity(
-            $request,
-            $user
-        );
-
         return response()->json([
             'status' => true,
             'success' => true,
@@ -1452,17 +1434,31 @@ class AuthController extends Controller
             'token' => $token,
             'token_type' => 'Bearer',
 
-            'activity_id' => $activity->id,
-
             'user' => $userData,
         ], 200);
     }
 
 
-    public function logout(Request $request){
-        $request->user()->currentAccessToken()->delete();
+    // public function logout(Request $request){
+    //     $request->user()->currentAccessToken()->delete();
+
+    //     return response()->json([
+    //         'message' => 'Logged out successfully',
+    //     ], 200);
+    // }
+
+    public function logout(Request $request)
+    {
+        $currentToken = $request->user()
+            ->currentAccessToken();
+
+        if ($currentToken) {
+            $currentToken->delete();
+        }
 
         return response()->json([
+            'status' => true,
+            'success' => true,
             'message' => 'Logged out successfully',
         ], 200);
     }
@@ -1738,76 +1734,5 @@ private function maskPhone(?string $phone): ?string
     return str_repeat('*', max(strlen($phone) - 4, 0))
         . substr($phone, -4);
 }
-
-    private function createAppActivity(
-    Request $request,
-    User $user
-): UserActivity {
-    $deviceId = $request->input('device_id')
-        ?: $request->header('Device-Id');
-
-    $appVersion = $request->input('app_version')
-        ?: $request->header('App-Version');
-
-    $platform = $request->input('platform')
-        ?: $request->header('Platform');
-
-    $deviceType = $request->input('device_type')
-        ?: $request->header('Device-Type')
-        ?: 'mobile';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Same user aur device ki old running activity close karein
-    |--------------------------------------------------------------------------
-    */
-
-    if (!empty($deviceId)) {
-        UserActivity::query()
-            ->where('user_id', $user->id)
-            ->where('source', 'mobile_app')
-            ->where('device_id', $deviceId)
-            ->whereNull('ended_at')
-            ->update([
-                'last_seen_at' => now(),
-                'ended_at' => now(),
-                'status' => 'ended',
-                'updated_at' => now(),
-            ]);
-    }
-
-    return UserActivity::create([
-        'user_id' => $user->id,
-        'office_id' => $user->office_id,
-
-        'source' => 'mobile_app',
-        'app_version' => $appVersion,
-        'device_id' => $deviceId,
-
-        'activity_uuid' => (string) Str::uuid(),
-        'laravel_session_id' => null,
-
-        'started_at' => now(),
-        'last_seen_at' => now(),
-        'ended_at' => null,
-
-        'active_seconds' => 0,
-        'page_views' => 1,
-
-        'current_route' => 'app.login',
-        'current_url' => null,
-        'current_page_title' => 'App Login',
-
-        'ip_address' => $request->ip(),
-        'user_agent' => $request->userAgent(),
-
-        'device_type' => $deviceType,
-        'browser' => null,
-        'platform' => $platform,
-
-        'status' => 'active',
-    ]);
-}
-
 
 }
