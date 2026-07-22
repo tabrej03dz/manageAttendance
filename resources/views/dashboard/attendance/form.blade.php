@@ -248,6 +248,42 @@
             font-weight: 900;
         }
 
+        .submit-feedback {
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            border: 1px solid #fecaca;
+            border-radius: 14px;
+            background: #fff1f2;
+            padding: 12px 14px;
+            color: #be123c;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.5;
+        }
+
+        .submit-feedback.show {
+            display: flex;
+            animation: submitFeedbackIn 0.25s ease-out;
+        }
+
+        @keyframes submitFeedbackIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .submit-feedback i {
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
         @media (max-width: 767px) {
             body.attendance-focus-mode .attendance-page {
                 margin-right: -7px;
@@ -443,6 +479,21 @@
                             </span>
                         </button>
 
+                        <div
+                            id="submitFeedback"
+                            class="submit-feedback"
+                            role="alert"
+                            aria-live="polite"
+                        >
+                            <i class="fas fa-location-dot"></i>
+
+                            <div>
+                                <strong>Unable to submit attendance.</strong>
+                                Your location is required. Please turn on location,
+                                allow permission in your browser, then tap Retry Location.
+                            </div>
+                        </div>
+
                         <p class="text-center text-xs font-semibold leading-5 text-slate-500">
                             After capturing, your photo will appear inside the circle.
                             Press Capture Again to retake it.
@@ -461,8 +512,7 @@
                     </h2>
 
                     <p class="mt-2 text-sm font-medium leading-6 text-slate-500">
-                        Attendance can still be submitted if the camera or
-                        location is unavailable.
+                        Capture your photo first. Location will be verified when you submit attendance.
                     </p>
 
                     <div
@@ -514,6 +564,7 @@
                             : route('attendance.check_out', ['user' => $user ?? null]) }}"
                         method="POST"
                         enctype="multipart/form-data"
+                        novalidate
                     >
                         @csrf
 
@@ -631,8 +682,14 @@
             const submitButton =
                 document.getElementById('submitButton');
 
+            const submitFeedback =
+                document.getElementById('submitFeedback');
+
             const attendanceForm =
                 document.getElementById('attendanceForm');
+
+            const defaultSubmitButtonHtml =
+                submitButton.innerHTML;
 
             const capturedImageInput =
                 document.getElementById('capturedImage');
@@ -733,6 +790,39 @@
             function updateSubmitButton() {
                 submitButton.disabled =
                     !imageCaptured || isSubmitting;
+            }
+
+            function hideSubmitFeedback() {
+                submitFeedback.classList.remove(
+                    'show'
+                );
+            }
+
+            function showSubmitFeedback() {
+                submitFeedback.classList.add(
+                    'show'
+                );
+
+                submitFeedback.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+
+            function setSubmitLoading(isLoading) {
+                isSubmitting = isLoading;
+
+                if (isLoading) {
+                    submitButton.disabled = true;
+
+                    submitButton.innerHTML =
+                        '<i class="fas fa-spinner fa-spin"></i><span>Checking Location...</span>';
+                } else {
+                    submitButton.innerHTML =
+                        defaultSubmitButtonHtml;
+
+                    updateSubmitButton();
+                }
             }
 
             /*
@@ -857,7 +947,7 @@
                     );
 
                     captureButtonText.textContent =
-                        'Create Verification Image';
+                        'Capture Image';
                 } finally {
                     isStartingCamera = false;
                 }
@@ -1214,6 +1304,7 @@
             */
 
             async function captureAgain() {
+                hideSubmitFeedback();
                 imageCaptured = false;
 
                 capturedImageInput.value = '';
@@ -1354,6 +1445,8 @@
                 distanceInput.value = '';
                 locationAvailableInput.value = '0';
                 locationReady = false;
+
+                updateSubmitButton();
             }
 
             function locationFailed(message) {
@@ -1394,9 +1487,11 @@
 
                 distanceText.textContent = '';
 
-                locationWarning.classList.remove(
+                locationWarning.classList.add(
                     'hidden'
                 );
+
+                updateSubmitButton();
             }
 
             function locationSuccess(
@@ -1451,6 +1546,9 @@
                     'hidden'
                 );
 
+                hideSubmitFeedback();
+                updateSubmitButton();
+
                 const officeLatitude =
                     parseFloat(
                         userOffice?.latitude
@@ -1489,6 +1587,7 @@
             }
 
             function detectLocation() {
+                hideSubmitFeedback();
                 clearLocationValues();
 
                 locationBox.classList.remove(
@@ -1570,7 +1669,10 @@
 
             retryLocationButton.addEventListener(
                 'click',
-                detectLocation
+                function () {
+                    hideSubmitFeedback();
+                    detectLocation();
+                }
             );
 
             /*
@@ -1582,14 +1684,15 @@
             attendanceForm.addEventListener(
                 'submit',
                 function (event) {
+                    event.preventDefault();
+
                     if (isSubmitting) {
-                        event.preventDefault();
                         return;
                     }
 
-                    if (!imageCaptured) {
-                        event.preventDefault();
+                    hideSubmitFeedback();
 
+                    if (!imageCaptured) {
                         alert(
                             'Please capture a photo before submitting attendance.'
                         );
@@ -1597,15 +1700,95 @@
                         return;
                     }
 
-                    isSubmitting = true;
+                    setSubmitLoading(true);
 
-                    stopCamera();
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Let Spinner Render Before Validation
+                    |--------------------------------------------------------------------------
+                    */
 
-                    captureButton.disabled = true;
-                    submitButton.disabled = true;
+                    window.setTimeout(
+                        function () {
+                            const hasValidLocation =
+                                locationReady === true &&
+                                latitudeInput.value.trim() !== '' &&
+                                longitudeInput.value.trim() !== '' &&
+                                locationAvailableInput.value === '1';
 
-                    submitButton.innerHTML =
-                        '<i class="fas fa-spinner fa-spin"></i><span>Submitting Attendance...</span>';
+                            if (!hasValidLocation) {
+                                setSubmitLoading(false);
+                                showSubmitFeedback();
+
+                                locationBox.classList.remove(
+                                    'location-success'
+                                );
+
+                                locationBox.classList.add(
+                                    'location-error'
+                                );
+
+                                locationStatus.textContent =
+                                    'Unable to submit attendance because location is unavailable.';
+
+                                locationStatus.classList.remove(
+                                    'text-emerald-700',
+                                    'text-slate-700'
+                                );
+
+                                locationStatus.classList.add(
+                                    'text-rose-700'
+                                );
+
+                                locationShortStatus.textContent =
+                                    'Location Required';
+
+                                locationShortStatus.classList.remove(
+                                    'text-emerald-700'
+                                );
+
+                                locationShortStatus.classList.add(
+                                    'text-rose-700'
+                                );
+
+                                locationIcon.className =
+                                    'fas fa-triangle-exclamation';
+
+                                distanceText.textContent =
+                                    'Turn on location, allow browser permission, then tap Retry Location.';
+
+                                retryLocationButton.classList.add(
+                                    'ring-2',
+                                    'ring-rose-400',
+                                    'ring-offset-2'
+                                );
+
+                                window.setTimeout(
+                                    function () {
+                                        retryLocationButton.classList.remove(
+                                            'ring-2',
+                                            'ring-rose-400',
+                                            'ring-offset-2'
+                                        );
+                                    },
+                                    2200
+                                );
+
+                                return;
+                            }
+
+                            submitButton.innerHTML =
+                                '<i class="fas fa-spinner fa-spin"></i><span>Submitting Attendance...</span>';
+
+                            stopCamera();
+                            captureButton.disabled = true;
+
+                            HTMLFormElement.prototype.submit.call(
+                                attendanceForm
+                            );
+                        },
+                        500
+                    );
                 }
             );
 
