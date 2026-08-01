@@ -77,29 +77,70 @@ Route::post('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 've
 Route::middleware(['auth', 'track.activity', 'active.office'])->group(function (){
 
 
+    // Route::prefix('user-activity')
+    //     ->name('user-activity.')
+    //     ->group(function () {
+    //         Route::post(
+    //             'heartbeat',
+    //             [UserActivityController::class, 'heartbeat']
+    //         )->name('heartbeat');
+
+    //         Route::post(
+    //             'end',
+    //             [UserActivityController::class, 'end']
+    //         )->name('end');
+
+    //         Route::get(
+    //             '/',
+    //             [UserActivityPageController::class, 'index']
+    //         )->name('index');
+
+    //         Route::get(
+    //             'user/{user}',
+    //             [UserActivityPageController::class, 'show']
+    //         )->name('show');
+    //     });
+
+
     Route::prefix('user-activity')
-        ->name('user-activity.')
-        ->group(function () {
-            Route::post(
-                'heartbeat',
-                [UserActivityController::class, 'heartbeat']
-            )->name('heartbeat');
+    ->name('user-activity.')
+    ->group(function () {
 
-            Route::post(
-                'end',
-                [UserActivityController::class, 'end']
-            )->name('end');
+        Route::post(
+            'heartbeat',
+            [UserActivityController::class, 'heartbeat']
+        )->name('heartbeat');
 
-            Route::get(
-                '/',
-                [UserActivityPageController::class, 'index']
-            )->name('index');
+        Route::post(
+            'end',
+            [UserActivityController::class, 'end']
+        )->name('end');
 
-            Route::get(
-                'user/{user}',
-                [UserActivityPageController::class, 'show']
-            )->name('show');
-        });
+        Route::get(
+            '/',
+            [UserActivityPageController::class, 'index']
+        )->name('index');
+
+        Route::delete(
+            'clear',
+            [UserActivityPageController::class, 'clearRange']
+        )->name('clear');
+
+        Route::delete(
+            'user/{user}/clear',
+            [UserActivityPageController::class, 'clearUserRange']
+        )->name('user.clear');
+
+        Route::delete(
+            'session/{activity}',
+            [UserActivityPageController::class, 'destroySession']
+        )->name('session.destroy');
+
+        Route::get(
+            'user/{user}',
+            [UserActivityPageController::class, 'show']
+        )->name('show');
+    });
 
 
     Route::resource('document-types', DocumentTypeController::class);
