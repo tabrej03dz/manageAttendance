@@ -2,7 +2,6 @@
 
 @section('title', 'Employee Registration')
 
-
 @push('styles')
 <style>
     .employee-page{font-family:'Inter',sans-serif;color:#0f172a}
@@ -41,7 +40,6 @@
     @media(max-width:767px){.employee-hero{border-radius:20px}.employee-card{border-radius:18px}.action-primary,.action-secondary{width:100%}}
 </style>
 @endpush
-
 
 @section('content')
 <div class="employee-page space-y-6 pb-10">
@@ -123,19 +121,6 @@
 
                 <div class="section-card">
                     <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-paperclip"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Photo & Documents</h3><p class="text-xs font-medium text-slate-500">Upload employee photo and supporting documents</p></div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div><label class="employee-label" for="photo">Employee Photo</label><input class="employee-input" id="photo" name="photo" type="file" accept="image/*"></div>
-                        <div><label class="employee-label" for="aadhar_attachment">Aadhar Attachment</label><input class="employee-input" id="aadhar_attachment" name="aadhar_attachment" type="file"></div>
-                        <div><label class="employee-label" for="pan_attachment">PAN Attachment</label><input class="employee-input" id="pan_attachment" name="pan_attachment" type="file"></div>
-                        <div><label class="employee-label" for="other_attachment">Other Attachment</label><input class="employee-input" id="other_attachment" name="other_attachment" type="file"></div>
-                    </div>
-                </div>
-
-                <div class="section-card">
-                    <div class="section-title">
                         <div class="section-icon"><i class="fas fa-briefcase"></i></div>
                         <div><h3 class="font-extrabold text-slate-900">Employment Details</h3><p class="text-xs font-medium text-slate-500">Department, designation, office and reporting structure</p></div>
                     </div>
@@ -198,6 +183,19 @@
                                 <label class="radio-card"><input type="radio" value="no" name="location_required" {{ old('location_required', 'no') === 'no' ? 'checked' : '' }}><span class="font-bold text-slate-700">No location restriction</span></label>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">
+                        <div class="section-icon"><i class="fas fa-paperclip"></i></div>
+                        <div><h3 class="font-extrabold text-slate-900">Photo & Documents</h3><p class="text-xs font-medium text-slate-500">Upload employee photo and supporting documents</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
+                        <div><label class="employee-label" for="photo">Employee Photo</label><input class="employee-input" id="photo" name="photo" type="file" accept="image/*"></div>
+                        <div><label class="employee-label" for="aadhar_attachment">Aadhar Attachment</label><input class="employee-input" id="aadhar_attachment" name="aadhar_attachment" type="file"></div>
+                        <div><label class="employee-label" for="pan_attachment">PAN Attachment</label><input class="employee-input" id="pan_attachment" name="pan_attachment" type="file"></div>
+                        <div><label class="employee-label" for="other_attachment">Other Attachment</label><input class="employee-input" id="other_attachment" name="other_attachment" type="file"></div>
                     </div>
                 </div>
 
