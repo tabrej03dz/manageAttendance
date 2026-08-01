@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use App\Http\Middleware\EnsureActiveOffice;
 
 class Kernel extends HttpKernel
 {
@@ -66,5 +67,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
         'track.activity' => \App\Http\Middleware\TrackUserActivity::class,
+        'active.office' => \App\Http\Middleware\EnsureActiveOffice::class,
     ];
 }

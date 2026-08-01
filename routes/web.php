@@ -74,7 +74,7 @@ Route::get('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'sho
 Route::post('/login/otp', [App\Http\Controllers\Auth\LoginController::class, 'verifyOtp'])->name('login.otp.verify');
 
 
-Route::middleware(['auth', 'track.activity'])->group(function (){
+Route::middleware(['auth', 'track.activity', 'active.office'])->group(function (){
 
 
     Route::prefix('user-activity')
