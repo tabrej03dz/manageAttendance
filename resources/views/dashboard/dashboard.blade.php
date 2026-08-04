@@ -1156,25 +1156,22 @@
 <div class="dashboard-page space-y-6 pb-10">
 
 
-    {{-- Premium Birthday Popup: only for logged-in birthday user --}}
+    {{-- Premium Birthday Popup: sirf logged-in birthday employee ko personal wish --}}
     @if($isUserBirthdayToday)
         @php
-            $mainBirthdayPerson = $user;
-            $mainBirthdayAge = $userBirthdayAge;
+            $birthdayOfficeName = optional($user->office)->name
+                ?? $activeOffice?->name
+                ?? 'आपके कार्यालय';
 
-            $mainBirthdayInitials = collect(explode(' ', $mainBirthdayPerson->name ?? 'User'))
+            $loggedInBirthdayInitials = collect(explode(' ', $user->name ?? 'User'))
                 ->filter()
                 ->take(2)
                 ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
                 ->implode('');
 
-            $mainBirthdayPhoto = !empty($mainBirthdayPerson?->photo)
-                ? asset('storage/' . $mainBirthdayPerson->photo)
+            $loggedInBirthdayPhoto = !empty($user->photo)
+                ? asset('storage/' . $user->photo)
                 : null;
-
-            $birthdayOfficeName = optional($mainBirthdayPerson->office)->name
-                ?? $activeOffice?->name
-                ?? 'हमारे कार्यालय';
         @endphp
 
         <div
@@ -1190,7 +1187,7 @@
                     type="button"
                     class="birthday-popup-close"
                     id="birthday-popup-close"
-                    aria-label="Close birthday wish"
+                    aria-label="Close birthday popup"
                 >
                     <i class="fas fa-times"></i>
                 </button>
@@ -1200,58 +1197,58 @@
 
                     <span class="birthday-popup-kicker">
                         <i class="fas fa-star"></i>
-                        A Very Special Day
+                        Today Is Your Special Day
                     </span>
 
                     <h2 id="birthday-popup-title" class="birthday-popup-title">
-                        Happy Birthday, {{ $mainBirthdayPerson->name }}! 🎉
+                        Happy Birthday, {{ $user->name }}! 🎉
                     </h2>
 
                     <p class="birthday-popup-message">
-                        आपकी मुस्कान हमेशा यूँ ही बनी रहे। आने वाला हर दिन
-                        खुशियों, सफलता, अच्छे स्वास्थ्य और नई उपलब्धियों से भरा हो।
-                        {{ $birthdayOfficeName }} की ओर से जन्मदिन की ढेरों शुभकामनाएं!
+                        आपके जन्मदिन पर हम आपके अच्छे स्वास्थ्य, सफलता और खुशियों की
+                        कामना करते हैं। <strong>{{ $birthdayOfficeName }}</strong> की ओर से
+                        आपको जन्मदिन की ढेरों शुभकामनाएं!
                     </p>
 
                     <div class="birthday-popup-person">
                         <div class="flex items-center gap-4">
                             <div class="birthday-popup-avatar">
-                                @if($mainBirthdayPhoto)
+                                @if($loggedInBirthdayPhoto)
                                     <img
-                                        src="{{ $mainBirthdayPhoto }}"
-                                        alt="{{ $mainBirthdayPerson->name }}"
+                                        src="{{ $loggedInBirthdayPhoto }}"
+                                        alt="{{ $user->name }}"
                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                     >
                                     <span class="hidden h-full w-full items-center justify-center">
-                                        {{ $mainBirthdayInitials ?: 'U' }}
+                                        {{ $loggedInBirthdayInitials ?: 'U' }}
                                     </span>
                                 @else
-                                    {{ $mainBirthdayInitials ?: 'U' }}
+                                    {{ $loggedInBirthdayInitials ?: 'U' }}
                                 @endif
                             </div>
 
                             <div class="min-w-0 flex-1">
-                                <p class="truncate text-lg font-extrabold text-white">
-                                    {{ $mainBirthdayPerson->name }}
+                                <p class="truncate text-lg font-black text-white">
+                                    {{ $user->name }}
                                 </p>
 
                                 <p class="mt-1 text-sm font-semibold text-purple-100">
-                                    {{ $mainBirthdayPerson->designation
-                                        ?? optional($mainBirthdayPerson->department)->name
-                                        ?? optional($mainBirthdayPerson->office)->name
-                                        ?? 'Our Wonderful Team Member'
+                                    {{ $user->designation
+                                        ?? optional($user->department)->name
+                                        ?? optional($user->office)->name
+                                        ?? 'Team Member'
                                     }}
                                 </p>
 
-                                @if($mainBirthdayAge !== null)
+                                @if($userBirthdayAge !== null)
                                     <p class="mt-2 inline-flex items-center gap-2 text-xs font-extrabold text-yellow-200">
                                         <i class="fas fa-gift"></i>
-                                        Celebrating {{ $mainBirthdayAge }} wonderful years
+                                        Celebrating {{ $userBirthdayAge }} wonderful years
                                     </p>
                                 @endif
                             </div>
 
-                            <div class="text-4xl">🎁</div>
+                            <div class="shrink-0 text-4xl">🎁</div>
                         </div>
                     </div>
 
@@ -1262,7 +1259,7 @@
                             class="birthday-popup-button birthday-popup-button-primary"
                         >
                             <i class="fas fa-birthday-cake"></i>
-                            Celebrate Again
+                            Celebrate
                         </button>
 
                         <button
@@ -1270,7 +1267,7 @@
                             id="birthday-popup-done"
                             class="birthday-popup-button birthday-popup-button-secondary"
                         >
-                            <i class="fas fa-heart"></i>
+                            <i class="fas fa-check"></i>
                             Thank You
                         </button>
                     </div>
@@ -1507,14 +1504,36 @@
         </div>
     </section>
 
+    @php
+        /*
+        |--------------------------------------------------------------------------
+        | Other Birthday Employees
+        |--------------------------------------------------------------------------
+        | Logged-in employee को team birthday list से हटा दिया गया है।
+        | इसलिए अपना birthday होने पर अपनी ही team card दिखाई नहीं देगी।
+        */
+        $otherBirthdayEmployees = $todayBirthdayEmployees
+            ->reject(function ($birthdayEmployee) {
+                return (int) $birthdayEmployee->id === (int) auth()->id();
+            })
+            ->values();
+    @endphp
+
     {{-- Birthday Celebration --}}
-    @if($hasBirthdayCelebration)
+    @if($isUserBirthdayToday || $otherBirthdayEmployees->isNotEmpty())
         <section class="birthday-celebration p-5 sm:p-6">
             <div class="relative">
 
+                {{--
+                |--------------------------------------------------------------------------
+                | Logged-in User Personal Birthday Wish
+                |--------------------------------------------------------------------------
+                | यह सिर्फ उसी employee को दिखेगा जिसका आज birthday है।
+                --}}
                 @if($isUserBirthdayToday)
                     <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-start gap-4">
+
                             <div class="birthday-main-icon">
                                 <i class="fas fa-birthday-cake"></i>
                             </div>
@@ -1537,6 +1556,7 @@
                                 @if($userBirthdayAge !== null)
                                     <p class="mt-3 inline-flex items-center gap-2 text-xs font-bold text-yellow-200">
                                         <i class="fas fa-gift"></i>
+
                                         Celebrating {{ $userBirthdayAge }} wonderful years
                                     </p>
                                 @endif
@@ -1551,7 +1571,16 @@
                     </div>
                 @endif
 
-                @if($todayBirthdayEmployees->isNotEmpty())
+
+                {{--
+                |--------------------------------------------------------------------------
+                | Other Team Members Birthday
+                |--------------------------------------------------------------------------
+                | यह section तभी दिखेगा जब logged-in employee के अलावा
+                | किसी दूसरे employee का birthday हो।
+                --}}
+                @if($otherBirthdayEmployees->isNotEmpty())
+
                     @if($isUserBirthdayToday)
                         <div class="my-6 border-t border-white/20"></div>
                     @endif
@@ -1563,41 +1592,62 @@
                             </p>
 
                             <h3 class="mt-1 text-xl font-extrabold text-white">
-                                Wish Your Team Members 🎈
+                                आज इन Team Members का Birthday है 🎈
                             </h3>
-
                         </div>
 
                         <span class="birthday-count-badge">
                             <i class="fas fa-birthday-cake text-yellow-300"></i>
-                            {{ $todayBirthdayEmployees->count() }}
-                            {{ \Illuminate\Support\Str::plural('Birthday', $todayBirthdayEmployees->count()) }}
+
+                            {{ $otherBirthdayEmployees->count() }}
+
+                            {{ \Illuminate\Support\Str::plural(
+                                'Birthday',
+                                $otherBirthdayEmployees->count()
+                            ) }}
                         </span>
                     </div>
 
                     <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-                        @foreach($todayBirthdayEmployees as $birthdayEmployee)
+
+                        @foreach($otherBirthdayEmployees as $birthdayEmployee)
                             @php
-                                $birthdayInitials = collect(explode(' ', $birthdayEmployee->name))
+                                $birthdayInitials = collect(
+                                    explode(' ', $birthdayEmployee->name ?? 'User')
+                                )
                                     ->filter()
                                     ->take(2)
-                                    ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
+                                    ->map(function ($part) {
+                                        return strtoupper(
+                                            mb_substr($part, 0, 1)
+                                        );
+                                    })
                                     ->implode('');
 
                                 $birthdayPhoto = !empty($birthdayEmployee->photo)
                                     ? asset('storage/' . $birthdayEmployee->photo)
                                     : null;
+
+                                $birthdayEmployeeOfficeName =
+                                    optional($birthdayEmployee->office)->name
+                                    ?? 'Office Team';
                             @endphp
 
                             <article class="birthday-employee-card">
+
                                 <div class="flex items-center gap-3">
+
                                     <div class="birthday-avatar">
                                         @if($birthdayPhoto)
                                             <img
                                                 src="{{ $birthdayPhoto }}"
                                                 alt="{{ $birthdayEmployee->name }}"
-                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                                onerror="
+                                                    this.style.display='none';
+                                                    this.nextElementSibling.style.display='flex';
+                                                "
                                             >
+
                                             <span class="hidden h-full w-full items-center justify-center">
                                                 {{ $birthdayInitials ?: 'U' }}
                                             </span>
@@ -1612,16 +1662,19 @@
                                         </p>
 
                                         <p class="mt-1 truncate text-xs font-semibold text-purple-100">
-                                            {{ $birthdayEmployee->designation
+                                            {{
+                                                $birthdayEmployee->designation
                                                 ?? optional($birthdayEmployee->department)->name
-                                                ?? optional($birthdayEmployee->office)->name
+                                                ?? $birthdayEmployeeOfficeName
                                                 ?? 'Team Member'
                                             }}
                                         </p>
 
                                         @if($birthdayEmployee->birthday_age !== null)
                                             <p class="mt-1 text-xs font-bold text-yellow-200">
-                                                Turns {{ $birthdayEmployee->birthday_age }} today
+                                                Turns
+                                                {{ $birthdayEmployee->birthday_age }}
+                                                today
                                             </p>
                                         @endif
                                     </div>
@@ -1633,9 +1686,19 @@
 
                                 <div class="mt-4 rounded-xl border border-white/15 bg-slate-950/15 px-3 py-3">
                                     <p class="text-xs font-semibold leading-5 text-white">
-                                        Happy Birthday,
-                                        <span class="font-extrabold">{{ $birthdayEmployee->name }}</span>!
-                                        आपका आने वाला वर्ष सफलता और खुशियों से भरा रहे। 🎉
+                                        आज
+
+                                        <span class="font-extrabold">
+                                            {{ $birthdayEmployee->name }}
+                                        </span>
+
+                                        का जन्मदिन है। पूरी
+
+                                        <span class="font-extrabold">
+                                            {{ $birthdayEmployeeOfficeName }}
+                                        </span>
+
+                                        की ओर से जन्मदिन की हार्दिक शुभकामनाएं! 🎉
                                     </p>
                                 </div>
                             </article>
@@ -1801,7 +1864,6 @@
                 <div class="flex items-center justify-between">
 
                     <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
-
                         <i class="fas fa-users text-xl"></i>
                     </div>
 

@@ -90,6 +90,56 @@ class DashboardController extends Controller
     }
 
     /**
+     * Birthday visibility ke liye office IDs.
+     * Normal office: sirf active office.
+     * Special pair: Real Victory Groups aur Rvg Development dono offices.
+     */
+    private function birthdayOfficeIds(Request $request): array
+    {
+        $activeOfficeId = $this->activeOfficeId($request);
+
+        if (! $activeOfficeId) {
+            return [];
+        }
+
+        $activeOffice = Office::query()
+            ->select(['id', 'name'])
+            ->find($activeOfficeId);
+
+        if (! $activeOffice) {
+            return [];
+        }
+
+        $normalizeOfficeName = static function (?string $name): string {
+            return mb_strtolower(trim(preg_replace('/\s+/', ' ', (string) $name)));
+        };
+
+        $specialOfficeNames = [
+            'real victory groups',
+            'rvg development',
+        ];
+
+        if (in_array($normalizeOfficeName($activeOffice->name), $specialOfficeNames, true)) {
+            return Office::query()
+                ->get(['id', 'name'])
+                ->filter(function (Office $office) use ($normalizeOfficeName, $specialOfficeNames) {
+                    return in_array(
+                        $normalizeOfficeName($office->name),
+                        $specialOfficeNames,
+                        true
+                    );
+                })
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        }
+
+        return [(int) $activeOfficeId];
+    }
+
+    /**
      * IMPORTANT:
      * Ye query EmployeeController ke officeEmployeesQuery + default active status
      * ke bilkul same hai. Isi se employee page aur dashboard ka total same rahega.
@@ -194,24 +244,14 @@ class DashboardController extends Controller
     }
 
     /**
-     * User role ke hisaab se birthday visibility decide karta hai.
+     * Selected/active office ke sabhi active employees birthday dekh sakte hain.
+     * Isliye role ya reporting hierarchy ke basis par birthday hide nahi hoga.
      */
     private function birthdayVisibleEmployees(User $user, Collection $employees): Collection
     {
-        // Owner, super admin aur admin ko accessible/selected office ke sab employees dikhenge.
-        if ($user->hasAnyRole(['super_admin', 'owner', 'admin'])) {
-            return $employees
-                ->reject(fn ($employee) => (int) $employee->id === (int) $user->id)
-                ->values();
-        }
-
-        // Team leader ko direct aur nested reporting employees dikhenge.
-        if ($user->hasRole('team_leader')) {
-            return $this->subordinateEmployees($employees, (int) $user->id);
-        }
-
-        // Normal employee ko doosre employees ka birthday nahi dikhana hai.
-        return collect();
+        return $employees
+            ->unique('id')
+            ->values();
     }
 
     /**
@@ -311,10 +351,9 @@ class DashboardController extends Controller
 
         /*
          * Birthday logic:
-         * - Logged-in user ka birthday alag wish hoga.
-         * - Owner/super-admin/admin ko accessible employees ke birthdays dikhenge.
-         * - Team leader ko direct aur nested team birthdays dikhenge.
-         * - Employee ko sirf apna birthday wish dikhega.
+         * - Selected/active office ke sabhi active employees ke birthdays niklenge.
+         * - Us office me login karne wale har employee ko birthday section aur popup dikhega.
+         * - Logged-in birthday employee ko personal wish bhi dikhegi.
          */
         $todayDate = now();
 
@@ -329,9 +368,28 @@ class DashboardController extends Controller
             }
         }
 
-        $birthdayVisibleEmployees = $this->birthdayVisibleEmployees($user, $employees);
+        /*
+         * Birthday employees attendance wale employee collection se alag query honge,
+         * taaki special paired offices ek dusre ke birthdays dekh saken aur dashboard
+         * attendance/counts sirf active office ke hi rahen.
+         */
+        $birthdayOfficeIds = $this->birthdayOfficeIds($request);
 
-        $todayBirthdayEmployees = $birthdayVisibleEmployees
+        $birthdayVisibleEmployees = empty($birthdayOfficeIds)
+            ? collect()
+            : User::query()
+                ->with([
+                    'office:id,name',
+                    'department:id,name',
+                ])
+                ->whereIn('office_id', $birthdayOfficeIds)
+                ->where('status', '1')
+                ->get();
+
+        $todayBirthdayEmployees = $this->birthdayVisibleEmployees(
+                $user,
+                $birthdayVisibleEmployees
+            )
             ->filter(fn ($employee) => $this->isBirthdayToday($employee->dob, $todayDate))
             ->map(function ($employee) {
                 try {
@@ -342,7 +400,13 @@ class DashboardController extends Controller
 
                 return $employee;
             })
-            ->sortBy('name')
+            ->sortBy(function ($employee) {
+                return sprintf(
+                    '%s-%s',
+                    optional($employee->office)->name ?? '',
+                    $employee->name ?? ''
+                );
+            })
             ->values();
 
         $hasBirthdayCelebration = $isUserBirthdayToday
