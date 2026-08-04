@@ -104,6 +104,21 @@
                             @error('email')<p class="employee-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</p>@enderror
                         </div>
                         <div>
+                            <label class="employee-label" for="dob">Date of Birth</label>
+                            <input
+                                class="employee-input @error('dob') input-error @enderror"
+                                id="dob"
+                                name="dob"
+                                type="date"
+                                value="{{ old('dob') }}"
+                            >
+                            @error('dob')
+                                <p class="employee-error">
+                                    <i class="fas fa-circle-exclamation"></i>{{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+                        <div>
                             <label class="employee-label" for="phone">Phone <span class="text-rose-500">*</span></label>
                             <input class="employee-input @error('phone') input-error @enderror" id="phone" name="phone" type="text" value="{{ old('phone') }}" placeholder="Enter phone number">
                             @error('phone')<p class="employee-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</p>@enderror

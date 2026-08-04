@@ -549,6 +549,460 @@
         }
     }
 
+
+
+    /* Birthday Celebration */
+    .birthday-celebration {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(217, 70, 239, 0.35);
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at top right, rgba(250, 204, 21, 0.30), transparent 32%),
+            radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.24), transparent 38%),
+            linear-gradient(135deg, #581c87 0%, #7e22ce 45%, #be185d 100%);
+        box-shadow: 0 22px 50px rgba(88, 28, 135, 0.24);
+        color: #ffffff;
+        isolation: isolate;
+    }
+
+    .birthday-celebration::before {
+        content: '';
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        right: -75px;
+        top: -95px;
+        border-radius: 999px;
+        background: rgba(250, 204, 21, 0.20);
+        filter: blur(8px);
+        z-index: -1;
+    }
+
+    .birthday-celebration::after {
+        content: '';
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        left: 28%;
+        bottom: -130px;
+        border-radius: 999px;
+        background: rgba(34, 211, 238, 0.16);
+        filter: blur(14px);
+        z-index: -1;
+    }
+
+    .birthday-main-icon {
+        display: flex;
+        width: 64px;
+        height: 64px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fde68a;
+        font-size: 28px;
+        box-shadow: 0 14px 30px rgba(30, 41, 59, 0.20);
+    }
+
+    .birthday-employee-card {
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.12);
+        padding: 14px;
+        backdrop-filter: blur(12px);
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .birthday-employee-card:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .birthday-avatar {
+        display: flex;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.65);
+        border-radius: 15px;
+        background: linear-gradient(135deg, #f59e0b, #ec4899);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .birthday-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .birthday-count-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid rgba(255, 255, 255, 0.26);
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.22);
+        padding: 7px 12px;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    @media (max-width: 640px) {
+        .birthday-celebration {
+            border-radius: 20px;
+        }
+
+        .birthday-main-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 17px;
+            font-size: 23px;
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Premium Birthday Popup
+    |--------------------------------------------------------------------------
+    */
+    body.birthday-popup-open {
+        overflow: hidden;
+    }
+
+    .birthday-popup-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background:
+            radial-gradient(circle at 15% 20%, rgba(236,72,153,.24), transparent 30%),
+            radial-gradient(circle at 85% 15%, rgba(250,204,21,.22), transparent 28%),
+            rgba(15,23,42,.78);
+        opacity: 0;
+        visibility: hidden;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: opacity .35s ease, visibility .35s ease;
+    }
+
+    .birthday-popup-overlay.is-visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .birthday-popup-dialog {
+        position: relative;
+        width: min(720px, 100%);
+        max-height: calc(100dvh - 36px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,.45) transparent;
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 30px;
+        background:
+            radial-gradient(circle at top right, rgba(250,204,21,.26), transparent 34%),
+            radial-gradient(circle at bottom left, rgba(34,211,238,.18), transparent 38%),
+            linear-gradient(145deg, #4c1d95 0%, #7e22ce 48%, #be185d 100%);
+        box-shadow: 0 35px 90px rgba(15,23,42,.45);
+        color: #fff;
+        transform: translateY(28px) scale(.94);
+        transition: transform .42s cubic-bezier(.2,.9,.2,1);
+        isolation: isolate;
+    }
+
+    .birthday-popup-overlay.is-visible .birthday-popup-dialog {
+        transform: translateY(0) scale(1);
+    }
+
+    .birthday-popup-dialog::-webkit-scrollbar {
+        width: 7px;
+        height: 0;
+    }
+
+    .birthday-popup-dialog::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .birthday-popup-dialog::-webkit-scrollbar-thumb {
+        border-radius: 999px;
+        background: rgba(255,255,255,.42);
+    }
+
+    .birthday-popup-dialog::before {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -90px;
+        top: -105px;
+        border-radius: 999px;
+        background: rgba(250,204,21,.20);
+        filter: blur(4px);
+        z-index: -1;
+    }
+
+    .birthday-popup-dialog::after {
+        content: '';
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        left: -95px;
+        bottom: -120px;
+        border-radius: 999px;
+        background: rgba(34,211,238,.16);
+        filter: blur(10px);
+        z-index: -1;
+    }
+
+    .birthday-popup-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 10;
+        display: inline-flex;
+        width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 14px;
+        background: rgba(15,23,42,.28);
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        transition: transform .2s ease, background .2s ease;
+    }
+
+    .birthday-popup-close:hover {
+        transform: rotate(8deg) scale(1.05);
+        background: rgba(15,23,42,.48);
+    }
+
+    .birthday-popup-content {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+        padding: 34px 26px 26px;
+        text-align: center;
+    }
+
+    .birthday-popup-cake {
+        display: flex;
+        width: 92px;
+        height: 92px;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255,255,255,.45);
+        border-radius: 28px;
+        background: rgba(255,255,255,.15);
+        font-size: 50px;
+        box-shadow: 0 20px 38px rgba(30,41,59,.24);
+        animation: birthdayCakeFloat 2.4s ease-in-out infinite;
+    }
+
+    @keyframes birthdayCakeFloat {
+        0%, 100% { transform: translateY(0) rotate(-2deg); }
+        50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    .birthday-popup-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 999px;
+        background: rgba(15,23,42,.18);
+        padding: 7px 13px;
+        color: #fde68a;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .birthday-popup-title {
+        margin-top: 14px;
+        color: #fff !important;
+        font-size: clamp(28px, 5vw, 44px);
+        font-weight: 900;
+        line-height: 1.08;
+        text-shadow: 0 4px 16px rgba(30,41,59,.28);
+    }
+
+    .birthday-popup-message {
+        max-width: 560px;
+        margin: 12px auto 0;
+        color: #f5e8ff;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.7;
+    }
+
+    .birthday-popup-person {
+        margin-top: 20px;
+        border: 1px solid rgba(255,255,255,.24);
+        border-radius: 22px;
+        background: rgba(255,255,255,.12);
+        padding: 16px;
+        text-align: left;
+        backdrop-filter: blur(8px);
+    }
+
+    .birthday-popup-avatar {
+        display: flex;
+        width: 62px;
+        height: 62px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 3px solid rgba(255,255,255,.74);
+        border-radius: 20px;
+        background: linear-gradient(135deg,#f59e0b,#ec4899);
+        color: #fff;
+        font-size: 17px;
+        font-weight: 900;
+        box-shadow: 0 12px 24px rgba(30,41,59,.22);
+    }
+
+    .birthday-popup-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .birthday-popup-team-list {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+        max-height: 245px;
+        overflow-y: auto;
+        padding-right: 3px;
+    }
+
+    .birthday-popup-team-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid rgba(255,255,255,.20);
+        border-radius: 17px;
+        background: rgba(15,23,42,.16);
+        padding: 12px;
+        text-align: left;
+    }
+
+    .birthday-popup-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 22px;
+    }
+
+    .birthday-popup-button {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 14px;
+        padding: 11px 18px;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .birthday-popup-button:hover {
+        transform: translateY(-2px);
+    }
+
+    .birthday-popup-button-primary {
+        background: linear-gradient(135deg,#facc15,#fb7185);
+        color: #4c1d95;
+        box-shadow: 0 14px 28px rgba(250,204,21,.20);
+    }
+
+    .birthday-popup-button-secondary {
+        border: 1px solid rgba(255,255,255,.26);
+        background: rgba(255,255,255,.12);
+        color: #fff;
+    }
+
+    .birthday-confetti {
+        position: absolute;
+        top: -20px;
+        width: 10px;
+        height: 16px;
+        border-radius: 3px;
+        opacity: .92;
+        pointer-events: none;
+        animation: birthdayConfettiFall linear forwards;
+    }
+
+    @keyframes birthdayConfettiFall {
+        from {
+            transform: translate3d(0,-20px,0) rotate(0deg);
+            opacity: 1;
+        }
+        to {
+            transform: translate3d(var(--confetti-x),110vh,0) rotate(760deg);
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .birthday-popup-overlay {
+            padding: 10px;
+        }
+
+        .birthday-popup-dialog {
+            max-height: calc(100dvh - 20px);
+            border-radius: 23px;
+        }
+
+        .birthday-popup-content {
+            padding: 30px 16px 20px;
+        }
+
+        .birthday-popup-cake {
+            width: 78px;
+            height: 78px;
+            border-radius: 23px;
+            font-size: 42px;
+        }
+
+        .birthday-popup-person {
+            padding: 13px;
+        }
+
+        .birthday-popup-actions {
+            flex-direction: column;
+        }
+
+        .birthday-popup-button {
+            width: 100%;
+        }
+    }
+
 </style>
 @endpush
 
@@ -700,6 +1154,200 @@
 @endphp
 
 <div class="dashboard-page space-y-6 pb-10">
+
+
+    {{-- Premium Birthday Popup --}}
+    @if($hasBirthdayCelebration)
+        @php
+            $popupBirthdayPeople = collect();
+
+            if ($isUserBirthdayToday) {
+                $popupBirthdayPeople->push($user);
+            }
+
+            $popupBirthdayPeople = $popupBirthdayPeople
+                ->merge($todayBirthdayEmployees)
+                ->unique('id')
+                ->values();
+
+            $mainBirthdayPerson = $isUserBirthdayToday
+                ? $user
+                : $popupBirthdayPeople->first();
+
+            $mainBirthdayAge = $isUserBirthdayToday
+                ? $userBirthdayAge
+                : ($mainBirthdayPerson->birthday_age ?? null);
+
+            $mainBirthdayInitials = collect(explode(' ', $mainBirthdayPerson->name ?? 'User'))
+                ->filter()
+                ->take(2)
+                ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
+                ->implode('');
+
+            $mainBirthdayPhoto = !empty($mainBirthdayPerson?->photo)
+                ? asset('storage/' . $mainBirthdayPerson->photo)
+                : null;
+        @endphp
+
+        <div
+            id="birthday-popup"
+            class="birthday-popup-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="birthday-popup-title"
+            aria-hidden="true"
+        >
+            <div class="birthday-popup-dialog" role="document">
+                <button
+                    type="button"
+                    class="birthday-popup-close"
+                    id="birthday-popup-close"
+                    aria-label="Close birthday wish"
+                >
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="birthday-popup-content">
+                    <div class="birthday-popup-cake">🎂</div>
+
+                    <span class="birthday-popup-kicker">
+                        <i class="fas fa-star"></i>
+                        A Very Special Day
+                    </span>
+
+                    <h2 id="birthday-popup-title" class="birthday-popup-title">
+                        Happy Birthday, {{ $mainBirthdayPerson->name }}! 🎉
+                    </h2>
+
+                    <p class="birthday-popup-message">
+                        आपकी मुस्कान हमेशा यूँ ही बनी रहे। आने वाला हर दिन
+                        खुशियों, सफलता, अच्छे स्वास्थ्य और नई उपलब्धियों से भरा हो।
+                        {{ $activeOffice?->name ?? 'हमारे कार्यालय' }} की ओर से
+                        जन्मदिन की ढेरों शुभकामनाएं!
+                    </p>
+
+                    <div class="birthday-popup-person">
+                        <div class="flex items-center gap-4">
+                            <div class="birthday-popup-avatar">
+                                @if($mainBirthdayPhoto)
+                                    <img
+                                        src="{{ $mainBirthdayPhoto }}"
+                                        alt="{{ $mainBirthdayPerson->name }}"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                    >
+                                    <span class="hidden h-full w-full items-center justify-center">
+                                        {{ $mainBirthdayInitials ?: 'U' }}
+                                    </span>
+                                @else
+                                    {{ $mainBirthdayInitials ?: 'U' }}
+                                @endif
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <p class="truncate text-lg font-extrabold text-white">
+                                    {{ $mainBirthdayPerson->name }}
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-purple-100">
+                                    {{ $mainBirthdayPerson->designation
+                                        ?? optional($mainBirthdayPerson->department)->name
+                                        ?? optional($mainBirthdayPerson->office)->name
+                                        ?? 'Our Wonderful Team Member'
+                                    }}
+                                </p>
+
+                                @if($mainBirthdayAge !== null)
+                                    <p class="mt-2 inline-flex items-center gap-2 text-xs font-extrabold text-yellow-200">
+                                        <i class="fas fa-gift"></i>
+                                        Celebrating {{ $mainBirthdayAge }} wonderful years
+                                    </p>
+                                @endif
+                            </div>
+
+                            <div class="text-4xl">🎁</div>
+                        </div>
+                    </div>
+
+                    @if($popupBirthdayPeople->count() > 1)
+                        <div class="birthday-popup-team-list">
+                            @foreach($popupBirthdayPeople as $popupEmployee)
+                                @php
+                                    $popupInitials = collect(explode(' ', $popupEmployee->name))
+                                        ->filter()
+                                        ->take(2)
+                                        ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
+                                        ->implode('');
+
+                                    $popupPhoto = !empty($popupEmployee->photo)
+                                        ? asset('storage/' . $popupEmployee->photo)
+                                        : null;
+
+                                    $popupAge = (int) $popupEmployee->id === (int) $user->id
+                                        ? $userBirthdayAge
+                                        : ($popupEmployee->birthday_age ?? null);
+                                @endphp
+
+                                <div class="birthday-popup-team-item">
+                                    <div class="birthday-popup-avatar !h-12 !w-12 !rounded-xl !text-sm">
+                                        @if($popupPhoto)
+                                            <img
+                                                src="{{ $popupPhoto }}"
+                                                alt="{{ $popupEmployee->name }}"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                            >
+                                            <span class="hidden h-full w-full items-center justify-center">
+                                                {{ $popupInitials ?: 'U' }}
+                                            </span>
+                                        @else
+                                            {{ $popupInitials ?: 'U' }}
+                                        @endif
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <p class="truncate text-sm font-extrabold text-white">
+                                            {{ $popupEmployee->name }}
+                                        </p>
+                                        <p class="mt-1 truncate text-xs font-semibold text-purple-100">
+                                            Happy Birthday! Wishing you a fantastic year ahead.
+                                        </p>
+                                    </div>
+
+                                    @if($popupAge !== null)
+                                        <span class="rounded-full bg-yellow-300/20 px-3 py-1 text-xs font-extrabold text-yellow-200">
+                                            {{ $popupAge }} Years
+                                        </span>
+                                    @else
+                                        <span class="text-2xl">🎈</span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="birthday-popup-actions">
+                        <button
+                            type="button"
+                            id="birthday-celebrate-button"
+                            class="birthday-popup-button birthday-popup-button-primary"
+                        >
+                            <i class="fas fa-party-horn"></i>
+                            Celebrate Again
+                        </button>
+
+                        <button
+                            type="button"
+                            id="birthday-popup-done"
+                            class="birthday-popup-button birthday-popup-button-secondary"
+                        >
+                            <i class="fas fa-heart"></i>
+                            Thank You
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
 
 
     {{-- Mobile Top Attendance Actions --}}
@@ -929,6 +1577,145 @@
             </div>
         </div>
     </section>
+
+    {{-- Birthday Celebration --}}
+    @if($hasBirthdayCelebration)
+        <section class="birthday-celebration p-5 sm:p-6">
+            <div class="relative">
+
+                @if($isUserBirthdayToday)
+                    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                        <div class="flex items-start gap-4">
+                            <div class="birthday-main-icon">
+                                <i class="fas fa-birthday-cake"></i>
+                            </div>
+
+                            <div>
+                                <span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-extrabold text-yellow-200">
+                                    <i class="fas fa-star"></i>
+                                    Today Is Your Special Day
+                                </span>
+
+                                <h2 class="mt-3 text-2xl font-extrabold text-white sm:text-3xl">
+                                    Happy Birthday, {{ $user->name }}! 🎉
+                                </h2>
+
+                                <p class="mt-2 max-w-2xl text-sm font-medium leading-6 text-purple-100 sm:text-base">
+                                    आपको जन्मदिन की हार्दिक शुभकामनाएं। आपका आने वाला वर्ष
+                                    खुशियों, सफलता और अच्छे स्वास्थ्य से भरा रहे।
+                                </p>
+
+                                @if($userBirthdayAge !== null)
+                                    <p class="mt-3 inline-flex items-center gap-2 text-xs font-bold text-yellow-200">
+                                        <i class="fas fa-gift"></i>
+                                        Celebrating {{ $userBirthdayAge }} wonderful years
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="hidden shrink-0 lg:block">
+                            <div class="flex h-28 w-28 items-center justify-center rounded-full border border-white/20 bg-white/10 text-6xl shadow-xl">
+                                🎂
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if($todayBirthdayEmployees->isNotEmpty())
+                    @if($isUserBirthdayToday)
+                        <div class="my-6 border-t border-white/20"></div>
+                    @endif
+
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-xs font-extrabold uppercase tracking-widest text-yellow-200">
+                                Team Birthday Celebration
+                            </p>
+
+                            <h3 class="mt-1 text-xl font-extrabold text-white">
+                                Wish Your Team Members 🎈
+                            </h3>
+
+                        </div>
+
+                        <span class="birthday-count-badge">
+                            <i class="fas fa-birthday-cake text-yellow-300"></i>
+                            {{ $todayBirthdayEmployees->count() }}
+                            {{ \Illuminate\Support\Str::plural('Birthday', $todayBirthdayEmployees->count()) }}
+                        </span>
+                    </div>
+
+                    <div class="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach($todayBirthdayEmployees as $birthdayEmployee)
+                            @php
+                                $birthdayInitials = collect(explode(' ', $birthdayEmployee->name))
+                                    ->filter()
+                                    ->take(2)
+                                    ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
+                                    ->implode('');
+
+                                $birthdayPhoto = !empty($birthdayEmployee->photo)
+                                    ? asset('storage/' . $birthdayEmployee->photo)
+                                    : null;
+                            @endphp
+
+                            <article class="birthday-employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="birthday-avatar">
+                                        @if($birthdayPhoto)
+                                            <img
+                                                src="{{ $birthdayPhoto }}"
+                                                alt="{{ $birthdayEmployee->name }}"
+                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                            >
+                                            <span class="hidden h-full w-full items-center justify-center">
+                                                {{ $birthdayInitials ?: 'U' }}
+                                            </span>
+                                        @else
+                                            {{ $birthdayInitials ?: 'U' }}
+                                        @endif
+                                    </div>
+
+                                    <div class="min-w-0 flex-1">
+                                        <p class="truncate text-sm font-extrabold text-white">
+                                            {{ $birthdayEmployee->name }}
+                                        </p>
+
+                                        <p class="mt-1 truncate text-xs font-semibold text-purple-100">
+                                            {{ $birthdayEmployee->designation
+                                                ?? optional($birthdayEmployee->department)->name
+                                                ?? optional($birthdayEmployee->office)->name
+                                                ?? 'Team Member'
+                                            }}
+                                        </p>
+
+                                        @if($birthdayEmployee->birthday_age !== null)
+                                            <p class="mt-1 text-xs font-bold text-yellow-200">
+                                                Turns {{ $birthdayEmployee->birthday_age }} today
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-300/20 text-xl">
+                                        🎁
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 rounded-xl border border-white/15 bg-slate-950/15 px-3 py-3">
+                                    <p class="text-xs font-semibold leading-5 text-white">
+                                        Happy Birthday,
+                                        <span class="font-extrabold">{{ $birthdayEmployee->name }}</span>!
+                                        आपका आने वाला वर्ष सफलता और खुशियों से भरा रहे। 🎉
+                                    </p>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </section>
+    @endif
 
     {{-- Attendance Quick Actions --}}
     <section class="attendance-action-card p-5 sm:p-6">
@@ -1924,6 +2711,94 @@
         updateLiveClock();
 
         setInterval(updateLiveClock, 1000);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Birthday Popup
+        |--------------------------------------------------------------------------
+        */
+        const birthdayPopup = document.getElementById('birthday-popup');
+        const birthdayCloseButton = document.getElementById('birthday-popup-close');
+        const birthdayDoneButton = document.getElementById('birthday-popup-done');
+        const birthdayCelebrateButton = document.getElementById('birthday-celebrate-button');
+
+        function createBirthdayConfetti() {
+            if (!birthdayPopup) {
+                return;
+            }
+
+            const confettiColors = [
+                '#facc15',
+                '#fb7185',
+                '#22d3ee',
+                '#a78bfa',
+                '#34d399',
+                '#ffffff'
+            ];
+
+            for (let index = 0; index < 70; index++) {
+                const confetti = document.createElement('span');
+                confetti.className = 'birthday-confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = confettiColors[
+                    Math.floor(Math.random() * confettiColors.length)
+                ];
+                confetti.style.animationDuration = (2.8 + Math.random() * 2.2) + 's';
+                confetti.style.animationDelay = (Math.random() * 0.65) + 's';
+                confetti.style.setProperty(
+                    '--confetti-x',
+                    ((Math.random() * 180) - 90) + 'px'
+                );
+
+                birthdayPopup.appendChild(confetti);
+
+                window.setTimeout(function () {
+                    confetti.remove();
+                }, 5500);
+            }
+        }
+
+        function openBirthdayPopup() {
+            if (!birthdayPopup) {
+                return;
+            }
+
+            birthdayPopup.classList.add('is-visible');
+            birthdayPopup.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('birthday-popup-open');
+            createBirthdayConfetti();
+        }
+
+        function closeBirthdayPopup() {
+            if (!birthdayPopup) {
+                return;
+            }
+
+            birthdayPopup.classList.remove('is-visible');
+            birthdayPopup.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('birthday-popup-open');
+        }
+
+        if (birthdayPopup) {
+            window.setTimeout(openBirthdayPopup, 450);
+
+            birthdayCloseButton?.addEventListener('click', closeBirthdayPopup);
+            birthdayDoneButton?.addEventListener('click', closeBirthdayPopup);
+            birthdayCelebrateButton?.addEventListener('click', createBirthdayConfetti);
+
+            birthdayPopup.addEventListener('click', function (event) {
+                if (event.target === birthdayPopup) {
+                    closeBirthdayPopup();
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeBirthdayPopup();
+                }
+            });
+        }
 
         /*
         |--------------------------------------------------------------------------

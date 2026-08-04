@@ -43,6 +43,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'check_in_time' => 'datetime',
         'check_out_time' => 'datetime',
+        'dob' => 'date',
     ];
 
     public function office()

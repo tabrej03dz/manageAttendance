@@ -150,6 +150,89 @@ class DashboardController extends Controller
         return $sorted->unique('id')->values();
     }
 
+    /**
+     * Logged-in user ke direct aur nested reporting employees nikalta hai.
+     */
+    private function subordinateEmployees(Collection $employees, int $managerId): Collection
+    {
+        $employees = collect($employees);
+        $employeesByLeader = $employees->groupBy(function ($employee) {
+            return $employee->team_leader_id !== null
+                ? (int) $employee->team_leader_id
+                : null;
+        });
+
+        $subordinates = collect();
+        $visitedIds = [];
+
+        $appendChildren = function (int $leaderId) use (
+            &$appendChildren,
+            &$subordinates,
+            &$visitedIds,
+            $employeesByLeader
+        ): void {
+            $children = $employeesByLeader->get($leaderId, collect());
+
+            foreach ($children as $employee) {
+                $employeeId = (int) $employee->id;
+
+                if (in_array($employeeId, $visitedIds, true)) {
+                    continue;
+                }
+
+                $visitedIds[] = $employeeId;
+                $subordinates->push($employee);
+                $appendChildren($employeeId);
+            }
+        };
+
+        $appendChildren($managerId);
+
+        return $subordinates
+            ->unique('id')
+            ->values();
+    }
+
+    /**
+     * User role ke hisaab se birthday visibility decide karta hai.
+     */
+    private function birthdayVisibleEmployees(User $user, Collection $employees): Collection
+    {
+        // Owner, super admin aur admin ko accessible/selected office ke sab employees dikhenge.
+        if ($user->hasAnyRole(['super_admin', 'owner', 'admin'])) {
+            return $employees
+                ->reject(fn ($employee) => (int) $employee->id === (int) $user->id)
+                ->values();
+        }
+
+        // Team leader ko direct aur nested reporting employees dikhenge.
+        if ($user->hasRole('team_leader')) {
+            return $this->subordinateEmployees($employees, (int) $user->id);
+        }
+
+        // Normal employee ko doosre employees ka birthday nahi dikhana hai.
+        return collect();
+    }
+
+    /**
+     * Month/day compare karke birthday today check karta hai.
+     */
+    private function isBirthdayToday($dob, Carbon $today): bool
+    {
+        if (empty($dob)) {
+            return false;
+        }
+
+        try {
+            $birthday = Carbon::parse($dob);
+
+            return (int) $birthday->month === (int) $today->month
+                && (int) $birthday->day === (int) $today->day;
+        } catch (\Throwable $exception) {
+            return false;
+        }
+    }
+
     private function monthlySummary(User $user, array $officeIds): array
     {
         $monthStart = now()->startOfMonth()->startOfDay();
@@ -213,18 +296,6 @@ class DashboardController extends Controller
 
 
 
-
-        
-
-
-
-
-
-
-
-
-
-
         /*
          * Employee page jaisa exact employee result:
          * office filter + status = 1
@@ -237,6 +308,45 @@ class DashboardController extends Controller
             ->map(fn ($id) => (int) $id)
             ->unique()
             ->values();
+
+        /*
+         * Birthday logic:
+         * - Logged-in user ka birthday alag wish hoga.
+         * - Owner/super-admin/admin ko accessible employees ke birthdays dikhenge.
+         * - Team leader ko direct aur nested team birthdays dikhenge.
+         * - Employee ko sirf apna birthday wish dikhega.
+         */
+        $todayDate = now();
+
+        $isUserBirthdayToday = $this->isBirthdayToday($user->dob, $todayDate);
+        $userBirthdayAge = null;
+
+        if ($isUserBirthdayToday) {
+            try {
+                $userBirthdayAge = Carbon::parse($user->dob)->age;
+            } catch (\Throwable $exception) {
+                $userBirthdayAge = null;
+            }
+        }
+
+        $birthdayVisibleEmployees = $this->birthdayVisibleEmployees($user, $employees);
+
+        $todayBirthdayEmployees = $birthdayVisibleEmployees
+            ->filter(fn ($employee) => $this->isBirthdayToday($employee->dob, $todayDate))
+            ->map(function ($employee) {
+                try {
+                    $employee->birthday_age = Carbon::parse($employee->dob)->age;
+                } catch (\Throwable $exception) {
+                    $employee->birthday_age = null;
+                }
+
+                return $employee;
+            })
+            ->sortBy('name')
+            ->values();
+
+        $hasBirthdayCelebration = $isUserBirthdayToday
+            || $todayBirthdayEmployees->isNotEmpty();
 
         $offices = Office::query()
             ->when(
@@ -400,7 +510,11 @@ class DashboardController extends Controller
             'totalLastMonthPayout',
             'data',
             'absentEmployeesList',
-            'onLeaveEmployeesList'
+            'onLeaveEmployeesList',
+            'isUserBirthdayToday',
+            'userBirthdayAge',
+            'todayBirthdayEmployees',
+            'hasBirthdayCelebration'
         ));
     }
 

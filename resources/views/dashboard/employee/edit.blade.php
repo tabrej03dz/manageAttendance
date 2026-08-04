@@ -85,6 +85,22 @@
                     <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
                         <div><label class="employee-label" for="name">Full Name <span class="text-rose-500">*</span></label><input class="employee-input" id="name" name="name" type="text" value="{{ old('name', $employee->name) }}" required></div>
                         <div><label class="employee-label" for="email">Email</label><input class="employee-input" id="email" name="email" type="email" value="{{ old('email', $employee->email) }}"></div>
+
+                        <div>
+                            <label class="employee-label" for="dob">Date of Birth</label>
+                            <input
+                                class="employee-input @error('dob') input-error @enderror"
+                                id="dob"
+                                name="dob"
+                                type="date"
+                                value="{{ old('dob', optional($employee->dob)->format('Y-m-d') ?? $employee->dob) }}"
+                            >
+                            @error('dob')
+                                <p class="employee-error">
+                                    <i class="fas fa-circle-exclamation"></i>{{ $message }}
+                                </p>
+                            @enderror
+                        </div>
                         <div><label class="employee-label" for="phone">Phone</label><input class="employee-input" id="phone" name="phone" type="text" value="{{ old('phone', $employee->phone) }}"></div>
                         <div><label class="employee-label" for="joining_date">Joining Date</label><input class="employee-input" id="joining_date" name="joining_date" type="date" value="{{ old('joining_date', $employee->joining_date) }}"></div>
                         <div class="md:col-span-2"><label class="employee-label" for="address">Full Address</label><textarea class="employee-textarea" id="address" name="address">{{ old('address', $employee->address) }}</textarea></div>
