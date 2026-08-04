@@ -1156,27 +1156,11 @@
 <div class="dashboard-page space-y-6 pb-10">
 
 
-    {{-- Premium Birthday Popup --}}
-    @if($hasBirthdayCelebration)
+    {{-- Premium Birthday Popup: only for logged-in birthday user --}}
+    @if($isUserBirthdayToday)
         @php
-            $popupBirthdayPeople = collect();
-
-            if ($isUserBirthdayToday) {
-                $popupBirthdayPeople->push($user);
-            }
-
-            $popupBirthdayPeople = $popupBirthdayPeople
-                ->merge($todayBirthdayEmployees)
-                ->unique('id')
-                ->values();
-
-            $mainBirthdayPerson = $isUserBirthdayToday
-                ? $user
-                : $popupBirthdayPeople->first();
-
-            $mainBirthdayAge = $isUserBirthdayToday
-                ? $userBirthdayAge
-                : ($mainBirthdayPerson->birthday_age ?? null);
+            $mainBirthdayPerson = $user;
+            $mainBirthdayAge = $userBirthdayAge;
 
             $mainBirthdayInitials = collect(explode(' ', $mainBirthdayPerson->name ?? 'User'))
                 ->filter()
@@ -1187,6 +1171,10 @@
             $mainBirthdayPhoto = !empty($mainBirthdayPerson?->photo)
                 ? asset('storage/' . $mainBirthdayPerson->photo)
                 : null;
+
+            $birthdayOfficeName = optional($mainBirthdayPerson->office)->name
+                ?? $activeOffice?->name
+                ?? 'हमारे कार्यालय';
         @endphp
 
         <div
@@ -1222,8 +1210,7 @@
                     <p class="birthday-popup-message">
                         आपकी मुस्कान हमेशा यूँ ही बनी रहे। आने वाला हर दिन
                         खुशियों, सफलता, अच्छे स्वास्थ्य और नई उपलब्धियों से भरा हो।
-                        {{ $activeOffice?->name ?? 'हमारे कार्यालय' }} की ओर से
-                        जन्मदिन की ढेरों शुभकामनाएं!
+                        {{ $birthdayOfficeName }} की ओर से जन्मदिन की ढेरों शुभकामनाएं!
                     </p>
 
                     <div class="birthday-popup-person">
@@ -1268,69 +1255,13 @@
                         </div>
                     </div>
 
-                    @if($popupBirthdayPeople->count() > 1)
-                        <div class="birthday-popup-team-list">
-                            @foreach($popupBirthdayPeople as $popupEmployee)
-                                @php
-                                    $popupInitials = collect(explode(' ', $popupEmployee->name))
-                                        ->filter()
-                                        ->take(2)
-                                        ->map(fn ($part) => strtoupper(mb_substr($part, 0, 1)))
-                                        ->implode('');
-
-                                    $popupPhoto = !empty($popupEmployee->photo)
-                                        ? asset('storage/' . $popupEmployee->photo)
-                                        : null;
-
-                                    $popupAge = (int) $popupEmployee->id === (int) $user->id
-                                        ? $userBirthdayAge
-                                        : ($popupEmployee->birthday_age ?? null);
-                                @endphp
-
-                                <div class="birthday-popup-team-item">
-                                    <div class="birthday-popup-avatar !h-12 !w-12 !rounded-xl !text-sm">
-                                        @if($popupPhoto)
-                                            <img
-                                                src="{{ $popupPhoto }}"
-                                                alt="{{ $popupEmployee->name }}"
-                                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                                            >
-                                            <span class="hidden h-full w-full items-center justify-center">
-                                                {{ $popupInitials ?: 'U' }}
-                                            </span>
-                                        @else
-                                            {{ $popupInitials ?: 'U' }}
-                                        @endif
-                                    </div>
-
-                                    <div class="min-w-0 flex-1">
-                                        <p class="truncate text-sm font-extrabold text-white">
-                                            {{ $popupEmployee->name }}
-                                        </p>
-                                        <p class="mt-1 truncate text-xs font-semibold text-purple-100">
-                                            Happy Birthday! Wishing you a fantastic year ahead.
-                                        </p>
-                                    </div>
-
-                                    @if($popupAge !== null)
-                                        <span class="rounded-full bg-yellow-300/20 px-3 py-1 text-xs font-extrabold text-yellow-200">
-                                            {{ $popupAge }} Years
-                                        </span>
-                                    @else
-                                        <span class="text-2xl">🎈</span>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
                     <div class="birthday-popup-actions">
                         <button
                             type="button"
                             id="birthday-celebrate-button"
                             class="birthday-popup-button birthday-popup-button-primary"
                         >
-                            <i class="fas fa-party-horn"></i>
+                            <i class="fas fa-birthday-cake"></i>
                             Celebrate Again
                         </button>
 
@@ -1347,8 +1278,6 @@
             </div>
         </div>
     @endif
-
-
 
     {{-- Mobile Top Attendance Actions --}}
     <section class="mobile-attendance-actions">
