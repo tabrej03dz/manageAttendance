@@ -4,249 +4,1192 @@
 
 @push('styles')
 <style>
-    .employee-page{font-family:'Inter',sans-serif;color:#0f172a}
-    .employee-hero{position:relative;overflow:hidden;border:1px solid #312e81;border-radius:26px;background:linear-gradient(135deg,#0f172a 0%,#172554 52%,#312e81 100%);box-shadow:0 22px 55px rgba(15,23,42,.28);isolation:isolate}
-    .employee-hero:before{content:'';position:absolute;width:320px;height:320px;right:-100px;top:-125px;border-radius:999px;background:rgba(99,102,241,.34);filter:blur(12px);z-index:-1}
-    .employee-hero:after{content:'';position:absolute;width:280px;height:280px;left:36%;bottom:-185px;border-radius:999px;background:rgba(6,182,212,.18);filter:blur(18px);z-index:-1}
-    .employee-hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.24);border-radius:999px;background:rgba(15,23,42,.55);color:#fff;padding:7px 12px;font-size:12px;font-weight:700}
-    .employee-card{overflow:hidden;border:1px solid #d8e0ea;border-radius:22px;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.10)}
-    .employee-card-header{border-bottom:1px solid #e2e8f0;background:linear-gradient(90deg,rgba(238,242,255,.88),rgba(236,254,255,.65))}
-    .section-card{border:1px solid #e2e8f0;border-radius:18px;background:#fff;overflow:hidden}
-    .section-title{display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0;background:#f8fafc;padding:16px 18px}
-    .section-icon{display:flex;width:42px;height:42px;align-items:center;justify-content:center;border-radius:13px;background:#e0e7ff;color:#4338ca;flex-shrink:0}
-    .employee-label{display:block;margin-bottom:7px;color:#334155;font-size:13px;font-weight:800}
-    .employee-input,.employee-select,.employee-textarea{width:100%;border:1px solid #dbe3ee!important;border-radius:13px!important;background:#fff!important;color:#0f172a!important;padding:11px 13px!important;font-size:13px!important;font-weight:500;outline:none;transition:border-color .2s,box-shadow .2s}
-    .employee-input,.employee-select{min-height:46px}
-    .employee-textarea{min-height:92px;resize:vertical}
-    .employee-input:focus,.employee-select:focus,.employee-textarea:focus{border-color:#818cf8!important;box-shadow:0 0 0 4px rgba(99,102,241,.12)!important}
-    .employee-input.input-error,.employee-select.input-error,.employee-textarea.input-error{border-color:#fb7185!important;background:#fff1f2!important}
-    .employee-help{margin-top:6px;color:#64748b;font-size:11px;font-weight:500}
-    .employee-error{display:flex;align-items:flex-start;gap:7px;margin-top:7px;color:#e11d48;font-size:12px;font-weight:700}
-    .error-summary{border:1px solid #fecdd3;border-radius:16px;background:#fff1f2;padding:16px;color:#9f1239}
-    .action-primary,.action-secondary,.action-dark,.action-warning{display:inline-flex;min-height:45px;align-items:center;justify-content:center;gap:8px;border-radius:13px;padding:10px 17px;font-size:13px;font-weight:800;text-decoration:none!important;transition:transform .2s,box-shadow .2s,filter .2s}
-    .action-primary{border:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff!important;box-shadow:0 12px 25px rgba(79,70,229,.24)}
-    .action-primary:hover{color:#fff!important;transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 17px 32px rgba(79,70,229,.31)}
-    .action-secondary{border:1px solid #dbe3ee;background:#f8fafc;color:#475569!important}
-    .action-secondary:hover{color:#0f172a!important;background:#f1f5f9;transform:translateY(-2px)}
-    .action-dark{border:1px solid #334155;background:#0f172a;color:#fff!important}
-    .action-warning{border:1px solid #fde68a;background:#fffbeb;color:#92400e!important}
-    .radio-card{display:flex;align-items:center;gap:10px;border:1px solid #e2e8f0;border-radius:13px;background:#f8fafc;padding:12px 14px;cursor:pointer}
-    .radio-card:has(input:checked){border-color:#818cf8;background:#eef2ff}
-    .table-scroll::-webkit-scrollbar{width:7px;height:7px}.table-scroll::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#818cf8,#06b6d4);border-radius:999px}.table-scroll::-webkit-scrollbar-track{background:#f1f5f9;border-radius:999px}
-    .employee-table{width:100%;min-width:1100px;border-collapse:separate;border-spacing:0}.employee-table th{border-bottom:1px solid #e2e8f0;background:#f8fafc;padding:15px 16px;text-align:left;color:#64748b;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}.employee-table td{border-bottom:1px solid #f1f5f9;padding:15px 16px;color:#334155;font-size:13px;vertical-align:middle}.employee-table tbody tr:hover{background:#f8fafc}.employee-table tbody tr:last-child td{border-bottom:0}
-    .icon-action{display:inline-flex;width:39px;height:39px;align-items:center;justify-content:center;border:0;border-radius:11px;color:#fff!important;text-decoration:none!important;box-shadow:0 8px 18px rgba(15,23,42,.14);transition:transform .2s,filter .2s}
-    .icon-action:hover{color:#fff!important;transform:translateY(-2px);filter:brightness(1.06)}
-    .filter-control{width:100%;min-height:44px;border:1px solid #dbe3ee!important;border-radius:12px!important;background:#fff!important;color:#0f172a!important;padding:10px 12px!important;font-size:13px!important;outline:none}.filter-control:focus{border-color:#818cf8!important;box-shadow:0 0 0 4px rgba(99,102,241,.12)!important}
-    @media(max-width:767px){.employee-hero{border-radius:20px}.employee-card{border-radius:18px}.action-primary,.action-secondary{width:100%}}
+    .employee-register-page {
+        font-family: Arial, Helvetica, sans-serif;
+        color: #333;
+        font-size: 12px;
+    }
+
+    .registration-summary,
+    .form-panel {
+        background: #fff;
+        border: 1px solid #bfc4c9;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, .20);
+    }
+
+    .registration-summary {
+        padding: 10px 14px;
+        margin-bottom: 12px;
+    }
+
+    .registration-summary-grid {
+        display: grid;
+        grid-template-columns: 130px minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+    }
+
+    .registration-avatar {
+        width: 112px;
+        height: 112px;
+        border-radius: 26px;
+        object-fit: cover;
+        border: 1px solid #c7ccd1;
+        background: #e7ebee;
+        box-shadow: 0 4px 12px rgba(0,0,0,.16);
+    }
+
+    .registration-title {
+        margin: 0 0 10px;
+        color: #4b4b4b;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.1;
+        text-transform: uppercase;
+    }
+
+    .summary-fields {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(130px, 1fr));
+        gap: 8px 24px;
+    }
+
+    .summary-label {
+        display: block;
+        margin-bottom: 2px;
+        color: #555;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .summary-value {
+        color: #777;
+        font-size: 11px;
+        line-height: 1.25;
+    }
+
+    .completion-text {
+        margin-top: 9px;
+        color: #d90000;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .page-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        align-items: start;
+    }
+
+    .form-panel {
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .form-panel.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 35px;
+        padding: 5px 12px;
+        border-bottom: 1px solid #d1d1d1;
+        background: linear-gradient(#fff, #f4f4f4);
+    }
+
+    .panel-title {
+        margin: 0;
+        color: #111;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .panel-edit {
+        color: #111;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .panel-body {
+        padding: 10px 12px 12px;
+    }
+
+    .compact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 18px;
+        row-gap: 7px;
+    }
+
+    .compact-grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .field-row {
+        display: grid;
+        grid-template-columns: 100px minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+    }
+
+    .field-row.top {
+        align-items: start;
+    }
+
+    .field-row.full {
+        grid-column: 1 / -1;
+    }
+
+    .field-label {
+        color: #555;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .required {
+        color: #d00000;
+    }
+
+    .form-control-compact {
+        width: 100%;
+        height: 28px;
+        min-width: 0;
+        padding: 3px 8px;
+        border: 1px solid #cfd3d7 !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        color: #444 !important;
+        font-size: 11px !important;
+        outline: none;
+        box-shadow: none !important;
+    }
+
+    textarea.form-control-compact {
+        height: 70px;
+        padding-top: 7px;
+        resize: vertical;
+    }
+
+    input[type="file"].form-control-compact {
+        height: auto;
+        min-height: 30px;
+        padding: 4px;
+    }
+
+    .form-control-compact:focus {
+        border-color: #7c9ab7 !important;
+        box-shadow: 0 0 0 1px #7c9ab7 !important;
+    }
+
+    .has-error {
+        border-color: #dc2626 !important;
+        background: #fff5f5 !important;
+    }
+
+    .field-error {
+        grid-column: 2;
+        margin-top: -3px;
+        color: #dc2626;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        min-height: 28px;
+    }
+
+    .radio-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #444;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .error-summary {
+        margin-bottom: 10px;
+        padding: 10px 13px;
+        border: 1px solid #e6a3a3;
+        background: #fff0f0;
+        color: #9b1515;
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 10px 12px;
+        border-top: 1px solid #d3d3d3;
+        background: #f7f7f7;
+    }
+
+    .btn-compact {
+        display: inline-flex;
+        min-width: 118px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 14px;
+        border: 1px solid transparent;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none !important;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        border-color: #315f8c;
+        background: #3f78ad;
+        color: #fff !important;
+    }
+
+    .btn-cancel {
+        border-color: #aaa;
+        background: #fff;
+        color: #333 !important;
+    }
+
+    @media (max-width: 1100px) {
+        .summary-fields,
+        .compact-grid.three {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 800px) {
+        .registration-summary-grid,
+        .page-form-grid,
+        .summary-fields,
+        .compact-grid,
+        .compact-grid.three {
+            grid-template-columns: 1fr;
+        }
+
+        .form-panel.full-width {
+            grid-column: auto;
+        }
+    }
+
+    @media (max-width: 520px) {
+        .field-row {
+            grid-template-columns: 1fr;
+            gap: 4px;
+        }
+
+        .field-error {
+            grid-column: 1;
+        }
+
+        .registration-avatar {
+            width: 96px;
+            height: 96px;
+        }
+
+        .registration-title {
+            font-size: 18px;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .btn-compact {
+            width: 100%;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="employee-page space-y-6 pb-10">
+<div class="employee-register-page">
 
-    <section class="employee-hero p-6 sm:p-8">
-        <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <section class="registration-summary">
+        <div class="registration-summary-grid">
             <div>
-                <span class="employee-hero-badge">
-                    <span class="h-2 w-2 animate-pulse rounded-full bg-cyan-400"></span>
-                    Employee Management
-                </span>
-                <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Employee Registration</h1>
-                <p class="mt-3 max-w-2xl text-sm font-medium leading-6 text-blue-100 sm:text-base">
-                    Personal details, employment information, attendance settings और salary configuration के साथ नया employee register करें।
-                </p>
+                <img
+                    id="employeePhotoPreview"
+                    class="registration-avatar"
+                    src="https://ui-avatars.com/api/?name=New+Employee&background=d8e0e6&color=333&size=200"
+                    alt="New Employee"
+                >
             </div>
-            <a href="{{ route('employee.index') }}" class="action-secondary bg-white">
-                <i class="fas fa-arrow-left"></i> Back to Employees
-            </a>
+
+            <div>
+                <h1 class="registration-title" id="employeePreviewName">
+                    NEW EMPLOYEE REGISTRATION
+                </h1>
+
+                <div class="summary-fields">
+                    <div>
+                        <span class="summary-label">Department</span>
+                        <div class="summary-value" id="departmentPreview">Not Selected</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Designation</span>
+                        <div class="summary-value" id="designationPreview">Not Entered</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Role</span>
+                        <div class="summary-value" id="rolePreview">EMPLOYEE</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Branch</span>
+                        <div class="summary-value" id="officePreview">Not Selected</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Reporting Manager</span>
+                        <div class="summary-value" id="leaderPreview">Not Selected</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Leave Authority</span>
+                        <div class="summary-value" id="leaveAuthorityPreview">Not Selected</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Joining Date</span>
+                        <div class="summary-value" id="joiningPreview">Not Entered</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Status</span>
+                        <div class="summary-value">Active</div>
+                    </div>
+
+                    <div>
+                        <span class="summary-label">Location Rule</span>
+                        <div class="summary-value" id="locationPreview">Not Required</div>
+                    </div>
+                </div>
+
+                <div class="completion-text">
+                    Complete all required fields before registering the employee
+                </div>
+            </div>
         </div>
     </section>
 
     @if($errors->any())
         <div class="error-summary">
-            <div class="flex items-start gap-3">
-                <i class="fas fa-exclamation-triangle mt-1"></i>
-                <div>
-                    <p class="font-extrabold">Please correct the following errors:</p>
-                    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm font-semibold">
-                        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
-                    </ul>
-                </div>
-            </div>
+            <strong>Please correct the following errors:</strong>
+            <ul style="margin:6px 0 0 18px;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    <form action="{{ route('employee.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form
+        action="{{ route('employee.store') }}"
+        method="POST"
+        enctype="multipart/form-data"
+    >
         @csrf
 
-        <section class="employee-card">
-            <div class="employee-card-header px-5 py-5 sm:px-6">
-                <h2 class="text-lg font-extrabold text-slate-900">Create Employee Profile</h2>
-                <p class="mt-1 text-sm font-medium text-slate-500">Required fields are marked with an asterisk.</p>
-            </div>
+        <div class="page-form-grid">
 
-            <div class="space-y-6 p-5 sm:p-6">
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Primary Details</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-user"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Personal Information</h3><p class="text-xs font-medium text-slate-500">Employee identity and contact details</p></div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div>
-                            <label class="employee-label" for="name">Full Name <span class="text-rose-500">*</span></label>
-                            <input class="employee-input @error('name') input-error @enderror" id="name" name="name" type="text" value="{{ old('name') }}" placeholder="Enter full name" required>
-                            @error('name')<p class="employee-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="employee-label" for="email">Email</label>
-                            <input class="employee-input @error('email') input-error @enderror" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="Enter email address">
-                            @error('email')<p class="employee-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="employee-label" for="dob">Date of Birth</label>
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row">
+                            <label class="field-label" for="name">
+                                Full Name <span class="required">*</span>
+                            </label>
                             <input
-                                class="employee-input @error('dob') input-error @enderror"
+                                class="form-control-compact @error('name') has-error @enderror"
+                                id="name"
+                                name="name"
+                                type="text"
+                                value="{{ old('name') }}"
+                                required
+                            >
+                            @error('name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="email">Email</label>
+                            <input
+                                class="form-control-compact @error('email') has-error @enderror"
+                                id="email"
+                                name="email"
+                                type="email"
+                                value="{{ old('email') }}"
+                            >
+                            @error('email')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="phone">
+                                Phone <span class="required">*</span>
+                            </label>
+                            <input
+                                class="form-control-compact @error('phone') has-error @enderror"
+                                id="phone"
+                                name="phone"
+                                type="text"
+                                value="{{ old('phone') }}"
+                                required
+                            >
+                            @error('phone')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="dob">Date of Birth</label>
+                            <input
+                                class="form-control-compact @error('dob') has-error @enderror"
                                 id="dob"
                                 name="dob"
                                 type="date"
                                 value="{{ old('dob') }}"
                             >
                             @error('dob')
-                                <p class="employee-error">
-                                    <i class="fas fa-circle-exclamation"></i>{{ $message }}
-                                </p>
+                                <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div>
-                            <label class="employee-label" for="phone">Phone <span class="text-rose-500">*</span></label>
-                            <input class="employee-input @error('phone') input-error @enderror" id="phone" name="phone" type="text" value="{{ old('phone') }}" placeholder="Enter phone number">
-                            @error('phone')<p class="employee-error"><i class="fas fa-circle-exclamation"></i>{{ $message }}</p>@enderror
+
+                        <div class="field-row">
+                            <label class="field-label" for="joining_date">Joining Date</label>
+                            <input
+                                class="form-control-compact @error('joining_date') has-error @enderror"
+                                id="joining_date"
+                                name="joining_date"
+                                type="date"
+                                value="{{ old('joining_date') }}"
+                            >
+                            @error('joining_date')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div>
-                            <label class="employee-label" for="joining_date">Joining Date</label>
-                            <input class="employee-input" id="joining_date" name="joining_date" type="date" value="{{ old('joining_date') }}">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="employee-label" for="address">Full Address</label>
-                            <textarea class="employee-textarea" id="address" name="address" placeholder="Enter full address">{{ old('address') }}</textarea>
+
+                        <div class="field-row">
+                            <label class="field-label" for="employee_id">Employee ID</label>
+                            <input
+                                class="form-control-compact @error('employee_id') has-error @enderror"
+                                id="employee_id"
+                                name="employee_id"
+                                type="text"
+                                value="{{ old('employee_id') }}"
+                            >
+                            @error('employee_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-briefcase"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Employment Details</h3><p class="text-xs font-medium text-slate-500">Department, designation, office and reporting structure</p></div>
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Address Details</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row top full">
+                            <label class="field-label" for="address">Current Address</label>
+                            <textarea
+                                class="form-control-compact @error('address') has-error @enderror"
+                                id="address"
+                                name="address"
+                            >{{ old('address') }}</textarea>
+                            @error('address')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div>
-                            <label class="employee-label" for="department_id">Department</label>
-                            <select class="employee-select" name="department_id" id="department_id">
-                                <option value="">Choose Department</option>
+                </div>
+            </section>
+
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Employment Details</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row">
+                            <label class="field-label" for="department_id">Department</label>
+                            <select
+                                class="form-control-compact @error('department_id') has-error @enderror"
+                                name="department_id"
+                                id="department_id"
+                            >
+                                <option value="">Select</option>
                                 @foreach($departments as $department)
-                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                                    <option
+                                        value="{{ $department->id }}"
+                                        {{ (string) old('department_id') === (string) $department->id ? 'selected' : '' }}
+                                    >
+                                        {{ $department->name }}
+                                    </option>
                                 @endforeach
                             </select>
+                            @error('department_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div><label class="employee-label" for="designation">Designation</label><input class="employee-input" id="designation" name="designation" type="text" value="{{ old('designation') }}" placeholder="Enter designation"></div>
-                        <div>
-                            <label class="employee-label" for="role">Role</label>
-                            <select class="employee-select" name="role" id="role">
-                                <option value="">Select Role</option>
-                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                                <option value="team_leader" {{ old('role') === 'team_leader' ? 'selected' : '' }}>Team Leader</option>
-                                <option value="employee" {{ old('role', 'employee') === 'employee' ? 'selected' : '' }}>Employee</option>
+
+                        <div class="field-row">
+                            <label class="field-label" for="designation">Designation</label>
+                            <input
+                                class="form-control-compact @error('designation') has-error @enderror"
+                                id="designation"
+                                name="designation"
+                                type="text"
+                                value="{{ old('designation') }}"
+                            >
+                            @error('designation')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="role">Role</label>
+                            <select
+                                class="form-control-compact @error('role') has-error @enderror"
+                                name="role"
+                                id="role"
+                            >
+                                <option value="">Select</option>
+                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
+                                    Admin
+                                </option>
+                                <option value="team_leader" {{ old('role') === 'team_leader' ? 'selected' : '' }}>
+                                    Team Leader
+                                </option>
+                                <option value="employee" {{ old('role', 'employee') === 'employee' ? 'selected' : '' }}>
+                                    Employee
+                                </option>
                             </select>
+                            @error('role')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div>
-                            <label class="employee-label" for="office_id">Office <span class="text-rose-500">*</span></label>
-                            <select class="employee-select" name="office_id" id="office_id" required>
-                                <option value="">Select Office</option>
+
+                        <div class="field-row">
+                            <label class="field-label" for="office_id">
+                                Office <span class="required">*</span>
+                            </label>
+                            <select
+                                class="form-control-compact @error('office_id') has-error @enderror"
+                                name="office_id"
+                                id="office_id"
+                                required
+                            >
+                                <option value="">Select</option>
                                 @foreach($offices as $office)
-                                    <option value="{{ $office->id }}" {{ old('office_id', $loop->first ? $office->id : null) == $office->id ? 'selected' : '' }}>{{ $office->name }}</option>
+                                    <option
+                                        value="{{ $office->id }}"
+                                        {{ (string) old('office_id', $loop->first ? $office->id : null) === (string) $office->id ? 'selected' : '' }}
+                                    >
+                                        {{ $office->name }}
+                                    </option>
                                 @endforeach
                             </select>
+                            @error('office_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div>
-                            <label class="employee-label" for="team_leader_id">Team Leader</label>
-                            <select class="employee-select" name="team_leader_id" id="team_leader_id">
-                                <option value="">Select Team Leader</option>
+
+                        <div class="field-row">
+                            <label class="field-label" for="team_leader_id">Reporting Manager</label>
+                            <select
+                                class="form-control-compact @error('team_leader_id') has-error @enderror"
+                                name="team_leader_id"
+                                id="team_leader_id"
+                            >
+                                <option value="">Select</option>
                                 @foreach($teamLeaders as $leader)
-                                    <option value="{{ $leader->id }}" {{ old('team_leader_id') == $leader->id ? 'selected' : '' }}>{{ $leader->name }}</option>
+                                    <option
+                                        value="{{ $leader->id }}"
+                                        data-office-id="{{ $leader->office_id }}"
+                                        {{ (string) old('team_leader_id') === (string) $leader->id ? 'selected' : '' }}
+                                    >
+                                        {{ $leader->name }}
+                                        @if($leader->office)
+                                            - {{ $leader->office->name }}
+                                        @endif
+                                    </option>
                                 @endforeach
                             </select>
+                            @error('team_leader_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
                         </div>
-                        <div><label class="employee-label" for="salary">Monthly Salary</label><input class="employee-input" id="salary" name="salary" type="number" step="0.01" value="{{ old('salary') }}" placeholder="Enter salary"></div>
-                        <div class="md:col-span-2"><label class="employee-label" for="responsibility">Responsibility</label><textarea class="employee-textarea" id="responsibility" name="responsibility" placeholder="Enter responsibilities">{{ old('responsibility') }}</textarea></div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="leave_authority_id">Leave Authority</label>
+                            <select
+                                class="form-control-compact @error('leave_authority_id') has-error @enderror"
+                                name="leave_authority_id"
+                                id="leave_authority_id"
+                            >
+                                <option value="">Select</option>
+                                @foreach($teamLeaders as $teamLeader)
+                                    <option
+                                        value="{{ $teamLeader->id }}"
+                                        data-office-id="{{ $teamLeader->office_id }}"
+                                        {{ (string) old('leave_authority_id') === (string) $teamLeader->id ? 'selected' : '' }}
+                                    >
+                                        {{ $teamLeader->name }}
+                                        @if($teamLeader->office)
+                                            - {{ $teamLeader->office->name }}
+                                        @else
+                                            - Global
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('leave_authority_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="status">
+                                Status <span class="required">*</span>
+                            </label>
+
+                            <select
+                                class="form-control-compact @error('status') has-error @enderror"
+                                name="status"
+                                id="status"
+                                required
+                            >
+                                <option
+                                    value="1"
+                                    {{ (string) old('status', '1') === '1' ? 'selected' : '' }}
+                                >
+                                    Active
+                                </option>
+
+                                <option
+                                    value="0"
+                                    {{ (string) old('status', '1') === '0' ? 'selected' : '' }}
+                                >
+                                    Inactive
+                                </option>
+                            </select>
+
+                            @error('status')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="salary">Monthly Salary</label>
+                            <input
+                                class="form-control-compact @error('salary') has-error @enderror"
+                                id="salary"
+                                name="salary"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('salary') }}"
+                            >
+                            @error('salary')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row top full">
+                            <label class="field-label" for="responsibility">Responsibility</label>
+                            <textarea
+                                class="form-control-compact @error('responsibility') has-error @enderror"
+                                id="responsibility"
+                                name="responsibility"
+                            >{{ old('responsibility') }}</textarea>
+                            @error('responsibility')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-clock"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Attendance Settings</h3><p class="text-xs font-medium text-slate-500">Working hours, break duration and location requirement</p></div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
-                        <div><label class="employee-label" for="check_in_time">Check In Time <span class="text-rose-500">*</span></label><input class="employee-input" id="check_in_time" name="check_in_time" type="time" value="{{ old('check_in_time') }}"></div>
-                        <div><label class="employee-label" for="check_out_time">Check Out Time <span class="text-rose-500">*</span></label><input class="employee-input" id="check_out_time" name="check_out_time" type="time" value="{{ old('check_out_time') }}"></div>
-                        <div><label class="employee-label" for="break">Break Duration (minutes) <span class="text-rose-500">*</span></label><input class="employee-input" id="break" name="break" type="number" value="{{ old('break') }}" placeholder="Example: 30"></div>
-                        <div class="md:col-span-3">
-                            <span class="employee-label">Location Required</span>
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <label class="radio-card"><input type="radio" value="yes" name="location_required" {{ old('location_required', 'no') === 'yes' ? 'checked' : '' }}><span class="font-bold text-slate-700">Yes, location is required</span></label>
-                                <label class="radio-card"><input type="radio" value="no" name="location_required" {{ old('location_required', 'no') === 'no' ? 'checked' : '' }}><span class="font-bold text-slate-700">No location restriction</span></label>
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Attendance Settings</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row">
+                            <label class="field-label" for="check_in_time">
+                                Check In <span class="required">*</span>
+                            </label>
+                            <input
+                                class="form-control-compact @error('check_in_time') has-error @enderror"
+                                id="check_in_time"
+                                name="check_in_time"
+                                type="time"
+                                value="{{ old('check_in_time') }}"
+                            >
+                            @error('check_in_time')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="check_out_time">
+                                Check Out <span class="required">*</span>
+                            </label>
+                            <input
+                                class="form-control-compact @error('check_out_time') has-error @enderror"
+                                id="check_out_time"
+                                name="check_out_time"
+                                type="time"
+                                value="{{ old('check_out_time') }}"
+                            >
+                            @error('check_out_time')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="break">
+                                Break Minutes <span class="required">*</span>
+                            </label>
+                            <input
+                                class="form-control-compact @error('break') has-error @enderror"
+                                id="break"
+                                name="break"
+                                type="number"
+                                value="{{ old('break') }}"
+                            >
+                            @error('break')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <span class="field-label">Location Required</span>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input
+                                        type="radio"
+                                        value="yes"
+                                        name="location_required"
+                                        {{ old('location_required', 'no') === 'yes' ? 'checked' : '' }}
+                                    >
+                                    Yes
+                                </label>
+
+                                <label class="radio-label">
+                                    <input
+                                        type="radio"
+                                        value="no"
+                                        name="location_required"
+                                        {{ old('location_required', 'no') === 'no' ? 'checked' : '' }}
+                                    >
+                                    No
+                                </label>
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-paperclip"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Photo & Documents</h3><p class="text-xs font-medium text-slate-500">Upload employee photo and supporting documents</p></div>
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Photo & Documents</h2>
+                    <span class="panel-edit"><i class="fas fa-paperclip"></i> Upload</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row top">
+                            <label class="field-label" for="photo">Employee Photo</label>
+                            <input
+                                class="form-control-compact @error('photo') has-error @enderror"
+                                id="photo"
+                                name="photo"
+                                type="file"
+                                accept="image/*"
+                            >
+                            @error('photo')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row top">
+                            <label class="field-label" for="aadhar_attachment">Aadhaar File</label>
+                            <input
+                                class="form-control-compact @error('aadhar_attachment') has-error @enderror"
+                                id="aadhar_attachment"
+                                name="aadhar_attachment"
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            >
+                            @error('aadhar_attachment')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row top">
+                            <label class="field-label" for="pan_attachment">PAN File</label>
+                            <input
+                                class="form-control-compact @error('pan_attachment') has-error @enderror"
+                                id="pan_attachment"
+                                name="pan_attachment"
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.webp,.pdf"
+                            >
+                            @error('pan_attachment')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row top">
+                            <label class="field-label" for="other_attachment">Other File</label>
+                            <input
+                                class="form-control-compact @error('other_attachment') has-error @enderror"
+                                id="other_attachment"
+                                name="other_attachment"
+                                type="file"
+                            >
+                            @error('other_attachment')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">
-                        <div><label class="employee-label" for="photo">Employee Photo</label><input class="employee-input" id="photo" name="photo" type="file" accept="image/*"></div>
-                        <div><label class="employee-label" for="aadhar_attachment">Aadhar Attachment</label><input class="employee-input" id="aadhar_attachment" name="aadhar_attachment" type="file"></div>
-                        <div><label class="employee-label" for="pan_attachment">PAN Attachment</label><input class="employee-input" id="pan_attachment" name="pan_attachment" type="file"></div>
-                        <div><label class="employee-label" for="other_attachment">Other Attachment</label><input class="employee-input" id="other_attachment" name="other_attachment" type="file"></div>
+                </div>
+            </section>
+
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Official Identifiers</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row">
+                            <label class="field-label" for="uan_number">UAN Number</label>
+                            <input
+                                class="form-control-compact @error('uan_number') has-error @enderror"
+                                id="uan_number"
+                                name="uan_number"
+                                type="text"
+                                value="{{ old('uan_number') }}"
+                            >
+                            @error('uan_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="esic_number">ESIC Number</label>
+                            <input
+                                class="form-control-compact @error('esic_number') has-error @enderror"
+                                id="esic_number"
+                                name="esic_number"
+                                type="text"
+                                value="{{ old('esic_number') }}"
+                            >
+                            @error('esic_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Salary Details</h2>
+                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="basic_salary">Basic Pay</label>
+                            <input
+                                class="form-control-compact @error('basic_salary') has-error @enderror"
+                                id="basic_salary"
+                                name="basic_salary"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('basic_salary') }}"
+                            >
+                            @error('basic_salary')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="dearness_allowance">D.A.</label>
+                            <input
+                                class="form-control-compact @error('dearness_allowance') has-error @enderror"
+                                id="dearness_allowance"
+                                name="dearness_allowance"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('dearness_allowance') }}"
+                            >
+                            @error('dearness_allowance')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="relieving_charge">Relieving Charge</label>
+                            <input
+                                class="form-control-compact @error('relieving_charge') has-error @enderror"
+                                id="relieving_charge"
+                                name="relieving_charge"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('relieving_charge') }}"
+                            >
+                            @error('relieving_charge')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="additional_allowance">Additional Allowance</label>
+                            <input
+                                class="form-control-compact @error('additional_allowance') has-error @enderror"
+                                id="additional_allowance"
+                                name="additional_allowance"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('additional_allowance') }}"
+                            >
+                            @error('additional_allowance')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="provident_fund">Provident Fund %</label>
+                            <input
+                                class="form-control-compact @error('provident_fund') has-error @enderror"
+                                id="provident_fund"
+                                name="provident_fund"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('provident_fund') }}"
+                            >
+                            @error('provident_fund')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="employee_state_insurance_corporation">ESIC %</label>
+                            <input
+                                class="form-control-compact @error('employee_state_insurance_corporation') has-error @enderror"
+                                id="employee_state_insurance_corporation"
+                                name="employee_state_insurance_corporation"
+                                type="number"
+                                step="0.01"
+                                value="{{ old('employee_state_insurance_corporation') }}"
+                            >
+                            @error('employee_state_insurance_corporation')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-id-card"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Official Identifiers</h3><p class="text-xs font-medium text-slate-500">Internal employee and statutory numbers</p></div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-3">
-                        <div><label class="employee-label" for="employee_id">Employee ID</label><input class="employee-input" id="employee_id" name="employee_id" type="text" value="{{ old('employee_id') }}" placeholder="Employee ID"></div>
-                        <div><label class="employee-label" for="uan_number">UAN Number</label><input class="employee-input" id="uan_number" name="uan_number" type="text" value="{{ old('uan_number') }}" placeholder="UAN Number"></div>
-                        <div><label class="employee-label" for="esic_number">ESIC Number</label><input class="employee-input" id="esic_number" name="esic_number" type="text" value="{{ old('esic_number') }}" placeholder="ESIC Number"></div>
-                    </div>
-                </div>
+                <div class="form-actions">
+                    <a href="{{ route('employee.index') }}" class="btn-compact btn-cancel">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
 
-                <div class="section-card">
-                    <div class="section-title">
-                        <div class="section-icon"><i class="fas fa-wallet"></i></div>
-                        <div><h3 class="font-extrabold text-slate-900">Salary Details</h3><p class="text-xs font-medium text-slate-500">Pay components, allowances and deductions</p></div>
-                    </div>
-                    <div class="grid grid-cols-1 gap-5 p-5 md:grid-cols-2 lg:grid-cols-3">
-                        <div><label class="employee-label" for="basic_salary">Basic Pay</label><input class="employee-input" id="basic_salary" name="basic_salary" type="number" step="0.01" value="{{ old('basic_salary') }}" placeholder="Basic salary"></div>
-                        <div><label class="employee-label" for="dearness_allowance">Dearness Allowance (D.A)</label><input class="employee-input" id="dearness_allowance" name="dearness_allowance" type="number" step="0.01" value="{{ old('dearness_allowance') }}" placeholder="Dearness allowance"></div>
-                        <div><label class="employee-label" for="relieving_charge">Relieving Charge</label><input class="employee-input" id="relieving_charge" name="relieving_charge" type="number" step="0.01" value="{{ old('relieving_charge') }}" placeholder="Relieving charge"></div>
-                        <div><label class="employee-label" for="additional_allowance">Additional Allowance</label><input class="employee-input" id="additional_allowance" name="additional_allowance" type="number" step="0.01" value="{{ old('additional_allowance') }}" placeholder="Additional allowance"></div>
-                        <div><label class="employee-label" for="provident_fund">Provident Fund %</label><input class="employee-input" id="provident_fund" name="provident_fund" type="number" step="0.01" value="{{ old('provident_fund') }}" placeholder="PF percentage"></div>
-                        <div><label class="employee-label" for="employee_state_insurance_corporation">ESIC %</label><input class="employee-input" id="employee_state_insurance_corporation" name="employee_state_insurance_corporation" type="number" step="0.01" value="{{ old('employee_state_insurance_corporation') }}" placeholder="ESIC percentage"></div>
-                    </div>
+                    <button type="submit" class="btn-compact btn-save">
+                        <i class="fas fa-user-plus"></i> Register Employee
+                    </button>
                 </div>
+            </section>
 
-                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
-                    <a href="{{ route('employee.index') }}" class="action-secondary"><i class="fas fa-times"></i> Cancel</a>
-                    <button type="submit" class="action-primary"><i class="fas fa-user-plus"></i> Register Employee</button>
-                </div>
-            </div>
-        </section>
+        </div>
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nameInput = document.getElementById('name');
+    const photoInput = document.getElementById('photo');
+    const department = document.getElementById('department_id');
+    const designation = document.getElementById('designation');
+    const role = document.getElementById('role');
+    const office = document.getElementById('office_id');
+    const leader = document.getElementById('team_leader_id');
+    const leaveAuthority = document.getElementById('leave_authority_id');
+    const joiningDate = document.getElementById('joining_date');
+
+    const setText = (id, value, fallback) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value && value.trim() !== '' ? value : fallback;
+        }
+    };
+
+    const selectedText = (select) => {
+        if (!select || select.selectedIndex < 0) return '';
+        return select.options[select.selectedIndex]?.text || '';
+    };
+
+    const updateSummary = () => {
+        setText(
+            'employeePreviewName',
+            nameInput?.value ? nameInput.value.toUpperCase() : '',
+            'NEW EMPLOYEE REGISTRATION'
+        );
+
+        setText(
+            'departmentPreview',
+            department?.value ? selectedText(department) : '',
+            'Not Selected'
+        );
+
+        setText(
+            'designationPreview',
+            designation?.value,
+            'Not Entered'
+        );
+
+        setText(
+            'rolePreview',
+            role?.value ? selectedText(role).toUpperCase() : '',
+            'EMPLOYEE'
+        );
+
+        setText(
+            'officePreview',
+            office?.value ? selectedText(office) : '',
+            'Not Selected'
+        );
+
+        setText(
+            'leaderPreview',
+            leader?.value ? selectedText(leader) : '',
+            'Not Selected'
+        );
+
+        setText(
+            'leaveAuthorityPreview',
+            leaveAuthority?.value ? selectedText(leaveAuthority) : '',
+            'Not Selected'
+        );
+
+        setText(
+            'joiningPreview',
+            joiningDate?.value,
+            'Not Entered'
+        );
+
+        const locationValue = document.querySelector(
+            'input[name="location_required"]:checked'
+        )?.value;
+
+        setText(
+            'locationPreview',
+            locationValue === 'yes' ? 'Required' : 'Not Required',
+            'Not Required'
+        );
+    };
+
+    [nameInput, department, designation, role, office, leader, leaveAuthority, joiningDate]
+        .filter(Boolean)
+        .forEach(element => {
+            element.addEventListener('input', updateSummary);
+            element.addEventListener('change', updateSummary);
+        });
+
+    document.querySelectorAll('input[name="location_required"]').forEach(input => {
+        input.addEventListener('change', updateSummary);
+    });
+
+    if (photoInput) {
+        photoInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+
+            if (!file || !file.type.startsWith('image/')) {
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const preview = document.getElementById('employeePhotoPreview');
+                if (preview) preview.src = event.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const filterSelectByOffice = (selectElement, officeId, allowGlobal = false) => {
+        if (!selectElement) return;
+
+        Array.from(selectElement.options).forEach((option, index) => {
+            if (index === 0) {
+                option.hidden = false;
+                option.disabled = false;
+                return;
+            }
+
+            const optionOfficeId = option.dataset.officeId || '';
+            const isGlobal = allowGlobal && optionOfficeId === '';
+            const shouldShow = isGlobal || !officeId || String(optionOfficeId) === String(officeId);
+
+            option.hidden = !shouldShow;
+            option.disabled = !shouldShow;
+        });
+
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        if (selectedOption && selectedOption.disabled) selectElement.value = '';
+    };
+
+    const filterManagersByOffice = () => {
+        const selectedOfficeId = office?.value || '';
+        filterSelectByOffice(leader, selectedOfficeId, false);
+        filterSelectByOffice(leaveAuthority, selectedOfficeId, true);
+        updateSummary();
+    };
+
+    if (office) office.addEventListener('change', filterManagersByOffice);
+    filterManagersByOffice();
+});
+</script>
+@endpush

@@ -197,4 +197,21 @@ class User extends Authenticatable
         );
     }
 
+
+
+    public function leaveAuthority()
+{
+    return $this->belongsTo(
+        self::class,
+        'leave_authority_id'
+    );
+}
+
+public function leaveAuthorityEmployees()
+{
+    return $this->hasMany(
+        self::class,
+        'leave_authority_id'
+    );
+}
 }
