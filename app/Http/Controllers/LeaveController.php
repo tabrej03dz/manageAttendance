@@ -2,370 +2,881 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Mail\LeaveRequest;
 use App\Mail\LeaveResponse;
 use App\Models\EmployeeRoster;
+use App\Models\Leave;
 use App\Models\LeaveImage;
+use App\Models\Office;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Leave;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Validation\Rule;
+use Throwable;
 
 class LeaveController extends Controller
 {
-//     public function index(Request $request){
-//         $user = auth()->user();
-//         $query = Leave::query();
-// //        if ($user->hasRole('super_admin')) {
-// //            $query->where(function ($q) {
-// //                $q->whereDate('start_date', '>=', today())
-// //                    ->orWhereDate('end_date', '>=', today());
-// //            });
-// //        }
-// //        elseif($user->hasRole('owner')){
-// //            $officeIds = $user->offices()->pluck('id');
-// //            $userIds = User::whereIn('office_id', $officeIds)->pluck('id');
-// //            $query->whereIn('user_id', $userIds)
-// //                ->where(function ($q) {
-// //                    $q->whereDate('start_date', '>=', today())
-// //                        ->orWhereDate('end_date', '>=', today());
-// //                });
-// //
-// //        }
-// //        elseif ($user->hasRole('admin')) {
-// //            $userIds = $user->office->users->pluck('id');
-// //            $query->whereIn('user_id', $userIds)
-// //                ->where(function ($q) {
-// //                    $q->whereDate('start_date', '>=', today())
-// //                        ->orWhereDate('end_date', '>=', today());
-// //                });
-// //        }
-// //
-// //
-// //        elseif ($user->hasRole('team_leader')) {
-// //            $userIds = $user->members->pluck('id');
-// //            $query->whereIn('user_id', $userIds)
-// //                ->where(function ($q) {
-// //                    $q->whereDate('start_date', '>=', today())
-// //                        ->orWhereDate('end_date', '>=', today());
-// //                });
-// //        }else{
-// //
-// //            $query->where('user_id', $user->id)
-// //                ->where(function ($q) {
-// //                    $q->whereDate('start_date', '>=', today())
-// //                        ->orWhereDate('end_date', '>=', today());
-// //                });
-// //        }
-//         $employeesIds = HomeController::employeeList()->pluck('id');
-// //        dd($employeesIds);
-//         $query->whereIn('user_id', $employeesIds);
-//         if ($request->status){
-//             $query->where('status', $request->status);
-//         }
-//         $leaves = $query->orderBy('start_date', 'desc')->get();
-//         return view('dashboard.leave.index', compact('leaves'));
-//     }
-
-
-//     public function create($employeeId = null){
-//         return view('dashboard.leave.create', compact('employeeId'));
-//     }
-
-//     public function store(Request $request)
-//     {
-//         $request->validate([
-//             'leave_type' => 'required',
-//             'is_paid' => 'required',
-//             'start_date'=> 'required',
-//             'end_date' => '',
-//             'reason' => '',
-//             'image.*' => 'required',
-//         ]);
-//         $user = $request->employee_id ? User::find($request->employee_id) :  auth()->user();
-
-//         if ($request->start_date && $request->end_date){
-//             $startDate = Carbon::parse($request->start_date);
-//             $endDate = Carbon::parse($request->end_date);
-//             // Calculate the difference in days
-//             $dayCount = $startDate->diffInDays($endDate);
-//         }else{
-//             $dayCount = null;
-//         }
-//         $leave = Leave::create($request->all() + ['user_id' => $user->id, 'office_id' => $user->office->id, 'day_count' => $dayCount ?? 1]);
-
-//         if ($request->hasFile('image')){
-//             foreach ($request->image as $image){
-//                 $path = $image->store('public/leave');
-//                 LeaveImage::create([
-//                     'leave_id' => $leave->id,
-//                     'path' => str_replace('public', '', $path),
-//                 ]);
-//             }
-//         }
-
-//         $admin = User::where('office_id', $user->office->id)
-//             ->whereHas('roles', function($query) {
-//                 $query->where('name', 'admin');
-//             })
-//             ->first();
-//         $superAdmin = User::role('super_admin')->first();
-
-//         $teamLeader = $user->teamLeader;
-//         Mail::to($superAdmin->email)->send(new LeaveRequest($leave));
-//         if($admin){
-//             Mail::to($admin->email)->send(new LeaveRequest($leave));
-//         }
-
-//         if ($teamLeader){
-//             Mail::to($teamLeader->email)->send(new LeaveRequest($leave));
-//         }
-
-//         return back()->with('success', 'Leave request taken successfully and notification sent to admin.');
-//     }
-
-//     public function status(Leave $leave, $status, $type = null){
-//         $leave->update(['status' => $status, 'responses_by' => auth()->user()->id, 'approve_as' => $type]);
-//         Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
-//         return back()->with('success', 'Status updated successfully');
-//     }
-
-//     public function show($id){
-//         $leave = Leave::find($id);
-//         return view('dashboard.leave.show', compact('leave'));
-//     }
-
-//     public function response(Request $request, Leave $leave){
-// //        dd($request->all());
-//         $leave->update($request->all() + ['responses_by' => auth()->user()->id]);
-//         Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
-//         return back()->with('success', 'operation successfully');
-//     }
-
-
-
-
-
+    /*
+    |--------------------------------------------------------------------------
+    | Active office
+    |--------------------------------------------------------------------------
+    */
 
     private function activeOfficeId(Request $request): ?int
     {
-        return $request->user()?->activeOfficeId();
+        $user = $request->user();
+
+        if (!$user) {
+            return null;
+        }
+
+        $sessionOfficeId = (int) $request->session()->get(
+            'active_office_id',
+            0
+        );
+
+        if ($sessionOfficeId > 0) {
+            return $sessionOfficeId;
+        }
+
+        if (!empty($user->office_id)) {
+            return (int) $user->office_id;
+        }
+
+        if ($user->hasRole('owner')) {
+            $officeId = Office::query()
+                ->where('owner_id', $user->id)
+                ->orderBy('id')
+                ->value('id');
+
+            return $officeId ? (int) $officeId : null;
+        }
+
+        if ($user->hasRole('super_admin')) {
+            $officeId = Office::query()
+                ->orderBy('id')
+                ->value('id');
+
+            return $officeId ? (int) $officeId : null;
+        }
+
+        return null;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Offices accessible by logged-in user
+    |--------------------------------------------------------------------------
+    */
+
+    private function allowedOfficeIds(Request $request): array
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return [];
+        }
+
+        if ($user->hasRole('super_admin')) {
+            return Office::query()
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+        }
+
+        if ($user->hasRole('owner')) {
+            return Office::query()
+                ->where('owner_id', $user->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+        }
+
+        /*
+         * Office switching permission वाले user को उसी owner के offices।
+         */
+        if (
+            $user->can('switch offices')
+            || $user->can('switch office')
+        ) {
+            $ownerId = null;
+
+            if (!empty($user->office_id)) {
+                $ownerId = Office::query()
+                    ->whereKey($user->office_id)
+                    ->value('owner_id');
+            }
+
+            if ($ownerId) {
+                return Office::query()
+                    ->where('owner_id', $ownerId)
+                    ->pluck('id')
+                    ->map(fn ($id) => (int) $id)
+                    ->values()
+                    ->all();
+            }
+        }
+
+        return !empty($user->office_id)
+            ? [(int) $user->office_id]
+            : [];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Valid selected office
+    |--------------------------------------------------------------------------
+    */
+
+    private function selectedOfficeId(Request $request): ?int
+    {
+        $activeOfficeId = $this->activeOfficeId($request);
+        $allowedOfficeIds = $this->allowedOfficeIds($request);
+
+        if (
+            $activeOfficeId
+            && in_array(
+                (int) $activeOfficeId,
+                $allowedOfficeIds,
+                true
+            )
+        ) {
+            return (int) $activeOfficeId;
+        }
+
+        return !empty($allowedOfficeIds)
+            ? (int) $allowedOfficeIds[0]
+            : null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe nested team hierarchy
+    |--------------------------------------------------------------------------
+    |
+    | Collection recursion या push/prepend का उपयोग नहीं है।
+    | Circular hierarchy आने पर visited IDs उसे रोक देंगे।
+    |
+    */
+
+    private function teamHierarchyEmployeeIds(
+        int $teamLeaderId,
+        ?int $officeId = null
+    ): array {
+        $result = [$teamLeaderId];
+        $visited = [$teamLeaderId => true];
+        $currentLeaderIds = [$teamLeaderId];
+
+        /*
+         * Safety limit बहुत बड़ी गलत hierarchy से भी request को बचाती है।
+         */
+        $level = 0;
+        $maximumLevels = 100;
+
+        while (
+            !empty($currentLeaderIds)
+            && $level < $maximumLevels
+        ) {
+            $level++;
+
+            $query = User::query()
+                ->whereIn('team_leader_id', $currentLeaderIds)
+                ->where('status', '1');
+
+            if ($officeId) {
+                $query->where('office_id', $officeId);
+            }
+
+            $childIds = $query
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+
+            $nextLeaderIds = [];
+
+            foreach ($childIds as $childId) {
+                if ($childId <= 0) {
+                    continue;
+                }
+
+                /*
+                 * Self-reference और circular reference दोनों सुरक्षित।
+                 */
+                if (isset($visited[$childId])) {
+                    continue;
+                }
+
+                $visited[$childId] = true;
+                $result[] = $childId;
+                $nextLeaderIds[] = $childId;
+            }
+
+            $currentLeaderIds = $nextLeaderIds;
+        }
+
+        return array_values(array_unique($result));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employees visible to logged-in user
+    |--------------------------------------------------------------------------
+    */
 
     private function allowedEmployeeIds(Request $request): array
     {
-        return HomeController::employeeList()->pluck('id')->toArray();
+        $user = $request->user();
+
+        if (!$user) {
+            return [];
+        }
+
+        /*
+         * Normal employee केवल खुद को देखेगा।
+         */
+        if (
+            !$user->hasAnyRole([
+                'super_admin',
+                'owner',
+                'admin',
+                'team_leader',
+            ])
+        ) {
+            return [(int) $user->id];
+        }
+
+        $officeId = $this->selectedOfficeId($request);
+
+        /*
+         * Team leader खुद और पूरी nested team देखेगा।
+         */
+        if ($user->hasRole('team_leader')) {
+            return $this->teamHierarchyEmployeeIds(
+                (int) $user->id,
+                $officeId
+            );
+        }
+
+        /*
+         * Management selected office के सभी active employees देखेगा।
+         */
+        if (!$officeId) {
+            return [];
+        }
+
+        return User::query()
+            ->where('office_id', $officeId)
+            ->where('status', '1')
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
     }
 
-    private function ensureLeaveInScope(Request $request, Leave $leave): void
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | Scope authorization
+    |--------------------------------------------------------------------------
+    */
+
+    private function ensureLeaveInScope(
+        Request $request,
+        Leave $leave
+    ): void {
         $allowedEmployeeIds = $this->allowedEmployeeIds($request);
 
-        if (!in_array((int) $leave->user_id, $allowedEmployeeIds)) {
-            abort(403, 'This leave record does not belong to the selected office.');
+        if (
+            !in_array(
+                (int) $leave->user_id,
+                $allowedEmployeeIds,
+                true
+            )
+        ) {
+            abort(
+                403,
+                'This leave record is outside your allowed hierarchy.'
+            );
         }
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe mail sender
+    |--------------------------------------------------------------------------
+    |
+    | Mail server failure के कारण leave request fail नहीं होगी।
+    |
+    */
+
+    private function sendLeaveRequestMail(
+        ?string $email,
+        Leave $leave
+    ): void {
+        if (empty($email)) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->send(
+                new LeaveRequest($leave)
+            );
+        } catch (Throwable $exception) {
+            Log::error('Leave request email failed.', [
+                'leave_id' => $leave->id,
+                'email' => $email,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    private function sendLeaveResponseMail(
+        ?string $email,
+        Leave $leave
+    ): void {
+        if (empty($email)) {
+            return;
+        }
+
+        try {
+            Mail::to($email)->send(
+                new LeaveResponse($leave)
+            );
+        } catch (Throwable $exception) {
+            Log::error('Leave response email failed.', [
+                'leave_id' => $leave->id,
+                'email' => $email,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Leave listing
+    |--------------------------------------------------------------------------
+    */
 
     public function index(Request $request)
     {
         $employeeIds = $this->allowedEmployeeIds($request);
 
-        $query = Leave::with([
-                'user:id,name',
+        $query = Leave::query()
+            ->with([
+                'user:id,name,email,office_id,team_leader_id',
                 'responsesBy:id,name',
-            ])
-            ->whereIn('user_id', $employeeIds);
+            ]);
+
+        if (empty($employeeIds)) {
+            $query->whereRaw('1 = 0');
+        } else {
+            $query->whereIn('user_id', $employeeIds);
+        }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where(
+                'status',
+                (string) $request->input('status')
+            );
         }
 
         if ($request->filled('employee_id')) {
-            $query->where('user_id', $request->employee_id);
+            $employeeId = (int) $request->input('employee_id');
+
+            if (
+                in_array(
+                    $employeeId,
+                    $employeeIds,
+                    true
+                )
+            ) {
+                $query->where('user_id', $employeeId);
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
-        // Descending order me latest leave upar
+        if ($request->filled('from_date')) {
+            $query->whereDate(
+                'start_date',
+                '>=',
+                $request->input('from_date')
+            );
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate(
+                'end_date',
+                '<=',
+                $request->input('to_date')
+            );
+        }
+
         $leaves = $query
             ->orderByDesc('start_date')
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('dashboard.leave.index', compact('leaves'));
+        return view('dashboard.leave.index', [
+            'leaves' => $leaves,
+        ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Create form
+    |--------------------------------------------------------------------------
+    */
 
-    public function create(Request $request, $employeeId = null)
-    {
+    public function create(
+        Request $request,
+        $employeeId = null
+    ) {
         $allowedEmployeeIds = $this->allowedEmployeeIds($request);
 
-        if ($employeeId && !in_array((int) $employeeId, $allowedEmployeeIds)) {
-            abort(403, 'This employee does not belong to the selected office.');
-        }
+        if ($employeeId !== null) {
+            $employeeId = (int) $employeeId;
 
-        return view('dashboard.leave.create', compact('employeeId'));
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'leave_type' => 'required',
-            'is_paid' => 'required',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'reason' => 'nullable|string',
-            'image.*' => 'nullable|file',
-            'employee_id' => 'nullable|exists:users,id',
-        ]);
-
-        $allowedEmployeeIds = $this->allowedEmployeeIds($request);
-
-        $user = $request->filled('employee_id')
-            ? User::findOrFail($request->employee_id)
-            : auth()->user();
-
-        if (!in_array((int) $user->id, $allowedEmployeeIds)) {
-            abort(403, 'This employee does not belong to the selected office.');
-        }
-
-        if ($request->start_date && $request->end_date) {
-            $startDate = Carbon::parse($request->start_date);
-            $endDate = Carbon::parse($request->end_date);
-            $dayCount = $startDate->diffInDays($endDate) + 1;
-        } else {
-            $dayCount = 1;
-        }
-
-        $leave = Leave::create([
-            'user_id' => $user->id,
-            'office_id' => $user->office_id,
-            'leave_type' => $request->leave_type,
-            'is_paid' => $request->is_paid,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date ?? $request->start_date,
-            'reason' => $request->reason,
-            'day_count' => $dayCount,
-            'status' => 'pending',
-        ]);
-
-        if ($request->hasFile('image')) {
-            foreach ($request->file('image') as $image) {
-                $path = $image->store('public/leave');
-
-                LeaveImage::create([
-                    'leave_id' => $leave->id,
-                    'path' => str_replace('public', '', $path),
-                ]);
+            if (
+                !in_array(
+                    $employeeId,
+                    $allowedEmployeeIds,
+                    true
+                )
+            ) {
+                abort(
+                    403,
+                    'This employee is outside your allowed hierarchy.'
+                );
             }
         }
 
-        $admin = User::where('office_id', $user->office_id)
+        return view('dashboard.leave.create', [
+            'employeeId' => $employeeId,
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Store leave
+    |--------------------------------------------------------------------------
+    */
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'leave_type' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+            'is_paid' => [
+                'required',
+            ],
+            'start_date' => [
+                'required',
+                'date',
+            ],
+            'end_date' => [
+                'nullable',
+                'date',
+                'after_or_equal:start_date',
+            ],
+            'reason' => [
+                'nullable',
+                'string',
+                'max:5000',
+            ],
+            'image' => [
+                'nullable',
+                'array',
+            ],
+            'image.*' => [
+                'nullable',
+                'file',
+                'mimes:jpg,jpeg,png,webp,pdf',
+                'max:5120',
+            ],
+            'employee_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id'),
+            ],
+        ]);
+
+        $loggedInUser = $request->user();
+        $allowedEmployeeIds = $this->allowedEmployeeIds($request);
+
+        $employeeId = $request->filled('employee_id')
+            ? (int) $request->input('employee_id')
+            : (int) $loggedInUser->id;
+
+        if (
+            !in_array(
+                $employeeId,
+                $allowedEmployeeIds,
+                true
+            )
+        ) {
+            abort(
+                403,
+                'This employee is outside your allowed hierarchy.'
+            );
+        }
+
+        $employee = User::query()
+            ->findOrFail($employeeId);
+
+        if (empty($employee->office_id)) {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Selected employee is not assigned to an office.'
+                );
+        }
+
+        $startDate = Carbon::parse(
+            $validated['start_date']
+        )->startOfDay();
+
+        $endDate = !empty($validated['end_date'])
+            ? Carbon::parse($validated['end_date'])->startOfDay()
+            : $startDate->copy();
+
+        $dayCount = $startDate->diffInDays($endDate) + 1;
+
+        DB::beginTransaction();
+
+        try {
+            $leave = Leave::query()->create([
+                'user_id' => $employee->id,
+                'office_id' => $employee->office_id,
+                'leave_type' => $validated['leave_type'],
+                'is_paid' => $validated['is_paid'],
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+                'reason' => $validated['reason'] ?? null,
+                'day_count' => $dayCount,
+                'status' => 'pending',
+            ]);
+
+            if ($request->hasFile('image')) {
+                foreach ($request->file('image', []) as $image) {
+                    if (
+                        !$image
+                        || !$image->isValid()
+                    ) {
+                        continue;
+                    }
+
+                    $path = $image->store('public/leave');
+
+                    LeaveImage::query()->create([
+                        'leave_id' => $leave->id,
+                        'path' => str_replace(
+                            'public',
+                            '',
+                            $path
+                        ),
+                    ]);
+                }
+            }
+
+            DB::commit();
+        } catch (Throwable $exception) {
+            DB::rollBack();
+
+            Log::error('Leave creation failed.', [
+                'employee_id' => $employeeId,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Leave request could not be created. Please try again.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Notification recipients
+        |--------------------------------------------------------------------------
+        */
+
+        $admin = User::query()
+            ->where('office_id', $employee->office_id)
             ->whereHas('roles', function ($query) {
                 $query->where('name', 'admin');
             })
             ->first();
 
         $superAdmin = User::role('super_admin')->first();
-        $teamLeader = $user->teamLeader;
 
-        if ($superAdmin && !empty($superAdmin->email)) {
-            Mail::to($superAdmin->email)->send(new LeaveRequest($leave));
-        }
+        $teamLeader = !empty($employee->team_leader_id)
+            ? User::query()->find($employee->team_leader_id)
+            : null;
 
-        if ($admin && !empty($admin->email)) {
-            Mail::to($admin->email)->send(new LeaveRequest($leave));
-        }
+        $recipientEmails = collect([
+            $superAdmin?->email,
+            $admin?->email,
+            $teamLeader?->email,
+        ])
+            ->filter()
+            ->unique()
+            ->values();
 
-        if ($teamLeader && !empty($teamLeader->email)) {
-            Mail::to($teamLeader->email)->send(new LeaveRequest($leave));
-        }
-
-        return back()->with('success', 'Leave request taken successfully and notification sent.');
-    }
-
-    // public function status(Request $request, Leave $leave, $status, $type = null)
-    // {
-    //     $this->ensureLeaveInScope($request, $leave);
-
-    //     $leave->update([
-    //         'status' => $status,
-    //         'responses_by' => auth()->id(),
-    //         'approve_as' => $type,
-    //     ]);
-
-    //     Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
-
-    //     return back()->with('success', 'Status updated successfully');
-    // }
-
-    public function status(Request $request, Leave $leave, $status, $type = null)
-{
-    $this->ensureLeaveInScope($request, $leave);
-
-    $leave->update([
-        'status'       => $status,
-        'responses_by' => auth()->id(),
-        'approve_as'   => $type,
-    ]);
-
-    // Agar leave approve hui hai to employee_roster me leave entry create karo
-    if ($status === 'approved') {
-        $startDate = Carbon::parse($leave->start_date);
-        $endDate   = Carbon::parse($leave->end_date ?? $leave->start_date);
-
-        while ($startDate->lte($endDate)) {
-            EmployeeRoster::firstOrCreate(
-                [
-                    'employee_id' => $leave->user_id,
-                    'duty_date'    => $startDate->toDateString(),
-                ],
-                [
-                    'office_id'    => $leave->office_id,
-                    'status'       => 'leave',
-                    'leave_id'     => $leave->id,
-                    'shift_name'   => null,
-                    'shift_start'  => null,
-                    'shift_end'    => null,
-                    'remarks'      => 'Leave approved',
-                    'created_by'   => auth()->id(),
-                ]
+        foreach ($recipientEmails as $email) {
+            $this->sendLeaveRequestMail(
+                (string) $email,
+                $leave
             );
-
-            $startDate->addDay();
         }
+
+        return back()->with(
+            'success',
+            'Leave request submitted successfully.'
+        );
     }
 
-    // $email = $leave->user->email1 ?? $leave->user->email;
+    /*
+    |--------------------------------------------------------------------------
+    | Approve/reject leave
+    |--------------------------------------------------------------------------
+    */
 
-    // if (!empty($email)) {
-    //     Mail::to($email)->send(new LeaveResponse($leave));
-    // }
+    public function status(
+        Request $request,
+        Leave $leave,
+        $status,
+        $type = null
+    ) {
+        $this->ensureLeaveInScope($request, $leave);
 
-    return back()->with('success', 'Status updated successfully');
-}
+        $allowedStatuses = [
+            'pending',
+            'approved',
+            'rejected',
+            'cancelled',
+        ];
 
-    public function show(Request $request, $id)
-    {
-        $leave = Leave::findOrFail($id);
+        if (!in_array($status, $allowedStatuses, true)) {
+            abort(422, 'Invalid leave status.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $leave->update([
+                'status' => $status,
+                'responses_by' => $request->user()->id,
+                'approve_as' => $type,
+            ]);
+
+            if ($status === 'approved') {
+                $startDate = Carbon::parse(
+                    $leave->start_date
+                )->startOfDay();
+
+                $endDate = Carbon::parse(
+                    $leave->end_date ?? $leave->start_date
+                )->startOfDay();
+
+                /*
+                 * Excessively large bad date ranges से request को बचाना।
+                 */
+                $maximumRosterDays = 366;
+
+                if (
+                    $startDate->diffInDays($endDate) + 1
+                    > $maximumRosterDays
+                ) {
+                    throw new \RuntimeException(
+                        'Leave range exceeds 366 days.'
+                    );
+                }
+
+                $currentDate = $startDate->copy();
+
+                while ($currentDate->lte($endDate)) {
+                    EmployeeRoster::query()->updateOrCreate(
+                        [
+                            'employee_id' => $leave->user_id,
+                            'duty_date' => $currentDate->toDateString(),
+                        ],
+                        [
+                            'office_id' => $leave->office_id,
+                            'status' => 'leave',
+                            'leave_id' => $leave->id,
+                            'shift_name' => null,
+                            'shift_start' => null,
+                            'shift_end' => null,
+                            'remarks' => 'Leave approved',
+                            'created_by' => $request->user()->id,
+                        ]
+                    );
+
+                    $currentDate->addDay();
+                }
+            } else {
+                /*
+                 * Approved leave बाद में reject/cancel हो तो उससे बनी roster
+                 * leave entries हटेंगी।
+                 */
+                EmployeeRoster::query()
+                    ->where('leave_id', $leave->id)
+                    ->where('status', 'leave')
+                    ->delete();
+            }
+
+            DB::commit();
+        } catch (Throwable $exception) {
+            DB::rollBack();
+
+            Log::error('Leave status update failed.', [
+                'leave_id' => $leave->id,
+                'status' => $status,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return back()->with(
+                'error',
+                'Leave status could not be updated.'
+            );
+        }
+
+        $leave->loadMissing('user');
+
+        $employeeEmail = $leave->user?->email1
+            ?? $leave->user?->email;
+
+        $this->sendLeaveResponseMail(
+            $employeeEmail,
+            $leave
+        );
+
+        return back()->with(
+            'success',
+            'Leave status updated successfully.'
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show leave
+    |--------------------------------------------------------------------------
+    */
+
+    public function show(
+        Request $request,
+        $id
+    ) {
+        $leave = Leave::query()
+            ->with([
+                'user',
+                'responsesBy',
+            ])
+            ->findOrFail($id);
 
         $this->ensureLeaveInScope($request, $leave);
 
-        return view('dashboard.leave.show', compact('leave'));
+        return view('dashboard.leave.show', [
+            'leave' => $leave,
+        ]);
     }
 
-    public function response(Request $request, Leave $leave)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | Save response
+    |--------------------------------------------------------------------------
+    */
+
+    public function response(
+        Request $request,
+        Leave $leave
+    ) {
         $this->ensureLeaveInScope($request, $leave);
 
-        $leave->update($request->all() + [
-            'responses_by' => auth()->id()
+        $validated = $request->validate([
+            'status' => [
+                'nullable',
+                Rule::in([
+                    'pending',
+                    'approved',
+                    'rejected',
+                    'cancelled',
+                ]),
+            ],
+            'approve_as' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+            'response' => [
+                'nullable',
+                'string',
+                'max:5000',
+            ],
         ]);
 
-        Mail::to($leave->user->email1 ?? $leave->user->email)->send(new LeaveResponse($leave));
+        $updateData = [
+            'responses_by' => $request->user()->id,
+        ];
 
-        return back()->with('success', 'Operation successfully');
+        if (array_key_exists('status', $validated)) {
+            $updateData['status'] = $validated['status'];
+        }
+
+        if (array_key_exists('approve_as', $validated)) {
+            $updateData['approve_as'] = $validated['approve_as'];
+        }
+
+        /*
+         * केवल तभी लगाएं जब leaves table में response column मौजूद है।
+         * आपके form में response field नहीं है तो यह block नहीं चलेगा।
+         */
+        if (
+            array_key_exists('response', $validated)
+            && $validated['response'] !== null
+        ) {
+            $updateData['response'] = $validated['response'];
+        }
+
+        try {
+            $leave->update($updateData);
+        } catch (Throwable $exception) {
+            Log::error('Leave response update failed.', [
+                'leave_id' => $leave->id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return back()->with(
+                'error',
+                'Leave response could not be saved.'
+            );
+        }
+
+        $leave->loadMissing('user');
+
+        $employeeEmail = $leave->user?->email1
+            ?? $leave->user?->email;
+
+        $this->sendLeaveResponseMail(
+            $employeeEmail,
+            $leave
+        );
+
+        return back()->with(
+            'success',
+            'Leave response saved successfully.'
+        );
     }
 }
