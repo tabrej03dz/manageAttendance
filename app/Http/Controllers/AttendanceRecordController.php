@@ -706,129 +706,148 @@ public function index(Request $request)
     // }
 
 
-    public function dayWise(Request $request)
-    {
+public function dayWise(Request $request)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Selected date
+    |--------------------------------------------------------------------------
+    */
+
+    try {
         $date = $request->filled('date')
-            ? Carbon::parse($request->date)->toDateString()
+            ? Carbon::createFromFormat(
+                'Y-m-d',
+                $request->input('date')
+            )->toDateString()
             : today()->toDateString();
+    } catch (\Throwable $exception) {
+        $date = today()->toDateString();
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Employees
-        |--------------------------------------------------------------------------
-        */
+    $startOfDay = Carbon::parse($date)->startOfDay();
+    $endOfDay = Carbon::parse($date)->endOfDay();
 
-        $employees = collect(HomeController::employeeList())
-            ->filter(function ($employee) {
-                return (string) ($employee->status ?? '') === '1';
-            })
-            ->values();
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination settings
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Optional status filter
-        |--------------------------------------------------------------------------
-        |
-        | ध्यान दें: ऊपर केवल active status=1 employees रखे गए हैं।
-        | इसलिए request status अगर 0 होगा तो कोई employee नहीं मिलेगा।
-        |
-        */
+    $perPage = 20;
 
-        if ($request->filled('status')) {
-            $employees = $employees
-                ->filter(function ($employee) use ($request) {
-                    return (string) $employee->status === (string) $request->status;
-                })
-                ->values();
-        }
+    $currentPage = max(
+        1,
+        (int) Paginator::resolveCurrentPage('page')
+    );
 
-        $employeeIds = $employees
-            ->pluck('id')
-            ->filter()
-            ->unique()
-            ->values();
+    /*
+    |--------------------------------------------------------------------------
+    | Get active employees
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Attendance records — single query
-        |--------------------------------------------------------------------------
-        */
+    $employees = collect(HomeController::employeeList())
+        ->filter(function ($employee) {
+            return !empty($employee->id)
+                && (string) ($employee->status ?? '') === '1';
+        })
+        ->unique('id')
+        ->values();
 
-        $attendances = AttendanceRecord::query()
-            ->whereIn('user_id', $employeeIds)
-            ->where(function ($query) use ($date) {
-                $query
-                    ->whereDate('check_in', $date)
-                    ->orWhereDate('check_out', $date);
-            })
-            ->orderByDesc('id')
-            ->get()
-            ->unique('user_id')
-            ->keyBy('user_id');
+    /*
+    |--------------------------------------------------------------------------
+    | Optional search filter
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | Leaves — single query
-        |--------------------------------------------------------------------------
-        */
-
-        $leaves = Leave::query()
-            ->whereIn('user_id', $employeeIds)
-            ->whereDate('start_date', '<=', $date)
-            ->whereDate('end_date', '>=', $date)
-            ->orderByDesc('id')
-            ->get()
-            ->unique('user_id')
-            ->keyBy('user_id');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Half days — single query
-        |--------------------------------------------------------------------------
-        */
-
-        $halfDays = HalfDay::query()
-            ->whereIn('user_id', $employeeIds)
-            ->whereDate('date', $date)
-            ->orderByDesc('id')
-            ->get()
-            ->unique('user_id')
-            ->keyBy('user_id');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Attach fetched records to employee objects
-        |--------------------------------------------------------------------------
-        */
+    if ($request->filled('search')) {
+        $search = mb_strtolower(
+            trim((string) $request->input('search'))
+        );
 
         $employees = $employees
-            ->map(function ($employee) use ($attendances, $leaves, $halfDays) {
-                $employee->attendance_record = $attendances->get($employee->id);
-                $employee->leave_record = $leaves->get($employee->id);
-                $employee->half_day_record = $halfDays->get($employee->id);
-                $employee->has_attendance = $attendances->has($employee->id);
+            ->filter(function ($employee) use ($search) {
+                $name = mb_strtolower(
+                    (string) ($employee->name ?? '')
+                );
 
-                return $employee;
-            })
-            ->sortByDesc(function ($employee) {
-                return $employee->has_attendance;
+                $email = mb_strtolower(
+                    (string) ($employee->email ?? '')
+                );
+
+                $phone = mb_strtolower(
+                    (string) ($employee->phone ?? '')
+                );
+
+                $officeName = mb_strtolower(
+                    (string) data_get($employee, 'office.name', '')
+                );
+
+                return str_contains($name, $search)
+                    || str_contains($email, $search)
+                    || str_contains($phone, $search)
+                    || str_contains($officeName, $search);
             })
             ->values();
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Manual pagination
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Optional status filter
+    |--------------------------------------------------------------------------
+    |
+    | इस page पर active employees ही दिखाए जा रहे हैं।
+    | इसलिए status=0 आएगा तो result empty होगा।
+    |
+    */
 
-        $perPage = 20;
-        $currentPage = Paginator::resolveCurrentPage('page');
+    if ($request->filled('status')) {
+        $selectedStatus = (string) $request->input('status');
 
+        $employees = $employees
+            ->filter(function ($employee) use ($selectedStatus) {
+                return (string) ($employee->status ?? '')
+                    === $selectedStatus;
+            })
+            ->values();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee count before pagination
+    |--------------------------------------------------------------------------
+    */
+
+    $totalEmployees = $employees->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Paginate employees before attendance queries
+    |--------------------------------------------------------------------------
+    */
+
+    $pageEmployees = $employees
+        ->forPage($currentPage, $perPage)
+        ->values();
+
+    $employeeIds = $pageEmployees
+        ->pluck('id')
+        ->filter()
+        ->unique()
+        ->values()
+        ->all();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Empty result
+    |--------------------------------------------------------------------------
+    */
+
+    if (empty($employeeIds)) {
         $paginatedEmployees = new LengthAwarePaginator(
-            $employees
-                ->slice(($currentPage - 1) * $perPage, $perPage)
-                ->values(),
-            $employees->count(),
+            collect(),
+            $totalEmployees,
             $perPage,
             $currentPage,
             [
@@ -843,6 +862,126 @@ public function index(Request $request)
             'date' => $date,
         ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Attendance records
+    |--------------------------------------------------------------------------
+    |
+    | केवल current page के employees का data load होगा।
+    | whereBetween से datetime indexes काम कर सकते हैं।
+    |
+    */
+
+    $attendances = AttendanceRecord::query()
+        ->whereIn('user_id', $employeeIds)
+        ->where(function ($query) use ($startOfDay, $endOfDay) {
+            $query
+                ->whereBetween('check_in', [
+                    $startOfDay,
+                    $endOfDay,
+                ])
+                ->orWhereBetween('check_out', [
+                    $startOfDay,
+                    $endOfDay,
+                ]);
+        })
+        ->orderByDesc('id')
+        ->get()
+        ->groupBy('user_id')
+        ->map(function ($records) {
+            return $records->first();
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Leave records
+    |--------------------------------------------------------------------------
+    */
+
+    $leaves = Leave::query()
+        ->whereIn('user_id', $employeeIds)
+        ->where('start_date', '<=', $date)
+        ->where('end_date', '>=', $date)
+        ->orderByDesc('id')
+        ->get()
+        ->groupBy('user_id')
+        ->map(function ($records) {
+            return $records->first();
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Half-day records
+    |--------------------------------------------------------------------------
+    */
+
+    $halfDays = HalfDay::query()
+        ->whereIn('user_id', $employeeIds)
+        ->whereDate('date', $date)
+        ->orderByDesc('id')
+        ->get()
+        ->groupBy('user_id')
+        ->map(function ($records) {
+            return $records->first();
+        });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Attach records to employees
+    |--------------------------------------------------------------------------
+    */
+
+    $pageEmployees = $pageEmployees
+        ->map(function ($employee) use (
+            $attendances,
+            $leaves,
+            $halfDays
+        ) {
+            $employeeId = $employee->id;
+
+            $employee->attendance_record =
+                $attendances->get($employeeId);
+
+            $employee->leave_record =
+                $leaves->get($employeeId);
+
+            $employee->half_day_record =
+                $halfDays->get($employeeId);
+
+            $employee->has_attendance =
+                $attendances->has($employeeId);
+
+            return $employee;
+        })
+        ->sortByDesc(function ($employee) {
+            return $employee->has_attendance ? 1 : 0;
+        })
+        ->values();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Final paginator
+    |--------------------------------------------------------------------------
+    */
+
+    $paginatedEmployees = new LengthAwarePaginator(
+        $pageEmployees,
+        $totalEmployees,
+        $perPage,
+        $currentPage,
+        [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => 'page',
+            'query' => $request->query(),
+        ]
+    );
+
+    return view('dashboard.attendance.dayWise', [
+        'employees' => $paginatedEmployees,
+        'date' => $date,
+    ]);
+}
 
 
     public function addNote(Request $request, AttendanceRecord $record){
