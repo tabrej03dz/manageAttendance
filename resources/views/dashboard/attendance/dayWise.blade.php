@@ -111,7 +111,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($employees as $employee)
-                                    @php
+                                    {{-- @php
                                         //$record = \App\Models\AttendanceRecord::where('user_id', $employee->id)
                                         //    ->whereDate('created_at', $date)
                                         //    ->first();
@@ -129,7 +129,15 @@
                                             ->first();
                                         $halfDayRecord = App\Models\HalfDay::where('date', $date)->where('user_id', $employee->id)->first();
 
+                                    @endphp --}}
+
+
+                                    @php
+                                        $record = $employee->attendance_record;
+                                        $leave = $employee->leave_record;
+                                        $halfDayRecord = $employee->half_day_record;
                                     @endphp
+
 {{--                                    @if ($leave)--}}
 {{--                                        <tr class="hover:bg-gray-50">--}}
 {{--                                            <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->name }}</td>--}}
@@ -141,14 +149,14 @@
 {{--                                    @else--}}
                                         <tr oncontextmenu="showModal(event, {{ $employee->id }})">
                                             <td class="employee-cell">
-    <span class="employee-name">{{ $employee->name }}</span>
-    @if($leave || $halfDayRecord)
-        <span class="employee-status-note">
-            {{ $leave ? 'Leave: ' . $leave->status : '' }}
-            {{ $halfDayRecord ? ' Half Day: ' . $halfDayRecord->status : '' }}
-        </span>
-    @endif
-</td>
+                                                <span class="employee-name">{{ $employee->name }}</span>
+                                                @if($leave || $halfDayRecord)
+                                                    <span class="employee-status-note">
+                                                        {{ $leave ? 'Leave: ' . $leave->status : '' }}
+                                                        {{ $halfDayRecord ? ' Half Day: ' . $halfDayRecord->status : '' }}
+                                                    </span>
+                                                @endif
+                                            </td>
                                             <td class="px-4 py-4 text-sm text-gray-700">{{ $employee->office?->name }}</td>
                                             <td
                                                 class="px-4 py-4 text-sm text-{{ Carbon\Carbon::parse($record?->check_in)->format('H:i:s') < Carbon\Carbon::parse($employee->check_in_time)->format('H:i:s') ? 'green' : ($record?->late ? 'red' : 'grey') }}-700">
@@ -338,11 +346,11 @@
                                                 @can('add note')
                                                 <!-- Trigger Button -->
                                                 <button type="button" title="Add Note" class="mini-action mini-action-note"
-        data-note-url="{{ route('attendance.note', ['record' => $record->id]) }}"
-        data-note-text="{{ e($record->note ?? '') }}"
-        onclick="openNotePopup(this)">
-        <i class="fas fa-note-sticky"></i>
-    </button>
+                                                    data-note-url="{{ route('attendance.note', ['record' => $record->id]) }}"
+                                                    data-note-text="{{ e($record->note ?? '') }}"
+                                                    onclick="openNotePopup(this)">
+                                                    <i class="fas fa-note-sticky"></i>
+                                                </button>
                                                 @endcan
                                                 
                                                 @endif
