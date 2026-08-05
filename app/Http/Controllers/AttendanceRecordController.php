@@ -706,8 +706,243 @@ public function index(Request $request)
     // }
 
 
+// public function dayWise(Request $request)
+// {
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Selected date
+//     |--------------------------------------------------------------------------
+//     */
+
+//     try {
+//         $date = $request->filled('date')
+//             ? Carbon::createFromFormat(
+//                 'Y-m-d',
+//                 $request->input('date')
+//             )->toDateString()
+//             : now()->toDateString();
+//     } catch (\Throwable $exception) {
+//         $date = now()->toDateString();
+//     }
+
+//     $startOfDay = Carbon::parse($date)->startOfDay();
+//     $endOfDay = Carbon::parse($date)->endOfDay();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Selected office
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $officeId = $this->selectedOfficeId($request);
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Employee query
+//     |--------------------------------------------------------------------------
+//     |
+//     | HomeController::employeeList() जानबूझकर इस्तेमाल नहीं किया गया है,
+//     | क्योंकि वही recursive/prepend execution timeout का कारण बन रहा है।
+//     |
+//     */
+
+//     $employeeQuery = User::query()
+//         ->select([
+//             'id',
+//             'name',
+//             'email',
+//             'phone',
+//             'office_id',
+//             'status',
+//             'check_in_time',
+//             'check_out_time',
+//         ])
+//         ->with([
+//             'office:id,name',
+//         ])
+//         ->where('status', '1');
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Office filter
+//     |--------------------------------------------------------------------------
+//     */
+
+//     if ($officeId) {
+//         $employeeQuery->where('office_id', $officeId);
+//     } else {
+//         /*
+//          * Office resolve नहीं हुआ तो unauthorized offices का data नहीं दिखाना।
+//          */
+//         $employeeQuery->whereRaw('1 = 0');
+//     }
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Optional search
+//     |--------------------------------------------------------------------------
+//     */
+
+//     if ($request->filled('search')) {
+//         $search = trim((string) $request->input('search'));
+
+//         $employeeQuery->where(function ($query) use ($search) {
+//             $query
+//                 ->where('name', 'like', '%' . $search . '%')
+//                 ->orWhere('email', 'like', '%' . $search . '%')
+//                 ->orWhere('phone', 'like', '%' . $search . '%');
+//         });
+//     }
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Database pagination
+//     |--------------------------------------------------------------------------
+//     |
+//     | अब सभी employees memory में load नहीं होंगे।
+//     | केवल current page के 20 employees आएंगे।
+//     |
+//     */
+
+//     $employees = $employeeQuery
+//         ->orderBy('name')
+//         ->paginate(20)
+//         ->withQueryString();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Current page employee IDs
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $employeeIds = $employees
+//         ->getCollection()
+//         ->pluck('id')
+//         ->map(fn ($id) => (int) $id)
+//         ->values()
+//         ->all();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Empty employee result
+//     |--------------------------------------------------------------------------
+//     */
+
+//     if (empty($employeeIds)) {
+//         return view('dashboard.attendance.dayWise', [
+//             'employees' => $employees,
+//             'date' => $date,
+//         ]);
+//     }
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Attendance records
+//     |--------------------------------------------------------------------------
+//     |
+//     | केवल current page employees का attendance load होगा।
+//     |
+//     */
+
+//     $attendances = AttendanceRecord::query()
+//         ->whereIn('user_id', $employeeIds)
+//         ->where(function ($query) use ($startOfDay, $endOfDay) {
+//             $query
+//                 ->whereBetween('check_in', [
+//                     $startOfDay,
+//                     $endOfDay,
+//                 ])
+//                 ->orWhereBetween('check_out', [
+//                     $startOfDay,
+//                     $endOfDay,
+//                 ]);
+//         })
+//         ->orderByDesc('id')
+//         ->get()
+//         ->groupBy('user_id')
+//         ->map(function ($records) {
+//             return $records->first();
+//         });
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Leave records
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $leaves = Leave::query()
+//         ->whereIn('user_id', $employeeIds)
+//         ->where('start_date', '<=', $date)
+//         ->where('end_date', '>=', $date)
+//         ->orderByDesc('id')
+//         ->get()
+//         ->groupBy('user_id')
+//         ->map(function ($records) {
+//             return $records->first();
+//         });
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Half-day records
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $halfDays = HalfDay::query()
+//         ->whereIn('user_id', $employeeIds)
+//         ->whereDate('date', $date)
+//         ->orderByDesc('id')
+//         ->get()
+//         ->groupBy('user_id')
+//         ->map(function ($records) {
+//             return $records->first();
+//         });
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Attach attendance data to current page employees
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $employees->setCollection(
+//         $employees
+//             ->getCollection()
+//             ->map(function ($employee) use (
+//                 $attendances,
+//                 $leaves,
+//                 $halfDays
+//             ) {
+//                 $employeeId = (int) $employee->id;
+
+//                 $employee->attendance_record =
+//                     $attendances->get($employeeId);
+
+//                 $employee->leave_record =
+//                     $leaves->get($employeeId);
+
+//                 $employee->half_day_record =
+//                     $halfDays->get($employeeId);
+
+//                 $employee->has_attendance =
+//                     $attendances->has($employeeId);
+
+//                 return $employee;
+//             })
+//             ->sortByDesc(function ($employee) {
+//                 return $employee->has_attendance ? 1 : 0;
+//             })
+//             ->values()
+//     );
+
+//     return view('dashboard.attendance.dayWise', [
+//         'employees' => $employees,
+//         'date' => $date,
+//     ]);
+// }
+
 public function dayWise(Request $request)
 {
+    $loggedInUser = $request->user();
+
     /*
     |--------------------------------------------------------------------------
     | Selected date
@@ -730,20 +965,25 @@ public function dayWise(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Selected office
+    | Role access
     |--------------------------------------------------------------------------
+    |
+    | Management users selected office के employees देख सकते हैं।
+    | Normal employee केवल अपना attendance record देख सकता है।
+    |
     */
 
-    $officeId = $this->selectedOfficeId($request);
+    $isManagement = $loggedInUser->hasAnyRole([
+        'super_admin',
+        'owner',
+        'admin',
+        'team_leader',
+    ]);
 
     /*
     |--------------------------------------------------------------------------
     | Employee query
     |--------------------------------------------------------------------------
-    |
-    | HomeController::employeeList() जानबूझकर इस्तेमाल नहीं किया गया है,
-    | क्योंकि वही recursive/prepend execution timeout का कारण बन रहा है।
-    |
     */
 
     $employeeQuery = User::query()
@@ -764,26 +1004,38 @@ public function dayWise(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Office filter
+    | Employee visibility
     |--------------------------------------------------------------------------
     */
 
-    if ($officeId) {
-        $employeeQuery->where('office_id', $officeId);
+    if ($isManagement) {
+        /*
+         * Management user के लिए selected office के employees।
+         */
+        $officeId = $this->selectedOfficeId($request);
+
+        if ($officeId) {
+            $employeeQuery->where('office_id', $officeId);
+        } else {
+            $employeeQuery->whereRaw('1 = 0');
+        }
     } else {
         /*
-         * Office resolve नहीं हुआ तो unauthorized offices का data नहीं दिखाना।
+         * Normal employee केवल खुद को देख सकता है।
          */
-        $employeeQuery->whereRaw('1 = 0');
+        $employeeQuery->where('id', $loggedInUser->id);
     }
 
     /*
     |--------------------------------------------------------------------------
     | Optional search
     |--------------------------------------------------------------------------
+    |
+    | Search केवल management users के लिए उपयोगी है।
+    |
     */
 
-    if ($request->filled('search')) {
+    if ($isManagement && $request->filled('search')) {
         $search = trim((string) $request->input('search'));
 
         $employeeQuery->where(function ($query) use ($search) {
@@ -798,10 +1050,6 @@ public function dayWise(Request $request)
     |--------------------------------------------------------------------------
     | Database pagination
     |--------------------------------------------------------------------------
-    |
-    | अब सभी employees memory में load नहीं होंगे।
-    | केवल current page के 20 employees आएंगे।
-    |
     */
 
     $employees = $employeeQuery
@@ -832,6 +1080,7 @@ public function dayWise(Request $request)
         return view('dashboard.attendance.dayWise', [
             'employees' => $employees,
             'date' => $date,
+            'isManagement' => $isManagement,
         ]);
     }
 
@@ -839,9 +1088,6 @@ public function dayWise(Request $request)
     |--------------------------------------------------------------------------
     | Attendance records
     |--------------------------------------------------------------------------
-    |
-    | केवल current page employees का attendance load होगा।
-    |
     */
 
     $attendances = AttendanceRecord::query()
@@ -899,7 +1145,7 @@ public function dayWise(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Attach attendance data to current page employees
+    | Attach records to employees
     |--------------------------------------------------------------------------
     */
 
@@ -936,6 +1182,7 @@ public function dayWise(Request $request)
     return view('dashboard.attendance.dayWise', [
         'employees' => $employees,
         'date' => $date,
+        'isManagement' => $isManagement,
     ]);
 }
 
