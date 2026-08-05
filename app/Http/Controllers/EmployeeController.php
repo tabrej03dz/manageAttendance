@@ -1207,20 +1207,37 @@ public function index(Request $request)
     }
 
 
+    // public function employeeAttendance(Request $request)
+    // {
+    //     $activeOfficeId = $request->user()->activeOfficeId();
+
+    //     if (!$activeOfficeId) {
+    //         $employees = collect();
+    //     } else {
+    //         $employees = User::where('office_id', $activeOfficeId)
+    //             ->orderBy('name')
+    //             ->get();
+    //     }
+
+    //     return view('dashboard.employee.list', compact('employees'));
+    // }
+
     public function employeeAttendance(Request $request)
-    {
-        $activeOfficeId = $request->user()->activeOfficeId();
+{
+    $activeOfficeId = $request->user()?->activeOfficeId();
 
-        if (!$activeOfficeId) {
-            $employees = collect();
-        } else {
-            $employees = User::where('office_id', $activeOfficeId)
-                ->orderBy('name')
-                ->get();
-        }
-
-        return view('dashboard.employee.list', compact('employees'));
+    if (!$activeOfficeId) {
+        $employees = collect();
+    } else {
+        $employees = User::query()
+            ->where('office_id', $activeOfficeId)
+            ->where('status', '1') // केवल active employees
+            ->orderBy('name')
+            ->get();
     }
+
+    return view('dashboard.employee.list', compact('employees'));
+}
 
 
 
