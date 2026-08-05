@@ -175,120 +175,495 @@ private function officeEmployeesQuery(Request $request)
 
 
 
-    private function sortEmployeesHierarchically($employees)
-    {
-        $employees = collect($employees);
+    // private function sortEmployeesHierarchically($employees)
+    // {
+    //     $employees = collect($employees);
 
-        $grouped = $employees->groupBy('team_leader_id');
-        $sorted = collect();
+    //     $grouped = $employees->groupBy('team_leader_id');
+    //     $sorted = collect();
 
-        $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
-            if (!isset($grouped[$leaderId])) {
-                return;
-            }
+    //     $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
+    //         if (!isset($grouped[$leaderId])) {
+    //             return;
+    //         }
 
-            foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
-                $sorted->push($employee);
-                $appendChildren($employee->id);
-            }
-        };
+    //         foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
+    //             $sorted->push($employee);
+    //             $appendChildren($employee->id);
+    //         }
+    //     };
 
-        if (isset($grouped[null])) {
-            foreach ($grouped[null]->sortBy('name') as $employee) {
-                $sorted->push($employee);
-                $appendChildren($employee->id);
-            }
-        }
+    //     if (isset($grouped[null])) {
+    //         foreach ($grouped[null]->sortBy('name') as $employee) {
+    //             $sorted->push($employee);
+    //             $appendChildren($employee->id);
+    //         }
+    //     }
 
-        $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
+    //     $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
 
-        foreach ($remaining->sortBy('name') as $employee) {
-            $sorted->push($employee);
-            $appendChildren($employee->id);
-        }
+    //     foreach ($remaining->sortBy('name') as $employee) {
+    //         $sorted->push($employee);
+    //         $appendChildren($employee->id);
+    //     }
 
-        return $sorted->unique('id')->values();
+    //     return $sorted->unique('id')->values();
+    // }
+
+
+    private function sortEmployeesHierarchically(
+    \Illuminate\Support\Collection $employees
+): \Illuminate\Support\Collection {
+    /*
+    |--------------------------------------------------------------------------
+    | Normalize employees
+    |--------------------------------------------------------------------------
+    */
+
+    $employees = $employees
+        ->filter(function ($employee) {
+            return !empty($employee->id);
+        })
+        ->unique('id')
+        ->values();
+
+    if ($employees->isEmpty()) {
+        return collect();
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Employee lookup
+    |--------------------------------------------------------------------------
+    */
+
+    $employeeById = $employees->keyBy(function ($employee) {
+        return (int) $employee->id;
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Group employees by team leader
+    |--------------------------------------------------------------------------
+    */
+
+    $childrenByLeader = [];
+
+    foreach ($employees as $employee) {
+        $employeeId = (int) $employee->id;
+
+        $leaderId = !empty($employee->team_leader_id)
+            ? (int) $employee->team_leader_id
+            : 0;
+
+        /*
+         * Self-reference को root employee मानेंगे।
+         */
+        if ($leaderId === $employeeId) {
+            $leaderId = 0;
+        }
+
+        /*
+         * Leader employee current collection में मौजूद नहीं है,
+         * तो employee root level पर दिखेगा।
+         */
+        if (
+            $leaderId > 0
+            && !$employeeById->has($leaderId)
+        ) {
+            $leaderId = 0;
+        }
+
+        $childrenByLeader[$leaderId][] = $employee;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sort each group alphabetically
+    |--------------------------------------------------------------------------
+    */
+
+    foreach ($childrenByLeader as &$children) {
+        usort(
+            $children,
+            function ($first, $second) {
+                return strcasecmp(
+                    (string) ($first->name ?? ''),
+                    (string) ($second->name ?? '')
+                );
+            }
+        );
+    }
+
+    unset($children);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe hierarchy traversal
+    |--------------------------------------------------------------------------
+    */
+
+    $sorted = collect();
+    $visited = [];
+    $processing = [];
+
+    $appendEmployee = function (
+        $employee,
+        int $level = 0
+    ) use (
+        &$appendEmployee,
+        &$sorted,
+        &$visited,
+        &$processing,
+        $childrenByLeader
+    ) {
+        $employeeId = (int) $employee->id;
+
+        /*
+         * Employee पहले add हो चुका है।
+         */
+        if (isset($visited[$employeeId])) {
+            return;
+        }
+
+        /*
+         * Circular hierarchy detected.
+         */
+        if (isset($processing[$employeeId])) {
+            return;
+        }
+
+        $processing[$employeeId] = true;
+
+        $employee->hierarchy_level = $level;
+
+        $sorted->push($employee);
+
+        $visited[$employeeId] = true;
+
+        $children = $childrenByLeader[$employeeId] ?? [];
+
+        foreach ($children as $child) {
+            $appendEmployee(
+                $child,
+                $level + 1
+            );
+        }
+
+        unset($processing[$employeeId]);
+    };
+
+    /*
+    |--------------------------------------------------------------------------
+    | First append root employees
+    |--------------------------------------------------------------------------
+    */
+
+    foreach ($childrenByLeader[0] ?? [] as $rootEmployee) {
+        $appendEmployee($rootEmployee, 0);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Append remaining employees
+    |--------------------------------------------------------------------------
+    |
+    | Circular or broken hierarchy वाले employees छूटने नहीं चाहिए।
+    |
+    */
+
+    foreach ($employees as $employee) {
+        $employeeId = (int) $employee->id;
+
+        if (!isset($visited[$employeeId])) {
+            $appendEmployee($employee, 0);
+        }
+    }
+
+    return $sorted->values();
+}
+
+
+
+    // public function index(Request $request)
+    // {
+    //     $query = $this->officeEmployeesQuery($request);
+
+    //     if ($request->filled('q')) {
+    //         $q = trim($request->q);
+    //         $query->where(function ($qq) use ($q) {
+    //             $qq->where('name', 'like', "%{$q}%")
+    //                 ->orWhere('email', 'like', "%{$q}%")
+    //                 ->orWhere('phone', 'like', "%{$q}%");
+    //         });
+    //     }
+
+    //     if ($request->filled('status')) {
+    //         $query->where('status', $request->status);
+    //     } else {
+    //         $query->where('status', '1');
+    //     }
+
+    //     if ($request->filled('department_id')) {
+    //         $query->where('department_id', $request->department_id);
+    //     }
+
+    //     $allowedOfficeIds = $this->allowedOfficeIds($request);
+
+    //     if ($request->filled('office_id')) {
+    //         $requestedOfficeId = (int) $request->office_id;
+
+    //         if (in_array($requestedOfficeId, $allowedOfficeIds, true)) {
+    //             $query->where('office_id', $requestedOfficeId);
+    //         } else {
+    //             $query->whereRaw('1 = 0');
+    //         }
+    //     }
+
+    //     if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
+    //         $query->whereNull('office_id');
+    //     }
+
+    //     $employees = $query->get();
+
+    //     // hierarchy order preserve
+    //     $employees = $this->sortEmployeesHierarchically($employees);
+
+    //     $departments = Department::all();
+
+    //     $offices = Office::when(!empty($allowedOfficeIds), function ($q) use ($allowedOfficeIds) {
+    //             $q->whereIn('id', $allowedOfficeIds);
+    //         })
+    //         ->orderBy('name')
+    //         ->get();
+
+    //     $unassignedCount = (clone $this->officeEmployeesQuery($request))
+    //         ->whereNull('office_id')
+    //         ->count();
+
+    //     $perPage = 25;
+    //     $currentPage = Paginator::resolveCurrentPage();
+
+    //     $paginatedEmployees = new LengthAwarePaginator(
+    //         $employees->forPage($currentPage, $perPage)->values(),
+    //         $employees->count(),
+    //         $perPage,
+    //         $currentPage,
+    //         [
+    //             'path' => Paginator::resolveCurrentPath(),
+    //             'query' => $request->query(),
+    //         ]
+    //     );
+
+    //     return view('dashboard.employee.index', [
+    //         'employees' => $paginatedEmployees,
+    //         'departments' => $departments,
+    //         'offices' => $offices,
+    //         'unassignedCount' => $unassignedCount,
+    //     ]);
+    // }
 
 
     public function index(Request $request)
-    {
-        $query = $this->officeEmployeesQuery($request);
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed offices
+    |--------------------------------------------------------------------------
+    */
 
-        if ($request->filled('q')) {
-            $q = trim($request->q);
-            $query->where(function ($qq) use ($q) {
-                $qq->where('name', 'like', "%{$q}%")
-                    ->orWhere('email', 'like', "%{$q}%")
-                    ->orWhere('phone', 'like', "%{$q}%");
-            });
-        }
+    $allowedOfficeIds = $this->allowedOfficeIds($request);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        } else {
-            $query->where('status', '1');
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Base employee query
+    |--------------------------------------------------------------------------
+    */
 
-        if ($request->filled('department_id')) {
-            $query->where('department_id', $request->department_id);
-        }
-
-        $allowedOfficeIds = $this->allowedOfficeIds($request);
-
-        if ($request->filled('office_id')) {
-            $requestedOfficeId = (int) $request->office_id;
-
-            if (in_array($requestedOfficeId, $allowedOfficeIds, true)) {
-                $query->where('office_id', $requestedOfficeId);
-            } else {
-                $query->whereRaw('1 = 0');
-            }
-        }
-
-        if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
-            $query->whereNull('office_id');
-        }
-
-        $employees = $query->get();
-
-        // hierarchy order preserve
-        $employees = $this->sortEmployeesHierarchically($employees);
-
-        $departments = Department::all();
-
-        $offices = Office::when(!empty($allowedOfficeIds), function ($q) use ($allowedOfficeIds) {
-                $q->whereIn('id', $allowedOfficeIds);
-            })
-            ->orderBy('name')
-            ->get();
-
-        $unassignedCount = (clone $this->officeEmployeesQuery($request))
-            ->whereNull('office_id')
-            ->count();
-
-        $perPage = 25;
-        $currentPage = Paginator::resolveCurrentPage();
-
-        $paginatedEmployees = new LengthAwarePaginator(
-            $employees->forPage($currentPage, $perPage)->values(),
-            $employees->count(),
-            $perPage,
-            $currentPage,
-            [
-                'path' => Paginator::resolveCurrentPath(),
-                'query' => $request->query(),
-            ]
-        );
-
-        return view('dashboard.employee.index', [
-            'employees' => $paginatedEmployees,
-            'departments' => $departments,
-            'offices' => $offices,
-            'unassignedCount' => $unassignedCount,
+    $query = $this->officeEmployeesQuery($request)
+        ->select([
+            'id',
+            'name',
+            'email',
+            'phone',
+            'status',
+            'office_id',
+            'department_id',
+            'designation_id',
+            'team_leader_id',
+            'created_at',
+        ])
+        ->with([
+            'office:id,name',
+            'department:id,name',
+            'designation:id,name',
+            'teamLeader:id,name',
         ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('q')) {
+        $search = trim((string) $request->input('q'));
+
+        $query->where(function ($subQuery) use ($search) {
+            $subQuery
+                ->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('phone', 'like', '%' . $search . '%');
+        });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('status')) {
+        $query->where(
+            'status',
+            (string) $request->input('status')
+        );
+    } else {
+        $query->where('status', '1');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Department
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('department_id')) {
+        $query->where(
+            'department_id',
+            (int) $request->input('department_id')
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Office filter
+    |--------------------------------------------------------------------------
+    */
+
+    if ($request->filled('office_id')) {
+        $requestedOfficeId = (int) $request->input('office_id');
+
+        if (
+            in_array(
+                $requestedOfficeId,
+                $allowedOfficeIds,
+                true
+            )
+        ) {
+            $query->where('office_id', $requestedOfficeId);
+        } else {
+            $query->whereRaw('1 = 0');
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unassigned office filter
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $request->boolean('office_unassigned')
+    ) {
+        $query->whereNull('office_id');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database pagination
+    |--------------------------------------------------------------------------
+    |
+    | Hierarchical recursive sorting हटाई गई है।
+    | अब database केवल current page के 25 employees load करेगा।
+    |
+    */
+
+    $employees = $query
+        ->orderByRaw(
+            'CASE WHEN team_leader_id IS NULL THEN 0 ELSE 1 END'
+        )
+        ->orderBy('team_leader_id')
+        ->orderBy('name')
+        ->paginate(25)
+        ->withQueryString();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Departments
+    |--------------------------------------------------------------------------
+    */
+
+    $departments = Department::query()
+        ->select([
+            'id',
+            'name',
+        ])
+        ->orderBy('name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Offices
+    |--------------------------------------------------------------------------
+    */
+
+    $offices = Office::query()
+        ->select([
+            'id',
+            'name',
+        ])
+        ->when(
+            !empty($allowedOfficeIds),
+            function ($officeQuery) use ($allowedOfficeIds) {
+                $officeQuery->whereIn(
+                    'id',
+                    $allowedOfficeIds
+                );
+            }
+        )
+        ->orderBy('name')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unassigned employee count
+    |--------------------------------------------------------------------------
+    */
+
+    $unassignedQuery = $this->officeEmployeesQuery($request)
+        ->whereNull('office_id');
+
+    /*
+     * Allowed office list empty होने की स्थिति में unauthorized data
+     * count न हो।
+     */
+    if (
+        empty($allowedOfficeIds)
+        && !$request->user()->hasRole('super_admin')
+    ) {
+        $unassignedQuery->whereRaw('1 = 0');
+    }
+
+    $unassignedCount = $unassignedQuery->count();
+
+    return view('dashboard.employee.index', [
+        'employees' => $employees,
+        'departments' => $departments,
+        'offices' => $offices,
+        'unassignedCount' => $unassignedCount,
+    ]);
+}
 
 
 
