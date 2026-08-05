@@ -299,20 +299,32 @@ public function dashboard(Request $request)
         $birthdayOfficeIds = collect();
 
         if ($user->hasRole('super_admin')) {
+            /*
+             * Super admin ko sabhi offices ke birthdays dikhenge.
+             */
             $birthdayOfficeIds = Office::query()
                 ->pluck('id');
         } elseif ($user->hasRole('owner')) {
+            /*
+             * Owner ko uske owned offices ke birthdays dikhenge.
+             */
             $birthdayOfficeIds = Office::query()
                 ->where('owner_id', $user->id)
                 ->pluck('id');
         } elseif ($user->office_id) {
+            /*
+             * Normal employee/team leader/admin ke liye current office.
+             */
             $currentOffice = Office::query()
-                ->select(['id', 'name'])
+                ->select([
+                    'id',
+                    'name',
+                ])
                 ->find($user->office_id);
 
             if ($currentOffice) {
                 $currentOfficeName = mb_strtolower(
-                    trim($currentOffice->name)
+                    trim((string) $currentOffice->name)
                 );
 
                 $specialOfficeNames = [
@@ -320,11 +332,17 @@ public function dashboard(Request $request)
                     'rvg development',
                 ];
 
-                if (in_array(
-                    $currentOfficeName,
-                    $specialOfficeNames,
-                    true
-                )) {
+                if (
+                    in_array(
+                        $currentOfficeName,
+                        $specialOfficeNames,
+                        true
+                    )
+                ) {
+                    /*
+                     * Real Victory Groups aur Rvg Development ke
+                     * employees ko dono offices ke birthdays dikhenge.
+                     */
                     $birthdayOfficeIds = Office::query()
                         ->where(function ($query) {
                             $query
@@ -339,6 +357,9 @@ public function dashboard(Request $request)
                         })
                         ->pluck('id');
                 } else {
+                    /*
+                     * Baaki employees ko sirf apne office ka birthday.
+                     */
                     $birthdayOfficeIds = collect([
                         (int) $currentOffice->id,
                     ]);
@@ -347,8 +368,12 @@ public function dashboard(Request $request)
         }
 
         $birthdayOfficeIds = $birthdayOfficeIds
-            ->map(fn ($officeId) => (int) $officeId)
-            ->filter(fn ($officeId) => $officeId > 0)
+            ->map(function ($officeId) {
+                return (int) $officeId;
+            })
+            ->filter(function ($officeId) {
+                return $officeId > 0;
+            })
             ->unique()
             ->values();
 
@@ -358,9 +383,10 @@ public function dashboard(Request $request)
         |--------------------------------------------------------------------------
         */
 
-        $todayBirthdayEmployees = $birthdayOfficeIds->isEmpty()
-            ? collect()
-            : User::query()
+        if ($birthdayOfficeIds->isEmpty()) {
+            $todayBirthdayEmployees = collect();
+        } else {
+            $todayBirthdayEmployees = User::query()
                 ->with([
                     'office:id,name',
                     'department:id,name',
@@ -385,17 +411,26 @@ public function dashboard(Request $request)
                     'office_id',
                     'department_id',
                 ])
-                ->map(function ($birthdayEmployee) use ($today) {
+                ->map(function ($birthdayEmployee) use ($today, $user) {
+                    /*
+                     * IMPORTANT:
+                     * $user ko closure ke use() me pass kiya gaya hai.
+                     * Isi se Undefined variable $user error fix hota hai.
+                     */
+
                     $birthdayAge = null;
+                    $birthdayDate = null;
 
                     try {
                         $dob = Carbon::parse(
                             $birthdayEmployee->dob
                         );
 
-                        $birthdayAge = $dob->diffInYears($today);
+                        $birthdayAge = $dob->age;
+                        $birthdayDate = $dob->toDateString();
                     } catch (\Throwable $exception) {
                         $birthdayAge = null;
+                        $birthdayDate = null;
                     }
 
                     return [
@@ -409,23 +444,21 @@ public function dashboard(Request $request)
 
                         'photo' => $birthdayEmployee->photo,
 
-                        'dob' => $birthdayEmployee->dob
-                            ? Carbon::parse(
-                                $birthdayEmployee->dob
-                            )->toDateString()
-                            : null,
+                        'dob' => $birthdayDate,
 
                         'birthday_age' => $birthdayAge,
 
-                        'designation' => $birthdayEmployee->designation,
+                        'designation' =>
+                            $birthdayEmployee->designation,
 
                         'department' => optional(
                             $birthdayEmployee->department
                         )->name,
 
-                        'office_id' => $birthdayEmployee->office_id
-                            ? (int) $birthdayEmployee->office_id
-                            : null,
+                        'office_id' =>
+                            $birthdayEmployee->office_id
+                                ? (int) $birthdayEmployee->office_id
+                                : null,
 
                         'office_name' => optional(
                             $birthdayEmployee->office
@@ -437,6 +470,7 @@ public function dashboard(Request $request)
                     ];
                 })
                 ->values();
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -455,7 +489,7 @@ public function dashboard(Request $request)
         | Other birthday employees
         |--------------------------------------------------------------------------
         |
-        | Logged-in user ko remove karke sirf dusre birthday employees.
+        | Logged-in user ko list se remove karke sirf dusre employees.
         |
         */
 
@@ -465,6 +499,18 @@ public function dashboard(Request $request)
                     (int) $user->id;
             })
             ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logged-in birthday employee data
+        |--------------------------------------------------------------------------
+        */
+
+        $loggedInBirthdayEmployee = $todayBirthdayEmployees
+            ->first(function ($birthdayEmployee) use ($user) {
+                return (int) $birthdayEmployee['id'] ===
+                    (int) $user->id;
+            });
 
         /*
         |--------------------------------------------------------------------------
@@ -522,8 +568,8 @@ public function dashboard(Request $request)
             ->startOfDay();
 
         /*
-         * Current month ke future days ko include nahi karna hai.
-         * Isliye end date aaj tak rakhi gayi hai.
+         * Future dates include nahi karni hain.
+         * Isliye month end ke badle aaj tak ka data.
          */
         $endDate = $today
             ->copy()
@@ -551,19 +597,22 @@ public function dashboard(Request $request)
 
         /*
         |--------------------------------------------------------------------------
-        | Final response
+        | Final API response
         |--------------------------------------------------------------------------
         */
 
         return response()->json([
-            'status'  => true,
-            'message' => 'Dashboard data fetched successfully.',
+            'status' => true,
+
+            'message' =>
+                'Dashboard data fetched successfully.',
 
             'offices' => $offices->count(),
 
             'employees' => $employees->count(),
 
-            'todayAttendanceRecord' => $todayAttendanceRecord,
+            'todayAttendanceRecord' =>
+                $todayAttendanceRecord,
 
             'break' => $break,
 
@@ -576,26 +625,68 @@ public function dashboard(Request $request)
             */
 
             'birthday' => [
+                /*
+                 * Aaj kisi visible employee ka birthday hai ya nahi.
+                 */
                 'hasBirthdayToday' =>
                     $todayBirthdayEmployees->isNotEmpty(),
 
+                /*
+                 * Logged-in user ka khud ka birthday hai ya nahi.
+                 */
                 'isUserBirthdayToday' =>
                     $isUserBirthdayToday,
 
+                /*
+                 * Logged-in user ka birthday data.
+                 * Birthday nahi hai to null.
+                 */
+                'loggedInBirthdayEmployee' =>
+                    $loggedInBirthdayEmployee,
+
+                /*
+                 * Total visible birthday employees.
+                 */
                 'todayBirthdayCount' =>
                     $todayBirthdayEmployees->count(),
 
+                /*
+                 * Logged-in user ko hata kar dusre birthday employees.
+                 */
                 'otherBirthdayCount' =>
                     $otherBirthdayEmployees->count(),
 
+                /*
+                 * Birthday ke liye visible offices.
+                 */
                 'visibleOfficeIds' =>
                     $birthdayOfficeIds->all(),
 
+                /*
+                 * Isme logged-in user bhi ho sakta hai.
+                 */
                 'todayBirthdayEmployees' =>
                     $todayBirthdayEmployees,
 
+                /*
+                 * Isme logged-in user nahi hoga.
+                 */
                 'otherBirthdayEmployees' =>
                     $otherBirthdayEmployees,
+
+                /*
+                 * App popup visibility:
+                 * sirf logged-in birthday user ke liye true.
+                 */
+                'showBirthdayPopup' =>
+                    $isUserBirthdayToday,
+
+                /*
+                 * Team birthday section:
+                 * sirf tab true jab kisi dusre employee ka birthday ho.
+                 */
+                'showTeamBirthdaySection' =>
+                    $otherBirthdayEmployees->isNotEmpty(),
             ],
         ], 200);
     } catch (\Throwable $exception) {
@@ -608,7 +699,7 @@ public function dashboard(Request $request)
         ]);
 
         return response()->json([
-            'status'  => false,
+            'status' => false,
 
             'message' =>
                 'Dashboard data could not be loaded.',
