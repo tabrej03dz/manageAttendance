@@ -464,7 +464,7 @@ private function officeEmployeesQuery(Request $request)
     // }
 
 
-    public function index(Request $request)
+public function index(Request $request)
 {
     /*
     |--------------------------------------------------------------------------
@@ -489,14 +489,12 @@ private function officeEmployeesQuery(Request $request)
             'status',
             'office_id',
             'department_id',
-            'designation_id',
             'team_leader_id',
             'created_at',
         ])
         ->with([
             'office:id,name',
             'department:id,name',
-            'designation:id,name',
             'teamLeader:id,name',
         ]);
 
@@ -519,7 +517,7 @@ private function officeEmployeesQuery(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Status
+    | Status filter
     |--------------------------------------------------------------------------
     */
 
@@ -534,7 +532,7 @@ private function officeEmployeesQuery(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Department
+    | Department filter
     |--------------------------------------------------------------------------
     */
 
@@ -573,9 +571,7 @@ private function officeEmployeesQuery(Request $request)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $request->boolean('office_unassigned')
-    ) {
+    if ($request->boolean('office_unassigned')) {
         $query->whereNull('office_id');
     }
 
@@ -584,8 +580,8 @@ private function officeEmployeesQuery(Request $request)
     | Database pagination
     |--------------------------------------------------------------------------
     |
-    | Hierarchical recursive sorting हटाई गई है।
-    | अब database केवल current page के 25 employees load करेगा।
+    | Recursive hierarchy sorting intentionally removed.
+    | केवल current page के 25 employees database से load होंगे।
     |
     */
 
@@ -637,17 +633,13 @@ private function officeEmployeesQuery(Request $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Unassigned employee count
+    | Unassigned employees count
     |--------------------------------------------------------------------------
     */
 
     $unassignedQuery = $this->officeEmployeesQuery($request)
         ->whereNull('office_id');
 
-    /*
-     * Allowed office list empty होने की स्थिति में unauthorized data
-     * count न हो।
-     */
     if (
         empty($allowedOfficeIds)
         && !$request->user()->hasRole('super_admin')
@@ -664,7 +656,6 @@ private function officeEmployeesQuery(Request $request)
         'unassignedCount' => $unassignedCount,
     ]);
 }
-
 
 
     public function create(Request $request)
