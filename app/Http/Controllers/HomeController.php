@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Collection;
+
 
 class HomeController extends Controller
 {
@@ -202,107 +204,107 @@ class HomeController extends Controller
     // }
 
 
-    static function employeeList()
-{
-    $user = auth()->user();
+//     static function employeeList()
+// {
+//     $user = auth()->user();
 
-    if (!$user) {
-        return collect();
-    }
+//     if (!$user) {
+//         return collect();
+//     }
 
-    $activeOfficeId = session('active_office_id');
+//     $activeOfficeId = session('active_office_id');
 
-    if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
-        $activeOfficeId = $user->office_id;
-    }
+//     if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
+//         $activeOfficeId = $user->office_id;
+//     }
 
-    if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
-        return collect();
-    }
+//     if (!$activeOfficeId || (int) $activeOfficeId <= 0) {
+//         return collect();
+//     }
 
-    $activeOfficeId = (int) $activeOfficeId;
+//     $activeOfficeId = (int) $activeOfficeId;
 
-    if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
-        $employees = User::where('office_id', $activeOfficeId)->get();
+//     if ($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('owner')) {
+//         $employees = User::where('office_id', $activeOfficeId)->get();
 
-        return self::sortEmployeesHierarchically($employees);
-    }
+//         return self::sortEmployeesHierarchically($employees);
+//     }
 
-    if ($user->can('switch offices') || $user->can('switch office')) {
-        $currentOffice = $user->office;
+//     if ($user->can('switch offices') || $user->can('switch office')) {
+//         $currentOffice = $user->office;
 
-        if (!$currentOffice || !$currentOffice->owner_id) {
-            return collect();
-        }
+//         if (!$currentOffice || !$currentOffice->owner_id) {
+//             return collect();
+//         }
 
-        $isAllowedOffice = Office::where('id', $activeOfficeId)
-            ->where('owner_id', $currentOffice->owner_id)
-            ->exists();
+//         $isAllowedOffice = Office::where('id', $activeOfficeId)
+//             ->where('owner_id', $currentOffice->owner_id)
+//             ->exists();
 
-        if (!$isAllowedOffice) {
-            return collect();
-        }
+//         if (!$isAllowedOffice) {
+//             return collect();
+//         }
 
-        $employees = User::where('office_id', $activeOfficeId)->get();
+//         $employees = User::where('office_id', $activeOfficeId)->get();
 
-        return self::sortEmployeesHierarchically($employees);
-    }
+//         return self::sortEmployeesHierarchically($employees);
+//     }
 
-    if ($user->hasRole('team_leader')) {
-        $employees = $user->getAllTeamMembers()->filter(function ($member) use ($activeOfficeId) {
-            return (int) $member->office_id === (int) $activeOfficeId;
-        });
+//     if ($user->hasRole('team_leader')) {
+//         $employees = $user->getAllTeamMembers()->filter(function ($member) use ($activeOfficeId) {
+//             return (int) $member->office_id === (int) $activeOfficeId;
+//         });
 
-        if ((int) $user->office_id === (int) $activeOfficeId) {
-            $employees->push($user);
-        }
+//         if ((int) $user->office_id === (int) $activeOfficeId) {
+//             $employees->push($user);
+//         }
 
-        return self::sortEmployeesHierarchically($employees->unique('id')->values());
-    }
+//         return self::sortEmployeesHierarchically($employees->unique('id')->values());
+//     }
 
-    if ((int) $user->office_id === (int) $activeOfficeId) {
-        return collect([$user]);
-    }
+//     if ((int) $user->office_id === (int) $activeOfficeId) {
+//         return collect([$user]);
+//     }
 
-    return collect();
-}
+//     return collect();
+// }
 
 
 
-    static function sortEmployeesHierarchically($employees)
-    {
-        $employees = collect($employees);
+    // static function sortEmployeesHierarchically($employees)
+    // {
+    //     $employees = collect($employees);
 
-        $grouped = $employees->groupBy('team_leader_id');
-        $sorted = collect();
+    //     $grouped = $employees->groupBy('team_leader_id');
+    //     $sorted = collect();
 
-        $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
-            if (!isset($grouped[$leaderId])) {
-                return;
-            }
+    //     $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
+    //         if (!isset($grouped[$leaderId])) {
+    //             return;
+    //         }
 
-            foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
-                $sorted->push($employee);
-                $appendChildren($employee->id);
-            }
-        };
+    //         foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
+    //             $sorted->push($employee);
+    //             $appendChildren($employee->id);
+    //         }
+    //     };
 
-        if (isset($grouped[null])) {
-            foreach ($grouped[null]->sortBy('name') as $employee) {
-                $sorted->push($employee);
-                $appendChildren($employee->id);
-            }
-        }
+    //     if (isset($grouped[null])) {
+    //         foreach ($grouped[null]->sortBy('name') as $employee) {
+    //             $sorted->push($employee);
+    //             $appendChildren($employee->id);
+    //         }
+    //     }
 
-        $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
+    //     $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
 
-        foreach ($remaining->sortBy('name') as $employee) {
-            $sorted->push($employee);
-            $appendChildren($employee->id);
-        }
+    //     foreach ($remaining->sortBy('name') as $employee) {
+    //         $sorted->push($employee);
+    //         $appendChildren($employee->id);
+    //     }
 
-        return $sorted->unique('id')->values();
-    }
+    //     return $sorted->unique('id')->values();
+    // }
 
     static function latitudeInDMS($decimal)
     {
@@ -358,6 +360,330 @@ class HomeController extends Controller
     //     return view('mainpage.index');
     // }
 
+
+
+
+    public static function employeeList(): Collection
+    {
+        $loggedInUser = auth()->user();
+
+        if (!$loggedInUser) {
+            return collect();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Active office resolution
+        |--------------------------------------------------------------------------
+        */
+
+        $activeOfficeId = (int) session(
+            'active_office_id',
+            $loggedInUser->office_id
+        );
+
+        if ($activeOfficeId <= 0) {
+            return collect();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Super admin / Owner / Admin
+        |--------------------------------------------------------------------------
+        |
+        | इन roles को active office के सभी employees मिलेंगे।
+        |
+        */
+
+        if (
+            $loggedInUser->hasRole('super_admin') ||
+            $loggedInUser->hasRole('owner') ||
+            $loggedInUser->hasRole('admin')
+        ) {
+            $employees = User::query()
+                ->select([
+                    'id',
+                    'name',
+                    'email',
+                    'office_id',
+                    'team_leader_id',
+                    'status',
+                ])
+                ->where('office_id', $activeOfficeId)
+                ->orderBy('name')
+                ->get();
+
+            return self::sortEmployeesHierarchically($employees);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Office-switch permission
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $loggedInUser->can('switch offices') ||
+            $loggedInUser->can('switch office')
+        ) {
+            $currentOfficeOwnerId = Office::query()
+                ->whereKey($loggedInUser->office_id)
+                ->value('owner_id');
+
+            if (!$currentOfficeOwnerId) {
+                return collect();
+            }
+
+            $isAllowedOffice = Office::query()
+                ->whereKey($activeOfficeId)
+                ->where('owner_id', $currentOfficeOwnerId)
+                ->exists();
+
+            if (!$isAllowedOffice) {
+                return collect();
+            }
+
+            $employees = User::query()
+                ->select([
+                    'id',
+                    'name',
+                    'email',
+                    'office_id',
+                    'team_leader_id',
+                    'status',
+                ])
+                ->where('office_id', $activeOfficeId)
+                ->orderBy('name')
+                ->get();
+
+            return self::sortEmployeesHierarchically($employees);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Team leader
+        |--------------------------------------------------------------------------
+        |
+        | Team leader और उसके नीचे आने वाले सभी levels के employees।
+        | Recursive model method का उपयोग नहीं किया गया है।
+        |
+        */
+
+        if ($loggedInUser->hasRole('team_leader')) {
+            if ((int) $loggedInUser->office_id !== $activeOfficeId) {
+                return collect();
+            }
+
+            $officeEmployees = User::query()
+                ->select([
+                    'id',
+                    'name',
+                    'email',
+                    'office_id',
+                    'team_leader_id',
+                    'status',
+                ])
+                ->where('office_id', $activeOfficeId)
+                ->orderBy('name')
+                ->get();
+
+            $teamEmployees = self::getTeamMembersSafely(
+                $loggedInUser,
+                $officeEmployees
+            );
+
+            return self::sortEmployeesHierarchically($teamEmployees);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Normal employee
+        |--------------------------------------------------------------------------
+        */
+
+        if ((int) $loggedInUser->office_id === $activeOfficeId) {
+            return collect([$loggedInUser]);
+        }
+
+        return collect();
+    }
+
+    /**
+     * Team leader के सभी direct और indirect team members प्राप्त करता है।
+     *
+     * यह method recursion नहीं करता, इसलिए circular hierarchy होने पर
+     * maximum execution time error नहीं आएगा।
+     */
+    private static function getTeamMembersSafely(
+        User $teamLeader,
+        Collection $officeEmployees
+    ): Collection {
+        $employeesByLeader = $officeEmployees
+            ->filter(function ($employee) {
+                return !empty($employee->team_leader_id);
+            })
+            ->groupBy(function ($employee) {
+                return (int) $employee->team_leader_id;
+            });
+
+        $result = collect();
+
+        /*
+         * Queue में पहले logged-in team leader रहेगा।
+         */
+        $queue = [(int) $teamLeader->id];
+
+        /*
+         * Processed IDs circular references को रोकेंगे।
+         */
+        $processedLeaderIds = [];
+        $addedEmployeeIds = [];
+
+        /*
+         * Team leader को result में पहले add करें।
+         */
+        $result->push($teamLeader);
+        $addedEmployeeIds[(int) $teamLeader->id] = true;
+
+        while (!empty($queue)) {
+            $currentLeaderId = array_shift($queue);
+
+            if (isset($processedLeaderIds[$currentLeaderId])) {
+                continue;
+            }
+
+            $processedLeaderIds[$currentLeaderId] = true;
+
+            $directMembers = $employeesByLeader->get(
+                $currentLeaderId,
+                collect()
+            );
+
+            foreach ($directMembers as $member) {
+                $memberId = (int) $member->id;
+
+                /*
+                 * Duplicate और circular employee references रोकना।
+                 */
+                if (!isset($addedEmployeeIds[$memberId])) {
+                    $result->push($member);
+                    $addedEmployeeIds[$memberId] = true;
+                }
+
+                /*
+                 * यह employee आगे किसी और का team leader हो सकता है।
+                 */
+                if (!isset($processedLeaderIds[$memberId])) {
+                    $queue[] = $memberId;
+                }
+            }
+        }
+
+        return $result->values();
+    }
+
+    /**
+     * Employees को hierarchy order में sort करता है।
+     *
+     * Team leader पहले और उसके नीचे direct/indirect members आएंगे।
+     * Orphan और circular records अंत में safely add होंगे।
+     */
+    public static function sortEmployeesHierarchically(
+        Collection $employees
+    ): Collection {
+        if ($employees->isEmpty()) {
+            return collect();
+        }
+
+        /*
+         * Duplicate employee IDs हटाएं।
+         */
+        $employees = $employees
+            ->filter(function ($employee) {
+                return !empty($employee->id);
+            })
+            ->unique('id')
+            ->values();
+
+        $employeeIds = $employees
+            ->pluck('id')
+            ->map(function ($id) {
+                return (int) $id;
+            })
+            ->flip();
+
+        /*
+         * Parent/team leader के अनुसार employees group करें।
+         */
+        $childrenByLeader = $employees
+            ->groupBy(function ($employee) use ($employeeIds) {
+                $leaderId = (int) $employee->team_leader_id;
+
+                /*
+                 * Leader इसी collection में नहीं है तो employee root माना जाएगा।
+                 */
+                if (
+                    $leaderId <= 0 ||
+                    $leaderId === (int) $employee->id ||
+                    !$employeeIds->has($leaderId)
+                ) {
+                    return 0;
+                }
+
+                return $leaderId;
+            });
+
+        $sorted = collect();
+        $addedIds = [];
+
+        /*
+         * Root employees से processing शुरू करें।
+         */
+        $queue = [];
+
+        foreach ($childrenByLeader->get(0, collect())->sortBy('name') as $root) {
+            $queue[] = $root;
+        }
+
+        while (!empty($queue)) {
+            /** @var User $employee */
+            $employee = array_shift($queue);
+            $employeeId = (int) $employee->id;
+
+            if (isset($addedIds[$employeeId])) {
+                continue;
+            }
+
+            $sorted->push($employee);
+            $addedIds[$employeeId] = true;
+
+            $children = $childrenByLeader
+                ->get($employeeId, collect())
+                ->sortBy('name');
+
+            foreach ($children as $child) {
+                $childId = (int) $child->id;
+
+                if (!isset($addedIds[$childId])) {
+                    $queue[] = $child;
+                }
+            }
+        }
+
+        /*
+         * Circular या malformed hierarchy वाले employees को अंत में add करें।
+         */
+        foreach ($employees->sortBy('name') as $employee) {
+            $employeeId = (int) $employee->id;
+
+            if (!isset($addedIds[$employeeId])) {
+                $sorted->push($employee);
+                $addedIds[$employeeId] = true;
+            }
+        }
+
+        return $sorted->values();
+    }
 
 
 }
