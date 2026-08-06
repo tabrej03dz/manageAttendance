@@ -1034,7 +1034,7 @@
                             @enderror
                         </div>
 
-                        <div class="field-row">
+                        {{-- <div class="field-row">
                             <label class="field-label" for="bank_branch">Branch Name</label>
                             <input
                                 class="form-control-compact @error('bank_branch') has-error @enderror"
@@ -1048,7 +1048,7 @@
                             @error('bank_branch')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div> --}}
 
                         <div class="field-row">
                             <label class="field-label" for="account_number">Account Number</label>
