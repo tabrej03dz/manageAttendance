@@ -1005,6 +1005,30 @@
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="field-row top full">
+                            <label class="field-label" for="other_attachment">Other File</label>
+                            <div>
+                                <input
+                                    class="form-control-compact @error('other_attachment') has-error @enderror"
+                                    id="other_attachment"
+                                    name="other_attachment"
+                                    type="file"
+                                >
+                                @if($employee->other_attachment)
+                                    <a
+                                        class="document-link"
+                                        href="{{ asset('storage/' . $employee->other_attachment) }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                    >
+                                        <i class="fas fa-eye"></i> View Current File
+                                    </a>
+                                @endif
+                            </div>
+                            @error('other_attachment')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1046,6 +1070,22 @@
                             @enderror
                         </div>
 
+                        <div class="field-row">
+                            <label class="field-label" for="break">Break (Minutes)</label>
+                            <input
+                                class="form-control-compact @error('break') has-error @enderror"
+                                id="break"
+                                name="break"
+                                type="number"
+                                min="0"
+                                max="1440"
+                                value="{{ old('break', $employee->break) }}"
+                            >
+                            @error('break')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="field-row full">
                             <span class="field-label">Location Required</span>
                             <div class="radio-group">
@@ -1074,10 +1114,10 @@
                 </div>
             </section>
 
-            {{-- Official & Bank Details --}}
+            {{-- Official Identifiers --}}
             <section class="form-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Official & Bank Details</h2>
+                    <h2 class="panel-title">Official Identifiers</h2>
                     <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Edit</span>
                 </div>
 
@@ -1085,44 +1125,73 @@
                     <div class="compact-grid">
                         <div class="field-row">
                             <label class="field-label" for="uan_number">UAN Number</label>
-                            <input
-                                class="form-control-compact @error('uan_number') has-error @enderror"
-                                id="uan_number"
-                                name="uan_number"
-                                type="text"
-                                value="{{ old('uan_number', $employee->uan_number) }}"
-                            >
-                            @error('uan_number')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <input class="form-control-compact @error('uan_number') has-error @enderror" id="uan_number" name="uan_number" type="text" value="{{ old('uan_number', $employee->uan_number) }}">
+                            @error('uan_number')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="field-row">
                             <label class="field-label" for="esic_number">ESIC Number</label>
-                            <input
-                                class="form-control-compact @error('esic_number') has-error @enderror"
-                                id="esic_number"
-                                name="esic_number"
-                                type="text"
-                                value="{{ old('esic_number', $employee->esic_number) }}"
-                            >
-                            @error('esic_number')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <input class="form-control-compact @error('esic_number') has-error @enderror" id="esic_number" name="esic_number" type="text" value="{{ old('esic_number', $employee->esic_number) }}">
+                            @error('esic_number')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- Bank Details --}}
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Bank Details</h2>
+                    <span class="panel-edit"><i class="fas fa-university"></i> Edit</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="account_holder_name">Account Holder</label>
+                            <input class="form-control-compact @error('account_holder_name') has-error @enderror" id="account_holder_name" name="account_holder_name" type="text" maxlength="255" value="{{ old('account_holder_name', $employee->account_holder_name) }}" placeholder="Account holder name">
+                            @error('account_holder_name')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="field-row full">
+                        <div class="field-row">
+                            <label class="field-label" for="bank_name">Bank Name</label>
+                            <input class="form-control-compact @error('bank_name') has-error @enderror" id="bank_name" name="bank_name" type="text" maxlength="255" value="{{ old('bank_name', $employee->bank_name) }}" placeholder="Bank name">
+                            @error('bank_name')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="bank_branch">Branch Name</label>
+                            <input class="form-control-compact @error('bank_branch') has-error @enderror" id="bank_branch" name="bank_branch" type="text" maxlength="255" value="{{ old('bank_branch', $employee->bank_branch) }}" placeholder="Branch name">
+                            @error('bank_branch')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field-row">
                             <label class="field-label" for="account_number">Account Number</label>
-                            <input
-                                class="form-control-compact @error('account_number') has-error @enderror"
-                                id="account_number"
-                                name="account_number"
-                                type="text"
-                                value="{{ old('account_number', $employee->account_number) }}"
-                            >
-                            @error('account_number')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
+                            <input class="form-control-compact @error('account_number') has-error @enderror" id="account_number" name="account_number" type="text" inputmode="numeric" maxlength="30" value="{{ old('account_number', $employee->account_number) }}" placeholder="Bank account number" autocomplete="off">
+                            @error('account_number')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="ifsc_code">IFSC Code</label>
+                            <input class="form-control-compact @error('ifsc_code') has-error @enderror" id="ifsc_code" name="ifsc_code" type="text" minlength="11" maxlength="11" value="{{ old('ifsc_code', $employee->ifsc_code) }}" placeholder="SBIN0001234" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+                            @error('ifsc_code')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="account_type">Account Type</label>
+                            <select class="form-control-compact @error('account_type') has-error @enderror" id="account_type" name="account_type">
+                                <option value="">Select</option>
+                                @foreach(['savings' => 'Savings', 'current' => 'Current', 'salary' => 'Salary', 'other' => 'Other'] as $value => $label)
+                                    <option value="{{ $value }}" {{ old('account_type', $employee->account_type) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('account_type')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="upi_id">UPI ID</label>
+                            <input class="form-control-compact @error('upi_id') has-error @enderror" id="upi_id" name="upi_id" type="text" maxlength="100" value="{{ old('upi_id', $employee->upi_id) }}" placeholder="name@bank" autocomplete="off">
+                            @error('upi_id')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>
@@ -1230,45 +1299,7 @@
                 </div>
             </section>
 
-            {{-- Password --}}
             <section class="form-panel full-width">
-                <div class="panel-header">
-                    <h2 class="panel-title">Password</h2>
-                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Edit</span>
-                </div>
-
-                <div class="panel-body">
-                    <div class="compact-grid">
-                        <div class="field-row">
-                            <label class="field-label" for="password">New Password</label>
-                            <input
-                                class="form-control-compact @error('password') has-error @enderror"
-                                id="password"
-                                name="password"
-                                type="password"
-                                autocomplete="new-password"
-                            >
-                            @error('password')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="confirm_password">Confirm Password</label>
-                            <input
-                                class="form-control-compact @error('confirm_password') has-error @enderror"
-                                id="confirm_password"
-                                name="confirm_password"
-                                type="password"
-                                autocomplete="new-password"
-                            >
-                            @error('confirm_password')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
                 <div class="form-actions">
                     <a href="{{ route('employee.index') }}" class="btn-compact btn-cancel">
                         <i class="fas fa-times"></i> Cancel

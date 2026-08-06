@@ -120,42 +120,6 @@ private function officeEmployeesQuery(Request $request)
 
 
 
-    // private function sortEmployeesHierarchically($employees)
-    // {
-    //     $employees = collect($employees);
-
-    //     $grouped = $employees->groupBy('team_leader_id');
-    //     $sorted = collect();
-
-    //     $appendChildren = function ($leaderId) use (&$appendChildren, $grouped, &$sorted) {
-    //         if (!isset($grouped[$leaderId])) {
-    //             return;
-    //         }
-
-    //         foreach ($grouped[$leaderId]->sortBy('name') as $employee) {
-    //             $sorted->push($employee);
-    //             $appendChildren($employee->id);
-    //         }
-    //     };
-
-    //     if (isset($grouped[null])) {
-    //         foreach ($grouped[null]->sortBy('name') as $employee) {
-    //             $sorted->push($employee);
-    //             $appendChildren($employee->id);
-    //         }
-    //     }
-
-    //     $remaining = $employees->whereNotIn('id', $sorted->pluck('id'));
-
-    //     foreach ($remaining->sortBy('name') as $employee) {
-    //         $sorted->push($employee);
-    //         $appendChildren($employee->id);
-    //     }
-
-    //     return $sorted->unique('id')->values();
-    // }
-
-
     private function sortEmployeesHierarchically(
     \Illuminate\Support\Collection $employees
 ): \Illuminate\Support\Collection {
@@ -327,86 +291,6 @@ private function officeEmployeesQuery(Request $request)
 
     return $sorted->values();
 }
-
-
-
-    // public function index(Request $request)
-    // {
-    //     $query = $this->officeEmployeesQuery($request);
-
-    //     if ($request->filled('q')) {
-    //         $q = trim($request->q);
-    //         $query->where(function ($qq) use ($q) {
-    //             $qq->where('name', 'like', "%{$q}%")
-    //                 ->orWhere('email', 'like', "%{$q}%")
-    //                 ->orWhere('phone', 'like', "%{$q}%");
-    //         });
-    //     }
-
-    //     if ($request->filled('status')) {
-    //         $query->where('status', $request->status);
-    //     } else {
-    //         $query->where('status', '1');
-    //     }
-
-    //     if ($request->filled('department_id')) {
-    //         $query->where('department_id', $request->department_id);
-    //     }
-
-    //     $allowedOfficeIds = $this->allowedOfficeIds($request);
-
-    //     if ($request->filled('office_id')) {
-    //         $requestedOfficeId = (int) $request->office_id;
-
-    //         if (in_array($requestedOfficeId, $allowedOfficeIds, true)) {
-    //             $query->where('office_id', $requestedOfficeId);
-    //         } else {
-    //             $query->whereRaw('1 = 0');
-    //         }
-    //     }
-
-    //     if ($request->filled('office_unassigned') && $request->office_unassigned == '1') {
-    //         $query->whereNull('office_id');
-    //     }
-
-    //     $employees = $query->get();
-
-    //     // hierarchy order preserve
-    //     $employees = $this->sortEmployeesHierarchically($employees);
-
-    //     $departments = Department::all();
-
-    //     $offices = Office::when(!empty($allowedOfficeIds), function ($q) use ($allowedOfficeIds) {
-    //             $q->whereIn('id', $allowedOfficeIds);
-    //         })
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     $unassignedCount = (clone $this->officeEmployeesQuery($request))
-    //         ->whereNull('office_id')
-    //         ->count();
-
-    //     $perPage = 25;
-    //     $currentPage = Paginator::resolveCurrentPage();
-
-    //     $paginatedEmployees = new LengthAwarePaginator(
-    //         $employees->forPage($currentPage, $perPage)->values(),
-    //         $employees->count(),
-    //         $perPage,
-    //         $currentPage,
-    //         [
-    //             'path' => Paginator::resolveCurrentPath(),
-    //             'query' => $request->query(),
-    //         ]
-    //     );
-
-    //     return view('dashboard.employee.index', [
-    //         'employees' => $paginatedEmployees,
-    //         'departments' => $departments,
-    //         'offices' => $offices,
-    //         'unassignedCount' => $unassignedCount,
-    //     ]);
-    // }
 
 
 public function index(Request $request)
@@ -603,254 +487,58 @@ public function index(Request $request)
 }
 
 
-    // public function create(Request $request)
-    // {
-    //     $user = $request->user();
-
-    //     if ($user->hasRole('super_admin')) {
-    //         $offices = Office::orderBy('name')->get();
-
-    //         $teamLeaders = User::whereHas('roles', function ($q) {
-    //                 $q->where('name', 'team_leader');
-    //             })
-    //             ->with('office')
-    //             ->get();
-    //     } elseif ($user->hasRole('owner')) {
-    //         // owner ke saare offices lao
-    //         $offices = Office::where('owner_id', $user->id)
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         if ($offices->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.');
-    //         }
-
-    //         // owner ke total employees count sab offices ka
-    //         $officeIds = $offices->pluck('id');
-
-    //         $plan = Plan::where('user_id', $user->id)->latest()->first();
-    //         $employeeCount = User::whereIn('office_id', $officeIds)->count();
-
-    //         if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //             return back()->with('error', 'Your employee creation limit exceeded!');
-    //         }
-
-    //         $teamLeaders = User::whereIn('office_id', $officeIds)
-    //             ->role('team_leader')
-    //             ->with('office')
-    //             ->get();
-    //     } else {
-    //         $activeOfficeId = $user->activeOfficeId();
-
-    //         if (!$activeOfficeId) {
-    //             return back()->with('error', 'Please select an office first.');
-    //         }
-
-    //         $owner = optional($user->office)->owner;
-
-    //         if ($owner) {
-    //             $plan = Plan::where('user_id', $owner->id)->latest()->first();
-
-    //             $employeeCount = User::where('office_id', $activeOfficeId)->count();
-
-    //             if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //                 return back()->with('error', 'Your employee creation limit exceeded!');
-    //             }
-    //         }
-
-    //         $offices = Office::where('id', $activeOfficeId)->orderBy('name')->get();
-
-    //         $teamLeaders = User::where('office_id', $activeOfficeId)
-    //             ->role('team_leader')
-    //             ->with('office')
-    //             ->get();
-    //     }
-
-    //     $departments = Department::all();
-
-    //     return view('dashboard.employee.create', compact('offices', 'teamLeaders', 'departments'));
-    // }
 
 
-    // public function create(Request $request)
-    // {
-    //     $loggedInUser = $request->user();
 
-    //     if ($loggedInUser->hasRole('super_admin')) {
-    //         $offices = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->orderBy('name')
-    //             ->get();
 
-    //         $allowedOfficeIds = $offices->pluck('id');
 
-    //     } elseif ($loggedInUser->hasRole('owner')) {
-    //         $offices = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->where('owner_id', $loggedInUser->id)
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         if ($offices->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.');
-    //         }
-
-    //         $allowedOfficeIds = $offices->pluck('id');
-
-    //         $plan = Plan::query()
-    //             ->where('user_id', $loggedInUser->id)
-    //             ->latest('id')
-    //             ->first();
-
-    //         $employeeCount = User::query()
-    //             ->whereIn('office_id', $allowedOfficeIds)
-    //             ->count();
-
-    //         if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //             return back()->with(
-    //                 'error',
-    //                 'Your employee creation limit exceeded!'
-    //             );
-    //         }
-
-    //     } else {
-    //         $activeOfficeId = $loggedInUser->activeOfficeId();
-
-    //         if (!$activeOfficeId) {
-    //             return back()->with(
-    //                 'error',
-    //                 'Please select an office first.'
-    //             );
-    //         }
-
-    //         $office = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->find($activeOfficeId);
-
-    //         if (!$office) {
-    //             return back()->with(
-    //                 'error',
-    //                 'Selected office was not found.'
-    //             );
-    //         }
-
-    //         $offices = collect([$office]);
-    //         $allowedOfficeIds = collect([(int) $office->id]);
-
-    //         $owner = $office->owner;
-
-    //         if ($owner) {
-    //             $plan = Plan::query()
-    //                 ->where('user_id', $owner->id)
-    //                 ->latest('id')
-    //                 ->first();
-
-    //             $employeeCount = User::query()
-    //                 ->where('office_id', $office->id)
-    //                 ->count();
-
-    //             if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //                 return back()->with(
-    //                     'error',
-    //                     'Your employee creation limit exceeded!'
-    //                 );
-    //             }
-    //         }
-    //     }
-
-    //     $teamLeaders = User::query()
-    //         ->select('id', 'name', 'office_id')
-    //         ->where('status', 1)
-    //         ->whereIn('office_id', $allowedOfficeIds)
-    //         ->role('team_leader')
-    //         ->with('office:id,name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Leave authorities
-    //     |--------------------------------------------------------------------------
-    //     |
-    //     | Admin, team leader, owner and super admin can be selected.
-    //     | Same accessible offices are used, so hierarchy/security remains intact.
-    //     |
-    //     */
-
-    //     $leaveAuthorities = User::query()
-    //         ->select('id', 'name', 'office_id', 'status')
-    //         ->where('status', 1)
-    //         ->whereIn('office_id', $allowedOfficeIds)
-    //         ->whereHas('roles', function ($roleQuery) {
-    //             $roleQuery->whereIn('name', [
-    //                 'owner',
-    //                 'admin',
-    //                 'team_leader',
-    //                 'super_admin',
-    //             ]);
-    //         })
-    //         ->with('office:id,name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     /*
-    //     * Super admin generally has no office_id. Include active super admins too.
-    //     */
-    //     if ($loggedInUser->hasRole('super_admin')) {
-    //         $superAdmins = User::query()
-    //             ->select('id', 'name', 'office_id', 'status')
-    //             ->where('status', 1)
-    //             ->whereHas('roles', function ($roleQuery) {
-    //                 $roleQuery->where('name', 'super_admin');
-    //             })
-    //             ->with('office:id,name')
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         $leaveAuthorities = $leaveAuthorities
-    //             ->merge($superAdmins)
-    //             ->unique('id')
-    //             ->sortBy('name')
-    //             ->values();
-    //     }
-
-    //     $departments = Department::query()
-    //         ->select('id', 'name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     return view('dashboard.employee.create', compact(
-    //         'offices',
-    //         'teamLeaders',
-    //         'leaveAuthorities',
-    //         'departments'
-    //     ));
-    // }
-
-    public function create(Request $request)
+public function create(Request $request)
 {
     $loggedInUser = $request->user();
 
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve accessible offices
+    |--------------------------------------------------------------------------
+    */
+
     if ($loggedInUser->hasRole('super_admin')) {
         $offices = Office::query()
-            ->select('id', 'name', 'owner_id')
+            ->select([
+                'id',
+                'name',
+                'owner_id',
+            ])
             ->orderBy('name')
             ->get();
 
-        $allowedOfficeIds = $offices->pluck('id')->map(fn ($id) => (int) $id);
+        $allowedOfficeIds = $offices
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
 
     } elseif ($loggedInUser->hasRole('owner')) {
         $offices = Office::query()
-            ->select('id', 'name', 'owner_id')
+            ->select([
+                'id',
+                'name',
+                'owner_id',
+            ])
             ->where('owner_id', $loggedInUser->id)
             ->orderBy('name')
             ->get();
 
         if ($offices->isEmpty()) {
-            return back()->with('error', 'No office found for this owner.');
+            return back()->with(
+                'error',
+                'No office found for this owner.'
+            );
         }
 
-        $allowedOfficeIds = $offices->pluck('id')->map(fn ($id) => (int) $id);
+        $allowedOfficeIds = $offices
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values();
 
         $plan = Plan::query()
             ->where('user_id', $loggedInUser->id)
@@ -861,28 +549,47 @@ public function index(Request $request)
             ->whereIn('office_id', $allowedOfficeIds)
             ->count();
 
-        if ($plan && $employeeCount >= (int) $plan->number_of_employees) {
-            return back()->with('error', 'Your employee creation limit exceeded!');
+        if (
+            $plan &&
+            $employeeCount >= (int) $plan->number_of_employees
+        ) {
+            return back()->with(
+                'error',
+                'Your employee creation limit exceeded!'
+            );
         }
 
     } else {
         $activeOfficeId = (int) $loggedInUser->activeOfficeId();
 
         if (!$activeOfficeId) {
-            return back()->with('error', 'Please select an office first.');
+            return back()->with(
+                'error',
+                'Please select an office first.'
+            );
         }
 
         $office = Office::query()
-            ->select('id', 'name', 'owner_id')
+            ->select([
+                'id',
+                'name',
+                'owner_id',
+            ])
             ->with('owner:id,name')
             ->find($activeOfficeId);
 
         if (!$office) {
-            return back()->with('error', 'Selected office was not found.');
+            return back()->with(
+                'error',
+                'Selected office was not found.'
+            );
         }
 
         $offices = collect([$office]);
-        $allowedOfficeIds = collect([(int) $office->id]);
+
+        $allowedOfficeIds = collect([
+            (int) $office->id,
+        ]);
 
         if ($office->owner) {
             $plan = Plan::query()
@@ -894,11 +601,44 @@ public function index(Request $request)
                 ->where('office_id', $office->id)
                 ->count();
 
-            if ($plan && $employeeCount >= (int) $plan->number_of_employees) {
-                return back()->with('error', 'Your employee creation limit exceeded!');
+            if (
+                $plan &&
+                $employeeCount >= (int) $plan->number_of_employees
+            ) {
+                return back()->with(
+                    'error',
+                    'Your employee creation limit exceeded!'
+                );
             }
         }
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Office owners
+    |--------------------------------------------------------------------------
+    */
+
+    $officeOwnerIds = $offices
+        ->pluck('owner_id')
+        ->filter()
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reporting Managers and Leave Authorities
+    |--------------------------------------------------------------------------
+    |
+    | Same $teamLeaders variable is used for both dropdowns.
+    |
+    | Selected office candidates:
+    | 1. Owner of that office
+    | 2. Active admins of that office
+    | 3. Active team leaders of that office
+    |
+    */
 
     $teamLeaders = User::query()
         ->select([
@@ -907,13 +647,50 @@ public function index(Request $request)
             'users.office_id',
             'users.status',
         ])
-        ->whereIn('users.office_id', $allowedOfficeIds)
-        ->whereHas('roles', function ($query) {
-            $query->whereIn('roles.name', [
-                'team_leader',
-                'admin',
-                'owner',
-            ]);
+        ->where('users.status', '1')
+        ->where(function ($userQuery) use (
+            $allowedOfficeIds,
+            $officeOwnerIds
+        ) {
+            /*
+             * Office Admins and Team Leaders
+             */
+            $userQuery->where(function ($officeUserQuery) use (
+                $allowedOfficeIds
+            ) {
+                $officeUserQuery
+                    ->whereIn(
+                        'users.office_id',
+                        $allowedOfficeIds
+                    )
+                    ->whereHas('roles', function ($roleQuery) {
+                        $roleQuery->whereIn('roles.name', [
+                            'admin',
+                            'team_leader',
+                        ]);
+                    });
+            });
+
+            /*
+             * Office Owners
+             */
+            if ($officeOwnerIds->isNotEmpty()) {
+                $userQuery->orWhere(function ($ownerQuery) use (
+                    $officeOwnerIds
+                ) {
+                    $ownerQuery
+                        ->whereIn(
+                            'users.id',
+                            $officeOwnerIds
+                        )
+                        ->whereHas('roles', function ($roleQuery) {
+                            $roleQuery->where(
+                                'roles.name',
+                                'owner'
+                            );
+                        });
+                });
+            }
         })
         ->with([
             'office:id,name',
@@ -922,547 +699,90 @@ public function index(Request $request)
         ->orderBy('users.name')
         ->get();
 
+    /*
+    |--------------------------------------------------------------------------
+    | Attach selectable office IDs
+    |--------------------------------------------------------------------------
+    |
+    | Admin/team leader: users.office_id
+    | Owner: offices.owner_id ke according office IDs
+    |
+    */
 
-    $leaveAuthorities = User::query()
-        ->select('users.id', 'users.name', 'users.office_id', 'users.status')
-        ->where('users.status', 1)
-        ->whereIn('users.office_id', $allowedOfficeIds)
-        ->whereHas('roles', function ($roleQuery) {
-            $roleQuery->whereIn('roles.name', [
-                'owner',
-                'admin',
-                'team_leader',
-            ]);
-        })
-        ->with('office:id,name')
-        ->orderBy('users.name')
-        ->get();
+    $ownerOfficeMap = $offices
+        ->filter(fn ($office) => !empty($office->owner_id))
+        ->groupBy(fn ($office) => (int) $office->owner_id)
+        ->map(function ($ownerOffices) {
+            return $ownerOffices
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values()
+                ->all();
+        });
 
-    if ($loggedInUser->hasRole('super_admin')) {
-        $superAdmins = User::query()
-            ->select('users.id', 'users.name', 'users.office_id', 'users.status')
-            ->where('users.status', 1)
-            ->whereHas('roles', function ($roleQuery) {
-                $roleQuery->where('roles.name', 'super_admin');
-            })
-            ->with('office:id,name')
-            ->get();
+    $teamLeaders->each(function ($manager) use ($ownerOfficeMap) {
+        if ($manager->hasRole('owner')) {
+            $manager->selectable_office_ids = $ownerOfficeMap->get(
+                (int) $manager->id,
+                []
+            );
+        } else {
+            $manager->selectable_office_ids = $manager->office_id
+                ? [(int) $manager->office_id]
+                : [];
+        }
+    });
 
-        $leaveAuthorities = $leaveAuthorities
-            ->merge($superAdmins)
-            ->unique('id')
-            ->sortBy('name')
-            ->values();
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Departments
+    |--------------------------------------------------------------------------
+    */
 
     $departments = Department::query()
-        ->select('id', 'name')
+        ->select([
+            'id',
+            'name',
+        ])
         ->orderBy('name')
         ->get();
 
-    return view('dashboard.employee.create', compact(
-        'offices',
-        'teamLeaders',
-        'leaveAuthorities',
-        'departments'
-    ));
+    return view(
+        'dashboard.employee.create',
+        compact(
+            'offices',
+            'teamLeaders',
+            'departments'
+        )
+    );
 }
 
 
 
-
-
-
-
-    // public function store(EmployeeRequest $request)
-    // {
-    //     $user = $request->user();
-
-    //     // =========================
-    //     // OFFICE RESOLUTION
-    //     // =========================
-    //     if ($user->hasRole('super_admin')) {
-
-    //         $targetOfficeId = $request->office_id;
-
-    //         if (!$targetOfficeId) {
-    //             return back()->with('error', 'Please select an office first.')->withInput();
-    //         }
-
-    //     } elseif ($user->hasRole('owner')) {
-
-    //         // owner ke saare offices
-    //         $ownerOfficeIds = Office::where('owner_id', $user->id)->pluck('id');
-
-    //         if ($ownerOfficeIds->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.')->withInput();
-    //         }
-
-    //         // agar dropdown se office select ho raha hai to use lo, warna active
-    //         $targetOfficeId = $request->office_id ?: $user->activeOfficeId();
-
-    //         if (!$targetOfficeId || !$ownerOfficeIds->contains($targetOfficeId)) {
-    //             return back()->with('error', 'Invalid office selected.')->withInput();
-    //         }
-
-    //         // ✅ PLAN CHECK (OWNER TOTAL EMPLOYEES)
-    //         $plan = Plan::where('user_id', $user->id)->latest()->first();
-
-    //         $employeeCount = User::whereIn('office_id', $ownerOfficeIds)->count();
-
-    //         if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //             return back()->with('error', 'Your employee creation limit exceeded!')->withInput();
-    //         }
-
-    //     } else {
-
-    //         $targetOfficeId = $user->activeOfficeId();
-
-    //         if (!$targetOfficeId) {
-    //             return back()->with('error', 'Please select an office first.')->withInput();
-    //         }
-
-    //         // owner निकालो
-    //         $owner = optional($user->office)->owner;
-
-    //         if ($owner) {
-    //             $plan = Plan::where('user_id', $owner->id)->latest()->first();
-
-    //             $employeeCount = User::where('office_id', $targetOfficeId)->count();
-
-    //             if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //                 return back()->with('error', 'Your employee creation limit exceeded!')->withInput();
-    //             }
-    //         }
-    //     }
-
-    //     // =========================
-    //     // EMAIL CHECK
-    //     // =========================
-    //     $existingEmployee = User::where('email', $request->email)->first();
-    //     if ($existingEmployee) {
-    //         return back()->withErrors(['email' => 'Email already exists.'])->withInput();
-    //     }
-
-    //     // =========================
-    //     // TIME CALCULATION
-    //     // =========================
-    //     $checkInTime = Carbon::parse($request->check_in_time);
-    //     $checkOutTime = Carbon::parse($request->check_out_time);
-
-    //     // =========================
-    //     // CREATE EMPLOYEE
-    //     // =========================
-    //     $employee = User::create($request->except([
-    //         'joining_date',
-    //         'office_id',
-    //         'photo',
-    //         'aadhar_attachment',
-    //         'pan_attachment',
-    //         'other_attachment',
-    //         'role',
-    //         'basic_salary',
-    //         'house_rent_allowance',
-    //         'transport_allowance',
-    //         'medical_allowance',
-    //         'special_allowance',
-    //         'dearness_allowance',
-    //         'relieving_charge',
-    //         'additional_allowance',
-    //     ]) + [
-    //         'office_id' => $targetOfficeId,
-    //         'password' => Hash::make('password'),
-    //     ]);
-
-    //     // =========================
-    //     // FILE UPLOADS
-    //     // =========================
-    //     if ($request->file('photo')) {
-    //         $file = $request->file('photo')->store('public/photos');
-    //         $employee->photo = str_replace('public/', '', $file);
-    //     }
-
-    //     if ($request->file('aadhar_attachment')) {
-    //         $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
-    //         $employee->aadhar_attachment = str_replace('public/', '', $file);
-    //     }
-
-    //     if ($request->file('pan_attachment')) {
-    //         $file = $request->file('pan_attachment')->store('public/pan_attachments');
-    //         $employee->pan_attachment = str_replace('public/', '', $file);
-    //     }
-
-    //     if ($request->file('other_attachment')) {
-    //         $file = $request->file('other_attachment')->store('public/other_attachments');
-    //         $employee->other_attachment = str_replace('public/', '', $file);
-    //     }
-
-    //     // =========================
-    //     // SAVE EXTRA DATA
-    //     // =========================
-    //     $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
-    //     $employee->joining_date = $request->joining_date;
-    //     $employee->save();
-
-    //     // =========================
-    //     // ROLE ASSIGN
-    //     // =========================
-    //     $employee->assignRole($request->role ?? 'employee');
-
-    //     // =========================
-    //     // SALARY
-    //     // =========================
-    //     $basic_salary = $request->basic_salary ?? 0;
-    //     $house_rent_allowance = $request->house_rent_allowance ?? 0;
-    //     $transport_allowance = $request->transport_allowance ?? 0;
-    //     $medical_allowance = $request->medical_allowance ?? 0;
-    //     $special_allowance = $request->special_allowance ?? 0;
-    //     $dearness_allowance = $request->dearness_allowance ?? 0;
-    //     $relieving_charge = $request->relieving_charge ?? 0;
-    //     $additional_allowance = $request->additional_allowance ?? 0;
-
-    //     $total_salary =
-    //         $basic_salary +
-    //         $house_rent_allowance +
-    //         $transport_allowance +
-    //         $medical_allowance +
-    //         $special_allowance +
-    //         $dearness_allowance +
-    //         $relieving_charge +
-    //         $additional_allowance;
-
-    //     UserSalary::create([
-    //         'user_id' => $employee->id,
-    //         'basic_salary' => $basic_salary,
-    //         'house_rent_allowance' => $house_rent_allowance,
-    //         'transport_allowance' => $transport_allowance,
-    //         'medical_allowance' => $medical_allowance,
-    //         'special_allowance' => $special_allowance,
-    //         'dearness_allowance' => $dearness_allowance,
-    //         'relieving_charge' => $relieving_charge,
-    //         'additional_allowance' => $additional_allowance,
-    //         'total_salary' => $total_salary,
-    //     ]);
-
-    //     return redirect('employee')->with('success', 'Employee Registered successfully');
-    // }
-
-    // public function store(EmployeeRequest $request)
-    // {
-    //     $loggedInUser = $request->user();
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Resolve target office
-    //     |--------------------------------------------------------------------------
-    //     */
-
-    //     if ($loggedInUser->hasRole('super_admin')) {
-    //         $targetOfficeId = (int) $request->input('office_id');
-
-    //         if (!$targetOfficeId || !Office::whereKey($targetOfficeId)->exists()) {
-    //             return back()
-    //                 ->withErrors([
-    //                     'office_id' => 'Please select a valid office.',
-    //                 ])
-    //                 ->withInput();
-    //         }
-
-    //     } elseif ($loggedInUser->hasRole('owner')) {
-    //         $ownerOfficeIds = Office::query()
-    //             ->where('owner_id', $loggedInUser->id)
-    //             ->pluck('id')
-    //             ->map(fn ($id) => (int) $id);
-
-    //         if ($ownerOfficeIds->isEmpty()) {
-    //             return back()
-    //                 ->with('error', 'No office found for this owner.')
-    //                 ->withInput();
-    //         }
-
-    //         $targetOfficeId = (int) (
-    //             $request->input('office_id')
-    //             ?: $loggedInUser->activeOfficeId()
-    //         );
-
-    //         if (!$targetOfficeId || !$ownerOfficeIds->contains($targetOfficeId)) {
-    //             return back()
-    //                 ->withErrors([
-    //                     'office_id' => 'Invalid office selected.',
-    //                 ])
-    //                 ->withInput();
-    //         }
-
-    //         $plan = Plan::query()
-    //             ->where('user_id', $loggedInUser->id)
-    //             ->latest('id')
-    //             ->first();
-
-    //         $employeeCount = User::query()
-    //             ->whereIn('office_id', $ownerOfficeIds)
-    //             ->count();
-
-    //         if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //             return back()
-    //                 ->with('error', 'Your employee creation limit exceeded!')
-    //                 ->withInput();
-    //         }
-
-    //     } else {
-    //         $targetOfficeId = (int) $loggedInUser->activeOfficeId();
-
-    //         if (!$targetOfficeId) {
-    //             return back()
-    //                 ->with('error', 'Please select an office first.')
-    //                 ->withInput();
-    //         }
-
-    //         $office = Office::query()->find($targetOfficeId);
-
-    //         if (!$office) {
-    //             return back()
-    //                 ->withErrors([
-    //                     'office_id' => 'Selected office was not found.',
-    //                 ])
-    //                 ->withInput();
-    //         }
-
-    //         $owner = $office->owner;
-
-    //         if ($owner) {
-    //             $plan = Plan::query()
-    //                 ->where('user_id', $owner->id)
-    //                 ->latest('id')
-    //                 ->first();
-
-    //             $employeeCount = User::query()
-    //                 ->where('office_id', $targetOfficeId)
-    //                 ->count();
-
-    //             if ($plan && $employeeCount >= $plan->number_of_employees) {
-    //                 return back()
-    //                     ->with('error', 'Your employee creation limit exceeded!')
-    //                     ->withInput();
-    //             }
-    //         }
-    //     }
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Leave authority validation
-    //     |--------------------------------------------------------------------------
-    //     */
-
-    //     $request->validate([
-    //         'leave_authority_id' => [
-    //             'nullable',
-    //             'integer',
-    //             Rule::exists('users', 'id')->where(function ($query) use ($targetOfficeId) {
-    //                 $query->where('status', 1)
-    //                     ->where(function ($officeQuery) use ($targetOfficeId) {
-    //                         $officeQuery
-    //                             ->where('office_id', $targetOfficeId)
-    //                             ->orWhereNull('office_id');
-    //                     });
-    //             }),
-    //         ],
-    //     ]);
-
-    //     $leaveAuthorityId = $request->filled('leave_authority_id')
-    //         ? (int) $request->input('leave_authority_id')
-    //         : null;
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Reporting manager validation
-    //     |--------------------------------------------------------------------------
-    //     */
-
-    //     if ($request->filled('team_leader_id')) {
-    //         $validTeamLeader = User::query()
-    //             ->whereKey((int) $request->input('team_leader_id'))
-    //             ->where('office_id', $targetOfficeId)
-    //             ->where('status', 1)
-    //             ->role('team_leader')
-    //             ->exists();
-
-    //         if (!$validTeamLeader) {
-    //             return back()
-    //                 ->withErrors([
-    //                     'team_leader_id' => 'Invalid reporting manager selected.',
-    //                 ])
-    //                 ->withInput();
-    //         }
-    //     }
-
-    //     /*
-    //     |--------------------------------------------------------------------------
-    //     | Email and time checks
-    //     |--------------------------------------------------------------------------
-    //     */
-
-    //     if (
-    //         $request->filled('email')
-    //         && User::where('email', $request->input('email'))->exists()
-    //     ) {
-    //         return back()
-    //             ->withErrors([
-    //                 'email' => 'Email already exists.',
-    //             ])
-    //             ->withInput();
-    //     }
-
-    //     try {
-    //         $checkInTime = Carbon::parse($request->input('check_in_time'));
-    //         $checkOutTime = Carbon::parse($request->input('check_out_time'));
-    //     } catch (\Throwable $exception) {
-    //         return back()
-    //             ->withErrors([
-    //                 'check_in_time' => 'Please enter valid check-in and check-out times.',
-    //             ])
-    //             ->withInput();
-    //     }
-
-    //     if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
-    //         $checkOutTime->addDay();
-    //     }
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         $employeeData = $request->except([
-    //             'joining_date',
-    //             'office_id',
-    //             'photo',
-    //             'aadhar_attachment',
-    //             'pan_attachment',
-    //             'other_attachment',
-    //             'role',
-    //             'leave_authority_id',
-    //             'basic_salary',
-    //             'house_rent_allowance',
-    //             'transport_allowance',
-    //             'medical_allowance',
-    //             'special_allowance',
-    //             'dearness_allowance',
-    //             'relieving_charge',
-    //             'additional_allowance',
-    //             'provident_fund',
-    //             'employee_state_insurance_corporation',
-    //         ]);
-
-    //         $employeeData['office_id'] = $targetOfficeId;
-    //         $employeeData['leave_authority_id'] = $leaveAuthorityId;
-    //         $employeeData['password'] = Hash::make('password');
-    //         $employeeData['joining_date'] = $request->input('joining_date');
-    //         $employeeData['office_time'] = $checkInTime->diffInMinutes($checkOutTime);
-    //         $employeeData['status'] = $request->input('status', 1);
-
-    //         $employee = User::create($employeeData);
-
-    //         if ($request->hasFile('photo')) {
-    //             $path = $request->file('photo')->store('public/photos');
-    //             $employee->photo = str_replace('public/', '', $path);
-    //         }
-
-    //         if ($request->hasFile('aadhar_attachment')) {
-    //             $path = $request->file('aadhar_attachment')
-    //                 ->store('public/aadhar_attachments');
-
-    //             $employee->aadhar_attachment = str_replace('public/', '', $path);
-    //         }
-
-    //         if ($request->hasFile('pan_attachment')) {
-    //             $path = $request->file('pan_attachment')
-    //                 ->store('public/pan_attachments');
-
-    //             $employee->pan_attachment = str_replace('public/', '', $path);
-    //         }
-
-    //         if ($request->hasFile('other_attachment')) {
-    //             $path = $request->file('other_attachment')
-    //                 ->store('public/other_attachments');
-
-    //             $employee->other_attachment = str_replace('public/', '', $path);
-    //         }
-
-    //         $employee->save();
-
-    //         $employee->syncRoles([
-    //             $request->input('role', 'employee'),
-    //         ]);
-
-    //         $basicSalary = (float) $request->input('basic_salary', 0);
-    //         $houseRentAllowance = (float) $request->input('house_rent_allowance', 0);
-    //         $transportAllowance = (float) $request->input('transport_allowance', 0);
-    //         $medicalAllowance = (float) $request->input('medical_allowance', 0);
-    //         $specialAllowance = (float) $request->input('special_allowance', 0);
-    //         $dearnessAllowance = (float) $request->input('dearness_allowance', 0);
-    //         $relievingCharge = (float) $request->input('relieving_charge', 0);
-    //         $additionalAllowance = (float) $request->input('additional_allowance', 0);
-    //         $providentFund = (float) $request->input('provident_fund', 0);
-    //         $esic = (float) $request->input(
-    //             'employee_state_insurance_corporation',
-    //             0
-    //         );
-
-    //         $totalSalary =
-    //             $basicSalary
-    //             + $houseRentAllowance
-    //             + $transportAllowance
-    //             + $medicalAllowance
-    //             + $specialAllowance
-    //             + $dearnessAllowance
-    //             + $relievingCharge
-    //             + $additionalAllowance;
-
-    //         UserSalary::create([
-    //             'user_id' => $employee->id,
-    //             'basic_salary' => $basicSalary,
-    //             'house_rent_allowance' => $houseRentAllowance,
-    //             'transport_allowance' => $transportAllowance,
-    //             'medical_allowance' => $medicalAllowance,
-    //             'special_allowance' => $specialAllowance,
-    //             'dearness_allowance' => $dearnessAllowance,
-    //             'relieving_charge' => $relievingCharge,
-    //             'additional_allowance' => $additionalAllowance,
-    //             'provident_fund' => $providentFund,
-    //             'employee_state_insurance_corporation' => $esic,
-    //             'total_salary' => $totalSalary,
-    //         ]);
-
-    //         DB::commit();
-
-    //         return redirect()
-    //             ->route('employee.index')
-    //             ->with('success', 'Employee registered successfully.');
-
-    //     } catch (\Throwable $exception) {
-    //         DB::rollBack();
-
-    //         report($exception);
-
-    //         return back()
-    //             ->with('error', 'Employee could not be registered. Please try again.')
-    //             ->withInput();
-    //     }
-    // }
-
-
-
-    public function store(EmployeeRequest $request)
+public function store(EmployeeRequest $request)
 {
     $loggedInUser = $request->user();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Resolve target office
+    |--------------------------------------------------------------------------
+    */
 
     if ($loggedInUser->hasRole('super_admin')) {
         $targetOfficeId = (int) $request->input('office_id');
 
-        if (!$targetOfficeId || !Office::whereKey($targetOfficeId)->exists()) {
-            return back()->withErrors([
-                'office_id' => 'Please select a valid office.',
-            ])->withInput();
+        if (
+            !$targetOfficeId ||
+            !Office::query()->whereKey($targetOfficeId)->exists()
+        ) {
+            return back()
+                ->withErrors([
+                    'office_id' => 'Please select a valid office.',
+                ])
+                ->withInput();
         }
-
     } elseif ($loggedInUser->hasRole('owner')) {
         $ownerOfficeIds = Office::query()
             ->where('owner_id', $loggedInUser->id)
@@ -1470,17 +790,25 @@ public function index(Request $request)
             ->map(fn ($id) => (int) $id);
 
         if ($ownerOfficeIds->isEmpty()) {
-            return back()->with('error', 'No office found for this owner.')->withInput();
+            return back()
+                ->with('error', 'No office found for this owner.')
+                ->withInput();
         }
 
         $targetOfficeId = (int) (
-            $request->input('office_id') ?: $loggedInUser->activeOfficeId()
+            $request->input('office_id')
+            ?: $loggedInUser->activeOfficeId()
         );
 
-        if (!$targetOfficeId || !$ownerOfficeIds->contains($targetOfficeId)) {
-            return back()->withErrors([
-                'office_id' => 'Invalid office selected.',
-            ])->withInput();
+        if (
+            !$targetOfficeId ||
+            !$ownerOfficeIds->contains($targetOfficeId)
+        ) {
+            return back()
+                ->withErrors([
+                    'office_id' => 'Invalid office selected.',
+                ])
+                ->withInput();
         }
 
         $plan = Plan::query()
@@ -1492,15 +820,21 @@ public function index(Request $request)
             ->whereIn('office_id', $ownerOfficeIds)
             ->count();
 
-        if ($plan && $employeeCount >= (int) $plan->number_of_employees) {
-            return back()->with('error', 'Your employee creation limit exceeded!')->withInput();
+        if (
+            $plan &&
+            $employeeCount >= (int) $plan->number_of_employees
+        ) {
+            return back()
+                ->with('error', 'Your employee creation limit exceeded!')
+                ->withInput();
         }
-
     } else {
         $targetOfficeId = (int) $loggedInUser->activeOfficeId();
 
         if (!$targetOfficeId) {
-            return back()->with('error', 'Please select an office first.')->withInput();
+            return back()
+                ->with('error', 'Please select an office first.')
+                ->withInput();
         }
 
         $office = Office::query()
@@ -1508,9 +842,11 @@ public function index(Request $request)
             ->find($targetOfficeId);
 
         if (!$office) {
-            return back()->withErrors([
-                'office_id' => 'Selected office was not found.',
-            ])->withInput();
+            return back()
+                ->withErrors([
+                    'office_id' => 'Selected office was not found.',
+                ])
+                ->withInput();
         }
 
         if ($office->owner) {
@@ -1523,13 +859,24 @@ public function index(Request $request)
                 ->where('office_id', $targetOfficeId)
                 ->count();
 
-            if ($plan && $employeeCount >= (int) $plan->number_of_employees) {
-                return back()->with('error', 'Your employee creation limit exceeded!')->withInput();
+            if (
+                $plan &&
+                $employeeCount >= (int) $plan->number_of_employees
+            ) {
+                return back()
+                    ->with('error', 'Your employee creation limit exceeded!')
+                    ->withInput();
             }
         }
     }
 
-        $validatedExtra = $request->validate([
+    /*
+    |--------------------------------------------------------------------------
+    | Additional role and hierarchy validation
+    |--------------------------------------------------------------------------
+    */
+
+    $validatedExtra = $request->validate([
         'role' => [
             'required',
             Rule::in([
@@ -1542,10 +889,10 @@ public function index(Request $request)
         'status' => [
             'required',
             Rule::in([
-                0,
-                1,
                 '0',
                 '1',
+                0,
+                1,
             ]),
         ],
 
@@ -1562,130 +909,287 @@ public function index(Request $request)
         ],
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Verify reporting manager
+    |--------------------------------------------------------------------------
+    */
+
     if ($request->filled('team_leader_id')) {
         $validReportingManager = User::query()
             ->whereKey((int) $request->input('team_leader_id'))
             ->where('office_id', $targetOfficeId)
+            ->where('status', '1')
             ->whereHas('roles', function ($query) {
-                $query->whereIn('roles.name', [
-                    'team_leader',
-                    'admin',
-                    'owner',
-                ]);
+                $query->where('roles.name', 'team_leader');
             })
             ->exists();
 
         if (!$validReportingManager) {
-            return back()->withErrors([
-                'team_leader_id' => 'Invalid reporting manager selected.',
-            ])->withInput();
+            return back()
+                ->withErrors([
+                    'team_leader_id' =>
+                        'Please select a valid active team leader as reporting manager.',
+                ])
+                ->withInput();
         }
     }
 
-    if ($request->filled('leave_authority_id')) {
-        $validLeaveAuthority = User::query()
-            ->whereKey((int) $request->input('leave_authority_id'))
-            ->where('office_id', $targetOfficeId)
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('roles.name', [
-                    'team_leader',
-                    'admin',
-                    'owner',
-                ]);
-            })
-            ->exists();
 
-        if (!$validLeaveAuthority) {
-            return back()->withErrors([
-                'leave_authority_id' => 'Invalid leave authority selected.',
-            ])->withInput();
-        }
-    }
 
-    if ($request->filled('email') && User::where('email', $request->email)->exists()) {
-        return back()->withErrors([
-            'email' => 'Email already exists.',
-        ])->withInput();
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Attendance duration
+    |--------------------------------------------------------------------------
+    */
 
     try {
-        $checkInTime = Carbon::parse($request->check_in_time);
-        $checkOutTime = Carbon::parse($request->check_out_time);
+        $checkInTime = Carbon::createFromFormat(
+            'H:i',
+            $request->input('check_in_time')
+        );
+
+        $checkOutTime = Carbon::createFromFormat(
+            'H:i',
+            $request->input('check_out_time')
+        );
     } catch (\Throwable $exception) {
-        return back()->withErrors([
-            'check_in_time' => 'Please enter valid check-in and check-out times.',
-        ])->withInput();
+        return back()
+            ->withErrors([
+                'check_in_time' => 'Please enter valid check-in and check-out times.',
+            ])
+            ->withInput();
     }
 
     if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
         $checkOutTime->addDay();
     }
 
+    $officeMinutes = $checkInTime->diffInMinutes($checkOutTime);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Explicit status normalization
+    |--------------------------------------------------------------------------
+    |
+    | Database enum stores "0" or "1".
+    | 1 = Active
+    | 0 = Inactive
+    |
+    */
+
+    // $employeeStatus = ((string) $validatedExtra['status'] === '1') ? 1 : 0;
+    $employeeStatus = (string) $request->input('status') === '1'
+    ? '1'
+    : '0';
+
     DB::beginTransaction();
 
     try {
-        $employeeData = $request->except([
-            'joining_date',
-            'office_id',
-            'photo',
-            'aadhar_attachment',
-            'pan_attachment',
-            'other_attachment',
-            'role',
-            'team_leader_id',
-            'leave_authority_id',
-            'basic_salary',
-            'house_rent_allowance',
-            'transport_allowance',
-            'medical_allowance',
-            'special_allowance',
-            'dearness_allowance',
-            'relieving_charge',
-            'additional_allowance',
-            'provident_fund',
-            'employee_state_insurance_corporation',
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Prepare employee data
+        |--------------------------------------------------------------------------
+        */
 
-        $employeeData['office_id'] = $targetOfficeId;
-        $employeeData['team_leader_id'] = $request->filled('team_leader_id')
-            ? (int) $validatedExtra['team_leader_id']
-            : null;
-        $employeeData['leave_authority_id'] = $request->filled('leave_authority_id')
-            ? (int) $validatedExtra['leave_authority_id']
-            : null;
-        $employeeData['password'] = Hash::make('password');
-        $employeeData['joining_date'] = $request->joining_date;
-        $employeeData['office_time'] = $checkInTime->diffInMinutes($checkOutTime);
-        // $employeeData['status'] = $request->input('status', 1);
+        $employeeData = [
+            'name' => trim((string) $request->input('name')),
 
-        $employeeData['status'] = (int) $validatedExtra['status'];
-        $employee = User::create($employeeData);
+            'email' => $request->filled('email')
+                ? strtolower(trim((string) $request->input('email')))
+                : null,
+
+            'phone' => trim((string) $request->input('phone')),
+
+            'dob' => $request->input('dob'),
+            'joining_date' => $request->input('joining_date'),
+            'employee_id' => $request->input('employee_id'),
+            'address' => $request->input('address'),
+
+            'department_id' => $request->filled('department_id')
+                ? (int) $request->input('department_id')
+                : null,
+
+            'designation' => $request->input('designation'),
+            'responsibility' => $request->input('responsibility'),
+
+            'salary' => $request->filled('salary')
+                ? (float) $request->input('salary')
+                : null,
+
+            'check_in_time' => $request->input('check_in_time'),
+            'check_out_time' => $request->input('check_out_time'),
+            'office_time' => $officeMinutes,
+
+            'break' => $request->input('break'),
+            'location_required' => $request->input('location_required', 'no'),
+
+            'office_id' => $targetOfficeId,
+
+            'team_leader_id' => $request->filled('team_leader_id')
+                ? (int) $validatedExtra['team_leader_id']
+                : null,
+
+            'leave_authority_id' => $request->filled('leave_authority_id')
+                ? (int) $validatedExtra['leave_authority_id']
+                : null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Explicit status
+            |--------------------------------------------------------------------------
+            */
+
+            // 'status' => $employeeStatus,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Aadhaar and PAN details
+            |--------------------------------------------------------------------------
+            */
+
+            'adhar_number' => $request->filled('adhar_number')
+                ? preg_replace(
+                    '/\D+/',
+                    '',
+                    (string) $request->input('adhar_number')
+                )
+                : null,
+
+            'pan_number' => $request->filled('pan_number')
+                ? strtoupper(trim((string) $request->input('pan_number')))
+                : null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Official identifiers
+            |--------------------------------------------------------------------------
+            */
+
+            'uan_number' => $request->input('uan_number'),
+            'esic_number' => $request->input('esic_number'),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Bank details
+            |--------------------------------------------------------------------------
+            */
+
+            'account_holder_name' => $request->input('account_holder_name'),
+            'bank_name' => $request->input('bank_name'),
+            'bank_branch' => $request->input('bank_branch'),
+
+            'account_number' => $request->filled('account_number')
+                ? trim((string) $request->input('account_number'))
+                : null,
+
+            'ifsc_code' => $request->filled('ifsc_code')
+                ? strtoupper(trim((string) $request->input('ifsc_code')))
+                : null,
+
+            'account_type' => $request->input('account_type'),
+
+            'upi_id' => $request->filled('upi_id')
+                ? strtolower(trim((string) $request->input('upi_id')))
+                : null,
+
+            'password' => Hash::make('password'),
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create employee
+        |--------------------------------------------------------------------------
+        */
+
+        $employee = new User();
+
+        // forceFill prevents status or new bank fields from being silently ignored
+        // when an old $fillable list is still cached or incomplete.
+        $employee->forceFill($employeeData);
+        $employee->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upload files
+        |--------------------------------------------------------------------------
+        */
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('public/photos');
-            $employee->photo = str_replace('public/', '', $path);
+            $employee->photo = $request
+                ->file('photo')
+                ->store('photos', 'public');
         }
 
         if ($request->hasFile('aadhar_attachment')) {
-            $path = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
-            $employee->aadhar_attachment = str_replace('public/', '', $path);
+            $employee->aadhar_attachment = $request
+                ->file('aadhar_attachment')
+                ->store('aadhar_attachments', 'public');
         }
 
         if ($request->hasFile('pan_attachment')) {
-            $path = $request->file('pan_attachment')->store('public/pan_attachments');
-            $employee->pan_attachment = str_replace('public/', '', $path);
+            $employee->pan_attachment = $request
+                ->file('pan_attachment')
+                ->store('pan_attachments', 'public');
         }
 
         if ($request->hasFile('other_attachment')) {
-            $path = $request->file('other_attachment')->store('public/other_attachments');
-            $employee->other_attachment = str_replace('public/', '', $path);
+            $employee->other_attachment = $request
+                ->file('other_attachment')
+                ->store('other_attachments', 'public');
         }
 
-        $employee->save();
+        /*
+        |--------------------------------------------------------------------------
+        | Save status again explicitly
+        |--------------------------------------------------------------------------
+        |
+        | This prevents any observer, mutator or default value from accidentally
+        | changing Active to Inactive during initial creation.
+        |
+        */
+
+        // $employee->forceFill([
+        //     'status' => $employeeStatus,
+        // ]);
+
+        // $employee->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assign role
+        |--------------------------------------------------------------------------
+        */
 
         $employee->syncRoles([
             $validatedExtra['role'],
         ]);
+
+        DB::table('users')
+            ->where('id', $employee->id)
+            ->update([
+                'status' => $employeeStatus,
+                'updated_at' => now(),
+            ]);
+
+        $employee->refresh();
+
+        if ((string) $employee->status !== $employeeStatus) {
+            throw new \RuntimeException(
+                'Employee status could not be saved correctly.'
+            );
+        }
+
+
+        // Save selected status one final time after role sync.
+        // $employee->status = $employeeStatus;
+        // $employee->save();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Salary details
+        |--------------------------------------------------------------------------
+        */
 
         $basicSalary = (float) $request->input('basic_salary', 0);
         $houseRentAllowance = (float) $request->input('house_rent_allowance', 0);
@@ -1696,7 +1200,11 @@ public function index(Request $request)
         $relievingCharge = (float) $request->input('relieving_charge', 0);
         $additionalAllowance = (float) $request->input('additional_allowance', 0);
         $providentFund = (float) $request->input('provident_fund', 0);
-        $esic = (float) $request->input('employee_state_insurance_corporation', 0);
+
+        $esic = (float) $request->input(
+            'employee_state_insurance_corporation',
+            0
+        );
 
         $totalSalary = $basicSalary
             + $houseRentAllowance
@@ -1707,7 +1215,7 @@ public function index(Request $request)
             + $relievingCharge
             + $additionalAllowance;
 
-        UserSalary::create([
+        UserSalary::query()->create([
             'user_id' => $employee->id,
             'basic_salary' => $basicSalary,
             'house_rent_allowance' => $houseRentAllowance,
@@ -1726,212 +1234,28 @@ public function index(Request $request)
 
         return redirect()
             ->route('employee.index')
-            ->with('success', 'Employee registered successfully.');
-
+            ->with(
+                'success',
+                $employeeStatus === 1
+                    ? 'Active employee registered successfully.'
+                    : 'Inactive employee registered successfully.'
+            );
     } catch (\Throwable $exception) {
         DB::rollBack();
+
         report($exception);
 
         return back()
-            ->with('error', 'Employee could not be registered. Please try again.')
+            ->with(
+                'error',
+                config('app.debug')
+                    ? $exception->getMessage()
+                    : 'Employee could not be registered. Please try again.'
+            )
             ->withInput();
     }
 }
 
-
-
-    // public function edit(Request $request, User $employee)
-    // {
-    //     $user = $request->user();
-
-    //     if ($user->hasRole('super_admin')) {
-    //         $offices = Office::orderBy('name')->get();
-
-    //         $teamLeaders = User::whereHas('roles', function ($q) {
-    //                 $q->where('name', 'team_leader');
-    //             })
-    //             ->with('office')
-    //             ->get();
-
-    //         // super admin kisi bhi office ke employee ko edit kar sakta hai
-    //     } elseif ($user->hasRole('owner')) {
-    //         $ownerOfficeIds = Office::where('owner_id', $user->id)->pluck('id');
-
-    //         if ($ownerOfficeIds->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.');
-    //         }
-
-    //         $activeOfficeId = $user->activeOfficeId();
-
-    //         if (!$activeOfficeId) {
-    //             $activeOfficeId = $ownerOfficeIds->first();
-    //         }
-
-    //         // security: owner sirf apne office ke employee ko edit kare
-    //         if (!$ownerOfficeIds->contains($employee->office_id)) {
-    //             abort(403, 'This employee does not belong to your office.');
-    //         }
-
-    //         $offices = Office::whereIn('id', $ownerOfficeIds)
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         $teamLeaders = User::where('office_id', $activeOfficeId)
-    //             ->role('team_leader')
-    //             ->with('office')
-    //             ->get();
-    //     } else {
-    //         $activeOfficeId = $user->activeOfficeId();
-
-    //         if (!$activeOfficeId) {
-    //             return back()->with('error', 'Please select an office first.');
-    //         }
-
-    //         if ((int) $employee->office_id !== (int) $activeOfficeId) {
-    //             abort(403, 'This employee does not belong to the selected office.');
-    //         }
-
-    //         $offices = Office::where('id', $activeOfficeId)
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         $teamLeaders = User::where('office_id', $activeOfficeId)
-    //             ->role('team_leader')
-    //             ->with('office')
-    //             ->get();
-    //     }
-
-    //     $departments = Department::all();
-
-    //     return view('dashboard.employee.edit', compact('employee', 'offices', 'teamLeaders', 'departments'));
-    // }
-
-
-    // public function edit(Request $request, User $employee)
-    // {
-    //     $loggedInUser = $request->user();
-
-    //     if ($loggedInUser->hasRole('super_admin')) {
-    //         $offices = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         $allowedOfficeIds = $offices->pluck('id');
-
-    //     } elseif ($loggedInUser->hasRole('owner')) {
-    //         $ownerOfficeIds = Office::query()
-    //             ->where('owner_id', $loggedInUser->id)
-    //             ->pluck('id')
-    //             ->map(fn ($id) => (int) $id);
-
-    //         if ($ownerOfficeIds->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.');
-    //         }
-
-    //         if (!$ownerOfficeIds->contains((int) $employee->office_id)) {
-    //             abort(403, 'This employee does not belong to your office.');
-    //         }
-
-    //         $offices = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->whereIn('id', $ownerOfficeIds)
-    //             ->orderBy('name')
-    //             ->get();
-
-    //         $allowedOfficeIds = $ownerOfficeIds;
-
-    //     } else {
-    //         $activeOfficeId = (int) $loggedInUser->activeOfficeId();
-
-    //         if (!$activeOfficeId) {
-    //             return back()->with(
-    //                 'error',
-    //                 'Please select an office first.'
-    //             );
-    //         }
-
-    //         if ((int) $employee->office_id !== $activeOfficeId) {
-    //             abort(
-    //                 403,
-    //                 'This employee does not belong to the selected office.'
-    //             );
-    //         }
-
-    //         $offices = Office::query()
-    //             ->select('id', 'name', 'owner_id')
-    //             ->whereKey($activeOfficeId)
-    //             ->get();
-
-    //         $allowedOfficeIds = collect([$activeOfficeId]);
-    //     }
-
-    //     $teamLeaders = User::query()
-    //         ->select('id', 'name', 'office_id')
-    //         ->where('status', 1)
-    //         ->whereIn('office_id', $allowedOfficeIds)
-    //         ->whereKeyNot($employee->id)
-    //         ->role('team_leader')
-    //         ->with('office:id,name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     $leaveAuthorities = User::query()
-    //         ->select('id', 'name', 'office_id', 'status')
-    //         ->where('status', 1)
-    //         ->whereIn('office_id', $allowedOfficeIds)
-    //         ->whereKeyNot($employee->id)
-    //         ->whereHas('roles', function ($roleQuery) {
-    //             $roleQuery->whereIn('name', [
-    //                 'owner',
-    //                 'admin',
-    //                 'team_leader',
-    //                 'super_admin',
-    //             ]);
-    //         })
-    //         ->with('office:id,name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     if ($loggedInUser->hasRole('super_admin')) {
-    //         $superAdmins = User::query()
-    //             ->select('id', 'name', 'office_id', 'status')
-    //             ->where('status', 1)
-    //             ->whereKeyNot($employee->id)
-    //             ->whereHas('roles', function ($roleQuery) {
-    //                 $roleQuery->where('name', 'super_admin');
-    //             })
-    //             ->with('office:id,name')
-    //             ->get();
-
-    //         $leaveAuthorities = $leaveAuthorities
-    //             ->merge($superAdmins)
-    //             ->unique('id')
-    //             ->sortBy('name')
-    //             ->values();
-    //     }
-
-    //     $departments = Department::query()
-    //         ->select('id', 'name')
-    //         ->orderBy('name')
-    //         ->get();
-
-    //     $employee->load([
-    //         'office:id,name',
-    //         'department:id,name',
-    //         'teamLeader:id,name',
-    //         'leaveAuthority:id,name',
-    //         'userSalary',
-    //     ]);
-
-    //     return view('dashboard.employee.edit', compact(
-    //         'employee',
-    //         'offices',
-    //         'teamLeaders',
-    //         'leaveAuthorities',
-    //         'departments'
-    //     ));
-    // }
 
 
     public function edit(Request $request, User $employee)
@@ -2070,250 +1394,718 @@ public function index(Request $request)
 
     // public function update(Request $request, User $employee)
     // {
-    //     $user = $request->user();
-    //     // =========================
-    //     // TARGET OFFICE RESOLUTION
-    //     // =========================
-    //     if ($user->hasRole('super_admin')) {
+    //     $loggedInUser = $request->user();
 
-    //         $targetOfficeId = $request->office_id ?: $employee->office_id;
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Target office resolution and authorization
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     if ($loggedInUser->hasRole('super_admin')) {
+    //         $targetOfficeId = $request->input('office_id', $employee->office_id);
 
     //         if (!$targetOfficeId) {
-    //             return back()->with('error', 'Please select an office first.')->withInput();
+    //             return back()
+    //                 ->with('error', 'Please select an office first.')
+    //                 ->withInput();
     //         }
 
-    //     } elseif ($user->hasRole('owner')) {
-
-    //         $ownerOfficeIds = Office::where('owner_id', $user->id)->pluck('id');
+    //         if (!Office::whereKey($targetOfficeId)->exists()) {
+    //             return back()
+    //                 ->withErrors([
+    //                     'office_id' => 'The selected office is invalid.',
+    //                 ])
+    //                 ->withInput();
+    //         }
+    //     } elseif ($loggedInUser->hasRole('owner')) {
+    //         $ownerOfficeIds = Office::query()
+    //             ->where('owner_id', $loggedInUser->id)
+    //             ->pluck('id');
 
     //         if ($ownerOfficeIds->isEmpty()) {
-    //             return back()->with('error', 'No office found for this owner.')->withInput();
+    //             return back()
+    //                 ->with('error', 'No office found for this owner.')
+    //                 ->withInput();
     //         }
 
-    //         // security: employee owner ke kisi office ka hi hona chahiye
-    //         if (!$ownerOfficeIds->contains($employee->office_id)) {
+    //         if (!$ownerOfficeIds->contains((int) $employee->office_id)) {
     //             abort(403, 'This employee does not belong to your office.');
     //         }
 
-    //         // owner dropdown se office change kar sakta hai
-    //         $targetOfficeId = $request->office_id ?: $employee->office_id;
+    //         $targetOfficeId = (int) $request->input(
+    //             'office_id',
+    //             $employee->office_id
+    //         );
 
     //         if (!$ownerOfficeIds->contains($targetOfficeId)) {
-    //             return back()->with('error', 'Invalid office selected.')->withInput();
+    //             return back()
+    //                 ->withErrors([
+    //                     'office_id' => 'Invalid office selected.',
+    //                 ])
+    //                 ->withInput();
     //         }
-
     //     } else {
-
-    //         $targetOfficeId = $user->activeOfficeId();
+    //         $targetOfficeId = $loggedInUser->activeOfficeId();
 
     //         if (!$targetOfficeId) {
-    //             return back()->with('error', 'Please select an office first.')->withInput();
+    //             return back()
+    //                 ->with('error', 'Please select an office first.')
+    //                 ->withInput();
     //         }
 
     //         if ((int) $employee->office_id !== (int) $targetOfficeId) {
-    //             abort(403, 'This employee does not belong to the selected office.');
+    //             abort(
+    //                 403,
+    //                 'This employee does not belong to the selected office.'
+    //             );
     //         }
     //     }
 
-    //     // =========================
-    //     // OPTIONAL EMAIL UNIQUE CHECK
-    //     // =========================
-    //     if ($request->filled('email')) {
-    //         $emailExists = User::where('email', $request->email)
-    //             ->where('id', '!=', $employee->id)
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Normalize Aadhaar and PAN before validation
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     if ($request->filled('adhar_number')) {
+    //         $request->merge([
+    //             'adhar_number' => preg_replace(
+    //                 '/\D/',
+    //                 '',
+    //                 (string) $request->adhar_number
+    //             ),
+    //         ]);
+    //     }
+
+    //     if ($request->filled('pan_number')) {
+    //         $request->merge([
+    //             'pan_number' => strtoupper(
+    //                 trim((string) $request->pan_number)
+    //             ),
+    //         ]);
+    //     }
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Validation
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     $validated = $request->validate(
+    //         [
+    //             'name' => [
+    //                 'required',
+    //                 'string',
+    //                 'max:255',
+    //             ],
+
+    //             'email' => [
+    //                 'nullable',
+    //                 'email',
+    //                 'max:255',
+    //                 Rule::unique('users', 'email')->ignore($employee->id),
+    //             ],
+
+    //             'phone' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:20',
+    //             ],
+
+    //             'dob' => [
+    //                 'nullable',
+    //                 'date',
+    //                 'before_or_equal:today',
+    //             ],
+
+    //             'joining_date' => [
+    //                 'nullable',
+    //                 'date',
+    //             ],
+
+    //             'address' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:2000',
+    //             ],
+
+    //             'department_id' => [
+    //                 'nullable',
+    //                 'integer',
+    //                 'exists:departments,id',
+    //             ],
+
+    //             'designation' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:255',
+    //             ],
+
+    //             'office_id' => [
+    //                 'nullable',
+    //                 'integer',
+    //                 'exists:offices,id',
+    //             ],
+
+    //             'team_leader_id' => [
+    //                 'nullable',
+    //                 'integer',
+    //                 'exists:users,id',
+    //                 Rule::notIn([$employee->id]),
+    //             ],
+
+    //             'role' => [
+    //                 'nullable',
+    //                 Rule::in([
+    //                     'admin',
+    //                     'team_leader',
+    //                     'employee',
+    //                 ]),
+    //             ],
+
+    //             'status' => [
+    //                 'required',
+    //                 Rule::in([
+    //                     0,
+    //                     1,
+    //                     '0',
+    //                     '1',
+    //                 ]),
+    //             ],
+
+    //             'salary' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'responsibility' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:5000',
+    //             ],
+
+    //             'check_in_time' => [
+    //                 'nullable',
+    //                 'date_format:H:i',
+    //             ],
+
+    //             'check_out_time' => [
+    //                 'nullable',
+    //                 'date_format:H:i',
+    //             ],
+
+    //             'break' => [
+    //                 'nullable',
+    //                 'integer',
+    //                 'min:0',
+    //                 'max:1440',
+    //             ],
+
+    //             'location_required' => [
+    //                 'nullable',
+    //                 Rule::in(['yes', 'no']),
+    //             ],
+
+    //             'password' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'min:8',
+    //             ],
+
+    //             'confirm_password' => [
+    //                 'nullable',
+    //                 'same:password',
+    //             ],
+
+    //             'employee_id' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:100',
+    //             ],
+
+    //             'uan_number' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:50',
+    //             ],
+
+    //             'esic_number' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:50',
+    //             ],
+
+    //             'account_number' => [
+    //                 'nullable',
+    //                 'string',
+    //                 'max:100',
+    //             ],
+
+    //             'adhar_number' => [
+    //                 'nullable',
+    //                 'digits:12',
+    //             ],
+
+    //             'pan_number' => [
+    //                 'nullable',
+    //                 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/',
+    //             ],
+
+    //             'photo' => [
+    //                 'nullable',
+    //                 'image',
+    //                 'mimes:jpg,jpeg,png,webp',
+    //                 'max:5120',
+    //             ],
+
+    //             'aadhar_attachment' => [
+    //                 'nullable',
+    //                 'file',
+    //                 'mimes:jpg,jpeg,png,webp,pdf',
+    //                 'max:5120',
+    //             ],
+
+    //             'pan_attachment' => [
+    //                 'nullable',
+    //                 'file',
+    //                 'mimes:jpg,jpeg,png,webp,pdf',
+    //                 'max:5120',
+    //             ],
+
+    //             'other_attachment' => [
+    //                 'nullable',
+    //                 'file',
+    //                 'mimes:jpg,jpeg,png,webp,pdf,doc,docx',
+    //                 'max:5120',
+    //             ],
+
+    //             'basic_salary' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'house_rent_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'transport_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'medical_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'special_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'dearness_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'relieving_charge' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'additional_allowance' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //             ],
+
+    //             'provident_fund' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //                 'max:100',
+    //             ],
+
+    //             'employee_state_insurance_corporation' => [
+    //                 'nullable',
+    //                 'numeric',
+    //                 'min:0',
+    //                 'max:100',
+    //             ],
+    //         ],
+    //         [
+    //             'email.unique' =>
+    //                 'This email address is already being used by another employee.',
+
+    //             'team_leader_id.not_in' =>
+    //                 'An employee cannot be assigned as their own team leader.',
+
+    //             'adhar_number.digits' =>
+    //                 'Aadhaar number must contain exactly 12 digits.',
+
+    //             'pan_number.regex' =>
+    //                 'Please enter a valid PAN number, for example ABCDE1234F.',
+
+    //             'confirm_password.same' =>
+    //                 'Password and confirm password do not match.',
+
+    //             'photo.max' =>
+    //                 'Employee photo must not be larger than 5 MB.',
+
+    //             'aadhar_attachment.mimes' =>
+    //                 'Aadhaar attachment must be JPG, JPEG, PNG, WEBP or PDF.',
+
+    //             'aadhar_attachment.max' =>
+    //                 'Aadhaar attachment must not be larger than 5 MB.',
+
+    //             'pan_attachment.mimes' =>
+    //                 'PAN attachment must be JPG, JPEG, PNG, WEBP or PDF.',
+
+    //             'pan_attachment.max' =>
+    //                 'PAN attachment must not be larger than 5 MB.',
+
+    //             'other_attachment.max' =>
+    //                 'Other attachment must not be larger than 5 MB.',
+    //         ]
+    //     );
+
+    //     /*
+    //     |--------------------------------------------------------------------------
+    //     | Check reporting employee belongs to target office
+    //     |--------------------------------------------------------------------------
+    //     */
+
+    //     if (!empty($validated['team_leader_id'])) {
+    //         $validTeamLeader = User::query()
+    //             ->whereKey($validated['team_leader_id'])
+    //             ->where('office_id', $targetOfficeId)
     //             ->exists();
 
-    //         if ($emailExists) {
-    //             return back()->withErrors(['email' => 'Email already exists.'])->withInput();
+    //         if (!$validTeamLeader) {
+    //             return back()
+    //                 ->withErrors([
+    //                     'team_leader_id' =>
+    //                         'The selected team leader does not belong to the selected office.',
+    //                 ])
+    //                 ->withInput();
     //         }
     //     }
 
-    //     // =========================
-    //     // UPDATE BASIC FIELDS
-    //     // =========================
-    //     $employee->fill($request->except([
-    //         'password',
-    //         'photo',
-    //         'aadhar_attachment',
-    //         'pan_attachment',
-    //         'other_attachment',
-    //         'joining_date',
-    //         'office_id',
-    //         'role',
-    //         'basic_salary',
-    //         'house_rent_allowance',
-    //         'transport_allowance',
-    //         'medical_allowance',
-    //         'special_allowance',
-    //         'dearness_allowance',
-    //         'relieving_charge',
-    //         'additional_allowance',
-    //         'provident_fund',
-    //         'employee_state_insurance_corporation',
-    //     ]));
+    //     $newUploadedFiles = [];
 
-    //     if ($request->filled('password')) {
-    //         $employee->password = Hash::make($request->password);
-    //     }
+    //     try {
+    //         DB::beginTransaction();
 
-    //     // =========================
-    //     // FILE UPLOADS
-    //     // =========================
-    //     if ($request->file('photo')) {
-    //         if ($employee->photo) {
-    //             $oldFile = public_path('storage/' . $employee->photo);
-    //             if (file_exists($oldFile)) {
-    //                 unlink($oldFile);
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | Basic employee details
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //         $employee->name = $validated['name'];
+    //         $employee->email = $validated['email'] ?? null;
+    //         $employee->phone = $validated['phone'] ?? null;
+    //         $employee->dob = $validated['dob'] ?? null;
+    //         $employee->joining_date = $validated['joining_date'] ?? null;
+    //         $employee->address = $validated['address'] ?? null;
+    //         $employee->department_id = $validated['department_id'] ?? null;
+    //         $employee->designation = $validated['designation'] ?? null;
+    //         $employee->office_id = $targetOfficeId;
+    //         $employee->team_leader_id =
+    //             $validated['team_leader_id'] ?? null;
+    //         // $employee->status = (int) ($validated['status'] ?? $employee->status);
+    //         $employee->status =  $validated['status'];
+    //         $employee->salary = $validated['salary'] ?? null;
+    //         $employee->responsibility =
+    //             $validated['responsibility'] ?? null;
+    //         $employee->location_required =
+    //             $validated['location_required'] ?? 'no';
+
+    //         $employee->check_in_time =
+    //             $validated['check_in_time'] ?? null;
+    //         $employee->check_out_time =
+    //             $validated['check_out_time'] ?? null;
+
+    //         if (array_key_exists('break', $validated)) {
+    //             $employee->break = $validated['break'];
+    //         }
+
+    //         $employee->employee_id =
+    //             $validated['employee_id'] ?? null;
+    //         $employee->uan_number =
+    //             $validated['uan_number'] ?? null;
+    //         $employee->esic_number =
+    //             $validated['esic_number'] ?? null;
+    //         $employee->account_number =
+    //             $validated['account_number'] ?? null;
+
+    //         $employee->adhar_number =
+    //             $validated['adhar_number'] ?? null;
+    //         $employee->pan_number =
+    //             $validated['pan_number'] ?? null;
+
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | Password
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //         if (!empty($validated['password'])) {
+    //             $employee->password = Hash::make(
+    //                 $validated['password']
+    //             );
+    //         }
+
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | Calculate office duration
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //         if (
+    //             !empty($validated['check_in_time']) &&
+    //             !empty($validated['check_out_time'])
+    //         ) {
+    //             $checkInTime = Carbon::createFromFormat(
+    //                 'H:i',
+    //                 $validated['check_in_time']
+    //             );
+
+    //             $checkOutTime = Carbon::createFromFormat(
+    //                 'H:i',
+    //                 $validated['check_out_time']
+    //             );
+
+    //             /*
+    //             * Night shift support:
+    //             * Example: check-in 10 PM and check-out 6 AM.
+    //             */
+    //             if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
+    //                 $checkOutTime->addDay();
+    //             }
+
+    //             $employee->office_time =
+    //                 $checkInTime->diffInMinutes($checkOutTime);
+    //         } else {
+    //             $employee->office_time = null;
+    //         }
+
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | File uploads
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //         $fileUploadMap = [
+    //             'photo' => [
+    //                 'directory' => 'photos',
+    //                 'column' => 'photo',
+    //             ],
+
+    //             'aadhar_attachment' => [
+    //                 'directory' => 'aadhar_attachments',
+    //                 'column' => 'aadhar_attachment',
+    //             ],
+
+    //             'pan_attachment' => [
+    //                 'directory' => 'pan_attachments',
+    //                 'column' => 'pan_attachment',
+    //             ],
+
+    //             'other_attachment' => [
+    //                 'directory' => 'other_attachments',
+    //                 'column' => 'other_attachment',
+    //             ],
+    //         ];
+
+    //         foreach ($fileUploadMap as $inputName => $fileConfig) {
+    //             if (!$request->hasFile($inputName)) {
+    //                 continue;
+    //             }
+
+    //             $uploadedFile = $request->file($inputName);
+
+    //             if (!$uploadedFile->isValid()) {
+    //                 throw new \RuntimeException(
+    //                     "The {$inputName} upload failed."
+    //                 );
+    //             }
+
+    //             $oldFilePath = $employee->{$fileConfig['column']};
+
+    //             $newFilePath = $uploadedFile->store(
+    //                 $fileConfig['directory'],
+    //                 'public'
+    //             );
+
+    //             if (!$newFilePath) {
+    //                 throw new \RuntimeException(
+    //                     "Unable to upload {$inputName}."
+    //                 );
+    //             }
+
+    //             $newUploadedFiles[] = $newFilePath;
+
+    //             $employee->{$fileConfig['column']} = $newFilePath;
+
+    //             /*
+    //             * Old file will be deleted only after the new upload succeeds.
+    //             */
+    //             if (
+    //                 !empty($oldFilePath) &&
+    //                 $oldFilePath !== $newFilePath &&
+    //                 Storage::disk('public')->exists($oldFilePath)
+    //             ) {
+    //                 Storage::disk('public')->delete($oldFilePath);
     //             }
     //         }
 
-    //         $file = $request->file('photo')->store('public/photos');
-    //         $employee->photo = str_replace('public/', '', $file);
-    //     }
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | Save employee and role
+    //         |--------------------------------------------------------------------------
+    //         */
 
-    //     if ($request->file('aadhar_attachment')) {
-    //         if ($employee->aadhar_attachment) {
-    //             $oldFile = public_path('storage/' . $employee->aadhar_attachment);
-    //             if (file_exists($oldFile)) {
-    //                 unlink($oldFile);
+    //         $employee->save();
+
+    //         if (!empty($validated['role'])) {
+    //             $employee->syncRoles([
+    //                 $validated['role'],
+    //             ]);
+    //         }
+
+    //         /*
+    //         |--------------------------------------------------------------------------
+    //         | Salary details
+    //         |--------------------------------------------------------------------------
+    //         */
+
+    //         $basicSalary = (float) ($validated['basic_salary'] ?? 0);
+    //         $houseRentAllowance =
+    //             (float) ($validated['house_rent_allowance'] ?? 0);
+    //         $transportAllowance =
+    //             (float) ($validated['transport_allowance'] ?? 0);
+    //         $medicalAllowance =
+    //             (float) ($validated['medical_allowance'] ?? 0);
+    //         $specialAllowance =
+    //             (float) ($validated['special_allowance'] ?? 0);
+    //         $dearnessAllowance =
+    //             (float) ($validated['dearness_allowance'] ?? 0);
+    //         $relievingCharge =
+    //             (float) ($validated['relieving_charge'] ?? 0);
+    //         $additionalAllowance =
+    //             (float) ($validated['additional_allowance'] ?? 0);
+    //         $providentFund =
+    //             (float) ($validated['provident_fund'] ?? 0);
+    //         $esic =
+    //             (float) (
+    //                 $validated[
+    //                     'employee_state_insurance_corporation'
+    //                 ] ?? 0
+    //             );
+
+    //         $totalSalary =
+    //             $basicSalary +
+    //             $houseRentAllowance +
+    //             $transportAllowance +
+    //             $medicalAllowance +
+    //             $specialAllowance +
+    //             $dearnessAllowance +
+    //             $relievingCharge +
+    //             $additionalAllowance;
+
+    //         UserSalary::updateOrCreate(
+    //             [
+    //                 'user_id' => $employee->id,
+    //             ],
+    //             [
+    //                 'basic_salary' => $basicSalary,
+    //                 'house_rent_allowance' => $houseRentAllowance,
+    //                 'transport_allowance' => $transportAllowance,
+    //                 'medical_allowance' => $medicalAllowance,
+    //                 'special_allowance' => $specialAllowance,
+    //                 'dearness_allowance' => $dearnessAllowance,
+    //                 'relieving_charge' => $relievingCharge,
+    //                 'additional_allowance' => $additionalAllowance,
+    //                 'provident_fund' => $providentFund,
+    //                 'employee_state_insurance_corporation' => $esic,
+    //                 'total_salary' => $totalSalary,
+    //             ]
+    //         );
+
+    //         DB::commit();
+
+    //         return redirect()
+    //             ->route('employee.index')
+    //             ->with(
+    //                 'success',
+    //                 'Employee record updated successfully.'
+    //             );
+    //     } catch (\Throwable $exception) {
+    //         DB::rollBack();
+
+    //         /*
+    //         * If database update fails, delete only newly uploaded files.
+    //         */
+    //         foreach ($newUploadedFiles as $newUploadedFile) {
+    //             if (Storage::disk('public')->exists($newUploadedFile)) {
+    //                 Storage::disk('public')->delete($newUploadedFile);
     //             }
     //         }
 
-    //         $file = $request->file('aadhar_attachment')->store('public/aadhar_attachments');
-    //         $employee->aadhar_attachment = str_replace('public/', '', $file);
+    //         report($exception);
+
+    //         return back()
+    //             ->with(
+    //                 'error',
+    //                 'Employee record could not be updated. Please try again.'
+    //             )
+    //             ->withInput();
     //     }
-
-    //     if ($request->file('pan_attachment')) {
-    //         if ($employee->pan_attachment) {
-    //             $oldFile = public_path('storage/' . $employee->pan_attachment);
-    //             if (file_exists($oldFile)) {
-    //                 unlink($oldFile);
-    //             }
-    //         }
-
-    //         $file = $request->file('pan_attachment')->store('public/pan_attachments');
-    //         $employee->pan_attachment = str_replace('public/', '', $file);
-    //     }
-
-    //     if ($request->file('other_attachment')) {
-    //         if ($employee->other_attachment) {
-    //             $oldFile = public_path('storage/' . $employee->other_attachment);
-    //             if (file_exists($oldFile)) {
-    //                 unlink($oldFile);
-    //             }
-    //         }
-
-    //         $file = $request->file('other_attachment')->store('public/other_attachments');
-    //         $employee->other_attachment = str_replace('public/', '', $file);
-    //     }
-
-    //     // =========================
-    //     // EXTRA FIELDS
-    //     // =========================
-    //     $employee->joining_date = $request->joining_date;
-    //     $employee->office_id = $targetOfficeId;
-
-    //     if ($request->filled('check_in_time') && $request->filled('check_out_time')) {
-    //         $checkInTime = Carbon::parse($request->check_in_time);
-    //         $checkOutTime = Carbon::parse($request->check_out_time);
-    //         $employee->office_time = $checkInTime->diffInMinutes($checkOutTime);
-    //     }
-
-    //     if ($request->role) {
-    //         $employee->syncRoles([$request->role]);
-    //     }
-
-    //     $employee->save();
-
-    //     // =========================
-    //     // SALARY DATA
-    //     // =========================
-    //     $basicSalary = $request->basic_salary ?? 0;
-    //     $houseRentAllowance = $request->house_rent_allowance ?? 0;
-    //     $transportAllowance = $request->transport_allowance ?? 0;
-    //     $medicalAllowance = $request->medical_allowance ?? 0;
-    //     $specialAllowance = $request->special_allowance ?? 0;
-    //     $dearnessAllowance = $request->dearness_allowance ?? 0;
-    //     $relievingCharge = $request->relieving_charge ?? 0;
-    //     $additionalAllowance = $request->additional_allowance ?? 0;
-    //     $providentFund = $request->provident_fund ?? 0;
-    //     $esic = $request->employee_state_insurance_corporation ?? 0;
-
-    //     $totalSalary = $basicSalary
-    //         + $houseRentAllowance
-    //         + $transportAllowance
-    //         + $medicalAllowance
-    //         + $specialAllowance
-    //         + $dearnessAllowance
-    //         + $relievingCharge
-    //         + $additionalAllowance;
-
-    //     $userSalary = UserSalary::where('user_id', $employee->id)->first();
-
-    //     if ($userSalary) {
-    //         $userSalary->update([
-    //             'basic_salary' => $basicSalary,
-    //             'house_rent_allowance' => $houseRentAllowance,
-    //             'transport_allowance' => $transportAllowance,
-    //             'medical_allowance' => $medicalAllowance,
-    //             'special_allowance' => $specialAllowance,
-    //             'dearness_allowance' => $dearnessAllowance,
-    //             'relieving_charge' => $relievingCharge,
-    //             'additional_allowance' => $additionalAllowance,
-    //             'provident_fund' => $providentFund,
-    //             'employee_state_insurance_corporation' => $esic,
-    //             'total_salary' => $totalSalary,
-    //         ]);
-    //     } else {
-    //         UserSalary::create([
-    //             'user_id' => $employee->id,
-    //             'basic_salary' => $basicSalary,
-    //             'house_rent_allowance' => $houseRentAllowance,
-    //             'transport_allowance' => $transportAllowance,
-    //             'medical_allowance' => $medicalAllowance,
-    //             'special_allowance' => $specialAllowance,
-    //             'dearness_allowance' => $dearnessAllowance,
-    //             'relieving_charge' => $relievingCharge,
-    //             'additional_allowance' => $additionalAllowance,
-    //             'provident_fund' => $providentFund,
-    //             'employee_state_insurance_corporation' => $esic,
-    //             'total_salary' => $totalSalary,
-    //         ]);
-    //     }
-
-    //     return redirect('employee')->with('success', 'Record Updated successfully');
     // }
 
-public function update(Request $request, User $employee)
+
+    public function update(Request $request, User $employee)
 {
     $loggedInUser = $request->user();
 
     /*
     |--------------------------------------------------------------------------
-    | Target office resolution and authorization
+    | 1. Resolve target office and authorize employee access
     |--------------------------------------------------------------------------
     */
 
     if ($loggedInUser->hasRole('super_admin')) {
-        $targetOfficeId = $request->input('office_id', $employee->office_id);
+        $targetOfficeId = (int) (
+            $request->input('office_id')
+            ?: $employee->office_id
+        );
 
-        if (!$targetOfficeId) {
-            return back()
-                ->with('error', 'Please select an office first.')
-                ->withInput();
-        }
-
-        if (!Office::whereKey($targetOfficeId)->exists()) {
+        if (
+            !$targetOfficeId ||
+            !Office::query()->whereKey($targetOfficeId)->exists()
+        ) {
             return back()
                 ->withErrors([
-                    'office_id' => 'The selected office is invalid.',
+                    'office_id' => 'Please select a valid office.',
                 ])
                 ->withInput();
         }
     } elseif ($loggedInUser->hasRole('owner')) {
         $ownerOfficeIds = Office::query()
             ->where('owner_id', $loggedInUser->id)
-            ->pluck('id');
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id);
 
         if ($ownerOfficeIds->isEmpty()) {
             return back()
@@ -2321,16 +2113,22 @@ public function update(Request $request, User $employee)
                 ->withInput();
         }
 
-        if (!$ownerOfficeIds->contains((int) $employee->office_id)) {
+        if (
+            !$employee->office_id ||
+            !$ownerOfficeIds->contains((int) $employee->office_id)
+        ) {
             abort(403, 'This employee does not belong to your office.');
         }
 
-        $targetOfficeId = (int) $request->input(
-            'office_id',
-            $employee->office_id
+        $targetOfficeId = (int) (
+            $request->input('office_id')
+            ?: $employee->office_id
         );
 
-        if (!$ownerOfficeIds->contains($targetOfficeId)) {
+        if (
+            !$targetOfficeId ||
+            !$ownerOfficeIds->contains($targetOfficeId)
+        ) {
             return back()
                 ->withErrors([
                     'office_id' => 'Invalid office selected.',
@@ -2338,7 +2136,7 @@ public function update(Request $request, User $employee)
                 ->withInput();
         }
     } else {
-        $targetOfficeId = $loggedInUser->activeOfficeId();
+        $targetOfficeId = (int) $loggedInUser->activeOfficeId();
 
         if (!$targetOfficeId) {
             return back()
@@ -2346,7 +2144,7 @@ public function update(Request $request, User $employee)
                 ->withInput();
         }
 
-        if ((int) $employee->office_id !== (int) $targetOfficeId) {
+        if ((int) $employee->office_id !== $targetOfficeId) {
             abort(
                 403,
                 'This employee does not belong to the selected office.'
@@ -2356,32 +2154,55 @@ public function update(Request $request, User $employee)
 
     /*
     |--------------------------------------------------------------------------
-    | Normalize Aadhaar and PAN before validation
+    | 2. Same normalization used in EmployeeRequest
     |--------------------------------------------------------------------------
     */
 
-    if ($request->filled('adhar_number')) {
-        $request->merge([
-            'adhar_number' => preg_replace(
-                '/\D/',
-                '',
-                (string) $request->adhar_number
-            ),
-        ]);
-    }
+    $request->merge([
+        'status' => $request->input('status', '1'),
 
-    if ($request->filled('pan_number')) {
-        $request->merge([
-            'pan_number' => strtoupper(
-                trim((string) $request->pan_number)
-            ),
-        ]);
-    }
+        'adhar_number' => $request->filled('adhar_number')
+            ? preg_replace(
+                '/\D+/',
+                '',
+                (string) $request->input('adhar_number')
+            )
+            : null,
+
+        'pan_number' => $request->filled('pan_number')
+            ? strtoupper(trim((string) $request->input('pan_number')))
+            : null,
+
+        'ifsc_code' => $request->filled('ifsc_code')
+            ? strtoupper(trim((string) $request->input('ifsc_code')))
+            : null,
+
+        'account_number' => $request->filled('account_number')
+            ? trim((string) $request->input('account_number'))
+            : null,
+
+        'upi_id' => $request->filled('upi_id')
+            ? strtolower(trim((string) $request->input('upi_id')))
+            : null,
+
+        'email' => $request->filled('email')
+            ? strtolower(trim((string) $request->input('email')))
+            : null,
+
+        'phone' => $request->filled('phone')
+            ? trim((string) $request->input('phone'))
+            : null,
+
+        'name' => trim((string) $request->input('name')),
+    ]);
 
     /*
     |--------------------------------------------------------------------------
-    | Validation
+    | 3. Validation based on the supplied EmployeeRequest
     |--------------------------------------------------------------------------
+    |
+    | Unique rules ignore the current employee because this is an update.
+    |
     */
 
     $validated = $request->validate(
@@ -2400,7 +2221,7 @@ public function update(Request $request, User $employee)
             ],
 
             'phone' => [
-                'nullable',
+                'required',
                 'string',
                 'max:20',
             ],
@@ -2416,10 +2237,17 @@ public function update(Request $request, User $employee)
                 'date',
             ],
 
+            'employee_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('users', 'employee_id')->ignore($employee->id),
+            ],
+
             'address' => [
                 'nullable',
                 'string',
-                'max:2000',
+                'max:5000',
             ],
 
             'department_id' => [
@@ -2434,115 +2262,127 @@ public function update(Request $request, User $employee)
                 'max:255',
             ],
 
-            'office_id' => [
-                'nullable',
-                'integer',
-                'exists:offices,id',
-            ],
-
-            'team_leader_id' => [
-                'nullable',
-                'integer',
-                'exists:users,id',
-                Rule::notIn([$employee->id]),
-            ],
-
-            'role' => [
-                'nullable',
-                Rule::in([
-                    'admin',
-                    'team_leader',
-                    'employee',
-                ]),
-            ],
-
-            'status' => [
-                'required',
-                Rule::in([
-                    0,
-                    1,
-                    '0',
-                    '1',
-                ]),
-            ],
-
-            'salary' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
-
             'responsibility' => [
                 'nullable',
                 'string',
                 'max:5000',
             ],
 
-            'check_in_time' => [
+            'salary' => [
                 'nullable',
+                'numeric',
+                'min:0',
+                'max:99999999.99',
+            ],
+
+            'check_in_time' => [
+                'required',
                 'date_format:H:i',
             ],
 
             'check_out_time' => [
-                'nullable',
+                'required',
                 'date_format:H:i',
             ],
 
             'break' => [
-                'nullable',
+                'required',
                 'integer',
                 'min:0',
                 'max:1440',
             ],
 
             'location_required' => [
-                'nullable',
-                Rule::in(['yes', 'no']),
+                'required',
+                Rule::in([
+                    'yes',
+                    'no',
+                ]),
             ],
 
-            'password' => [
-                'nullable',
-                'string',
-                'min:8',
-            ],
-
-            'confirm_password' => [
-                'nullable',
-                'same:password',
-            ],
-
-            'employee_id' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'uan_number' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'esic_number' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'account_number' => [
-                'nullable',
-                'string',
-                'max:100',
+            'status' => [
+                'required',
+                Rule::in([
+                    '0',
+                    '1',
+                    0,
+                    1,
+                ]),
             ],
 
             'adhar_number' => [
                 'nullable',
                 'digits:12',
+                Rule::unique('users', 'adhar_number')->ignore($employee->id),
             ],
 
             'pan_number' => [
                 'nullable',
+                'string',
+                'size:10',
                 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]$/',
+                Rule::unique('users', 'pan_number')->ignore($employee->id),
+            ],
+
+            'account_holder_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'bank_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'bank_branch' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+
+            'account_number' => [
+                'nullable',
+                'string',
+                'min:6',
+                'max:30',
+            ],
+
+            'ifsc_code' => [
+                'nullable',
+                'string',
+                'size:11',
+                'regex:/^[A-Z]{4}0[A-Z0-9]{6}$/',
+            ],
+
+            'account_type' => [
+                'nullable',
+                Rule::in([
+                    'savings',
+                    'current',
+                    'salary',
+                    'other',
+                ]),
+            ],
+
+            'upi_id' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^[a-zA-Z0-9.\-_]{2,}@[a-zA-Z]{2,}$/',
+            ],
+
+            'uan_number' => [
+                'nullable',
+                'string',
+                'max:30',
+            ],
+
+            'esic_number' => [
+                'nullable',
+                'string',
+                'max:30',
             ],
 
             'photo' => [
@@ -2570,7 +2410,7 @@ public function update(Request $request, User $employee)
                 'nullable',
                 'file',
                 'mimes:jpg,jpeg,png,webp,pdf,doc,docx',
-                'max:5120',
+                'max:10240',
             ],
 
             'basic_salary' => [
@@ -2634,167 +2474,319 @@ public function update(Request $request, User $employee)
                 'min:0',
                 'max:100',
             ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Edit-page hierarchy fields
+            |--------------------------------------------------------------------------
+            */
+
+            'role' => [
+                'required',
+                Rule::in([
+                    'admin',
+                    'team_leader',
+                    'employee',
+                ]),
+            ],
+
+            'office_id' => [
+                'nullable',
+                'integer',
+                'exists:offices,id',
+            ],
+
+            'team_leader_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+                Rule::notIn([
+                    (int) $employee->id,
+                ]),
+            ],
+
+            'leave_authority_id' => [
+                'nullable',
+                'integer',
+                'exists:users,id',
+                Rule::notIn([
+                    (int) $employee->id,
+                ]),
+            ],
         ],
         [
+            'status.required' =>
+                'Please select employee status.',
+
+            'status.in' =>
+                'Employee status must be Active or Inactive.',
+
             'email.unique' =>
                 'This email address is already being used by another employee.',
 
-            'team_leader_id.not_in' =>
-                'An employee cannot be assigned as their own team leader.',
+            'employee_id.unique' =>
+                'This employee ID is already registered.',
 
             'adhar_number.digits' =>
                 'Aadhaar number must contain exactly 12 digits.',
 
+            'adhar_number.unique' =>
+                'This Aadhaar number is already registered.',
+
+            'pan_number.size' =>
+                'PAN number must contain exactly 10 characters.',
+
             'pan_number.regex' =>
                 'Please enter a valid PAN number, for example ABCDE1234F.',
 
-            'confirm_password.same' =>
-                'Password and confirm password do not match.',
+            'pan_number.unique' =>
+                'This PAN number is already registered.',
 
-            'photo.max' =>
-                'Employee photo must not be larger than 5 MB.',
+            'ifsc_code.size' =>
+                'IFSC code must contain exactly 11 characters.',
 
-            'aadhar_attachment.mimes' =>
-                'Aadhaar attachment must be JPG, JPEG, PNG, WEBP or PDF.',
+            'ifsc_code.regex' =>
+                'Please enter a valid IFSC code, for example SBIN0001234.',
 
-            'aadhar_attachment.max' =>
-                'Aadhaar attachment must not be larger than 5 MB.',
+            'upi_id.regex' =>
+                'Please enter a valid UPI ID, for example name@bank.',
 
-            'pan_attachment.mimes' =>
-                'PAN attachment must be JPG, JPEG, PNG, WEBP or PDF.',
+            'team_leader_id.not_in' =>
+                'An employee cannot be assigned as their own reporting manager.',
 
-            'pan_attachment.max' =>
-                'PAN attachment must not be larger than 5 MB.',
-
-            'other_attachment.max' =>
-                'Other attachment must not be larger than 5 MB.',
+            'leave_authority_id.not_in' =>
+                'An employee cannot be assigned as their own leave authority.',
         ]
     );
 
     /*
     |--------------------------------------------------------------------------
-    | Check reporting employee belongs to target office
+    | 4. Validate reporting manager and leave authority
     |--------------------------------------------------------------------------
     */
 
-    if (!empty($validated['team_leader_id'])) {
-        $validTeamLeader = User::query()
-            ->whereKey($validated['team_leader_id'])
-            ->where('office_id', $targetOfficeId)
-            ->exists();
+    $targetOffice = Office::query()
+        ->select([
+            'id',
+            'owner_id',
+        ])
+        ->find($targetOfficeId);
 
-        if (!$validTeamLeader) {
+    if (!$targetOffice) {
+        return back()
+            ->withErrors([
+                'office_id' => 'The selected office was not found.',
+            ])
+            ->withInput();
+    }
+
+    $authorityIds = collect([
+        'team_leader_id' =>
+            $validated['team_leader_id'] ?? null,
+
+        'leave_authority_id' =>
+            $validated['leave_authority_id'] ?? null,
+    ])
+        ->filter()
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    if ($authorityIds->isNotEmpty()) {
+        $validManagerIds = User::query()
+            ->whereIn('id', $authorityIds)
+            ->where(function ($query) use (
+                $targetOfficeId,
+                $targetOffice
+            ) {
+                $query->where(function ($officeUserQuery) use (
+                    $targetOfficeId
+                ) {
+                    $officeUserQuery
+                        ->where('office_id', $targetOfficeId)
+                        ->where('status', '1')
+                        ->whereHas('roles', function ($roleQuery) {
+                            $roleQuery->whereIn('roles.name', [
+                                'admin',
+                                'team_leader',
+                            ]);
+                        });
+                });
+
+                if (!empty($targetOffice->owner_id)) {
+                    $query->orWhere(
+                        'id',
+                        (int) $targetOffice->owner_id
+                    );
+                }
+            })
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id);
+
+        if (
+            !empty($validated['team_leader_id']) &&
+            !$validManagerIds->contains(
+                (int) $validated['team_leader_id']
+            )
+        ) {
             return back()
                 ->withErrors([
                     'team_leader_id' =>
-                        'The selected team leader does not belong to the selected office.',
+                        'Please select a valid active reporting manager for the selected office.',
+                ])
+                ->withInput();
+        }
+
+        if (
+            !empty($validated['leave_authority_id']) &&
+            !$validManagerIds->contains(
+                (int) $validated['leave_authority_id']
+            )
+        ) {
+            return back()
+                ->withErrors([
+                    'leave_authority_id' =>
+                        'Please select a valid active leave authority for the selected office.',
                 ])
                 ->withInput();
         }
     }
 
-    $newUploadedFiles = [];
+    /*
+    |--------------------------------------------------------------------------
+    | 5. Calculate office time with overnight-shift support
+    |--------------------------------------------------------------------------
+    */
 
     try {
-        DB::beginTransaction();
+        $checkInTime = Carbon::createFromFormat(
+            'H:i',
+            $validated['check_in_time']
+        );
 
+        $checkOutTime = Carbon::createFromFormat(
+            'H:i',
+            $validated['check_out_time']
+        );
+    } catch (\Throwable $exception) {
+        return back()
+            ->withErrors([
+                'check_in_time' =>
+                    'Please enter valid check-in and check-out times.',
+            ])
+            ->withInput();
+    }
+
+    if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
+        $checkOutTime->addDay();
+    }
+
+    $officeMinutes =
+        $checkInTime->diffInMinutes($checkOutTime);
+
+    $employeeStatus =
+        (string) $validated['status'] === '1'
+            ? '1'
+            : '0';
+
+    $newUploadedFiles = [];
+    $oldFilesToDelete = [];
+
+    DB::beginTransaction();
+
+    try {
         /*
         |--------------------------------------------------------------------------
-        | Basic employee details
+        | 6. Update employee details
         |--------------------------------------------------------------------------
         */
 
-        $employee->name = $validated['name'];
-        $employee->email = $validated['email'] ?? null;
-        $employee->phone = $validated['phone'] ?? null;
-        $employee->dob = $validated['dob'] ?? null;
-        $employee->joining_date = $validated['joining_date'] ?? null;
-        $employee->address = $validated['address'] ?? null;
-        $employee->department_id = $validated['department_id'] ?? null;
-        $employee->designation = $validated['designation'] ?? null;
-        $employee->office_id = $targetOfficeId;
-        $employee->team_leader_id =
-            $validated['team_leader_id'] ?? null;
-        // $employee->status = (int) ($validated['status'] ?? $employee->status);
-        $employee->status =  $validated['status'];
-        $employee->salary = $validated['salary'] ?? null;
-        $employee->responsibility =
-            $validated['responsibility'] ?? null;
-        $employee->location_required =
-            $validated['location_required'] ?? 'no';
+        $employee->forceFill([
+            'name' => $validated['name'],
 
-        $employee->check_in_time =
-            $validated['check_in_time'] ?? null;
-        $employee->check_out_time =
-            $validated['check_out_time'] ?? null;
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'],
 
-        if (array_key_exists('break', $validated)) {
-            $employee->break = $validated['break'];
-        }
+            'dob' => $validated['dob'] ?? null,
+            'joining_date' => $validated['joining_date'] ?? null,
+            'employee_id' => $validated['employee_id'] ?? null,
 
-        $employee->employee_id =
-            $validated['employee_id'] ?? null;
-        $employee->uan_number =
-            $validated['uan_number'] ?? null;
-        $employee->esic_number =
-            $validated['esic_number'] ?? null;
-        $employee->account_number =
-            $validated['account_number'] ?? null;
+            'address' => $validated['address'] ?? null,
 
-        $employee->adhar_number =
-            $validated['adhar_number'] ?? null;
-        $employee->pan_number =
-            $validated['pan_number'] ?? null;
+            'department_id' =>
+                $validated['department_id'] ?? null,
 
-        /*
-        |--------------------------------------------------------------------------
-        | Password
-        |--------------------------------------------------------------------------
-        */
+            'designation' =>
+                $validated['designation'] ?? null,
 
-        if (!empty($validated['password'])) {
-            $employee->password = Hash::make(
-                $validated['password']
-            );
-        }
+            'responsibility' =>
+                $validated['responsibility'] ?? null,
 
-        /*
-        |--------------------------------------------------------------------------
-        | Calculate office duration
-        |--------------------------------------------------------------------------
-        */
+            'salary' => array_key_exists('salary', $validated)
+                && $validated['salary'] !== null
+                    ? (float) $validated['salary']
+                    : null,
 
-        if (
-            !empty($validated['check_in_time']) &&
-            !empty($validated['check_out_time'])
-        ) {
-            $checkInTime = Carbon::createFromFormat(
-                'H:i',
-                $validated['check_in_time']
-            );
+            'check_in_time' =>
+                $validated['check_in_time'],
 
-            $checkOutTime = Carbon::createFromFormat(
-                'H:i',
-                $validated['check_out_time']
-            );
+            'check_out_time' =>
+                $validated['check_out_time'],
 
-            /*
-             * Night shift support:
-             * Example: check-in 10 PM and check-out 6 AM.
-             */
-            if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
-                $checkOutTime->addDay();
-            }
+            'office_time' => $officeMinutes,
 
-            $employee->office_time =
-                $checkInTime->diffInMinutes($checkOutTime);
-        } else {
-            $employee->office_time = null;
-        }
+            'break' =>
+                (int) $validated['break'],
+
+            'location_required' =>
+                $validated['location_required'],
+
+            'status' => $employeeStatus,
+            'office_id' => $targetOfficeId,
+
+            'team_leader_id' =>
+                $validated['team_leader_id'] ?? null,
+
+            'leave_authority_id' =>
+                $validated['leave_authority_id'] ?? null,
+
+            'adhar_number' =>
+                $validated['adhar_number'] ?? null,
+
+            'pan_number' =>
+                $validated['pan_number'] ?? null,
+
+            'account_holder_name' =>
+                $validated['account_holder_name'] ?? null,
+
+            'bank_name' =>
+                $validated['bank_name'] ?? null,
+
+            'bank_branch' =>
+                $validated['bank_branch'] ?? null,
+
+            'account_number' =>
+                $validated['account_number'] ?? null,
+
+            'ifsc_code' =>
+                $validated['ifsc_code'] ?? null,
+
+            'account_type' =>
+                $validated['account_type'] ?? null,
+
+            'upi_id' =>
+                $validated['upi_id'] ?? null,
+
+            'uan_number' =>
+                $validated['uan_number'] ?? null,
+
+            'esic_number' =>
+                $validated['esic_number'] ?? null,
+        ]);
 
         /*
         |--------------------------------------------------------------------------
-        | File uploads
+        | 7. Replace files safely
         |--------------------------------------------------------------------------
         */
 
@@ -2827,13 +2819,11 @@ public function update(Request $request, User $employee)
 
             $uploadedFile = $request->file($inputName);
 
-            if (!$uploadedFile->isValid()) {
+            if (!$uploadedFile || !$uploadedFile->isValid()) {
                 throw new \RuntimeException(
                     "The {$inputName} upload failed."
                 );
             }
-
-            $oldFilePath = $employee->{$fileConfig['column']};
 
             $newFilePath = $uploadedFile->store(
                 $fileConfig['directory'],
@@ -2846,59 +2836,66 @@ public function update(Request $request, User $employee)
                 );
             }
 
+            $oldFilePath =
+                $employee->getOriginal($fileConfig['column']);
+
             $newUploadedFiles[] = $newFilePath;
 
-            $employee->{$fileConfig['column']} = $newFilePath;
-
-            /*
-             * Old file will be deleted only after the new upload succeeds.
-             */
             if (
                 !empty($oldFilePath) &&
-                $oldFilePath !== $newFilePath &&
-                Storage::disk('public')->exists($oldFilePath)
+                $oldFilePath !== $newFilePath
             ) {
-                Storage::disk('public')->delete($oldFilePath);
+                $oldFilesToDelete[] = $oldFilePath;
             }
-        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save employee and role
-        |--------------------------------------------------------------------------
-        */
+            $employee->{$fileConfig['column']} = $newFilePath;
+        }
 
         $employee->save();
 
-        if (!empty($validated['role'])) {
-            $employee->syncRoles([
-                $validated['role'],
-            ]);
-        }
-
         /*
         |--------------------------------------------------------------------------
-        | Salary details
+        | 8. Update Spatie role
         |--------------------------------------------------------------------------
         */
 
-        $basicSalary = (float) ($validated['basic_salary'] ?? 0);
+        $employee->syncRoles([
+            $validated['role'],
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | 9. Update salary structure
+        |--------------------------------------------------------------------------
+        */
+
+        $basicSalary =
+            (float) ($validated['basic_salary'] ?? 0);
+
         $houseRentAllowance =
             (float) ($validated['house_rent_allowance'] ?? 0);
+
         $transportAllowance =
             (float) ($validated['transport_allowance'] ?? 0);
+
         $medicalAllowance =
             (float) ($validated['medical_allowance'] ?? 0);
+
         $specialAllowance =
             (float) ($validated['special_allowance'] ?? 0);
+
         $dearnessAllowance =
             (float) ($validated['dearness_allowance'] ?? 0);
+
         $relievingCharge =
             (float) ($validated['relieving_charge'] ?? 0);
+
         $additionalAllowance =
             (float) ($validated['additional_allowance'] ?? 0);
+
         $providentFund =
             (float) ($validated['provident_fund'] ?? 0);
+
         $esic =
             (float) (
                 $validated[
@@ -2937,6 +2934,24 @@ public function update(Request $request, User $employee)
 
         DB::commit();
 
+        /*
+        |--------------------------------------------------------------------------
+        | 10. Delete replaced old files after successful commit
+        |--------------------------------------------------------------------------
+        */
+
+        foreach (array_unique($oldFilesToDelete) as $oldFilePath) {
+            try {
+                if (
+                    Storage::disk('public')->exists($oldFilePath)
+                ) {
+                    Storage::disk('public')->delete($oldFilePath);
+                }
+            } catch (\Throwable $fileDeleteException) {
+                report($fileDeleteException);
+            }
+        }
+
         return redirect()
             ->route('employee.index')
             ->with(
@@ -2947,11 +2962,18 @@ public function update(Request $request, User $employee)
         DB::rollBack();
 
         /*
-         * If database update fails, delete only newly uploaded files.
+         * Only files uploaded during this failed request are removed.
+         * Existing employee files remain untouched.
          */
-        foreach ($newUploadedFiles as $newUploadedFile) {
-            if (Storage::disk('public')->exists($newUploadedFile)) {
-                Storage::disk('public')->delete($newUploadedFile);
+        foreach (array_unique($newUploadedFiles) as $newUploadedFile) {
+            try {
+                if (
+                    Storage::disk('public')->exists($newUploadedFile)
+                ) {
+                    Storage::disk('public')->delete($newUploadedFile);
+                }
+            } catch (\Throwable $fileDeleteException) {
+                report($fileDeleteException);
             }
         }
 
@@ -2990,37 +3012,22 @@ public function update(Request $request, User $employee)
     }
 
 
-    // public function employeeAttendance(Request $request)
-    // {
-    //     $activeOfficeId = $request->user()->activeOfficeId();
-
-    //     if (!$activeOfficeId) {
-    //         $employees = collect();
-    //     } else {
-    //         $employees = User::where('office_id', $activeOfficeId)
-    //             ->orderBy('name')
-    //             ->get();
-    //     }
-
-    //     return view('dashboard.employee.list', compact('employees'));
-    // }
-
     public function employeeAttendance(Request $request)
-{
-    $activeOfficeId = $request->user()?->activeOfficeId();
+    {
+        $activeOfficeId = $request->user()?->activeOfficeId();
 
-    if (!$activeOfficeId) {
-        $employees = collect();
-    } else {
-        $employees = User::query()
-            ->where('office_id', $activeOfficeId)
-            ->where('status', '1') // केवल active employees
-            ->orderBy('name')
-            ->get();
+        if (!$activeOfficeId) {
+            $employees = collect();
+        } else {
+            $employees = User::query()
+                ->where('office_id', $activeOfficeId)
+                ->where('status', '1') // केवल active employees
+                ->orderBy('name')
+                ->get();
+        }
+
+        return view('dashboard.employee.list', compact('employees'));
     }
-
-    return view('dashboard.employee.list', compact('employees'));
-}
 
 
 
@@ -3074,6 +3081,5 @@ public function update(Request $request, User $employee)
 
         return back()->with('error', 'User does not have this permission.');
     }
-
 
 }

@@ -372,7 +372,7 @@
 
                     <div>
                         <span class="summary-label">Status</span>
-                        <div class="summary-value">Active</div>
+                        <div class="summary-value" id="statusPreview">{{ (string) old('status', '1') == '1' ? 'Active' : 'Inactive' }}</div>
                     </div>
 
                     <div>
@@ -651,28 +651,32 @@
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="leave_authority_id">Leave Authority</label>
+                            <label class="field-label" for="leave_authority_id">
+                                Leave Authority
+                            </label>
+
                             <select
                                 class="form-control-compact @error('leave_authority_id') has-error @enderror"
                                 name="leave_authority_id"
                                 id="leave_authority_id"
                             >
-                                <option value="">Select</option>
-                                @foreach($teamLeaders as $teamLeader)
+                                <option value="">Select Team Leader</option>
+
+                                @foreach($teamLeaders as $leaveAuthority)
                                     <option
-                                        value="{{ $teamLeader->id }}"
-                                        data-office-id="{{ $teamLeader->office_id }}"
-                                        {{ (string) old('leave_authority_id') === (string) $teamLeader->id ? 'selected' : '' }}
+                                        value="{{ $leaveAuthority->id }}"
+                                        data-office-id="{{ $leaveAuthority->office_id }}"
+                                        {{ (string) old('leave_authority_id') === (string) $leaveAuthority->id ? 'selected' : '' }}
                                     >
-                                        {{ $teamLeader->name }}
-                                        @if($teamLeader->office)
-                                            - {{ $teamLeader->office->name }}
-                                        @else
-                                            - Global
+                                        {{ $leaveAuthority->name }}
+
+                                        @if($leaveAuthority->office)
+                                            - {{ $leaveAuthority->office->name }}
                                         @endif
                                     </option>
                                 @endforeach
                             </select>
+
                             @error('leave_authority_id')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
@@ -691,14 +695,14 @@
                             >
                                 <option
                                     value="1"
-                                    {{ (string) old('status', '1') === '1' ? 'selected' : '' }}
+                                    {{ (string) old('status', '1') == '1' ? 'selected' : '' }}
                                 >
                                     Active
                                 </option>
 
                                 <option
                                     value="0"
-                                    {{ (string) old('status', '1') === '0' ? 'selected' : '' }}
+                                    {{ (string) old('status', '1') == '0' ? 'selected' : '' }}
                                 >
                                     Inactive
                                 </option>
@@ -928,6 +932,199 @@
                 </div>
             </section>
 
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Identity Details</h2>
+
+                    <span class="panel-edit">
+                        <i class="fas fa-id-card"></i> Add
+                    </span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+
+                        <div class="field-row">
+                            <label class="field-label" for="adhar_number">
+                                Aadhaar Number
+                            </label>
+
+                            <input
+                                class="form-control-compact @error('adhar_number') has-error @enderror"
+                                id="adhar_number"
+                                name="adhar_number"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="12"
+                                pattern="[0-9]{12}"
+                                placeholder="Enter 12 digit Aadhaar number"
+                                value="{{ old('adhar_number') }}"
+                                autocomplete="off"
+                            >
+
+                            @error('adhar_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="pan_number">
+                                PAN Number
+                            </label>
+
+                            <input
+                                class="form-control-compact @error('pan_number') has-error @enderror"
+                                id="pan_number"
+                                name="pan_number"
+                                type="text"
+                                minlength="10"
+                                maxlength="10"
+                                placeholder="ABCDE1234F"
+                                value="{{ old('pan_number') }}"
+                                autocomplete="off"
+                                style="text-transform: uppercase;"
+                            >
+
+                            @error('pan_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Bank Details</h2>
+                    <span class="panel-edit"><i class="fas fa-university"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="account_holder_name">Account Holder</label>
+                            <input
+                                class="form-control-compact @error('account_holder_name') has-error @enderror"
+                                id="account_holder_name"
+                                name="account_holder_name"
+                                type="text"
+                                maxlength="255"
+                                value="{{ old('account_holder_name') }}"
+                                placeholder="Account holder name"
+                            >
+                            @error('account_holder_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="bank_name">Bank Name</label>
+                            <input
+                                class="form-control-compact @error('bank_name') has-error @enderror"
+                                id="bank_name"
+                                name="bank_name"
+                                type="text"
+                                maxlength="255"
+                                value="{{ old('bank_name') }}"
+                                placeholder="Bank name"
+                            >
+                            @error('bank_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="bank_branch">Branch Name</label>
+                            <input
+                                class="form-control-compact @error('bank_branch') has-error @enderror"
+                                id="bank_branch"
+                                name="bank_branch"
+                                type="text"
+                                maxlength="255"
+                                value="{{ old('bank_branch') }}"
+                                placeholder="Branch name"
+                            >
+                            @error('bank_branch')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="account_number">Account Number</label>
+                            <input
+                                class="form-control-compact @error('account_number') has-error @enderror"
+                                id="account_number"
+                                name="account_number"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="30"
+                                value="{{ old('account_number') }}"
+                                placeholder="Bank account number"
+                                autocomplete="off"
+                            >
+                            @error('account_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="ifsc_code">IFSC Code</label>
+                            <input
+                                class="form-control-compact @error('ifsc_code') has-error @enderror"
+                                id="ifsc_code"
+                                name="ifsc_code"
+                                type="text"
+                                minlength="11"
+                                maxlength="11"
+                                value="{{ old('ifsc_code') }}"
+                                placeholder="SBIN0001234"
+                                autocomplete="off"
+                                style="text-transform: uppercase;"
+                            >
+                            @error('ifsc_code')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="account_type">Account Type</label>
+                            <select
+                                class="form-control-compact @error('account_type') has-error @enderror"
+                                id="account_type"
+                                name="account_type"
+                            >
+                                <option value="">Select</option>
+                                <option value="savings" {{ old('account_type') === 'savings' ? 'selected' : '' }}>Savings</option>
+                                <option value="current" {{ old('account_type') === 'current' ? 'selected' : '' }}>Current</option>
+                                <option value="salary" {{ old('account_type') === 'salary' ? 'selected' : '' }}>Salary</option>
+                                <option value="other" {{ old('account_type') === 'other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            @error('account_type')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="upi_id">UPI ID</label>
+                            <input
+                                class="form-control-compact @error('upi_id') has-error @enderror"
+                                id="upi_id"
+                                name="upi_id"
+                                type="text"
+                                maxlength="100"
+                                value="{{ old('upi_id') }}"
+                                placeholder="name@bank"
+                                autocomplete="off"
+                            >
+                            @error('upi_id')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="form-panel full-width">
                 <div class="panel-header">
                     <h2 class="panel-title">Salary Details</h2>
@@ -1056,6 +1253,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const leader = document.getElementById('team_leader_id');
     const leaveAuthority = document.getElementById('leave_authority_id');
     const joiningDate = document.getElementById('joining_date');
+    const status = document.getElementById('status');
+    const panInput = document.getElementById('pan_number');
+    const ifscInput = document.getElementById('ifsc_code');
+    const aadhaarInput = document.getElementById('adhar_number');
+    const accountNumberInput = document.getElementById('account_number');
 
     const setText = (id, value, fallback) => {
         const element = document.getElementById(id);
@@ -1118,6 +1320,12 @@ document.addEventListener('DOMContentLoaded', function () {
             'Not Entered'
         );
 
+        setText(
+            'statusPreview',
+            status?.value === '1' ? 'Active' : 'Inactive',
+            'Active'
+        );
+
         const locationValue = document.querySelector(
             'input[name="location_required"]:checked'
         )?.value;
@@ -1129,7 +1337,7 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     };
 
-    [nameInput, department, designation, role, office, leader, leaveAuthority, joiningDate]
+    [nameInput, department, designation, role, office, leader, leaveAuthority, joiningDate, status]
         .filter(Boolean)
         .forEach(element => {
             element.addEventListener('input', updateSummary);
@@ -1156,6 +1364,40 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             reader.readAsDataURL(file);
+        });
+    }
+
+    if (panInput) {
+        panInput.addEventListener('input', function () {
+            this.value = this.value
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .slice(0, 10);
+        });
+    }
+
+    if (ifscInput) {
+        ifscInput.addEventListener('input', function () {
+            this.value = this.value
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .slice(0, 11);
+        });
+    }
+
+    if (aadhaarInput) {
+        aadhaarInput.addEventListener('input', function () {
+            this.value = this.value
+                .replace(/\D/g, '')
+                .slice(0, 12);
+        });
+    }
+
+    if (accountNumberInput) {
+        accountNumberInput.addEventListener('input', function () {
+            this.value = this.value
+                .replace(/[^0-9A-Za-z]/g, '')
+                .slice(0, 30);
         });
     }
 
