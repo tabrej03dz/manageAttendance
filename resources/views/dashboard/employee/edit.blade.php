@@ -1159,11 +1159,11 @@
                             @error('bank_name')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
-                        <div class="field-row">
+                        {{-- <div class="field-row">
                             <label class="field-label" for="bank_branch">Branch Name</label>
                             <input class="form-control-compact @error('bank_branch') has-error @enderror" id="bank_branch" name="bank_branch" type="text" maxlength="255" value="{{ old('bank_branch', $employee->bank_branch) }}" placeholder="Branch name">
                             @error('bank_branch')<div class="field-error">{{ $message }}</div>@enderror
-                        </div>
+                        </div> --}}
 
                         <div class="field-row">
                             <label class="field-label" for="account_number">Account Number</label>
