@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EmployeeRequest;
 use App\Models\AttendanceRecord;
 use App\Models\Department;
+use App\Models\EmployeeAddress;
+use App\Models\EmployeeFamilyDetail;
+use App\Models\EmployeeNominee;
 use App\Models\Office;
 use App\Models\Plan;
 use App\Models\User;
@@ -116,6 +119,233 @@ private function officeEmployeesQuery(Request $request)
         }, function ($q) {
             $q->whereRaw('1 = 0');
         });
+}
+
+
+/**
+ * New structured employee profile fields are intentionally stored in
+ * separate tables. users.address is still maintained as a formatted string
+ * so old reports, APIs and screens continue to work without any change.
+ */
+private function employeeExtraProfileRules(): array
+{
+    return [
+        // Structured address
+        'premise_details' => ['nullable', 'string', 'max:255'],
+        'street_road' => ['nullable', 'string', 'max:255'],
+        'locality_area' => ['nullable', 'string', 'max:255'],
+        'landmark' => ['nullable', 'string', 'max:255'],
+        'city' => ['nullable', 'string', 'max:150'],
+        'district' => ['nullable', 'string', 'max:150'],
+        'state' => ['nullable', 'string', 'max:150'],
+        'pin_code' => ['nullable', 'regex:/^[1-9][0-9]{5}$/'],
+
+        // Marital / spouse details
+        'marital_status' => [
+            'required',
+            Rule::in([
+                'single',
+                'married',
+                'divorced',
+                'widowed',
+                'separated',
+            ]),
+        ],
+        'spouse_name' => ['nullable', 'required_if:marital_status,married', 'string', 'max:255'],
+        'spouse_phone' => ['nullable', 'string', 'max:20'],
+        'spouse_dob' => ['nullable', 'date', 'before_or_equal:today'],
+        'spouse_occupation' => ['nullable', 'string', 'max:255'],
+
+        // Nominee details
+        'has_nominee' => [
+            'required',
+            Rule::in(['yes', 'no']),
+        ],
+        'nominee_name' => ['nullable', 'required_if:has_nominee,yes', 'string', 'max:255'],
+        'nominee_relationship' => ['nullable', 'required_if:has_nominee,yes', 'string', 'max:100'],
+        'nominee_phone' => ['nullable', 'string', 'max:20'],
+        'nominee_dob' => ['nullable', 'date', 'before_or_equal:today'],
+        'nominee_aadhaar_number' => ['nullable', 'digits:12'],
+        'nominee_address' => ['nullable', 'string', 'max:2000'],
+    ];
+}
+
+private function cleanNullableString($value): ?string
+{
+    if ($value === null) {
+        return null;
+    }
+
+    $value = trim((string) $value);
+
+    return $value === '' ? null : $value;
+}
+
+private function employeeAddressPayload(array $validated): array
+{
+    return [
+        'premise_details' => $this->cleanNullableString(
+            $validated['premise_details'] ?? null
+        ),
+        'street_road' => $this->cleanNullableString(
+            $validated['street_road'] ?? null
+        ),
+        'locality_area' => $this->cleanNullableString(
+            $validated['locality_area'] ?? null
+        ),
+        'landmark' => $this->cleanNullableString(
+            $validated['landmark'] ?? null
+        ),
+        'city' => $this->cleanNullableString(
+            $validated['city'] ?? null
+        ),
+        'district' => $this->cleanNullableString(
+            $validated['district'] ?? null
+        ),
+        'state' => $this->cleanNullableString(
+            $validated['state'] ?? null
+        ),
+        'pin_code' => $this->cleanNullableString(
+            $validated['pin_code'] ?? null
+        ),
+    ];
+}
+
+private function hasAnyEmployeeAddressValue(array $address): bool
+{
+    foreach ($address as $value) {
+        if ($value !== null && $value !== '') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+private function formattedEmployeeAddress(array $address): ?string
+{
+    $parts = [];
+
+    foreach ([
+        'premise_details',
+        'street_road',
+        'locality_area',
+        'landmark',
+        'city',
+        'district',
+        'state',
+    ] as $key) {
+        if (!empty($address[$key])) {
+            $parts[] = trim((string) $address[$key]);
+        }
+    }
+
+    $formatted = implode(', ', $parts);
+
+    if (!empty($address['pin_code'])) {
+        $formatted .= ($formatted !== '' ? ' - ' : '') . $address['pin_code'];
+    }
+
+    return $formatted !== '' ? $formatted : null;
+}
+
+/**
+ * Saves new profile sections. Call this only inside the employee DB transaction.
+ */
+private function saveEmployeeExtraProfile(
+    User $employee,
+    array $validated
+): void {
+    /*
+    |--------------------------------------------------------------------------
+    | Structured address
+    |--------------------------------------------------------------------------
+    */
+    $address = $this->employeeAddressPayload($validated);
+
+    if ($this->hasAnyEmployeeAddressValue($address)) {
+        EmployeeAddress::updateOrCreate(
+            ['user_id' => $employee->id],
+            $address
+        );
+    } else {
+        EmployeeAddress::query()
+            ->where('user_id', $employee->id)
+            ->delete();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Marital / spouse details
+    |--------------------------------------------------------------------------
+    */
+    $maritalStatus = (string) ($validated['marital_status'] ?? 'single');
+
+    EmployeeFamilyDetail::updateOrCreate(
+        ['user_id' => $employee->id],
+        [
+            'marital_status' => $maritalStatus,
+
+            'spouse_name' => $maritalStatus === 'married'
+                ? $this->cleanNullableString(
+                    $validated['spouse_name'] ?? null
+                )
+                : null,
+
+            'spouse_phone' => $maritalStatus === 'married'
+                ? $this->cleanNullableString(
+                    $validated['spouse_phone'] ?? null
+                )
+                : null,
+
+            'spouse_dob' => $maritalStatus === 'married'
+                ? ($validated['spouse_dob'] ?? null)
+                : null,
+
+            'spouse_occupation' => $maritalStatus === 'married'
+                ? $this->cleanNullableString(
+                    $validated['spouse_occupation'] ?? null
+                )
+                : null,
+        ]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nominee details
+    |--------------------------------------------------------------------------
+    */
+    if (($validated['has_nominee'] ?? 'no') === 'yes') {
+        EmployeeNominee::updateOrCreate(
+            ['user_id' => $employee->id],
+            [
+                'name' => $this->cleanNullableString(
+                    $validated['nominee_name'] ?? null
+                ),
+                'relationship' => $this->cleanNullableString(
+                    $validated['nominee_relationship'] ?? null
+                ),
+                'phone' => $this->cleanNullableString(
+                    $validated['nominee_phone'] ?? null
+                ),
+                'dob' => $validated['nominee_dob'] ?? null,
+                'aadhaar_number' => !empty($validated['nominee_aadhaar_number'])
+                    ? preg_replace(
+                        '/\D+/',
+                        '',
+                        (string) $validated['nominee_aadhaar_number']
+                    )
+                    : null,
+                'address' => $this->cleanNullableString(
+                    $validated['nominee_address'] ?? null
+                ),
+            ]
+        );
+    } else {
+        EmployeeNominee::query()
+            ->where('user_id', $employee->id)
+            ->delete();
+    }
 }
 
 
@@ -907,6 +1137,8 @@ public function store(EmployeeRequest $request)
             'integer',
             'exists:users,id',
         ],
+
+        ...$this->employeeExtraProfileRules(),
     ]);
 
     /*
@@ -983,6 +1215,15 @@ public function store(EmployeeRequest $request)
     ? '1'
     : '0';
 
+    /*
+    |--------------------------------------------------------------------------
+    | Structured address + old users.address compatibility
+    |--------------------------------------------------------------------------
+    */
+
+    $structuredAddress = $this->employeeAddressPayload($validatedExtra);
+    $formattedAddress = $this->formattedEmployeeAddress($structuredAddress);
+
     DB::beginTransaction();
 
     try {
@@ -1004,7 +1245,10 @@ public function store(EmployeeRequest $request)
             'dob' => $request->input('dob'),
             'joining_date' => $request->input('joining_date'),
             'employee_id' => $request->input('employee_id'),
-            'address' => $request->input('address'),
+            'address' => $formattedAddress
+                ?? $this->cleanNullableString(
+                    $request->input('address')
+                ),
 
             'department_id' => $request->filled('department_id')
                 ? (int) $request->input('department_id')
@@ -1179,6 +1423,17 @@ public function store(EmployeeRequest $request)
                 'Employee status could not be saved correctly.'
             );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Structured address, marital/spouse and nominee details
+        |--------------------------------------------------------------------------
+        */
+
+        $this->saveEmployeeExtraProfile(
+            $employee,
+            $validatedExtra
+        );
 
 
         // Save selected status one final time after role sync.
@@ -1382,12 +1637,37 @@ public function store(EmployeeRequest $request)
             'userSalary',
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | New employee profile sections
+        |--------------------------------------------------------------------------
+        |
+        | No User model relation is required, therefore old User model remains
+        | untouched. Old plain address is used as a safe edit-form fallback.
+        |
+        */
+
+        $employeeAddress = EmployeeAddress::query()
+            ->where('user_id', $employee->id)
+            ->first();
+
+        $employeeFamily = EmployeeFamilyDetail::query()
+            ->where('user_id', $employee->id)
+            ->first();
+
+        $employeeNominee = EmployeeNominee::query()
+            ->where('user_id', $employee->id)
+            ->first();
+
         return view('dashboard.employee.edit', compact(
             'employee',
             'offices',
             'teamLeaders',
             'leaveAuthorities',
-            'departments'
+            'departments',
+            'employeeAddress',
+            'employeeFamily',
+            'employeeNominee'
         ));
     }
 
@@ -2513,6 +2793,8 @@ public function store(EmployeeRequest $request)
                     (int) $employee->id,
                 ]),
             ],
+
+            ...$this->employeeExtraProfileRules(),
         ],
         [
             'status.required' =>
@@ -2556,6 +2838,21 @@ public function store(EmployeeRequest $request)
 
             'leave_authority_id.not_in' =>
                 'An employee cannot be assigned as their own leave authority.',
+
+            'pin_code.regex' =>
+                'PIN code must contain exactly 6 digits and cannot start with 0.',
+
+            'spouse_name.required_if' =>
+                'Spouse name is required when marital status is Married.',
+
+            'nominee_name.required_if' =>
+                'Nominee name is required when nominee option is Yes.',
+
+            'nominee_relationship.required_if' =>
+                'Nominee relationship is required when nominee option is Yes.',
+
+            'nominee_aadhaar_number.digits' =>
+                'Nominee Aadhaar number must contain exactly 12 digits.',
         ]
     );
 
@@ -2689,6 +2986,9 @@ public function store(EmployeeRequest $request)
             ? '1'
             : '0';
 
+    $structuredAddress = $this->employeeAddressPayload($validated);
+    $formattedAddress = $this->formattedEmployeeAddress($structuredAddress);
+
     $newUploadedFiles = [];
     $oldFilesToDelete = [];
 
@@ -2711,7 +3011,10 @@ public function store(EmployeeRequest $request)
             'joining_date' => $validated['joining_date'] ?? null,
             'employee_id' => $validated['employee_id'] ?? null,
 
-            'address' => $validated['address'] ?? null,
+            'address' => $formattedAddress
+                ?? $this->cleanNullableString(
+                    $validated['address'] ?? null
+                ),
 
             'department_id' =>
                 $validated['department_id'] ?? null,
@@ -2855,7 +3158,18 @@ public function store(EmployeeRequest $request)
 
         /*
         |--------------------------------------------------------------------------
-        | 8. Update Spatie role
+        | 8. Structured address, marital/spouse and nominee details
+        |--------------------------------------------------------------------------
+        */
+
+        $this->saveEmployeeExtraProfile(
+            $employee,
+            $validated
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | 9. Update Spatie role
         |--------------------------------------------------------------------------
         */
 
@@ -2865,7 +3179,7 @@ public function store(EmployeeRequest $request)
 
         /*
         |--------------------------------------------------------------------------
-        | 9. Update salary structure
+        | 10. Update salary structure
         |--------------------------------------------------------------------------
         */
 
@@ -2936,7 +3250,7 @@ public function store(EmployeeRequest $request)
 
         /*
         |--------------------------------------------------------------------------
-        | 10. Delete replaced old files after successful commit
+        | 11. Delete replaced old files after successful commit
         |--------------------------------------------------------------------------
         */
 
@@ -3083,3 +3397,4 @@ public function store(EmployeeRequest $request)
     }
 
 }
+

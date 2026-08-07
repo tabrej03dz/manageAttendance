@@ -509,24 +509,354 @@
                 </div>
             </section>
 
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Structured Address Details</h2>
+                    <span class="panel-edit"><i class="fas fa-map-marker-alt"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    {{-- Backward compatibility: old EmployeeRequest / reports can still use address --}}
+                    <input type="hidden" name="address" id="address" value="{{ old('address') }}">
+
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="premise_details">Premise Details</label>
+                            <input
+                                class="form-control-compact @error('premise_details') has-error @enderror"
+                                id="premise_details"
+                                name="premise_details"
+                                type="text"
+                                value="{{ old('premise_details') }}"
+                                placeholder="House / Flat / Building / Floor"
+                            >
+                            @error('premise_details')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="street_road">Street / Road</label>
+                            <input
+                                class="form-control-compact @error('street_road') has-error @enderror"
+                                id="street_road"
+                                name="street_road"
+                                type="text"
+                                value="{{ old('street_road') }}"
+                                placeholder="Street, lane or road"
+                            >
+                            @error('street_road')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="locality_area">Locality / Area</label>
+                            <input
+                                class="form-control-compact @error('locality_area') has-error @enderror"
+                                id="locality_area"
+                                name="locality_area"
+                                type="text"
+                                value="{{ old('locality_area') }}"
+                                placeholder="Colony, sector, village"
+                            >
+                            @error('locality_area')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="landmark">Landmark</label>
+                            <input
+                                class="form-control-compact @error('landmark') has-error @enderror"
+                                id="landmark"
+                                name="landmark"
+                                type="text"
+                                value="{{ old('landmark') }}"
+                                placeholder="Nearby prominent place"
+                            >
+                            @error('landmark')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="city">City / Town</label>
+                            <input
+                                class="form-control-compact @error('city') has-error @enderror"
+                                id="city"
+                                name="city"
+                                type="text"
+                                value="{{ old('city') }}"
+                            >
+                            @error('city')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="district">District</label>
+                            <input
+                                class="form-control-compact @error('district') has-error @enderror"
+                                id="district"
+                                name="district"
+                                type="text"
+                                value="{{ old('district') }}"
+                            >
+                            @error('district')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="state">State / UT</label>
+                            <input
+                                class="form-control-compact @error('state') has-error @enderror"
+                                id="state"
+                                name="state"
+                                type="text"
+                                value="{{ old('state') }}"
+                            >
+                            @error('state')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="pin_code">PIN Code</label>
+                            <input
+                                class="form-control-compact @error('pin_code') has-error @enderror"
+                                id="pin_code"
+                                name="pin_code"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="6"
+                                value="{{ old('pin_code') }}"
+                                placeholder="6-digit PIN"
+                            >
+                            @error('pin_code')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="form-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title">Address Details</h2>
-                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Add</span>
+                    <h2 class="panel-title">Marital & Spouse Details</h2>
+                    <span class="panel-edit"><i class="fas fa-heart"></i> Add</span>
                 </div>
 
                 <div class="panel-body">
                     <div class="compact-grid">
-                        <div class="field-row top full">
-                            <label class="field-label" for="address">Current Address</label>
-                            <textarea
-                                class="form-control-compact @error('address') has-error @enderror"
-                                id="address"
-                                name="address"
-                            >{{ old('address') }}</textarea>
-                            @error('address')
+                        <div class="field-row full">
+                            <label class="field-label" for="marital_status">
+                                Marital Status <span class="required">*</span>
+                            </label>
+                            <select
+                                class="form-control-compact @error('marital_status') has-error @enderror"
+                                id="marital_status"
+                                name="marital_status"
+                                required
+                            >
+                                <option value="single" {{ old('marital_status', 'single') === 'single' ? 'selected' : '' }}>Single</option>
+                                <option value="married" {{ old('marital_status') === 'married' ? 'selected' : '' }}>Married</option>
+                                <option value="divorced" {{ old('marital_status') === 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="widowed" {{ old('marital_status') === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                <option value="separated" {{ old('marital_status') === 'separated' ? 'selected' : '' }}>Separated</option>
+                            </select>
+                            @error('marital_status')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div id="spouseDetails" class="field-row full" style="display:none;">
+                            <div style="grid-column:1 / -1;">
+                                <div class="compact-grid">
+                                    <div class="field-row">
+                                        <label class="field-label" for="spouse_name">
+                                            Spouse Name <span class="required">*</span>
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('spouse_name') has-error @enderror"
+                                            id="spouse_name"
+                                            name="spouse_name"
+                                            type="text"
+                                            value="{{ old('spouse_name') }}"
+                                        >
+                                        @error('spouse_name')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="spouse_phone">Spouse Phone</label>
+                                        <input
+                                            class="form-control-compact @error('spouse_phone') has-error @enderror"
+                                            id="spouse_phone"
+                                            name="spouse_phone"
+                                            type="text"
+                                            value="{{ old('spouse_phone') }}"
+                                        >
+                                        @error('spouse_phone')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="spouse_dob">Spouse DOB</label>
+                                        <input
+                                            class="form-control-compact @error('spouse_dob') has-error @enderror"
+                                            id="spouse_dob"
+                                            name="spouse_dob"
+                                            type="date"
+                                            value="{{ old('spouse_dob') }}"
+                                        >
+                                        @error('spouse_dob')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="spouse_occupation">Occupation</label>
+                                        <input
+                                            class="form-control-compact @error('spouse_occupation') has-error @enderror"
+                                            id="spouse_occupation"
+                                            name="spouse_occupation"
+                                            type="text"
+                                            value="{{ old('spouse_occupation') }}"
+                                        >
+                                        @error('spouse_occupation')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Nominee Details</h2>
+                    <span class="panel-edit"><i class="fas fa-user-shield"></i> Add</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="compact-grid">
+                        <div class="field-row full">
+                            <label class="field-label" for="has_nominee">
+                                Add Nominee? <span class="required">*</span>
+                            </label>
+                            <select
+                                class="form-control-compact @error('has_nominee') has-error @enderror"
+                                id="has_nominee"
+                                name="has_nominee"
+                                required
+                            >
+                                <option value="no" {{ old('has_nominee', 'no') === 'no' ? 'selected' : '' }}>No</option>
+                                <option value="yes" {{ old('has_nominee') === 'yes' ? 'selected' : '' }}>Yes</option>
+                            </select>
+                            @error('has_nominee')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div id="nomineeDetails" class="field-row full" style="display:none;">
+                            <div style="grid-column:1 / -1;">
+                                <div class="compact-grid">
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_name">
+                                            Nominee Name <span class="required">*</span>
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_name') has-error @enderror"
+                                            id="nominee_name"
+                                            name="nominee_name"
+                                            type="text"
+                                            value="{{ old('nominee_name') }}"
+                                        >
+                                        @error('nominee_name')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_relationship">
+                                            Relationship <span class="required">*</span>
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_relationship') has-error @enderror"
+                                            id="nominee_relationship"
+                                            name="nominee_relationship"
+                                            type="text"
+                                            value="{{ old('nominee_relationship') }}"
+                                            placeholder="Father, Mother, Spouse, etc."
+                                        >
+                                        @error('nominee_relationship')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_phone">Phone</label>
+                                        <input
+                                            class="form-control-compact @error('nominee_phone') has-error @enderror"
+                                            id="nominee_phone"
+                                            name="nominee_phone"
+                                            type="text"
+                                            value="{{ old('nominee_phone') }}"
+                                        >
+                                        @error('nominee_phone')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_dob">Date of Birth</label>
+                                        <input
+                                            class="form-control-compact @error('nominee_dob') has-error @enderror"
+                                            id="nominee_dob"
+                                            name="nominee_dob"
+                                            type="date"
+                                            value="{{ old('nominee_dob') }}"
+                                        >
+                                        @error('nominee_dob')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_aadhaar_number">Aadhaar No.</label>
+                                        <input
+                                            class="form-control-compact @error('nominee_aadhaar_number') has-error @enderror"
+                                            id="nominee_aadhaar_number"
+                                            name="nominee_aadhaar_number"
+                                            type="text"
+                                            inputmode="numeric"
+                                            maxlength="12"
+                                            value="{{ old('nominee_aadhaar_number') }}"
+                                        >
+                                        @error('nominee_aadhaar_number')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row top full">
+                                        <label class="field-label" for="nominee_address">Nominee Address</label>
+                                        <textarea
+                                            class="form-control-compact @error('nominee_address') has-error @enderror"
+                                            id="nominee_address"
+                                            name="nominee_address"
+                                        >{{ old('nominee_address') }}</textarea>
+                                        @error('nominee_address')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1400,6 +1730,110 @@ document.addEventListener('DOMContentLoaded', function () {
                 .slice(0, 30);
         });
     }
+
+    /*
+     * Structured address -> legacy users.address hidden field.
+     * This keeps the old EmployeeRequest/reports/API compatible.
+     */
+    const addressInputIds = [
+        'premise_details',
+        'street_road',
+        'locality_area',
+        'landmark',
+        'city',
+        'district',
+        'state'
+    ];
+
+    const syncLegacyAddress = () => {
+        const parts = addressInputIds
+            .map(id => document.getElementById(id)?.value?.trim() || '')
+            .filter(Boolean);
+
+        const pinCode = document.getElementById('pin_code')?.value?.trim() || '';
+
+        let fullAddress = parts.join(', ');
+
+        if (pinCode) {
+            fullAddress += (fullAddress ? ' - ' : '') + pinCode;
+        }
+
+        const legacyAddress = document.getElementById('address');
+        if (legacyAddress) {
+            legacyAddress.value = fullAddress;
+        }
+    };
+
+    [...addressInputIds, 'pin_code'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', syncLegacyAddress);
+            input.addEventListener('change', syncLegacyAddress);
+        }
+    });
+
+    const pinCodeInput = document.getElementById('pin_code');
+    if (pinCodeInput) {
+        pinCodeInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 6);
+        });
+    }
+
+    const nomineeAadhaarInput = document.getElementById('nominee_aadhaar_number');
+    if (nomineeAadhaarInput) {
+        nomineeAadhaarInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+        });
+    }
+
+    const maritalStatus = document.getElementById('marital_status');
+    const spouseDetails = document.getElementById('spouseDetails');
+    const spouseName = document.getElementById('spouse_name');
+
+    const toggleSpouseDetails = () => {
+        const isMarried = maritalStatus?.value === 'married';
+
+        if (spouseDetails) {
+            spouseDetails.style.display = isMarried ? '' : 'none';
+        }
+
+        if (spouseName) {
+            spouseName.required = isMarried;
+        }
+    };
+
+    if (maritalStatus) {
+        maritalStatus.addEventListener('change', toggleSpouseDetails);
+    }
+
+    const hasNominee = document.getElementById('has_nominee');
+    const nomineeDetails = document.getElementById('nomineeDetails');
+    const nomineeName = document.getElementById('nominee_name');
+    const nomineeRelationship = document.getElementById('nominee_relationship');
+
+    const toggleNomineeDetails = () => {
+        const enabled = hasNominee?.value === 'yes';
+
+        if (nomineeDetails) {
+            nomineeDetails.style.display = enabled ? '' : 'none';
+        }
+
+        if (nomineeName) {
+            nomineeName.required = enabled;
+        }
+
+        if (nomineeRelationship) {
+            nomineeRelationship.required = enabled;
+        }
+    };
+
+    if (hasNominee) {
+        hasNominee.addEventListener('change', toggleNomineeDetails);
+    }
+
+    syncLegacyAddress();
+    toggleSpouseDetails();
+    toggleNomineeDetails();
 
     const filterSelectByOffice = (selectElement, officeId, allowGlobal = false) => {
         if (!selectElement) return;
