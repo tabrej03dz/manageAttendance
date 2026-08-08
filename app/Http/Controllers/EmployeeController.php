@@ -1147,25 +1147,25 @@ public function store(EmployeeRequest $request)
     |--------------------------------------------------------------------------
     */
 
-    if ($request->filled('team_leader_id')) {
-        $validReportingManager = User::query()
-            ->whereKey((int) $request->input('team_leader_id'))
-            ->where('office_id', $targetOfficeId)
-            ->where('status', '1')
-            ->whereHas('roles', function ($query) {
-                $query->where('roles.name', 'team_leader');
-            })
-            ->exists();
+    // if ($request->filled('team_leader_id')) {
+    //     $validReportingManager = User::query()
+    //         ->whereKey((int) $request->input('team_leader_id'))
+    //         ->where('office_id', $targetOfficeId)
+    //         ->where('status', '1')
+    //         ->whereHas('roles', function ($query) {
+    //             $query->where('roles.name', 'team_leader');
+    //         })
+    //         ->exists();
 
-        if (!$validReportingManager) {
-            return back()
-                ->withErrors([
-                    'team_leader_id' =>
-                        'Please select a valid active team leader as reporting manager.',
-                ])
-                ->withInput();
-        }
-    }
+    //     if (!$validReportingManager) {
+    //         return back()
+    //             ->withErrors([
+    //                 'team_leader_id' =>
+    //                     'Please select a valid active team leader as reporting manager.',
+    //             ])
+    //             ->withInput();
+    //     }
+    // }
 
 
 

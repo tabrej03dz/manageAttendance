@@ -511,7 +511,7 @@
 
             <section class="form-panel full-width">
                 <div class="panel-header">
-                    <h2 class="panel-title">Structured Address Details</h2>
+                    <h2 class="panel-title">Address Details</h2>
                     <span class="panel-edit"><i class="fas fa-map-marker-alt"></i> Add</span>
                 </div>
 
