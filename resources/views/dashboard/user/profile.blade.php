@@ -1,965 +1,451 @@
 @extends('dashboard.layout.root')
-
-@section('title', 'Employee Profile')
-
-@push('styles')
-<style>
-    .employee-register-page {
-        font-family: Arial, Helvetica, sans-serif;
-        color: #333;
-        font-size: 12px;
-        padding-bottom: 90px;
-    }
-
-    .registration-summary,
-    .form-panel {
-        background: #fff;
-        border: 1px solid #bfc4c9;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, .20);
-    }
-
-    .registration-summary {
-        padding: 10px 14px;
-        margin-bottom: 12px;
-    }
-
-    .registration-summary-grid {
-        display: grid;
-        grid-template-columns: 130px minmax(0, 1fr);
-        gap: 18px;
-        align-items: center;
-    }
-
-    .registration-avatar {
-        width: 112px;
-        height: 112px;
-        border-radius: 26px;
-        object-fit: cover;
-        border: 1px solid #c7ccd1;
-        background: #e7ebee;
-        box-shadow: 0 4px 12px rgba(0,0,0,.16);
-    }
-
-    .registration-title {
-        margin: 0 0 10px;
-        color: #4b4b4b;
-        font-size: 22px;
-        font-weight: 700;
-        line-height: 1.1;
-        text-transform: uppercase;
-    }
-
-    .summary-fields {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(130px, 1fr));
-        gap: 8px 24px;
-    }
-
-    .summary-label {
-        display: block;
-        margin-bottom: 2px;
-        color: #555;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .summary-value {
-        color: #777;
-        font-size: 11px;
-        line-height: 1.25;
-        word-break: break-word;
-    }
-
-    .profile-status-text {
-        margin-top: 9px;
-        color: #315f8c;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .page-form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        align-items: start;
-    }
-
-    .form-panel {
-        overflow: hidden;
-        margin-bottom: 10px;
-    }
-
-    .form-panel.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .panel-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 35px;
-        padding: 5px 12px;
-        border-bottom: 1px solid #d1d1d1;
-        background: linear-gradient(#fff, #f4f4f4);
-    }
-
-    .panel-title {
-        margin: 0;
-        color: #111;
-        font-size: 16px;
-        font-weight: 700;
-    }
-
-    .panel-edit {
-        color: #777;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .panel-body {
-        padding: 10px 12px 12px;
-    }
-
-    .compact-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        column-gap: 18px;
-        row-gap: 7px;
-    }
-
-    .compact-grid.three {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .field-row {
-        display: grid;
-        grid-template-columns: 100px minmax(0, 1fr);
-        gap: 8px;
-        align-items: center;
-        min-width: 0;
-    }
-
-    .field-row.top {
-        align-items: start;
-    }
-
-    .field-row.full {
-        grid-column: 1 / -1;
-    }
-
-    .field-label {
-        color: #555;
-        font-size: 11px;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-
-    .form-control-compact,
-    .read-only-value {
-        width: 100%;
-        min-height: 28px;
-        min-width: 0;
-        padding: 5px 8px;
-        border: 1px solid #cfd3d7 !important;
-        border-radius: 0 !important;
-        background: #f8f9fa !important;
-        color: #444 !important;
-        font-size: 11px !important;
-        line-height: 17px;
-        box-shadow: none !important;
-        word-break: break-word;
-    }
-
-    .read-only-value.multiline {
-        min-height: 54px;
-        white-space: pre-wrap;
-    }
-
-    .empty-value {
-        color: #999 !important;
-        font-style: italic;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 22px;
-        padding: 2px 8px;
-        border: 1px solid #cfd3d7;
-        background: #f8f9fa;
-        color: #444;
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-
-    .document-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .document-card {
-        min-height: 76px;
-        padding: 9px;
-        border: 1px solid #d6dade;
-        background: #fafafa;
-    }
-
-    .document-title {
-        margin-bottom: 6px;
-        color: #555;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .document-actions {
-        display: flex;
-        gap: 6px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .document-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        min-height: 27px;
-        padding: 3px 9px;
-        border: 1px solid #315f8c;
-        background: #3f78ad;
-        color: #fff !important;
-        font-size: 10px;
-        font-weight: 700;
-        text-decoration: none !important;
-    }
-
-    .no-document {
-        color: #999;
-        font-size: 10px;
-        font-style: italic;
-    }
-
-    .password-panel {
-        margin-top: 2px;
-    }
-
-    .password-panel .form-control-compact {
-        background: #fff !important;
-    }
-
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        padding: 10px 12px;
-        border-top: 1px solid #d3d3d3;
-        background: #f7f7f7;
-    }
-
-    .btn-compact {
-        display: inline-flex;
-        min-width: 118px;
-        height: 32px;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 0 14px;
-        border: 1px solid transparent;
-        border-radius: 2px;
-        font-size: 12px;
-        font-weight: 700;
-        text-decoration: none !important;
-        cursor: pointer;
-    }
-
-    .btn-save {
-        border-color: #315f8c;
-        background: #3f78ad;
-        color: #fff !important;
-    }
-
-    .btn-logout {
-        border-color: #9f1d1d;
-        background: #c62828;
-        color: #fff !important;
-    }
-
-    @media (max-width: 1100px) {
-        .summary-fields,
-        .compact-grid.three {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 800px) {
-        .registration-summary-grid,
-        .page-form-grid,
-        .summary-fields,
-        .compact-grid,
-        .compact-grid.three,
-        .document-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .form-panel.full-width {
-            grid-column: auto;
-        }
-    }
-
-    @media (max-width: 520px) {
-        .field-row {
-            grid-template-columns: 1fr;
-            gap: 4px;
-        }
-
-        .registration-avatar {
-            width: 96px;
-            height: 96px;
-        }
-
-        .registration-title {
-            font-size: 18px;
-        }
-
-        .form-actions {
-            flex-direction: column;
-        }
-
-        .btn-compact {
-            width: 100%;
-        }
-    }
-</style>
-@endpush
-
 @section('content')
+    @if ($errors->any())
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    @endif
+    <div class="pb-24">
+        <!-- Profile Details -->
+        <div class="bg-gray-100 min-h-screen">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Full width on web, max width on mobile -->
 
-@php
-    /*
-    |--------------------------------------------------------------------------
-    | Read-only display helpers
-    |--------------------------------------------------------------------------
-    */
-    $show = function ($value, $fallback = 'Not Available') {
-        if (is_null($value) || trim((string) $value) === '') {
-            return $fallback;
-        }
+                <!-- Header -->
+                <div class="bg-red-600 text-white font-semibold text-2xl text-center py-3 shadow-lg rounded-t-lg">
+                    Profile Details
+                </div>
 
-        return $value;
-    };
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full  mx-auto">
+                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post"
+                        enctype="multipart/form-data">
+                        @csrf
+                        <div class="p-6">
+                            <!-- Profile Picture -->
+                            <div class="flex flex-col items-center mb-6">
+                                <img id="photoPreview"
+                                    src="{{ $user->photo ? asset('storage/' . $user->photo) : 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIALcAwwMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABAUBAwYCB//EADEQAQACAQIDBwIDCQAAAAAAAAABAgMEESExUQUSIjJBYXEjUhMUwRUzYoGRoaKx0f/EABcBAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/APoIDo5gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9232z/QGAAAAAAAAAAAAAAAAAAAAASdHpLam2/lxxzt/wABqw4cme/dx13n/SywdmY67Tmnvz0jhCZixUw0imOu1Ye2dakeaY6Y42x0rX4jZ73YEV4yYseSPqUrb5hEzdmYr7zimaT05wnAKDUaXNp/PXw/dHGGl0s8Y2nkr9X2bW299P4bfZ6T8NSs2KoZtE0tNbRMTHOJFRgAAABmtbXtFaxMzPpEMLzQaeuHBWdvHaN7T+iWrIq/yOp23/Bnb5homJrMxaJiY5xLpEPtPT1yYZyxHjpG+/WDVxTAKyAAA94cVs2WuOnOf7A26PTW1OTblSPNK8pSuOkUpG1Y5Q84MVcGKMdOUevV7ZtakAEUAAAAAA2iecQwyA5oBtgAAdDp7xkwUvXlNXPJGk1l9NO0R3qTzrKWLKvWjXXimkyzPrXux/NG/auPb91ffpwQdVqsmptE34VjlWPRJFtaAGmQABd9n6b8vi3tH1Lc/b2Q+y9N37/jXjw1nw+8rZm1qQARQAAAAAAAAAFVbsrJHky1n5jZFzaXPh43xzt1jjC/F1Mc0LvUaDDm3msdy/WsfoqtRpsunttkrw9LRyldTGkBUAAAAG3TYbZ80Y6+vOekNS80Gm/L4vFH1Lcbe3slqyJFKVx0ilI2rEbQyDLQAAAAAAAAAAAAAAxatb1mt4iazziWQFRrOz7Yt74d7U9Y9YQXSq/XaCL75MEbW9a9fhZUsVQTG07TwkaZAS9Bo51Fu/eNsUf5ewN3Zel70xnyRwjyR191oREREREbRHKBhuAAAAAAAAAAAAAAAAAAAAIur0VNR4qz3MnXr8oE9m6iJ2iKz7xZci6mK7T9mRExbPaLfw15LGIiIiIiIiOUQCKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//Z' }}"
+                                    alt="Profile Avatar" class="w-24 h-24 rounded-full mb-4 border">
+                                <label class="text-gray-700 text-sm font-medium">
+                                    Upload Profile Photo
+                                </label>
+                                <input type="file" name="photo"
+                                    class="mt-2 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    onchange="previewImage(event, 'photoPreview')">
+                            </div>
 
-    $dateValue = function ($value) {
-        if (!$value) {
-            return 'Not Available';
-        }
+                            <!-- Personal Details Section -->
+                            <div class="space-y-4">
+                                <!-- Name Field -->
+                                <div class="flex flex-col">
+                                    <label for="name" class="text-sm font-medium text-gray-700">Name</label>
+                                    <input type="text" id="name" name="name" placeholder="Full Name"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->name }}" disabled>
+                                </div>
 
-        try {
-            return \Carbon\Carbon::parse($value)->format('d M Y');
-        } catch (\Throwable $e) {
-            return $value;
-        }
-    };
+                                <!-- Designation Field -->
+                                <div class="flex flex-col">
+                                    <label for="designation" class="text-sm font-medium text-gray-700">Designation</label>
+                                    <input type="text" id="designation" name="designation" placeholder="Designation"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->designation }}">
+                                </div>
 
-    $timeValue = function ($value) {
-        if (!$value) {
-            return 'Not Available';
-        }
+                                <!-- Responsibility Field -->
+                                <div class="flex flex-col">
+                                    <label for="responsibility"
+                                        class="text-sm font-medium text-gray-700">Responsibility</label>
+                                    <input type="text" id="responsibility" name="responsibility" placeholder="Responsibilities"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->responsibility }}">
+                                </div>
 
-        try {
-            return \Carbon\Carbon::parse($value)->format('h:i A');
-        } catch (\Throwable $e) {
-            return $value;
-        }
-    };
+                                <!-- Joining Date Field -->
+                                <div class="flex flex-col">
+                                    <label for="joining_date" class="text-sm font-medium text-gray-700">Joining Date</label>
+                                    <input type="date" id="joining_date" name="joining_date"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                        value="{{ $user->joining_date }}" >
+                                </div>
 
-    $money = function ($value) {
-        if (is_null($value) || $value === '') {
-            return 'Not Available';
-        }
+                                <!-- Email Field -->
+                                <div class="flex flex-col">
+                                    <label for="email" class="text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" id="email" name="email"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->email }}" disabled>
+                                </div>
 
-        return '₹ ' . number_format((float) $value, 2);
-    };
+                                <!-- Secondary Email Field -->
+                                <div class="flex flex-col space-y-2">
+                                    <label for="email1" class="text-lg font-medium text-gray-600">Enter your secondary
+                                        email</label>
+                                    <input type="email" id="email1" name="email1" value="{{ $user->email1 }}" placeholder="Secondary Email"
+                                           class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />
+                                </div>
 
-    /*
-     * These relations are expected on User:
-     * department, office, teamLeader/reportingManager, leaveAuthority.
-     *
-     * If your relation name is different, only change the corresponding
-     * variable below; the HTML does not need to change.
-     */
-    $departmentName = data_get($user, 'department.name')
-        ?: data_get($user, 'department_name')
-        ?: $show(data_get($user, 'department_id'));
+                                <!-- Phone Number Field -->
+                                <div class="flex flex-col">
+                                    <label for="phone" class="text-sm font-medium text-gray-700">Phone</label>
+                                    <input type="text" id="phone" name="phone" placeholder="Phone"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->phone }}">
+                                </div>
 
-    $officeName = data_get($user, 'office.name')
-        ?: data_get($user, 'office_name')
-        ?: $show(data_get($user, 'office_id'));
+                                <!-- Salary Field -->
+                                <div class="flex flex-col">
+                                    <label for="salary" class="text-sm font-medium text-gray-700">Salary</label>
+                                    <input type="text" id="salary" name="salary" placeholder="Salary"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->salary }}" disabled>
+                                </div>
 
-    $reportingManagerName = data_get($user, 'teamLeader.name')
-        ?: data_get($user, 'reportingManager.name')
-        ?: data_get($user, 'manager.name')
-        ?: $show(data_get($user, 'team_leader_id'));
+                                <!-- Upload Pancard -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-semibold text-gray-800">Upload Pancard</label>
+                                    <div class="flex items-center space-x-4">
+                                        <input type="file" id="panAttachment" name="pan_attachment" class="hidden"
+                                            onchange="previewImage(event, 'panPreview')">
+                                        <label for="panAttachment"
+                                            class="cursor-pointer bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg py-2 px-4 flex items-center space-x-2 transition duration-200 ease-in-out transform hover:scale-105">
+                                            <span class="material-icons">cloud_upload</span>
+                                            <span class="text-sm">Choose Pancard</span>
+                                        </label>
+                                        <div class="relative">
+                                            <img id="panPreview"
+                                                src="{{ $user->pan_attachment ? asset('storage/' . $user->pan_attachment) : '' }}"
+                                                alt="Pancard Preview"
+                                                class="w-20 h-20 border border-gray-300 rounded-lg cursor-pointer"
+                                                onclick="openModal('panPreview')">
+                                            <div class="absolute top-0 right-0 text-xs text-gray-500 bg-white px-1 py-0.5 rounded-full hidden"
+                                                id="panFileName">
+                                                No file selected
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-    $leaveAuthorityName = data_get($user, 'leaveAuthority.name')
-        ?: data_get($user, 'leave_authority.name')
-        ?: $show(data_get($user, 'leave_authority_id'));
+                                <!-- Upload Aadharcard -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-semibold text-gray-800">Upload Aadharcard</label>
+                                    <div class="flex items-center space-x-4">
+                                        <input type="file" id="aadharAttachment" name="aadhar_attachment"
+                                            class="hidden" onchange="previewImage(event, 'aadharPreview')">
+                                        <label for="aadharAttachment"
+                                            class="cursor-pointer bg-green-100 hover:bg-green-200 text-green-600 rounded-lg py-2 px-4 flex items-center space-x-2 transition duration-200 ease-in-out transform hover:scale-105">
+                                            <span class="material-icons">cloud_upload</span>
+                                            <span class="text-sm">Choose Aadharcard</span>
+                                        </label>
+                                        <div class="relative">
+                                            <img id="aadharPreview"
+                                                src="{{ $user->aadhar_attachment ? asset('storage/' . $user->aadhar_attachment) : '' }}"
+                                                alt="Aadharcard Preview"
+                                                class="w-20 h-20 border border-gray-300 rounded-lg cursor-pointer"
+                                                onclick="openModal('aadharPreview')">
+                                            <div class="absolute top-0 right-0 text-xs text-gray-500 bg-white px-1 py-0.5 rounded-full hidden"
+                                                id="aadharFileName">
+                                                No file selected
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-    $roleName = method_exists($user, 'getRoleNames')
-        ? ($user->getRoleNames()->first() ?: $show(data_get($user, 'role')))
-        : $show(data_get($user, 'role'));
+                                <!-- Upload Other Documents -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-semibold text-gray-800">Upload Other Document</label>
+                                    <div class="flex items-center space-x-4">
+                                        <input type="file" id="otherAttachment" name="other_attachment"
+                                            class="hidden" onchange="previewImage(event, 'otherPreview')">
+                                        <label for="otherAttachment"
+                                            class="cursor-pointer bg-yellow-100 hover:bg-yellow-200 text-yellow-600 rounded-lg py-2 px-4 flex items-center space-x-2 transition duration-200 ease-in-out transform hover:scale-105">
+                                            <span class="material-icons">cloud_upload</span>
+                                            <span class="text-sm">Choose File</span>
+                                        </label>
+                                        <div class="relative">
+                                            <img id="otherPreview"
+                                                src="{{ $user->other_attachment ? asset('storage/' . $user->other_attachment) : '' }}"
+                                                alt="Other Document Preview"
+                                                class="w-20 h-20 border border-gray-300 rounded-lg cursor-pointer"
+                                                onclick="openModal('otherPreview')">
+                                            <div class="absolute top-0 right-0 text-xs text-gray-500 bg-white px-1 py-0.5 rounded-full hidden"
+                                                id="otherFileName">
+                                                No file selected
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-    $statusText = (string) data_get($user, 'status', '1') === '1' ? 'Active' : 'Inactive';
+                                <!-- Full Image Modal -->
+                                <div id="imageModal"
+                                    class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+                                    <div class="relative bg-white p-4 rounded-lg">
+                                        <span onclick="closeModal()"
+                                            class="absolute top-2 right-2 text-2xl text-gray-500 cursor-pointer">&times;</span>
+                                        <img id="modalImage" class="w-full max-w-2xl max-h-screen" />
+                                    </div>
+                                </div>
 
-    $locationRequired = strtolower((string) data_get($user, 'location_required', 'no')) === 'yes'
-        ? 'Required'
-        : 'Not Required';
 
-    $photoUrl = $user->photo
-        ? asset('storage/' . $user->photo)
-        : 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?: 'Employee') . '&background=d8e0e6&color=333&size=200';
+                                <!-- Address Field -->
+                                <div class="flex flex-col mt-4">
+                                    <label for="address" class="text-sm font-medium text-gray-700">Address</label>
+                                    <input type="text" id="address" name="address"
+                                        class="text-gray-800 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value="{{ $user->address }}" placeholder="Enter full address">
+                                </div>
+                            </div>
 
-    $fullAddressParts = array_filter([
-        data_get($user, 'premise_details'),
-        data_get($user, 'street_road'),
-        data_get($user, 'locality_area'),
-        data_get($user, 'landmark'),
-        data_get($user, 'city'),
-        data_get($user, 'district'),
-        data_get($user, 'state'),
-    ], fn ($item) => !is_null($item) && trim((string) $item) !== '');
+                            <!-- Update Button -->
+                            <div class="mt-6 text-center">
+                                <button type="submit" id="submitBtn"
+                                    class="bg-blue-600 text-white py-2 px-6 rounded-lg shadow hover:bg-blue-700 transition">
+                                    Update
+                                </button>
 
-    $structuredAddress = implode(', ', $fullAddressParts);
-
-    if (data_get($user, 'pin_code')) {
-        $structuredAddress .= ($structuredAddress ? ' - ' : '') . data_get($user, 'pin_code');
-    }
-
-    $fullAddress = $structuredAddress ?: data_get($user, 'address');
-@endphp
-
-<div class="employee-register-page">
-
-    {{-- ======================== PROFILE SUMMARY ======================== --}}
-    <section class="registration-summary">
-        <div class="registration-summary-grid">
-            <div>
-                <img
-                    class="registration-avatar"
-                    src="{{ $photoUrl }}"
-                    alt="{{ $user->name ?: 'Employee' }}"
-                >
-            </div>
-
-            <div>
-                <h1 class="registration-title">
-                    {{ $user->name ?: 'EMPLOYEE PROFILE' }}
-                </h1>
-
-                <div class="summary-fields">
-                    <div>
-                        <span class="summary-label">Department</span>
-                        <div class="summary-value">{{ $departmentName }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Designation</span>
-                        <div class="summary-value">{{ $show($user->designation) }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Role</span>
-                        <div class="summary-value">{{ strtoupper($roleName) }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Branch</span>
-                        <div class="summary-value">{{ $officeName }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Reporting Manager</span>
-                        <div class="summary-value">{{ $reportingManagerName }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Leave Authority</span>
-                        <div class="summary-value">{{ $leaveAuthorityName }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Joining Date</span>
-                        <div class="summary-value">{{ $dateValue($user->joining_date) }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Status</span>
-                        <div class="summary-value">{{ $statusText }}</div>
-                    </div>
-
-                    <div>
-                        <span class="summary-label">Location Rule</span>
-                        <div class="summary-value">{{ $locationRequired }}</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- Processing Modal -->
+                <div id="loadingModal"
+                    class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+                    <div class="bg-white p-4 rounded-lg">
+                        <span class="text-xl text-gray-500">Processing...</span>
                     </div>
                 </div>
 
-                <div class="profile-status-text">
-                    Employee profile details — view only
-                </div>
+                <script>
+                    // Function to open the image modal
+                    function openModal(imageId) {
+                        var imgElement = document.getElementById(imageId);
+                        var modal = document.getElementById('imageModal');
+                        var modalImg = document.getElementById('modalImage');
+                        modalImg.src = imgElement.src;
+                        modal.classList.remove('hidden');
+                    }
+
+                    // Function to close the image modal
+                    function closeModal() {
+                        var modal = document.getElementById('imageModal');
+                        modal.classList.add('hidden');
+                    }
+
+                    // Function to preview image
+                    function previewImage(event, previewId) {
+                        const inputFile = event.target;
+                        const previewImage = document.getElementById(previewId);
+                        const fileNameDisplay = document.getElementById(previewId + 'FileName');
+
+                        if (inputFile.files && inputFile.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                previewImage.src = e.target.result;
+                            };
+                            reader.readAsDataURL(inputFile.files[0]);
+
+                            fileNameDisplay.textContent = inputFile.files[0].name;
+                            fileNameDisplay.classList.remove('hidden');
+                        } else {
+                            previewImage.src = '';
+                            fileNameDisplay.classList.add('hidden');
+                        }
+                    }
+
+                    // Handle form submission
+                    const form = document.querySelector('form');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const loadingModal = document.getElementById('loadingModal');
+
+                    form.addEventListener('submit', function(e) {
+                        // Prevent form from actually submitting immediately
+                        e.preventDefault();
+
+                        // Disable the submit button and show the loading modal
+                        submitBtn.disabled = true;
+                        loadingModal.classList.remove('hidden'); // Show the processing modal
+
+                        // Simulate form submission delay (Remove the setTimeout when the actual form submission happens)
+                        setTimeout(function() {
+                            form.submit(); // Submit the form after delay
+                        }, 2000); // Adjust the time if needed (in ms)
+                    });
+                </script>
+
+
+
             </div>
         </div>
-    </section>
 
-    <div class="page-form-grid">
 
-        {{-- ======================== PRIMARY DETAILS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Primary Details</h2>
-                <span class="panel-edit"><i class="fas fa-eye"></i> View Only</span>
-            </div>
+        <!-- OFFICE TIMING -->
+        <div class="bg-gray-100 flex items-center justify-center">
+            <div class="container mx-auto px-4 py-8">
 
-            <div class="panel-body">
-                <div class="compact-grid">
-                    @foreach([
-                        ['Full Name', $user->name],
-                        ['Email', $user->email],
-                        ['Secondary Email', data_get($user, 'email1')],
-                        ['Phone', $user->phone],
-                        ['Date of Birth', $dateValue(data_get($user, 'dob'))],
-                        ['Joining Date', $dateValue(data_get($user, 'joining_date'))],
-                        ['Employee ID', data_get($user, 'employee_id')],
-                    ] as [$label, $value])
-                        <div class="field-row">
-                            <span class="field-label">{{ $label }}</span>
-                            <div class="read-only-value {{ $value === 'Not Available' || !$value ? 'empty-value' : '' }}">
-                                {{ $show($value) }}
+                <!-- Card with shadow and rounded corners -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <!-- Header with a red background -->
+                    <div class="bg-red-600 text-white font-semibold text-2xl text-center py-2 shadow-md rounded-t-lg">
+                        Office Timing
+                    </div>
+                    <!-- Form Section -->
+                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">
+                        @csrf
+                        <div class="p-6 space-y-8">
+
+                            <!-- Office Start Time -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="check_in_time" class="text-lg font-semibold text-gray-600">Office Start Time</label>
+                                <input type="time" id="check_in_time" name="check_in_time"
+                                    value="{{ old('check_in_time', $user->check_in_time ? date('H:i', strtotime($user->check_in_time)) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
+                            </div>
+
+                            <!-- Office End Time -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="check_out_time" class="text-lg font-semibold text-gray-600">Office End Time</label>
+                                <input type="time" id="check_out_time" name="check_out_time"
+                                    value="{{ old('check_out_time', $user->check_out_time ? date('H:i', strtotime($user->check_out_time)) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
+                            </div>
+
+                            <!-- Break Time (Optional) -->
+                            {{-- <div class="flex flex-col space-y-2">
+                                <label for="break" class="text-lg font-semibold text-gray-600">Break Time</label>
+                                <input type="text" id="break" name="break"
+                                    value="{{ old('break', $user->break ? (int)(date('H', strtotime($user->break)) * 60 + date('i', strtotime($user->break))) : '') }}"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    disabled />
+                            </div> --}}
+
+
+                            <!-- Submit Button -->
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300"
+                                    disabled>
+                                    Update
+                                </button>
                             </div>
                         </div>
-                    @endforeach
+                    </form>
+
+
                 </div>
+
             </div>
-        </section>
+        </div>
 
-        {{-- ======================== EMPLOYMENT DETAILS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Employment Details</h2>
-                <span class="panel-edit"><i class="fas fa-eye"></i> View Only</span>
-            </div>
 
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row">
-                        <span class="field-label">Department</span>
-                        <div class="read-only-value">{{ $departmentName }}</div>
-                    </div>
+        <!-- Secondary Email -->
+{{--        <div class="bg-gray-100 flex items-center justify-center">--}}
+{{--            <div class="container mx-auto px-4 py-8">--}}
+{{--                <!-- Card with shadow and rounded corners -->--}}
+{{--                <div class="bg-white rounded-lg shadow-lg overflow-hidden">--}}
 
-                    <div class="field-row">
-                        <span class="field-label">Designation</span>
-                        <div class="read-only-value">{{ $show($user->designation) }}</div>
-                    </div>
+{{--                    <!-- Header with a red background -->--}}
+{{--                    <div class="bg-red-600 text-white font-semibold text-2xl text-center py-2 shadow-md rounded-t-lg">--}}
+{{--                        Secondary Email--}}
+{{--                    </div>--}}
 
-                    <div class="field-row">
-                        <span class="field-label">Role</span>
-                        <div class="read-only-value">{{ $roleName }}</div>
-                    </div>
+{{--                    <!-- Form Section -->--}}
+{{--                    <form action="{{ route('profile.update', ['user' => $user->id]) }}" method="post">--}}
+{{--                        @csrf--}}
+{{--                        <div class="p-6 space-y-6">--}}
 
-                    <div class="field-row">
-                        <span class="field-label">Office</span>
-                        <div class="read-only-value">{{ $officeName }}</div>
-                    </div>
+{{--                            <!-- Secondary Email Field -->--}}
+{{--                            <div class="flex flex-col space-y-2">--}}
+{{--                                <label for="email1" class="text-lg font-semibold text-gray-600">Enter your secondary--}}
+{{--                                    email</label>--}}
+{{--                                <input type="email" id="email1" name="email1" value="{{ $user->email1 }}"--}}
+{{--                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent" />--}}
+{{--                            </div>--}}
 
-                    <div class="field-row">
-                        <span class="field-label">Reporting Manager</span>
-                        <div class="read-only-value">{{ $reportingManagerName }}</div>
-                    </div>
+{{--                            <!-- Submit Button -->--}}
+{{--                            <div class="mt-6 flex justify-center">--}}
+{{--                                <button type="submit"--}}
+{{--                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">--}}
+{{--                                    Update--}}
+{{--                                </button>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </form>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
 
-                    <div class="field-row">
-                        <span class="field-label">Leave Authority</span>
-                        <div class="read-only-value">{{ $leaveAuthorityName }}</div>
-                    </div>
 
-                    <div class="field-row">
-                        <span class="field-label">Status</span>
-                        <div class="read-only-value">{{ $statusText }}</div>
-                    </div>
+        <!-- Change Password -->
+        <div class="bg-gray-100 flex items-center justify-center">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Card with shadow and rounded corners -->
+                <form action="{{ route('userPassword', ['user' => $user->id]) }}" method="POST">
+                    @csrf
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full md:w-full mx-auto">
 
-                    <div class="field-row">
-                        <span class="field-label">Monthly Salary</span>
-                        <div class="read-only-value">{{ $money(data_get($user, 'salary')) }}</div>
-                    </div>
+                        <!-- Header with a red background -->
+                        <div class="bg-red-600 text-white font-semibold text-2xl text-center py-2 shadow-md rounded-t-lg">
+                            Change Password
+                        </div>
 
-                    <div class="field-row top full">
-                        <span class="field-label">Responsibility</span>
-                        <div class="read-only-value multiline">{{ $show(data_get($user, 'responsibility')) }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        <div class="p-6 space-y-6">
 
-        {{-- ======================== ADDRESS DETAILS ======================== --}}
-        <section class="form-panel full-width">
-            <div class="panel-header">
-                <h2 class="panel-title">Address Details</h2>
-                <span class="panel-edit"><i class="fas fa-map-marker-alt"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid three">
-                    @foreach([
-                        ['Premise Details', data_get($user, 'premise_details')],
-                        ['Street / Road', data_get($user, 'street_road')],
-                        ['Locality / Area', data_get($user, 'locality_area')],
-                        ['Landmark', data_get($user, 'landmark')],
-                        ['City / Town', data_get($user, 'city')],
-                        ['District', data_get($user, 'district')],
-                        ['State / UT', data_get($user, 'state')],
-                        ['PIN Code', data_get($user, 'pin_code')],
-                    ] as [$label, $value])
-                        <div class="field-row">
-                            <span class="field-label">{{ $label }}</span>
-                            <div class="read-only-value {{ !$value ? 'empty-value' : '' }}">
-                                {{ $show($value) }}
+                            <!-- Current Password Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="current-password" class="text-lg font-semibold text-gray-600">Current Password</label>
+                                <input type="password" id="current-password" name="current_password"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    placeholder="Enter your current password" >
                             </div>
-                        </div>
-                    @endforeach
 
-                    <div class="field-row top full">
-                        <span class="field-label">Full Address</span>
-                        <div class="read-only-value multiline">{{ $show($fullAddress) }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== MARITAL / SPOUSE ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Marital & Spouse Details</h2>
-                <span class="panel-edit"><i class="fas fa-heart"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row full">
-                        <span class="field-label">Marital Status</span>
-                        <div class="read-only-value">
-                            {{ ucfirst($show(data_get($user, 'marital_status'))) }}
-                        </div>
-                    </div>
-
-                    @if(strtolower((string) data_get($user, 'marital_status')) === 'married')
-                        @foreach([
-                            ['Spouse Name', data_get($user, 'spouse_name')],
-                            ['Spouse Phone', data_get($user, 'spouse_phone')],
-                            ['Spouse DOB', $dateValue(data_get($user, 'spouse_dob'))],
-                            ['Occupation', data_get($user, 'spouse_occupation')],
-                        ] as [$label, $value])
-                            <div class="field-row">
-                                <span class="field-label">{{ $label }}</span>
-                                <div class="read-only-value">{{ $show($value) }}</div>
+                            <!-- New Password Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="new-password" class="text-lg font-semibold text-gray-600">New Password</label>
+                                <input type="password" id="newPassword" name="new_password"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    placeholder="Enter your new password">
                             </div>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
-        </section>
 
-        {{-- ======================== NOMINEE DETAILS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Nominee Details</h2>
-                <span class="panel-edit"><i class="fas fa-user-shield"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row full">
-                        <span class="field-label">Nominee Added?</span>
-                        <div class="read-only-value">
-                            {{ strtolower((string) data_get($user, 'has_nominee', 'no')) === 'yes' ? 'Yes' : 'No' }}
-                        </div>
-                    </div>
-
-                    @if(strtolower((string) data_get($user, 'has_nominee', 'no')) === 'yes')
-                        @foreach([
-                            ['Nominee Name', data_get($user, 'nominee_name')],
-                            ['Relationship', data_get($user, 'nominee_relationship')],
-                            ['Phone', data_get($user, 'nominee_phone')],
-                            ['Date of Birth', $dateValue(data_get($user, 'nominee_dob'))],
-                            ['Aadhaar No.', data_get($user, 'nominee_aadhaar_number')],
-                        ] as [$label, $value])
-                            <div class="field-row">
-                                <span class="field-label">{{ $label }}</span>
-                                <div class="read-only-value">{{ $show($value) }}</div>
+                            <!-- Confirm Password Field -->
+                            <div class="flex flex-col space-y-2">
+                                <label for="confirm-password" class="text-lg font-semibold text-gray-600">Confirm New Password</label>
+                                <input type="password" id="confirm-password" name="confirm_password"
+                                    class="w-full text-gray-800 border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                                    placeholder="Confirm your new password">
                             </div>
-                        @endforeach
 
-                        <div class="field-row top full">
-                            <span class="field-label">Nominee Address</span>
-                            <div class="read-only-value multiline">
-                                {{ $show(data_get($user, 'nominee_address')) }}
+                            <!-- Divider -->
+                            <div class="flex items-center justify-between border-b py-2"></div>
+
+                            <!-- Update Password Button -->
+                            <div class="mt-6 flex justify-center">
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                                    Update Password
+                                </button>
                             </div>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </section>
 
-        {{-- ======================== ATTENDANCE SETTINGS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Attendance Settings</h2>
-                <span class="panel-edit"><i class="fas fa-clock"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row">
-                        <span class="field-label">Check In</span>
-                        <div class="read-only-value">{{ $timeValue(data_get($user, 'check_in_time')) }}</div>
-                    </div>
-
-                    <div class="field-row">
-                        <span class="field-label">Check Out</span>
-                        <div class="read-only-value">{{ $timeValue(data_get($user, 'check_out_time')) }}</div>
-                    </div>
-
-                    <div class="field-row">
-                        <span class="field-label">Break Minutes</span>
-                        <div class="read-only-value">{{ $show(data_get($user, 'break')) }}</div>
-                    </div>
-
-                    <div class="field-row">
-                        <span class="field-label">Location Required</span>
-                        <div class="read-only-value">{{ $locationRequired }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== OFFICIAL IDENTIFIERS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Official Identifiers</h2>
-                <span class="panel-edit"><i class="fas fa-id-badge"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row">
-                        <span class="field-label">UAN Number</span>
-                        <div class="read-only-value">{{ $show(data_get($user, 'uan_number')) }}</div>
-                    </div>
-
-                    <div class="field-row">
-                        <span class="field-label">ESIC Number</span>
-                        <div class="read-only-value">{{ $show(data_get($user, 'esic_number')) }}</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== IDENTITY DETAILS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Identity Details</h2>
-                <span class="panel-edit"><i class="fas fa-id-card"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid">
-                    <div class="field-row">
-                        <span class="field-label">Aadhaar Number</span>
-                        <div class="read-only-value">{{ $show(data_get($user, 'adhar_number')) }}</div>
-                    </div>
-
-                    <div class="field-row">
-                        <span class="field-label">PAN Number</span>
-                        <div class="read-only-value">
-                            {{ strtoupper($show(data_get($user, 'pan_number'))) }}
                         </div>
                     </div>
-                </div>
+                </form>
+
             </div>
-        </section>
+        </div>
 
-        {{-- ======================== PHOTO & DOCUMENTS ======================== --}}
-        <section class="form-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Photo & Documents</h2>
-                <span class="panel-edit"><i class="fas fa-paperclip"></i> View Only</span>
-            </div>
 
-            <div class="panel-body">
-                <div class="document-grid">
-                    @php
-                        $documents = [
-                            'Employee Photo' => data_get($user, 'photo'),
-                            'Aadhaar File' => data_get($user, 'aadhar_attachment'),
-                            'PAN File' => data_get($user, 'pan_attachment'),
-                            'Other File' => data_get($user, 'other_attachment'),
-                        ];
-                    @endphp
-
-                    @foreach($documents as $label => $path)
-                        <div class="document-card">
-                            <div class="document-title">{{ $label }}</div>
-
-                            <div class="document-actions">
-                                @if($path)
-                                    <a
-                                        href="{{ asset('storage/' . $path) }}"
-                                        target="_blank"
-                                        rel="noopener"
-                                        class="document-link"
-                                    >
-                                        <i class="fas fa-eye"></i>
-                                        View File
-                                    </a>
-                                @else
-                                    <span class="no-document">No file uploaded</span>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== BANK DETAILS ======================== --}}
-        <section class="form-panel full-width">
-            <div class="panel-header">
-                <h2 class="panel-title">Bank Details</h2>
-                <span class="panel-edit"><i class="fas fa-university"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid three">
-                    @foreach([
-                        ['Account Holder', data_get($user, 'account_holder_name')],
-                        ['Bank Name', data_get($user, 'bank_name')],
-                        ['Account Number', data_get($user, 'account_number')],
-                        ['IFSC Code', strtoupper((string) data_get($user, 'ifsc_code'))],
-                        ['Account Type', ucfirst((string) data_get($user, 'account_type'))],
-                        ['UPI ID', data_get($user, 'upi_id')],
-                    ] as [$label, $value])
-                        <div class="field-row">
-                            <span class="field-label">{{ $label }}</span>
-                            <div class="read-only-value">{{ $show($value) }}</div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== SALARY DETAILS ======================== --}}
-        <section class="form-panel full-width">
-            <div class="panel-header">
-                <h2 class="panel-title">Salary Details</h2>
-                <span class="panel-edit"><i class="fas fa-money-bill-wave"></i> View Only</span>
-            </div>
-
-            <div class="panel-body">
-                <div class="compact-grid three">
-                    @foreach([
-                        ['Basic Pay', $money(data_get($user, 'basic_salary'))],
-                        ['D.A.', $money(data_get($user, 'dearness_allowance'))],
-                        ['Relieving Charge', $money(data_get($user, 'relieving_charge'))],
-                        ['Additional Allowance', $money(data_get($user, 'additional_allowance'))],
-                        ['Provident Fund %', $show(data_get($user, 'provident_fund'))],
-                        ['ESIC %', $show(data_get($user, 'employee_state_insurance_corporation'))],
-                    ] as [$label, $value])
-                        <div class="field-row">
-                            <span class="field-label">{{ $label }}</span>
-                            <div class="read-only-value">{{ $value }}</div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-
-        {{-- ======================== CHANGE PASSWORD ======================== --}}
-        <section class="form-panel full-width password-panel">
-            <div class="panel-header">
-                <h2 class="panel-title">Change Password</h2>
-                <span class="panel-edit"><i class="fas fa-key"></i> Security</span>
-            </div>
-
-            <form action="{{ route('userPassword', ['user' => $user->id]) }}" method="POST">
-                @csrf
-
-                <div class="panel-body">
-                    <div class="compact-grid three">
-                        <div class="field-row">
-                            <label class="field-label" for="current-password">Current Password</label>
-                            <input
-                                type="password"
-                                id="current-password"
-                                name="current_password"
-                                class="form-control-compact"
-                                placeholder="Current password"
-                                autocomplete="current-password"
-                            >
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="newPassword">New Password</label>
-                            <input
-                                type="password"
-                                id="newPassword"
-                                name="new_password"
-                                class="form-control-compact"
-                                placeholder="New password"
-                                autocomplete="new-password"
-                            >
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="confirm-password">Confirm Password</label>
-                            <input
-                                type="password"
-                                id="confirm-password"
-                                name="confirm_password"
-                                class="form-control-compact"
-                                placeholder="Confirm new password"
-                                autocomplete="new-password"
-                            >
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-compact btn-save">
-                        <i class="fas fa-key"></i>
-                        Update Password
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        {{-- ======================== LOGOUT ======================== --}}
-        <section class="form-panel full-width">
-            <div class="panel-header">
-                <h2 class="panel-title">Account</h2>
-                <span class="panel-edit"><i class="fas fa-user"></i> Session</span>
-            </div>
-
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-compact btn-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Log Out
-                    </button>
-                </div>
-            </form>
-        </section>
-
+        <!-- Log out Button -->
+        <form action="{{ route('logout') }}" method="post">
+            @csrf
+            <button type="submit"
+                class="mt-6 w-3/4 mx-auto flex justify-center items-center bg-red-600 text-white py-2 rounded-lg shadow hover:bg-red-700 transition duration-300">
+                <!-- Icon on the left -->
+                <span class="material-icons text-white text-lg mr-2">exit_to_app</span>
+                LogOut
+            </button>
+        </form>
     </div>
-</div>
 @endsection
