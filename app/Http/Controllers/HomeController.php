@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\EmployeeEducationalQualification;
 
 use Illuminate\Support\Collection;
 
@@ -42,20 +43,31 @@ class HomeController extends Controller
         return view('home');
     }
 
+    // public function profile(User $user)
+    // {
+    //     // dd($user);
+
+    //     $leaves = Leave::where('user_id', $user->id)
+    //         ->whereDate('start_date', '>', today())
+    //         ->get();
+
+
+
+    //     $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
+
+    //     return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
+    // }
+
     public function profile(User $user)
-    {
-        // dd($user);
+{
+    $leaves = Leave::where('user_id', $user->id)
+        ->whereDate('start_date', '>', today())
+        ->get();
 
-        $leaves = Leave::where('user_id', $user->id)
-            ->whereDate('start_date', '>', today())
-            ->get();
+    $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
 
-
-
-        $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
-
-        return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
-    }
+    return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
+}
 
     public function changePassword(Request $request, User $user)
     {
