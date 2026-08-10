@@ -58,15 +58,57 @@ class HomeController extends Controller
     //     return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
     // }
 
-    public function profile(User $user)
+public function profile(User $user)
 {
-    $leaves = Leave::where('user_id', $user->id)
+    /*
+    |--------------------------------------------------------------------------
+    | Upcoming Leaves
+    |--------------------------------------------------------------------------
+    */
+
+    $leaves = Leave::query()
+        ->where('user_id', $user->id)
         ->whereDate('start_date', '>', today())
         ->get();
 
-    $infos = UserAdditionalInformation::where('user_id', $user->id)->get();
+    /*
+    |--------------------------------------------------------------------------
+    | Additional Information
+    |--------------------------------------------------------------------------
+    */
 
-    return view('dashboard.user.profile', compact('leaves', 'user', 'infos'));
+    $infos = UserAdditionalInformation::query()
+        ->where('user_id', $user->id)
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Educational Qualifications
+    |--------------------------------------------------------------------------
+    */
+
+    $qualifications = EmployeeEducationalQualification::query()
+        ->where('user_id', $user->id)
+        ->orderByRaw('passing_year IS NULL')
+        ->orderBy('passing_year')
+        ->orderBy('id')
+        ->get();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Employee Profile
+    |--------------------------------------------------------------------------
+    */
+
+    return view(
+        'dashboard.user.profile',
+        compact(
+            'leaves',
+            'user',
+            'infos',
+            'qualifications'
+        )
+    );
 }
 
     public function changePassword(Request $request, User $user)
