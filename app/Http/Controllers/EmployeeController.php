@@ -12,6 +12,7 @@ use App\Models\Office;
 use App\Models\Plan;
 use App\Models\User;
 use App\Models\UserSalary;
+use App\Models\EmployeeEducationalQualification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -1060,6 +1061,527 @@ public function create(Request $request)
 
 
 
+// public function store(EmployeeRequest $request)
+// {
+//     $loggedInUser = $request->user();
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Resolve target office
+//     |--------------------------------------------------------------------------
+//     */
+
+//     if ($loggedInUser->hasRole('super_admin')) {
+//         $targetOfficeId = (int) $request->input('office_id');
+
+//         if (
+//             !$targetOfficeId ||
+//             !Office::query()->whereKey($targetOfficeId)->exists()
+//         ) {
+//             return back()
+//                 ->withErrors([
+//                     'office_id' => 'Please select a valid office.',
+//                 ])
+//                 ->withInput();
+//         }
+//     } elseif ($loggedInUser->hasRole('owner')) {
+//         $ownerOfficeIds = Office::query()
+//             ->where('owner_id', $loggedInUser->id)
+//             ->pluck('id')
+//             ->map(fn ($id) => (int) $id);
+
+//         if ($ownerOfficeIds->isEmpty()) {
+//             return back()
+//                 ->with('error', 'No office found for this owner.')
+//                 ->withInput();
+//         }
+
+//         $targetOfficeId = (int) (
+//             $request->input('office_id')
+//             ?: $loggedInUser->activeOfficeId()
+//         );
+
+//         if (
+//             !$targetOfficeId ||
+//             !$ownerOfficeIds->contains($targetOfficeId)
+//         ) {
+//             return back()
+//                 ->withErrors([
+//                     'office_id' => 'Invalid office selected.',
+//                 ])
+//                 ->withInput();
+//         }
+
+//         $plan = Plan::query()
+//             ->where('user_id', $loggedInUser->id)
+//             ->latest('id')
+//             ->first();
+
+//         $employeeCount = User::query()
+//             ->whereIn('office_id', $ownerOfficeIds)
+//             ->count();
+
+//         if (
+//             $plan &&
+//             $employeeCount >= (int) $plan->number_of_employees
+//         ) {
+//             return back()
+//                 ->with('error', 'Your employee creation limit exceeded!')
+//                 ->withInput();
+//         }
+//     } else {
+//         $targetOfficeId = (int) $loggedInUser->activeOfficeId();
+
+//         if (!$targetOfficeId) {
+//             return back()
+//                 ->with('error', 'Please select an office first.')
+//                 ->withInput();
+//         }
+
+//         $office = Office::query()
+//             ->with('owner:id,name')
+//             ->find($targetOfficeId);
+
+//         if (!$office) {
+//             return back()
+//                 ->withErrors([
+//                     'office_id' => 'Selected office was not found.',
+//                 ])
+//                 ->withInput();
+//         }
+
+//         if ($office->owner) {
+//             $plan = Plan::query()
+//                 ->where('user_id', $office->owner->id)
+//                 ->latest('id')
+//                 ->first();
+
+//             $employeeCount = User::query()
+//                 ->where('office_id', $targetOfficeId)
+//                 ->count();
+
+//             if (
+//                 $plan &&
+//                 $employeeCount >= (int) $plan->number_of_employees
+//             ) {
+//                 return back()
+//                     ->with('error', 'Your employee creation limit exceeded!')
+//                     ->withInput();
+//             }
+//         }
+//     }
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Additional role and hierarchy validation
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $validatedExtra = $request->validate([
+//         'role' => [
+//             'required',
+//             Rule::in([
+//                 'admin',
+//                 'team_leader',
+//                 'employee',
+//             ]),
+//         ],
+
+//         'status' => [
+//             'required',
+//             Rule::in([
+//                 '0',
+//                 '1',
+//                 0,
+//                 1,
+//             ]),
+//         ],
+
+//         'team_leader_id' => [
+//             'nullable',
+//             'integer',
+//             'exists:users,id',
+//         ],
+
+//         'leave_authority_id' => [
+//             'nullable',
+//             'integer',
+//             'exists:users,id',
+//         ],
+
+//         ...$this->employeeExtraProfileRules(),
+//     ]);
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Verify reporting manager
+//     |--------------------------------------------------------------------------
+//     */
+
+//     // if ($request->filled('team_leader_id')) {
+//     //     $validReportingManager = User::query()
+//     //         ->whereKey((int) $request->input('team_leader_id'))
+//     //         ->where('office_id', $targetOfficeId)
+//     //         ->where('status', '1')
+//     //         ->whereHas('roles', function ($query) {
+//     //             $query->where('roles.name', 'team_leader');
+//     //         })
+//     //         ->exists();
+
+//     //     if (!$validReportingManager) {
+//     //         return back()
+//     //             ->withErrors([
+//     //                 'team_leader_id' =>
+//     //                     'Please select a valid active team leader as reporting manager.',
+//     //             ])
+//     //             ->withInput();
+//     //     }
+//     // }
+
+
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Attendance duration
+//     |--------------------------------------------------------------------------
+//     */
+
+//     try {
+//         $checkInTime = Carbon::createFromFormat(
+//             'H:i',
+//             $request->input('check_in_time')
+//         );
+
+//         $checkOutTime = Carbon::createFromFormat(
+//             'H:i',
+//             $request->input('check_out_time')
+//         );
+//     } catch (\Throwable $exception) {
+//         return back()
+//             ->withErrors([
+//                 'check_in_time' => 'Please enter valid check-in and check-out times.',
+//             ])
+//             ->withInput();
+//     }
+
+//     if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
+//         $checkOutTime->addDay();
+//     }
+
+//     $officeMinutes = $checkInTime->diffInMinutes($checkOutTime);
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Explicit status normalization
+//     |--------------------------------------------------------------------------
+//     |
+//     | Database enum stores "0" or "1".
+//     | 1 = Active
+//     | 0 = Inactive
+//     |
+//     */
+
+//     // $employeeStatus = ((string) $validatedExtra['status'] === '1') ? 1 : 0;
+//     $employeeStatus = (string) $request->input('status') === '1'
+//     ? '1'
+//     : '0';
+
+//     /*
+//     |--------------------------------------------------------------------------
+//     | Structured address + old users.address compatibility
+//     |--------------------------------------------------------------------------
+//     */
+
+//     $structuredAddress = $this->employeeAddressPayload($validatedExtra);
+//     $formattedAddress = $this->formattedEmployeeAddress($structuredAddress);
+
+//     DB::beginTransaction();
+
+//     try {
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Prepare employee data
+//         |--------------------------------------------------------------------------
+//         */
+
+//         $employeeData = [
+//             'name' => trim((string) $request->input('name')),
+
+//             'email' => $request->filled('email')
+//                 ? strtolower(trim((string) $request->input('email')))
+//                 : null,
+
+//             'phone' => trim((string) $request->input('phone')),
+
+//             'dob' => $request->input('dob'),
+//             'joining_date' => $request->input('joining_date'),
+//             'employee_id' => $request->input('employee_id'),
+//             'address' => $formattedAddress
+//                 ?? $this->cleanNullableString(
+//                     $request->input('address')
+//                 ),
+
+//             'department_id' => $request->filled('department_id')
+//                 ? (int) $request->input('department_id')
+//                 : null,
+
+//             'designation' => $request->input('designation'),
+//             'responsibility' => $request->input('responsibility'),
+
+//             'salary' => $request->filled('salary')
+//                 ? (float) $request->input('salary')
+//                 : null,
+
+//             'check_in_time' => $request->input('check_in_time'),
+//             'check_out_time' => $request->input('check_out_time'),
+//             'office_time' => $officeMinutes,
+
+//             'break' => $request->input('break'),
+//             'location_required' => $request->input('location_required', 'no'),
+
+//             'office_id' => $targetOfficeId,
+
+//             'team_leader_id' => $request->filled('team_leader_id')
+//                 ? (int) $validatedExtra['team_leader_id']
+//                 : null,
+
+//             'leave_authority_id' => $request->filled('leave_authority_id')
+//                 ? (int) $validatedExtra['leave_authority_id']
+//                 : null,
+
+//             /*
+//             |--------------------------------------------------------------------------
+//             | Explicit status
+//             |--------------------------------------------------------------------------
+//             */
+
+//             // 'status' => $employeeStatus,
+
+//             /*
+//             |--------------------------------------------------------------------------
+//             | Aadhaar and PAN details
+//             |--------------------------------------------------------------------------
+//             */
+
+//             'adhar_number' => $request->filled('adhar_number')
+//                 ? preg_replace(
+//                     '/\D+/',
+//                     '',
+//                     (string) $request->input('adhar_number')
+//                 )
+//                 : null,
+
+//             'pan_number' => $request->filled('pan_number')
+//                 ? strtoupper(trim((string) $request->input('pan_number')))
+//                 : null,
+
+//             /*
+//             |--------------------------------------------------------------------------
+//             | Official identifiers
+//             |--------------------------------------------------------------------------
+//             */
+
+//             'uan_number' => $request->input('uan_number'),
+//             'esic_number' => $request->input('esic_number'),
+
+//             /*
+//             |--------------------------------------------------------------------------
+//             | Bank details
+//             |--------------------------------------------------------------------------
+//             */
+
+//             'account_holder_name' => $request->input('account_holder_name'),
+//             'bank_name' => $request->input('bank_name'),
+//             'bank_branch' => $request->input('bank_branch'),
+
+//             'account_number' => $request->filled('account_number')
+//                 ? trim((string) $request->input('account_number'))
+//                 : null,
+
+//             'ifsc_code' => $request->filled('ifsc_code')
+//                 ? strtoupper(trim((string) $request->input('ifsc_code')))
+//                 : null,
+
+//             'account_type' => $request->input('account_type'),
+
+//             'upi_id' => $request->filled('upi_id')
+//                 ? strtolower(trim((string) $request->input('upi_id')))
+//                 : null,
+
+//             'password' => Hash::make('password'),
+//         ];
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Create employee
+//         |--------------------------------------------------------------------------
+//         */
+
+//         $employee = new User();
+
+//         // forceFill prevents status or new bank fields from being silently ignored
+//         // when an old $fillable list is still cached or incomplete.
+//         $employee->forceFill($employeeData);
+//         $employee->save();
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Upload files
+//         |--------------------------------------------------------------------------
+//         */
+
+//         if ($request->hasFile('photo')) {
+//             $employee->photo = $request
+//                 ->file('photo')
+//                 ->store('photos', 'public');
+//         }
+
+//         if ($request->hasFile('aadhar_attachment')) {
+//             $employee->aadhar_attachment = $request
+//                 ->file('aadhar_attachment')
+//                 ->store('aadhar_attachments', 'public');
+//         }
+
+//         if ($request->hasFile('pan_attachment')) {
+//             $employee->pan_attachment = $request
+//                 ->file('pan_attachment')
+//                 ->store('pan_attachments', 'public');
+//         }
+
+//         if ($request->hasFile('other_attachment')) {
+//             $employee->other_attachment = $request
+//                 ->file('other_attachment')
+//                 ->store('other_attachments', 'public');
+//         }
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Save status again explicitly
+//         |--------------------------------------------------------------------------
+//         |
+//         | This prevents any observer, mutator or default value from accidentally
+//         | changing Active to Inactive during initial creation.
+//         |
+//         */
+
+//         // $employee->forceFill([
+//         //     'status' => $employeeStatus,
+//         // ]);
+
+//         // $employee->save();
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Assign role
+//         |--------------------------------------------------------------------------
+//         */
+
+//         $employee->syncRoles([
+//             $validatedExtra['role'],
+//         ]);
+
+//         DB::table('users')
+//             ->where('id', $employee->id)
+//             ->update([
+//                 'status' => $employeeStatus,
+//                 'updated_at' => now(),
+//             ]);
+
+//         $employee->refresh();
+
+//         if ((string) $employee->status !== $employeeStatus) {
+//             throw new \RuntimeException(
+//                 'Employee status could not be saved correctly.'
+//             );
+//         }
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Structured address, marital/spouse and nominee details
+//         |--------------------------------------------------------------------------
+//         */
+
+//         $this->saveEmployeeExtraProfile(
+//             $employee,
+//             $validatedExtra
+//         );
+
+
+//         // Save selected status one final time after role sync.
+//         // $employee->status = $employeeStatus;
+//         // $employee->save();
+
+//         /*
+//         |--------------------------------------------------------------------------
+//         | Salary details
+//         |--------------------------------------------------------------------------
+//         */
+
+//         $basicSalary = (float) $request->input('basic_salary', 0);
+//         $houseRentAllowance = (float) $request->input('house_rent_allowance', 0);
+//         $transportAllowance = (float) $request->input('transport_allowance', 0);
+//         $medicalAllowance = (float) $request->input('medical_allowance', 0);
+//         $specialAllowance = (float) $request->input('special_allowance', 0);
+//         $dearnessAllowance = (float) $request->input('dearness_allowance', 0);
+//         $relievingCharge = (float) $request->input('relieving_charge', 0);
+//         $additionalAllowance = (float) $request->input('additional_allowance', 0);
+//         $providentFund = (float) $request->input('provident_fund', 0);
+
+//         $esic = (float) $request->input(
+//             'employee_state_insurance_corporation',
+//             0
+//         );
+
+//         $totalSalary = $basicSalary
+//             + $houseRentAllowance
+//             + $transportAllowance
+//             + $medicalAllowance
+//             + $specialAllowance
+//             + $dearnessAllowance
+//             + $relievingCharge
+//             + $additionalAllowance;
+
+//         UserSalary::query()->create([
+//             'user_id' => $employee->id,
+//             'basic_salary' => $basicSalary,
+//             'house_rent_allowance' => $houseRentAllowance,
+//             'transport_allowance' => $transportAllowance,
+//             'medical_allowance' => $medicalAllowance,
+//             'special_allowance' => $specialAllowance,
+//             'dearness_allowance' => $dearnessAllowance,
+//             'relieving_charge' => $relievingCharge,
+//             'additional_allowance' => $additionalAllowance,
+//             'provident_fund' => $providentFund,
+//             'employee_state_insurance_corporation' => $esic,
+//             'total_salary' => $totalSalary,
+//         ]);
+
+//         DB::commit();
+
+//         return redirect()
+//             ->route('employee.index')
+//             ->with(
+//                 'success',
+//                 $employeeStatus === 1
+//                     ? 'Active employee registered successfully.'
+//                     : 'Inactive employee registered successfully.'
+//             );
+//     } catch (\Throwable $exception) {
+//         DB::rollBack();
+
+//         report($exception);
+
+//         return back()
+//             ->with(
+//                 'error',
+//                 config('app.debug')
+//                     ? $exception->getMessage()
+//                     : 'Employee could not be registered. Please try again.'
+//             )
+//             ->withInput();
+//     }
+// }
+
 public function store(EmployeeRequest $request)
 {
     $loggedInUser = $request->user();
@@ -1071,6 +1593,7 @@ public function store(EmployeeRequest $request)
     */
 
     if ($loggedInUser->hasRole('super_admin')) {
+
         $targetOfficeId = (int) $request->input('office_id');
 
         if (
@@ -1083,7 +1606,9 @@ public function store(EmployeeRequest $request)
                 ])
                 ->withInput();
         }
+
     } elseif ($loggedInUser->hasRole('owner')) {
+
         $ownerOfficeIds = Office::query()
             ->where('owner_id', $loggedInUser->id)
             ->pluck('id')
@@ -1111,6 +1636,12 @@ public function store(EmployeeRequest $request)
                 ->withInput();
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Owner plan employee limit
+        |--------------------------------------------------------------------------
+        */
+
         $plan = Plan::query()
             ->where('user_id', $loggedInUser->id)
             ->latest('id')
@@ -1125,15 +1656,29 @@ public function store(EmployeeRequest $request)
             $employeeCount >= (int) $plan->number_of_employees
         ) {
             return back()
-                ->with('error', 'Your employee creation limit exceeded!')
+                ->with(
+                    'error',
+                    'Your employee creation limit exceeded!'
+                )
                 ->withInput();
         }
+
     } else {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Admin / Team Leader etc. active office
+        |--------------------------------------------------------------------------
+        */
+
         $targetOfficeId = (int) $loggedInUser->activeOfficeId();
 
         if (!$targetOfficeId) {
             return back()
-                ->with('error', 'Please select an office first.')
+                ->with(
+                    'error',
+                    'Please select an office first.'
+                )
                 ->withInput();
         }
 
@@ -1149,7 +1694,14 @@ public function store(EmployeeRequest $request)
                 ->withInput();
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Office owner's plan employee limit
+        |--------------------------------------------------------------------------
+        */
+
         if ($office->owner) {
+
             $plan = Plan::query()
                 ->where('user_id', $office->owner->id)
                 ->latest('id')
@@ -1164,7 +1716,10 @@ public function store(EmployeeRequest $request)
                 $employeeCount >= (int) $plan->number_of_employees
             ) {
                 return back()
-                    ->with('error', 'Your employee creation limit exceeded!')
+                    ->with(
+                        'error',
+                        'Your employee creation limit exceeded!'
+                    )
                     ->withInput();
             }
         }
@@ -1172,11 +1727,18 @@ public function store(EmployeeRequest $request)
 
     /*
     |--------------------------------------------------------------------------
-    | Additional role and hierarchy validation
+    | Additional validation
     |--------------------------------------------------------------------------
     */
 
     $validatedExtra = $request->validate([
+
+        /*
+        |--------------------------------------------------------------------------
+        | Role
+        |--------------------------------------------------------------------------
+        */
+
         'role' => [
             'required',
             Rule::in([
@@ -1185,6 +1747,12 @@ public function store(EmployeeRequest $request)
                 'employee',
             ]),
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Status
+        |--------------------------------------------------------------------------
+        */
 
         'status' => [
             'required',
@@ -1196,11 +1764,23 @@ public function store(EmployeeRequest $request)
             ]),
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Reporting Manager
+        |--------------------------------------------------------------------------
+        */
+
         'team_leader_id' => [
             'nullable',
             'integer',
             'exists:users,id',
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Leave Authority
+        |--------------------------------------------------------------------------
+        */
 
         'leave_authority_id' => [
             'nullable',
@@ -1208,26 +1788,113 @@ public function store(EmployeeRequest $request)
             'exists:users,id',
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Educational Qualifications
+        |--------------------------------------------------------------------------
+        */
+
+        'qualifications' => [
+            'nullable',
+            'array',
+        ],
+
+        'qualifications.*.qualification' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'qualifications.*.course_name' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'qualifications.*.board_university' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'qualifications.*.institute_name' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'qualifications.*.passing_year' => [
+            'nullable',
+            'integer',
+            'min:1950',
+            'max:' . (now()->year + 10),
+        ],
+
+        'qualifications.*.result' => [
+            'nullable',
+            'string',
+            'max:100',
+        ],
+
+        'qualifications.*.document_type' => [
+            'nullable',
+            Rule::in([
+                'marksheet',
+                'degree',
+                'certificate',
+            ]),
+        ],
+
+        'qualifications.*.document' => [
+            'nullable',
+            'file',
+            'mimes:jpg,jpeg,png,webp,pdf',
+            'max:5120',
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Existing address / spouse / nominee / bank rules
+        |--------------------------------------------------------------------------
+        */
+
         ...$this->employeeExtraProfileRules(),
     ]);
 
     /*
     |--------------------------------------------------------------------------
-    | Verify reporting manager
+    | Verify Reporting Manager
     |--------------------------------------------------------------------------
+    |
+    | Agar future me reporting manager ko strictly same office/team leader
+    | banana ho to is block ko enable kiya ja sakta hai.
+    |
     */
 
     // if ($request->filled('team_leader_id')) {
+    //
     //     $validReportingManager = User::query()
-    //         ->whereKey((int) $request->input('team_leader_id'))
-    //         ->where('office_id', $targetOfficeId)
+    //         ->whereKey(
+    //             (int) $request->input('team_leader_id')
+    //         )
+    //         ->where(
+    //             'office_id',
+    //             $targetOfficeId
+    //         )
     //         ->where('status', '1')
-    //         ->whereHas('roles', function ($query) {
-    //             $query->where('roles.name', 'team_leader');
-    //         })
+    //         ->whereHas(
+    //             'roles',
+    //             function ($query) {
+    //                 $query->where(
+    //                     'roles.name',
+    //                     'team_leader'
+    //                 );
+    //             }
+    //         )
     //         ->exists();
-
+    //
     //     if (!$validReportingManager) {
+    //
     //         return back()
     //             ->withErrors([
     //                 'team_leader_id' =>
@@ -1237,8 +1904,6 @@ public function store(EmployeeRequest $request)
     //     }
     // }
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Attendance duration
@@ -1246,6 +1911,7 @@ public function store(EmployeeRequest $request)
     */
 
     try {
+
         $checkInTime = Carbon::createFromFormat(
             'H:i',
             $request->input('check_in_time')
@@ -1255,223 +1921,457 @@ public function store(EmployeeRequest $request)
             'H:i',
             $request->input('check_out_time')
         );
+
     } catch (\Throwable $exception) {
+
         return back()
             ->withErrors([
-                'check_in_time' => 'Please enter valid check-in and check-out times.',
+                'check_in_time' =>
+                    'Please enter valid check-in and check-out times.',
             ])
             ->withInput();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Handle night shift
+    |--------------------------------------------------------------------------
+    */
 
     if ($checkOutTime->lessThanOrEqualTo($checkInTime)) {
         $checkOutTime->addDay();
     }
 
-    $officeMinutes = $checkInTime->diffInMinutes($checkOutTime);
+    $officeMinutes = $checkInTime->diffInMinutes(
+        $checkOutTime
+    );
 
     /*
     |--------------------------------------------------------------------------
-    | Explicit status normalization
+    | Employee status normalization
     |--------------------------------------------------------------------------
     |
-    | Database enum stores "0" or "1".
+    | Database stores:
+    |
     | 1 = Active
     | 0 = Inactive
     |
     */
 
-    // $employeeStatus = ((string) $validatedExtra['status'] === '1') ? 1 : 0;
-    $employeeStatus = (string) $request->input('status') === '1'
-    ? '1'
-    : '0';
+    $employeeStatus =
+        (string) $request->input('status') === '1'
+            ? '1'
+            : '0';
 
     /*
     |--------------------------------------------------------------------------
-    | Structured address + old users.address compatibility
+    | Structured Address
     |--------------------------------------------------------------------------
     */
 
-    $structuredAddress = $this->employeeAddressPayload($validatedExtra);
-    $formattedAddress = $this->formattedEmployeeAddress($structuredAddress);
+    $structuredAddress =
+        $this->employeeAddressPayload(
+            $validatedExtra
+        );
+
+    $formattedAddress =
+        $this->formattedEmployeeAddress(
+            $structuredAddress
+        );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Start Database Transaction
+    |--------------------------------------------------------------------------
+    */
 
     DB::beginTransaction();
 
     try {
+
         /*
         |--------------------------------------------------------------------------
-        | Prepare employee data
+        | Employee Data
         |--------------------------------------------------------------------------
         */
 
         $employeeData = [
-            'name' => trim((string) $request->input('name')),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Basic Details
+            |--------------------------------------------------------------------------
+            */
+
+            'name' => trim(
+                (string) $request->input('name')
+            ),
 
             'email' => $request->filled('email')
-                ? strtolower(trim((string) $request->input('email')))
+                ? strtolower(
+                    trim(
+                        (string) $request->input('email')
+                    )
+                )
                 : null,
 
-            'phone' => trim((string) $request->input('phone')),
+            'phone' => trim(
+                (string) $request->input('phone')
+            ),
 
             'dob' => $request->input('dob'),
-            'joining_date' => $request->input('joining_date'),
-            'employee_id' => $request->input('employee_id'),
+
+            'joining_date' =>
+                $request->input('joining_date'),
+
+            'employee_id' =>
+                $request->input('employee_id'),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Address
+            |--------------------------------------------------------------------------
+            */
+
             'address' => $formattedAddress
                 ?? $this->cleanNullableString(
                     $request->input('address')
                 ),
 
-            'department_id' => $request->filled('department_id')
-                ? (int) $request->input('department_id')
-                : null,
+            /*
+            |--------------------------------------------------------------------------
+            | Employment Details
+            |--------------------------------------------------------------------------
+            */
 
-            'designation' => $request->input('designation'),
-            'responsibility' => $request->input('responsibility'),
+            'department_id' =>
+                $request->filled('department_id')
+                    ? (int) $request->input(
+                        'department_id'
+                    )
+                    : null,
 
-            'salary' => $request->filled('salary')
-                ? (float) $request->input('salary')
-                : null,
+            'designation' =>
+                $request->input('designation'),
 
-            'check_in_time' => $request->input('check_in_time'),
-            'check_out_time' => $request->input('check_out_time'),
+            'responsibility' =>
+                $request->input('responsibility'),
+
+            'salary' =>
+                $request->filled('salary')
+                    ? (float) $request->input(
+                        'salary'
+                    )
+                    : null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Attendance
+            |--------------------------------------------------------------------------
+            */
+
+            'check_in_time' =>
+                $request->input('check_in_time'),
+
+            'check_out_time' =>
+                $request->input('check_out_time'),
+
             'office_time' => $officeMinutes,
 
-            'break' => $request->input('break'),
-            'location_required' => $request->input('location_required', 'no'),
+            'break' =>
+                $request->input('break'),
+
+            'location_required' =>
+                $request->input(
+                    'location_required',
+                    'no'
+                ),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Office
+            |--------------------------------------------------------------------------
+            */
 
             'office_id' => $targetOfficeId,
 
-            'team_leader_id' => $request->filled('team_leader_id')
-                ? (int) $validatedExtra['team_leader_id']
-                : null,
-
-            'leave_authority_id' => $request->filled('leave_authority_id')
-                ? (int) $validatedExtra['leave_authority_id']
-                : null,
-
             /*
             |--------------------------------------------------------------------------
-            | Explicit status
+            | Reporting Manager
             |--------------------------------------------------------------------------
             */
 
-            // 'status' => $employeeStatus,
-
-            /*
-            |--------------------------------------------------------------------------
-            | Aadhaar and PAN details
-            |--------------------------------------------------------------------------
-            */
-
-            'adhar_number' => $request->filled('adhar_number')
-                ? preg_replace(
-                    '/\D+/',
-                    '',
-                    (string) $request->input('adhar_number')
+            'team_leader_id' =>
+                $request->filled(
+                    'team_leader_id'
                 )
-                : null,
-
-            'pan_number' => $request->filled('pan_number')
-                ? strtoupper(trim((string) $request->input('pan_number')))
-                : null,
-
-            /*
-            |--------------------------------------------------------------------------
-            | Official identifiers
-            |--------------------------------------------------------------------------
-            */
-
-            'uan_number' => $request->input('uan_number'),
-            'esic_number' => $request->input('esic_number'),
+                    ? (int) $validatedExtra[
+                        'team_leader_id'
+                    ]
+                    : null,
 
             /*
             |--------------------------------------------------------------------------
-            | Bank details
+            | Leave Authority
             |--------------------------------------------------------------------------
             */
 
-            'account_holder_name' => $request->input('account_holder_name'),
-            'bank_name' => $request->input('bank_name'),
-            'bank_branch' => $request->input('bank_branch'),
+            'leave_authority_id' =>
+                $request->filled(
+                    'leave_authority_id'
+                )
+                    ? (int) $validatedExtra[
+                        'leave_authority_id'
+                    ]
+                    : null,
 
-            'account_number' => $request->filled('account_number')
-                ? trim((string) $request->input('account_number'))
-                : null,
+            /*
+            |--------------------------------------------------------------------------
+            | Aadhaar Number
+            |--------------------------------------------------------------------------
+            */
 
-            'ifsc_code' => $request->filled('ifsc_code')
-                ? strtoupper(trim((string) $request->input('ifsc_code')))
-                : null,
+            'adhar_number' =>
+                $request->filled(
+                    'adhar_number'
+                )
+                    ? preg_replace(
+                        '/\D+/',
+                        '',
+                        (string) $request->input(
+                            'adhar_number'
+                        )
+                    )
+                    : null,
 
-            'account_type' => $request->input('account_type'),
+            /*
+            |--------------------------------------------------------------------------
+            | PAN Number
+            |--------------------------------------------------------------------------
+            */
 
-            'upi_id' => $request->filled('upi_id')
-                ? strtolower(trim((string) $request->input('upi_id')))
-                : null,
+            'pan_number' =>
+                $request->filled(
+                    'pan_number'
+                )
+                    ? strtoupper(
+                        trim(
+                            (string) $request->input(
+                                'pan_number'
+                            )
+                        )
+                    )
+                    : null,
 
-            'password' => Hash::make('password'),
+            /*
+            |--------------------------------------------------------------------------
+            | Official Identifiers
+            |--------------------------------------------------------------------------
+            */
+
+            'uan_number' =>
+                $request->input(
+                    'uan_number'
+                ),
+
+            'esic_number' =>
+                $request->input(
+                    'esic_number'
+                ),
+
+            /*
+            |--------------------------------------------------------------------------
+            | Employee Bank Details
+            |--------------------------------------------------------------------------
+            */
+
+            'account_holder_name' =>
+                $request->input(
+                    'account_holder_name'
+                ),
+
+            'bank_name' =>
+                $request->input(
+                    'bank_name'
+                ),
+
+            'bank_branch' =>
+                $request->input(
+                    'bank_branch'
+                ),
+
+            'account_number' =>
+                $request->filled(
+                    'account_number'
+                )
+                    ? trim(
+                        (string) $request->input(
+                            'account_number'
+                        )
+                    )
+                    : null,
+
+            'ifsc_code' =>
+                $request->filled(
+                    'ifsc_code'
+                )
+                    ? strtoupper(
+                        trim(
+                            (string) $request->input(
+                                'ifsc_code'
+                            )
+                        )
+                    )
+                    : null,
+
+            'account_type' =>
+                $request->input(
+                    'account_type'
+                ),
+
+            'upi_id' =>
+                $request->filled(
+                    'upi_id'
+                )
+                    ? strtolower(
+                        trim(
+                            (string) $request->input(
+                                'upi_id'
+                            )
+                        )
+                    )
+                    : null,
+
+            /*
+            |--------------------------------------------------------------------------
+            | Default Password
+            |--------------------------------------------------------------------------
+            */
+
+            'password' => Hash::make(
+                'password'
+            ),
         ];
 
         /*
         |--------------------------------------------------------------------------
-        | Create employee
+        | Create Employee
         |--------------------------------------------------------------------------
         */
 
         $employee = new User();
 
-        // forceFill prevents status or new bank fields from being silently ignored
-        // when an old $fillable list is still cached or incomplete.
-        $employee->forceFill($employeeData);
+        /*
+         * forceFill use kar rahe hain taaki agar kisi new field ko User model
+         * ke $fillable me add karna reh gaya ho to bhi employee creation fail
+         * ya silently ignore na ho.
+         */
+
+        $employee->forceFill(
+            $employeeData
+        );
+
         $employee->save();
 
         /*
         |--------------------------------------------------------------------------
-        | Upload files
+        | Employee Photo
         |--------------------------------------------------------------------------
         */
 
         if ($request->hasFile('photo')) {
-            $employee->photo = $request
-                ->file('photo')
-                ->store('photos', 'public');
-        }
 
-        if ($request->hasFile('aadhar_attachment')) {
-            $employee->aadhar_attachment = $request
-                ->file('aadhar_attachment')
-                ->store('aadhar_attachments', 'public');
-        }
-
-        if ($request->hasFile('pan_attachment')) {
-            $employee->pan_attachment = $request
-                ->file('pan_attachment')
-                ->store('pan_attachments', 'public');
-        }
-
-        if ($request->hasFile('other_attachment')) {
-            $employee->other_attachment = $request
-                ->file('other_attachment')
-                ->store('other_attachments', 'public');
+            $employee->photo =
+                $request
+                    ->file('photo')
+                    ->store(
+                        'photos',
+                        'public'
+                    );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Save status again explicitly
+        | Aadhaar Attachment
         |--------------------------------------------------------------------------
-        |
-        | This prevents any observer, mutator or default value from accidentally
-        | changing Active to Inactive during initial creation.
-        |
         */
 
-        // $employee->forceFill([
-        //     'status' => $employeeStatus,
-        // ]);
+        if (
+            $request->hasFile(
+                'aadhar_attachment'
+            )
+        ) {
 
-        // $employee->save();
+            $employee->aadhar_attachment =
+                $request
+                    ->file(
+                        'aadhar_attachment'
+                    )
+                    ->store(
+                        'aadhar_attachments',
+                        'public'
+                    );
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | Assign role
+        | PAN Attachment
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->hasFile(
+                'pan_attachment'
+            )
+        ) {
+
+            $employee->pan_attachment =
+                $request
+                    ->file(
+                        'pan_attachment'
+                    )
+                    ->store(
+                        'pan_attachments',
+                        'public'
+                    );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Other Attachment
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $request->hasFile(
+                'other_attachment'
+            )
+        ) {
+
+            $employee->other_attachment =
+                $request
+                    ->file(
+                        'other_attachment'
+                    )
+                    ->store(
+                        'other_attachments',
+                        'public'
+                    );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save uploaded file paths
+        |--------------------------------------------------------------------------
+        */
+
+        if ($employee->isDirty()) {
+            $employee->save();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assign Employee Role
         |--------------------------------------------------------------------------
         */
 
@@ -1479,16 +2379,44 @@ public function store(EmployeeRequest $request)
             $validatedExtra['role'],
         ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Save Status Explicitly
+        |--------------------------------------------------------------------------
+        |
+        | Direct DB update is intentionally retained because existing code
+        | already protects status from observer/default/fillable issues.
+        |
+        */
+
         DB::table('users')
-            ->where('id', $employee->id)
+            ->where(
+                'id',
+                $employee->id
+            )
             ->update([
                 'status' => $employeeStatus,
                 'updated_at' => now(),
             ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh Employee
+        |--------------------------------------------------------------------------
+        */
+
         $employee->refresh();
 
-        if ((string) $employee->status !== $employeeStatus) {
+        /*
+        |--------------------------------------------------------------------------
+        | Confirm Status Saved Properly
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            (string) $employee->status
+            !== $employeeStatus
+        ) {
             throw new \RuntimeException(
                 'Employee status could not be saved correctly.'
             );
@@ -1496,8 +2424,15 @@ public function store(EmployeeRequest $request)
 
         /*
         |--------------------------------------------------------------------------
-        | Structured address, marital/spouse and nominee details
+        | Save Extra Employee Profile
         |--------------------------------------------------------------------------
+        |
+        | Structured address
+        | Marital status
+        | Spouse
+        | Nominee
+        | Nominee bank details
+        |
         */
 
         $this->saveEmployeeExtraProfile(
@@ -1505,33 +2440,259 @@ public function store(EmployeeRequest $request)
             $validatedExtra
         );
 
-
-        // Save selected status one final time after role sync.
-        // $employee->status = $employeeStatus;
-        // $employee->save();
-
         /*
         |--------------------------------------------------------------------------
-        | Salary details
+        | Save Educational Qualifications
         |--------------------------------------------------------------------------
         */
 
-        $basicSalary = (float) $request->input('basic_salary', 0);
-        $houseRentAllowance = (float) $request->input('house_rent_allowance', 0);
-        $transportAllowance = (float) $request->input('transport_allowance', 0);
-        $medicalAllowance = (float) $request->input('medical_allowance', 0);
-        $specialAllowance = (float) $request->input('special_allowance', 0);
-        $dearnessAllowance = (float) $request->input('dearness_allowance', 0);
-        $relievingCharge = (float) $request->input('relieving_charge', 0);
-        $additionalAllowance = (float) $request->input('additional_allowance', 0);
-        $providentFund = (float) $request->input('provident_fund', 0);
+        $qualifications =
+            $request->input(
+                'qualifications',
+                []
+            );
 
-        $esic = (float) $request->input(
-            'employee_state_insurance_corporation',
-            0
-        );
+        foreach (
+            $qualifications as $index => $qualification
+        ) {
 
-        $totalSalary = $basicSalary
+            /*
+            |--------------------------------------------------------------------------
+            | Clean qualification values
+            |--------------------------------------------------------------------------
+            */
+
+            $qualificationName =
+                $this->cleanNullableString(
+                    $qualification[
+                        'qualification'
+                    ] ?? null
+                );
+
+            $courseName =
+                $this->cleanNullableString(
+                    $qualification[
+                        'course_name'
+                    ] ?? null
+                );
+
+            $boardUniversity =
+                $this->cleanNullableString(
+                    $qualification[
+                        'board_university'
+                    ] ?? null
+                );
+
+            $instituteName =
+                $this->cleanNullableString(
+                    $qualification[
+                        'institute_name'
+                    ] ?? null
+                );
+
+            $passingYear =
+                $qualification[
+                    'passing_year'
+                ] ?? null;
+
+            $result =
+                $this->cleanNullableString(
+                    $qualification[
+                        'result'
+                    ] ?? null
+                );
+
+                $documentType =
+                    $this->cleanNullableString(
+                        $qualification[
+                            'document_type'
+                        ] ?? null
+                    );
+
+                $documentPath = null;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Upload Marksheet / Degree
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $request->hasFile(
+                        "qualifications.$index.document"
+                    )
+                ) {
+                    $documentPath = $request
+                        ->file(
+                            "qualifications.$index.document"
+                        )
+                        ->store(
+                            "employee_qualifications/{$employee->id}",
+                            'public'
+                        );
+                }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check whether row contains any value
+            |--------------------------------------------------------------------------
+            */
+
+            $hasAnyQualificationValue =
+                $qualificationName !== null
+                || $courseName !== null
+                || $boardUniversity !== null
+                || $instituteName !== null
+                || filled($passingYear)
+                || $result !== null
+                || $documentType !== null
+                || $documentPath !== null;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Ignore completely empty rows
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !$hasAnyQualificationValue
+            ) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Qualification name is required for a non-empty row
+            |--------------------------------------------------------------------------
+            |
+            | Migration me qualification nullable nahi hai.
+            |
+            */
+
+            if (
+                $qualificationName === null
+            ) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "qualifications.$index.qualification" =>
+                        'Please select qualification.',
+                ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Qualification
+            |--------------------------------------------------------------------------
+            */
+
+            EmployeeEducationalQualification::query()
+                ->create([
+
+                    'user_id' =>
+                        $employee->id,
+
+                    'qualification' =>
+                        $qualificationName,
+
+                    'course_name' =>
+                        $courseName,
+
+                    'board_university' =>
+                        $boardUniversity,
+
+                    'institute_name' =>
+                        $instituteName,
+
+                    'passing_year' =>
+                        filled($passingYear)
+                            ? (int) $passingYear
+                            : null,
+
+                    'result' =>
+                        $result,
+
+                    'document_type' =>
+                        $documentType,
+
+                    'document_path' =>
+                        $documentPath,
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Salary Details
+        |--------------------------------------------------------------------------
+        */
+
+        $basicSalary =
+            (float) $request->input(
+                'basic_salary',
+                0
+            );
+
+        $houseRentAllowance =
+            (float) $request->input(
+                'house_rent_allowance',
+                0
+            );
+
+        $transportAllowance =
+            (float) $request->input(
+                'transport_allowance',
+                0
+            );
+
+        $medicalAllowance =
+            (float) $request->input(
+                'medical_allowance',
+                0
+            );
+
+        $specialAllowance =
+            (float) $request->input(
+                'special_allowance',
+                0
+            );
+
+        $dearnessAllowance =
+            (float) $request->input(
+                'dearness_allowance',
+                0
+            );
+
+        $relievingCharge =
+            (float) $request->input(
+                'relieving_charge',
+                0
+            );
+
+        $additionalAllowance =
+            (float) $request->input(
+                'additional_allowance',
+                0
+            );
+
+        $providentFund =
+            (float) $request->input(
+                'provident_fund',
+                0
+            );
+
+        $esic =
+            (float) $request->input(
+                'employee_state_insurance_corporation',
+                0
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total Salary
+        |--------------------------------------------------------------------------
+        */
+
+        $totalSalary =
+            $basicSalary
             + $houseRentAllowance
             + $transportAllowance
             + $medicalAllowance
@@ -1540,35 +2701,112 @@ public function store(EmployeeRequest $request)
             + $relievingCharge
             + $additionalAllowance;
 
-        UserSalary::query()->create([
-            'user_id' => $employee->id,
-            'basic_salary' => $basicSalary,
-            'house_rent_allowance' => $houseRentAllowance,
-            'transport_allowance' => $transportAllowance,
-            'medical_allowance' => $medicalAllowance,
-            'special_allowance' => $specialAllowance,
-            'dearness_allowance' => $dearnessAllowance,
-            'relieving_charge' => $relievingCharge,
-            'additional_allowance' => $additionalAllowance,
-            'provident_fund' => $providentFund,
-            'employee_state_insurance_corporation' => $esic,
-            'total_salary' => $totalSalary,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Save Salary
+        |--------------------------------------------------------------------------
+        */
+
+        UserSalary::query()
+            ->create([
+
+                'user_id' =>
+                    $employee->id,
+
+                'basic_salary' =>
+                    $basicSalary,
+
+                'house_rent_allowance' =>
+                    $houseRentAllowance,
+
+                'transport_allowance' =>
+                    $transportAllowance,
+
+                'medical_allowance' =>
+                    $medicalAllowance,
+
+                'special_allowance' =>
+                    $specialAllowance,
+
+                'dearness_allowance' =>
+                    $dearnessAllowance,
+
+                'relieving_charge' =>
+                    $relievingCharge,
+
+                'additional_allowance' =>
+                    $additionalAllowance,
+
+                'provident_fund' =>
+                    $providentFund,
+
+                'employee_state_insurance_corporation' =>
+                    $esic,
+
+                'total_salary' =>
+                    $totalSalary,
+            ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Commit Transaction
+        |--------------------------------------------------------------------------
+        */
 
         DB::commit();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Success Response
+        |--------------------------------------------------------------------------
+        */
 
         return redirect()
             ->route('employee.index')
             ->with(
                 'success',
-                $employeeStatus === 1
+                $employeeStatus === '1'
                     ? 'Active employee registered successfully.'
                     : 'Inactive employee registered successfully.'
             );
-    } catch (\Throwable $exception) {
+
+    } catch (
+        \Illuminate\Validation\ValidationException $exception
+    ) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validation failure after transaction started
+        |--------------------------------------------------------------------------
+        */
+
         DB::rollBack();
 
+        throw $exception;
+
+    } catch (\Throwable $exception) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rollback
+        |--------------------------------------------------------------------------
+        */
+
+        DB::rollBack();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Log actual exception
+        |--------------------------------------------------------------------------
+        */
+
         report($exception);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return Error
+        |--------------------------------------------------------------------------
+        */
 
         return back()
             ->with(

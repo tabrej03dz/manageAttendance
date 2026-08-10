@@ -312,6 +312,90 @@
             width: 100%;
         }
     }
+
+    /* Educational Qualifications */
+    .qualification-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .qualification-item {
+        padding: 10px;
+        border: 1px solid #d6d9dc;
+        background: #fafafa;
+    }
+
+    .qualification-item-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px 14px;
+    }
+
+    .qualification-field label {
+        display: block;
+        margin-bottom: 3px;
+        color: #555;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .qualification-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .qualification-help {
+        color: #777;
+        font-size: 11px;
+    }
+
+    .btn-qualification-add,
+    .btn-qualification-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 2px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-qualification-add {
+        border: 1px solid #315f8c;
+        background: #3f78ad;
+        color: #fff;
+    }
+
+    .btn-qualification-remove {
+        border: 1px solid #c84b4b;
+        background: #fff;
+        color: #b42318;
+    }
+
+    .qualification-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 800px) {
+        .qualification-item-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .qualification-toolbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
 </style>
 @endpush
 
@@ -734,6 +818,238 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Educational Qualifications</h2>
+                    <span class="panel-edit"><i class="fas fa-graduation-cap"></i> Add Multiple</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="qualification-toolbar">
+                        <div class="qualification-help">
+                            Add 10th, 12th, Diploma, Graduation, Post Graduation or any other qualification.
+                        </div>
+
+                        <button type="button" class="btn-qualification-add" id="addQualificationBtn">
+                            <i class="fas fa-plus"></i> Add Qualification
+                        </button>
+                    </div>
+
+                    <div id="qualificationList" class="qualification-list">
+                        @php
+                            $oldQualifications = old('qualifications', [
+                                [
+                                    'qualification' => '',
+                                    'course_name' => '',
+                                    'board_university' => '',
+                                    'institute_name' => '',
+                                    'passing_year' => '',
+                                    'result' => '',
+                                    'document_type' => '',
+                                    'document' => '',
+                                ]
+                            ]);
+                        @endphp
+
+                        @foreach($oldQualifications as $index => $qualification)
+                            <div class="qualification-item" data-qualification-row>
+                                <div class="qualification-item-grid">
+
+                                    <div class="qualification-field">
+                                        <label>
+                                            Qualification
+                                            @if($index === 0)
+                                                <span class="required">*</span>
+                                            @endif
+                                        </label>
+                                        <select
+                                            class="form-control-compact @error("qualifications.$index.qualification") has-error @enderror"
+                                            name="qualifications[{{ $index }}][qualification]"
+                                            {{ $index === 0 ? 'required' : '' }}
+                                        >
+                                            <option value="">Select Qualification</option>
+                                            @foreach([
+                                                '10th',
+                                                '12th',
+                                                'ITI',
+                                                'Diploma',
+                                                'Graduation',
+                                                'Post Graduation',
+                                                'B.Tech',
+                                                'B.E.',
+                                                'B.Com',
+                                                'B.Sc',
+                                                'B.A.',
+                                                'BCA',
+                                                'M.Tech',
+                                                'M.Com',
+                                                'M.Sc',
+                                                'M.A.',
+                                                'MCA',
+                                                'MBA',
+                                                'PhD',
+                                                'Other'
+                                            ] as $option)
+                                                <option
+                                                    value="{{ $option }}"
+                                                    {{ ($qualification['qualification'] ?? '') === $option ? 'selected' : '' }}
+                                                >
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error("qualifications.$index.qualification")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Course / Stream</label>
+                                        <input
+                                            type="text"
+                                            class="form-control-compact @error("qualifications.$index.course_name") has-error @enderror"
+                                            name="qualifications[{{ $index }}][course_name]"
+                                            value="{{ $qualification['course_name'] ?? '' }}"
+                                            placeholder="Science, Commerce, B.Tech CSE..."
+                                        >
+                                        @error("qualifications.$index.course_name")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Board / University</label>
+                                        <input
+                                            type="text"
+                                            class="form-control-compact @error("qualifications.$index.board_university") has-error @enderror"
+                                            name="qualifications[{{ $index }}][board_university]"
+                                            value="{{ $qualification['board_university'] ?? '' }}"
+                                            placeholder="CBSE, UP Board, AKTU..."
+                                        >
+                                        @error("qualifications.$index.board_university")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>School / College / Institute</label>
+                                        <input
+                                            type="text"
+                                            class="form-control-compact @error("qualifications.$index.institute_name") has-error @enderror"
+                                            name="qualifications[{{ $index }}][institute_name]"
+                                            value="{{ $qualification['institute_name'] ?? '' }}"
+                                            placeholder="Institute name"
+                                        >
+                                        @error("qualifications.$index.institute_name")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Passing Year</label>
+                                        <input
+                                            type="number"
+                                            min="1950"
+                                            max="{{ now()->year + 10 }}"
+                                            class="form-control-compact @error("qualifications.$index.passing_year") has-error @enderror"
+                                            name="qualifications[{{ $index }}][passing_year]"
+                                            value="{{ $qualification['passing_year'] ?? '' }}"
+                                            placeholder="2024"
+                                        >
+                                        @error("qualifications.$index.passing_year")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Result</label>
+                                        <input
+                                            type="text"
+                                            maxlength="100"
+                                            class="form-control-compact @error("qualifications.$index.result") has-error @enderror"
+                                            name="qualifications[{{ $index }}][result]"
+                                            value="{{ $qualification['result'] ?? '' }}"
+                                            placeholder="75%, 8.5 CGPA, First Division..."
+                                        >
+                                        @error("qualifications.$index.result")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Document Type</label>
+
+                                        <select
+                                            class="form-control-compact @error("qualifications.$index.document_type") has-error @enderror"
+                                            name="qualifications[{{ $index }}][document_type]"
+                                        >
+                                            <option value="">Select Document Type</option>
+
+                                            <option
+                                                value="marksheet"
+                                                {{ ($qualification['document_type'] ?? '') === 'marksheet' ? 'selected' : '' }}
+                                            >
+                                                Marksheet
+                                            </option>
+
+                                            <option
+                                                value="degree"
+                                                {{ ($qualification['document_type'] ?? '') === 'degree' ? 'selected' : '' }}
+                                            >
+                                                Degree
+                                            </option>
+
+                                            <option
+                                                value="certificate"
+                                                {{ ($qualification['document_type'] ?? '') === 'certificate' ? 'selected' : '' }}
+                                            >
+                                                Certificate
+                                            </option>
+                                        </select>
+
+                                        @error("qualifications.$index.document_type")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="qualification-field">
+                                        <label>Marksheet / Degree</label>
+
+                                        <input
+                                            type="file"
+                                            class="form-control-compact @error("qualifications.$index.document") has-error @enderror"
+                                            name="qualifications[{{ $index }}][document]"
+                                            accept=".jpg,.jpeg,.png,.webp,.pdf"
+                                        >
+
+                                        @error("qualifications.$index.document")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="qualification-actions">
+                                    <button
+                                        type="button"
+                                        class="btn-qualification-remove"
+                                        data-remove-qualification
+                                        style="{{ count($oldQualifications) <= 1 ? 'display:none;' : '' }}"
+                                    >
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </section>
@@ -1949,6 +2265,217 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (office) office.addEventListener('change', filterManagersByOffice);
     filterManagersByOffice();
+
+    /* Educational Qualifications */
+    const qualificationList = document.getElementById('qualificationList');
+    const addQualificationBtn = document.getElementById('addQualificationBtn');
+
+    const qualificationOptions = [
+        '10th',
+        '12th',
+        'ITI',
+        'Diploma',
+        'Graduation',
+        'Post Graduation',
+        'B.Tech',
+        'B.E.',
+        'B.Com',
+        'B.Sc',
+        'B.A.',
+        'BCA',
+        'M.Tech',
+        'M.Com',
+        'M.Sc',
+        'M.A.',
+        'MCA',
+        'MBA',
+        'PhD',
+        'Other'
+    ];
+
+    const escapeHtml = (value) => String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const buildQualificationOptions = () => {
+        return '<option value="">Select Qualification</option>' +
+            qualificationOptions.map(option =>
+                `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`
+            ).join('');
+    };
+
+    const refreshQualificationRows = () => {
+        if (!qualificationList) return;
+
+        const rows = qualificationList.querySelectorAll('[data-qualification-row]');
+
+        rows.forEach((row, index) => {
+            row.querySelectorAll('select, input').forEach(field => {
+                const currentName = field.getAttribute('name') || '';
+
+                field.setAttribute(
+                    'name',
+                    currentName.replace(
+                        /qualifications\[\d+\]/,
+                        `qualifications[${index}]`
+                    )
+                );
+            });
+
+            const qualificationSelect = row.querySelector(
+                'select[name*="[qualification]"]'
+            );
+
+            if (qualificationSelect) {
+                qualificationSelect.required = index === 0;
+            }
+
+            const removeButton = row.querySelector('[data-remove-qualification]');
+            if (removeButton) {
+                removeButton.style.display = rows.length > 1 ? '' : 'none';
+            }
+        });
+    };
+
+    const createQualificationRow = () => {
+        const index = qualificationList
+            ? qualificationList.querySelectorAll('[data-qualification-row]').length
+            : 0;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'qualification-item';
+        wrapper.setAttribute('data-qualification-row', '');
+
+        wrapper.innerHTML = `
+            <div class="qualification-item-grid">
+                <div class="qualification-field">
+                    <label>Qualification</label>
+                    <select
+                        class="form-control-compact"
+                        name="qualifications[${index}][qualification]"
+                    >
+                        ${buildQualificationOptions()}
+                    </select>
+                </div>
+
+                <div class="qualification-field">
+                    <label>Course / Stream</label>
+                    <input
+                        type="text"
+                        class="form-control-compact"
+                        name="qualifications[${index}][course_name]"
+                        placeholder="Science, Commerce, B.Tech CSE..."
+                    >
+                </div>
+
+                <div class="qualification-field">
+                    <label>Board / University</label>
+                    <input
+                        type="text"
+                        class="form-control-compact"
+                        name="qualifications[${index}][board_university]"
+                        placeholder="CBSE, UP Board, AKTU..."
+                    >
+                </div>
+
+                <div class="qualification-field">
+                    <label>School / College / Institute</label>
+                    <input
+                        type="text"
+                        class="form-control-compact"
+                        name="qualifications[${index}][institute_name]"
+                        placeholder="Institute name"
+                    >
+                </div>
+
+                <div class="qualification-field">
+                    <label>Passing Year</label>
+                    <input
+                        type="number"
+                        min="1950"
+                        max="${new Date().getFullYear() + 10}"
+                        class="form-control-compact"
+                        name="qualifications[${index}][passing_year]"
+                        placeholder="2024"
+                    >
+                </div>
+
+                <div class="qualification-field">
+                    <label>Result</label>
+                    <input
+                        type="text"
+                        maxlength="100"
+                        class="form-control-compact"
+                        name="qualifications[${index}][result]"
+                        placeholder="75%, 8.5 CGPA, First Division..."
+                    >
+                </div>
+
+                <div class="qualification-field">
+                    <label>Document Type</label>
+
+                    <select
+                        class="form-control-compact"
+                        name="qualifications[${index}][document_type]"
+                    >
+                        <option value="">Select Document Type</option>
+                        <option value="marksheet">Marksheet</option>
+                        <option value="degree">Degree</option>
+                        <option value="certificate">Certificate</option>
+                    </select>
+                </div>
+
+                <div class="qualification-field">
+                    <label>Marksheet / Degree</label>
+
+                    <input
+                        type="file"
+                        class="form-control-compact"
+                        name="qualifications[${index}][document]"
+                        accept=".jpg,.jpeg,.png,.webp,.pdf"
+                    >
+                </div>
+            </div>
+
+            <div class="qualification-actions">
+                <button
+                    type="button"
+                    class="btn-qualification-remove"
+                    data-remove-qualification
+                >
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+        `;
+
+        return wrapper;
+    };
+
+    if (addQualificationBtn && qualificationList) {
+        addQualificationBtn.addEventListener('click', function () {
+            qualificationList.appendChild(createQualificationRow());
+            refreshQualificationRows();
+        });
+
+        qualificationList.addEventListener('click', function (event) {
+            const removeButton = event.target.closest('[data-remove-qualification]');
+
+            if (!removeButton) return;
+
+            const rows = qualificationList.querySelectorAll('[data-qualification-row]');
+
+            if (rows.length <= 1) return;
+
+            removeButton.closest('[data-qualification-row]')?.remove();
+            refreshQualificationRows();
+        });
+
+        refreshQualificationRows();
+    }
+
 });
 </script>
 @endpush

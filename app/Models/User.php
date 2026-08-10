@@ -214,4 +214,12 @@ public function leaveAuthorityEmployees()
         'leave_authority_id'
     );
 }
+
+public function educationalQualifications()
+{
+    return $this->hasMany(
+        \App\Models\EmployeeEducationalQualification::class,
+        'user_id'
+    )->orderBy('passing_year');
+}
 }
