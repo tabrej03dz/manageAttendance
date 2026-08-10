@@ -1157,7 +1157,7 @@
 
 
     {{-- Premium Birthday Popup: sirf logged-in birthday employee ko personal wish --}}
-    @if($isUserBirthdayToday)
+    {{-- @if($isUserBirthdayToday)
         @php
             $birthdayOfficeName = optional($user->office)->name
                 ?? $activeOffice?->name
@@ -1274,7 +1274,7 @@
                 </div>
             </div>
         </div>
-    @endif
+    @endif --}}
 
     {{-- Mobile Top Attendance Actions --}}
     <section class="mobile-attendance-actions">
@@ -1520,16 +1520,9 @@
     @endphp
 
     {{-- Birthday Celebration --}}
-    @if($isUserBirthdayToday || $otherBirthdayEmployees->isNotEmpty())
+    {{-- @if($isUserBirthdayToday || $otherBirthdayEmployees->isNotEmpty())
         <section class="birthday-celebration p-5 sm:p-6">
             <div class="relative">
-
-                {{--
-                |--------------------------------------------------------------------------
-                | Logged-in User Personal Birthday Wish
-                |--------------------------------------------------------------------------
-                | यह सिर्फ उसी employee को दिखेगा जिसका आज birthday है।
-                --}}
                 @if($isUserBirthdayToday)
                     <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-start gap-4">
@@ -1571,14 +1564,6 @@
                     </div>
                 @endif
 
-
-                {{--
-                |--------------------------------------------------------------------------
-                | Other Team Members Birthday
-                |--------------------------------------------------------------------------
-                | यह section तभी दिखेगा जब logged-in employee के अलावा
-                | किसी दूसरे employee का birthday हो।
-                --}}
                 @if($otherBirthdayEmployees->isNotEmpty())
 
                     @if($isUserBirthdayToday)
@@ -1707,7 +1692,7 @@
                 @endif
             </div>
         </section>
-    @endif
+    @endif --}}
 
     {{-- Attendance Quick Actions --}}
     <section class="attendance-action-card p-5 sm:p-6">
