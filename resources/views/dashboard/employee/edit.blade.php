@@ -1021,6 +1021,101 @@
                                             <div class="field-error">{{ $message }}</div>
                                         @enderror
                                     </div>
+
+                                    {{-- Nominee Bank Details --}}
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_bank_name">
+                                            Bank Name
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_bank_name') has-error @enderror"
+                                            id="nominee_bank_name"
+                                            name="nominee_bank_name"
+                                            type="text"
+                                            maxlength="255"
+                                            value="{{ old('nominee_bank_name', $employeeNominee?->bank_name) }}"
+                                            placeholder="Enter bank name"
+                                        >
+                                        @error('nominee_bank_name')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_account_holder_name">
+                                            Account Holder
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_account_holder_name') has-error @enderror"
+                                            id="nominee_account_holder_name"
+                                            name="nominee_account_holder_name"
+                                            type="text"
+                                            maxlength="255"
+                                            value="{{ old('nominee_account_holder_name', $employeeNominee?->account_holder_name) }}"
+                                            placeholder="Account holder name"
+                                        >
+                                        @error('nominee_account_holder_name')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_account_number">
+                                            Account Number
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_account_number') has-error @enderror"
+                                            id="nominee_account_number"
+                                            name="nominee_account_number"
+                                            type="text"
+                                            inputmode="numeric"
+                                            maxlength="30"
+                                            autocomplete="off"
+                                            value="{{ old('nominee_account_number', $employeeNominee?->account_number) }}"
+                                            placeholder="Enter account number"
+                                        >
+                                        @error('nominee_account_number')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="field-row">
+                                        <label class="field-label" for="nominee_ifsc_code">
+                                            IFSC Code
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_ifsc_code') has-error @enderror"
+                                            id="nominee_ifsc_code"
+                                            name="nominee_ifsc_code"
+                                            type="text"
+                                            maxlength="20"
+                                            autocomplete="off"
+                                            value="{{ old('nominee_ifsc_code', $employeeNominee?->ifsc_code) }}"
+                                            placeholder="SBIN0001234"
+                                            oninput="this.value=this.value.toUpperCase()"
+                                        >
+                                        @error('nominee_ifsc_code')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    {{-- <div class="field-row">
+                                        <label class="field-label" for="nominee_branch_name">
+                                            Branch Name
+                                        </label>
+                                        <input
+                                            class="form-control-compact @error('nominee_branch_name') has-error @enderror"
+                                            id="nominee_branch_name"
+                                            name="nominee_branch_name"
+                                            type="text"
+                                            maxlength="255"
+                                            value="{{ old('nominee_branch_name', $employeeNominee?->branch_name) }}"
+                                            placeholder="Enter branch name"
+                                        >
+                                        @error('nominee_branch_name')
+                                            <div class="field-error">{{ $message }}</div>
+                                        @enderror
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -1736,6 +1831,14 @@
             });
         }
 
+        const nomineeAccountNumberInput = document.getElementById('nominee_account_number');
+
+        if (nomineeAccountNumberInput) {
+            nomineeAccountNumberInput.addEventListener('input', function () {
+                this.value = this.value.replace(/\D/g, '').slice(0, 30);
+            });
+        }
+
         const maritalStatus = document.getElementById('marital_status');
         const spouseDetails = document.getElementById('spouseDetails');
         const spouseName = document.getElementById('spouse_name');
@@ -1775,6 +1878,7 @@
             if (nomineeRelationship) {
                 nomineeRelationship.required = !!enabled;
             }
+
         }
 
         if (hasNominee) {

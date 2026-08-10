@@ -167,6 +167,35 @@ private function employeeExtraProfileRules(): array
         'nominee_dob' => ['nullable', 'date', 'before_or_equal:today'],
         'nominee_aadhaar_number' => ['nullable', 'digits:12'],
         'nominee_address' => ['nullable', 'string', 'max:2000'],
+        'nominee_bank_name' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'nominee_account_holder_name' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+
+        'nominee_account_number' => [
+            'nullable',
+            'string',
+            'max:30',
+        ],
+
+        'nominee_ifsc_code' => [
+            'nullable',
+            'string',
+            'max:20',
+        ],
+
+        'nominee_branch_name' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
     ];
 }
 
@@ -316,31 +345,72 @@ private function saveEmployeeExtraProfile(
     |--------------------------------------------------------------------------
     */
     if (($validated['has_nominee'] ?? 'no') === 'yes') {
-        EmployeeNominee::updateOrCreate(
-            ['user_id' => $employee->id],
-            [
-                'name' => $this->cleanNullableString(
-                    $validated['nominee_name'] ?? null
-                ),
-                'relationship' => $this->cleanNullableString(
-                    $validated['nominee_relationship'] ?? null
-                ),
-                'phone' => $this->cleanNullableString(
-                    $validated['nominee_phone'] ?? null
-                ),
-                'dob' => $validated['nominee_dob'] ?? null,
-                'aadhaar_number' => !empty($validated['nominee_aadhaar_number'])
-                    ? preg_replace(
-                        '/\D+/',
-                        '',
-                        (string) $validated['nominee_aadhaar_number']
-                    )
-                    : null,
-                'address' => $this->cleanNullableString(
-                    $validated['nominee_address'] ?? null
-                ),
-            ]
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | Nominee + nominee bank details
+        |--------------------------------------------------------------------------
+        |
+        | firstOrNew + forceFill is intentionally used so newly added nominee bank
+        | columns are saved even if EmployeeNominee::$fillable has not yet been
+        | updated. This same helper is used by both store() and update().
+        |
+        */
+        $employeeNominee = EmployeeNominee::query()->firstOrNew([
+            'user_id' => $employee->id,
+        ]);
+
+        $employeeNominee->forceFill([
+            'user_id' => $employee->id,
+
+            'name' => $this->cleanNullableString(
+                $validated['nominee_name'] ?? null
+            ),
+
+            'relationship' => $this->cleanNullableString(
+                $validated['nominee_relationship'] ?? null
+            ),
+
+            'phone' => $this->cleanNullableString(
+                $validated['nominee_phone'] ?? null
+            ),
+
+            'dob' => $validated['nominee_dob'] ?? null,
+
+            'aadhaar_number' => !empty($validated['nominee_aadhaar_number'])
+                ? preg_replace(
+                    '/\D+/',
+                    '',
+                    (string) $validated['nominee_aadhaar_number']
+                )
+                : null,
+
+            'address' => $this->cleanNullableString(
+                $validated['nominee_address'] ?? null
+            ),
+
+            /* Nominee bank details */
+            'bank_name' => $this->cleanNullableString(
+                $validated['nominee_bank_name'] ?? null
+            ),
+
+            'account_holder_name' => $this->cleanNullableString(
+                $validated['nominee_account_holder_name'] ?? null
+            ),
+
+            'account_number' => $this->cleanNullableString(
+                $validated['nominee_account_number'] ?? null
+            ),
+
+            'ifsc_code' => !empty($validated['nominee_ifsc_code'])
+                ? strtoupper(trim((string) $validated['nominee_ifsc_code']))
+                : null,
+
+            'branch_name' => $this->cleanNullableString(
+                $validated['nominee_branch_name'] ?? null
+            ),
+        ]);
+
+        $employeeNominee->save();
     } else {
         EmployeeNominee::query()
             ->where('user_id', $employee->id)
@@ -2566,7 +2636,7 @@ public function store(EmployeeRequest $request)
             ],
 
             'break' => [
-                'required',
+                'nullable',
                 'integer',
                 'min:0',
                 'max:1440',
@@ -3397,4 +3467,3 @@ public function store(EmployeeRequest $request)
     }
 
 }
-
