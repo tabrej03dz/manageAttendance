@@ -95,39 +95,54 @@ $lastLetter = strtoupper($nameParts[1][0] ?? '');
 </header>
 
 
-<!-- Navbar -->
-<nav class="main-header z-10 navbar navbar-expand navbar-white navbar-light md:flex">
-
-
-
-    <!-- SEARCH FORM -->
-    {{-- <form class="form-inline ml-3">
-        <div class="input-group input-group-sm">
-            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-            <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </div>
-    </form> --}}
     @php
-        $note = \App\Models\NoteUser::where('user_id', auth()->user()->id)
-            ->orderBy('created_at', 'desc')
-            ->first()?->note;
+        $note = \App\Models\NoteUser::query()
+            ->where('user_id', auth()->id())
+            ->whereHas('note', function ($query) {
+                $query->where('status', '1');
+            })
+            ->with([
+                'note' => function ($query) {
+                    $query->where('status', '1');
+                }
+            ])
+            ->latest('created_at')
+            ->first()
+            ?->note;
     @endphp
+
     @if ($note)
-        <div class="relative bg-red-100 text-black rounded-lg shadow-md p-4 w-full overflow-hidden"
-            style="min-height: 40px;">
-            <div class="absolute w-full top-4 left-0 animate-scroll whitespace-nowrap">
-                <span class="inline-block">{{ $note?->description }}</span>
-            </div>
-        </div>
+        <!-- Navbar -->
+        <nav class="main-header z-10 navbar navbar-expand navbar-white navbar-light md:flex">
+            <!-- SEARCH FORM -->
+            {{-- <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-navbar" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form> --}}
+
+                <div
+                    class="relative bg-red-100 text-black rounded-lg shadow-md p-4 w-full overflow-hidden"
+                    style="min-height: 40px;"
+                >
+                    <div class="absolute w-full top-4 left-0 animate-scroll whitespace-nowrap">
+                        <span class="inline-block">
+                            {{ $note->description }}
+                        </span>
+                    </div>
+                </div>
+
+
+
+        </nav>
+        <!-- /.navbar -->
     @endif
 
-
-</nav>
-<!-- /.navbar -->
 
 
 

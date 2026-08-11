@@ -18,4 +18,6 @@ class NoteUser extends Model
     public function note(){
         return $this->belongsTo(Note::class, 'note_id');
     }
+
+
 }
