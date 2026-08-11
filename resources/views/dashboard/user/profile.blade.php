@@ -1069,7 +1069,7 @@
         </section>
 
         {{-- ======================== CHANGE PASSWORD ======================== --}}
-        <section class="form-panel full-width password-panel">
+        {{-- <section class="form-panel full-width password-panel">
             <div class="panel-header">
                 <h2 class="panel-title">Change Password</h2>
                 <span class="panel-edit"><i class="fas fa-key"></i> Security</span>
@@ -1125,7 +1125,7 @@
                     </button>
                 </div>
             </form>
-        </section>
+        </section> --}}
 
         {{-- ======================== LOGOUT ======================== --}}
         <section class="form-panel full-width">
