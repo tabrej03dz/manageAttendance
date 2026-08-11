@@ -332,6 +332,78 @@
             width: 100%;
         }
     }
+
+    /* Educational Qualifications */
+    .qualification-profile-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .qualification-profile-card {
+        padding: 10px;
+        border: 1px solid #d6dade;
+        background: #fafafa;
+    }
+
+    .qualification-profile-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px 16px;
+    }
+
+    .qualification-profile-field {
+        min-width: 0;
+    }
+
+    .qualification-profile-label {
+        display: block;
+        margin-bottom: 3px;
+        color: #555;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .qualification-profile-value {
+        min-height: 28px;
+        padding: 5px 8px;
+        border: 1px solid #cfd3d7;
+        background: #f8f9fa;
+        color: #444;
+        font-size: 11px;
+        line-height: 17px;
+        word-break: break-word;
+    }
+
+    .qualification-profile-document {
+        margin-top: 9px;
+        padding-top: 8px;
+        border-top: 1px dashed #d6dade;
+    }
+
+    .qualification-empty {
+        padding: 14px;
+        border: 1px dashed #cfd3d7;
+        background: #fafafa;
+        color: #999;
+        font-size: 11px;
+        font-style: italic;
+        text-align: center;
+    }
+
+    @media (max-width: 1100px) {
+        .qualification-profile-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 800px) {
+        .qualification-profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
 </style>
 @endpush
 
@@ -706,6 +778,120 @@
                         </div>
                     @endif
                 </div>
+            </div>
+        </section>
+
+
+        {{-- ======================== EDUCATIONAL QUALIFICATIONS ======================== --}}
+        <section class="form-panel full-width">
+            <div class="panel-header">
+                <h2 class="panel-title">Educational Qualifications</h2>
+                <span class="panel-edit">
+                    <i class="fas fa-graduation-cap"></i> View Only
+                </span>
+            </div>
+
+            <div class="panel-body">
+                @if($qualifications->isNotEmpty())
+                    <div class="qualification-profile-list">
+                        @foreach($qualifications as $qualification)
+                            <div class="qualification-profile-card">
+                                <div class="qualification-profile-grid">
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            Qualification
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->qualification) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            Course / Stream
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->course_name) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            Board / University
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->board_university) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            School / College / Institute
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->institute_name) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            Passing Year
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->passing_year) }}
+                                        </div>
+                                    </div>
+
+                                    <div class="qualification-profile-field">
+                                        <span class="qualification-profile-label">
+                                            Result
+                                        </span>
+
+                                        <div class="qualification-profile-value">
+                                            {{ $show($qualification->result) }}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="qualification-profile-document">
+                                    <span class="qualification-profile-label">
+                                        {{ ucfirst($qualification->document_type ?: 'Document') }}
+                                    </span>
+
+                                    @if($qualification->document_path)
+                                        <div class="document-actions">
+                                            <a
+                                                href="{{ asset('storage/' . $qualification->document_path) }}"
+                                                target="_blank"
+                                                rel="noopener"
+                                                class="document-link"
+                                            >
+                                                <i class="fas fa-eye"></i>
+                                                View
+                                                {{ ucfirst($qualification->document_type ?: 'Document') }}
+                                            </a>
+                                        </div>
+                                    @else
+                                        <span class="no-document">
+                                            No document uploaded
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="qualification-empty">
+                        No educational qualification added.
+                    </div>
+                @endif
             </div>
         </section>
 
