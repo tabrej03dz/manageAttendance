@@ -551,6 +551,8 @@
 
 
 
+    {{-- BIRTHDAY CSS TEMPORARILY DISABLED --}}
+    @if(false)
     /* Birthday Celebration */
     .birthday-celebration {
         position: relative;
@@ -1003,6 +1005,8 @@
         }
     }
 
+    @endif
+
 
     /*
     |--------------------------------------------------------------------------
@@ -1355,6 +1359,8 @@
     @endif
 
 
+    {{-- BIRTHDAY PERSONAL POPUP TEMPORARILY DISABLED --}}
+    @if(false)
     {{-- Premium Birthday Popup: sirf logged-in birthday employee ko personal wish --}}
     @if($isUserBirthdayToday)
         @php
@@ -1474,6 +1480,8 @@
             </div>
         </div>
     @endif
+    @endif
+
 
     {{-- Mobile Top Attendance Actions --}}
     <section class="mobile-attendance-actions">
@@ -1711,6 +1719,8 @@
         </div>
     </section>
 
+    {{-- BIRTHDAY TEAM CELEBRATION TEMPORARILY DISABLED --}}
+    @if(false)
     @php
         /*
         |--------------------------------------------------------------------------
@@ -1915,6 +1925,8 @@
             </div>
         </section>
     @endif
+    @endif
+
 
     {{-- Attendance Quick Actions --}}
     <section class="attendance-action-card p-5 sm:p-6">
@@ -2911,6 +2923,8 @@
         setInterval(updateLiveClock, 1000);
 
 
+        {{-- BIRTHDAY JAVASCRIPT TEMPORARILY DISABLED --}}
+        @if(false)
         /*
         |--------------------------------------------------------------------------
         | Birthday Popup
@@ -2997,6 +3011,8 @@
                 }
             });
         }
+        @endif
+
 
         /*
         |--------------------------------------------------------------------------
