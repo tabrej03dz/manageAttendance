@@ -1003,6 +1003,150 @@
         }
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Temporary Independence Day Theme (13 Aug 2026 - 15 Aug 2026)
+    |--------------------------------------------------------------------------
+    | 16 Aug 2026 se ye classes automatically apply nahi hongi.
+    */
+    .dashboard-page.independence-theme {
+        --india-saffron: #ff8c1a;
+        --india-green: #138808;
+        --india-navy: #000080;
+        --india-white: #ffffff;
+    }
+
+    .dashboard-page.independence-theme .dashboard-hero {
+        border-color: rgba(255, 255, 255, 0.70);
+        background:
+            radial-gradient(circle at 12% 15%, rgba(255, 153, 51, 0.40), transparent 30%),
+            radial-gradient(circle at 88% 85%, rgba(19, 136, 8, 0.34), transparent 32%),
+            linear-gradient(135deg, #ff9933 0%, #ffffff 48%, #f8fafc 55%, #138808 100%) !important;
+        box-shadow: 0 22px 55px rgba(15, 23, 42, 0.20);
+    }
+
+    .dashboard-page.independence-theme .dashboard-hero::before {
+        width: 220px;
+        height: 220px;
+        right: -55px;
+        top: -70px;
+        border: 18px solid rgba(0, 0, 128, 0.18);
+        background: transparent;
+        filter: none;
+    }
+
+    .dashboard-page.independence-theme .dashboard-hero::after {
+        left: auto;
+        right: 52px;
+        bottom: -105px;
+        width: 210px;
+        height: 210px;
+        background: rgba(255, 255, 255, 0.28);
+        filter: blur(8px);
+    }
+
+    .dashboard-page.independence-theme .hero-title {
+        color: #0f172a !important;
+        text-shadow: 0 1px 0 rgba(255,255,255,.75);
+    }
+
+    .dashboard-page.independence-theme .hero-description,
+    .dashboard-page.independence-theme .hero-meta {
+        color: #1e293b !important;
+    }
+
+    .dashboard-page.independence-theme .hero-badge {
+        border-color: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.78) !important;
+        color: #0f172a !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .dashboard-page.independence-theme .hero-office-badge {
+        border-color: rgba(0, 0, 128, 0.18);
+        background: rgba(255, 255, 255, 0.78) !important;
+        color: #000080 !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .dashboard-page.independence-theme .my-attendance-panel {
+        border-color: rgba(255,255,255,.88);
+        background: rgba(255,255,255,.92) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .independence-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(0, 0, 128, 0.14);
+        border-radius: 999px;
+        background: rgba(255,255,255,.86);
+        padding: 7px 12px;
+        color: #000080;
+        font-size: 12px;
+        font-weight: 900;
+        box-shadow: 0 8px 20px rgba(15,23,42,.08);
+    }
+
+    .independence-wish-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,.90);
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at 8% 20%, rgba(255,153,51,.26), transparent 28%),
+            radial-gradient(circle at 92% 82%, rgba(19,136,8,.24), transparent 30%),
+            linear-gradient(135deg, #fff7ed 0%, #ffffff 48%, #f0fdf4 100%);
+        box-shadow: 0 18px 45px rgba(15,23,42,.12);
+        isolation: isolate;
+    }
+
+    .independence-wish-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #ff9933 0 33.33%, #ffffff 33.33% 66.66%, #138808 66.66% 100%);
+    }
+
+    .independence-wheel {
+        display: flex;
+        width: 66px;
+        height: 66px;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid #000080;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #000080;
+        font-size: 28px;
+        box-shadow: 0 12px 28px rgba(0,0,128,.14);
+    }
+
+    .independence-wish-title {
+        background: linear-gradient(90deg, #e76f00, #000080 50%, #138808);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    @media (max-width: 640px) {
+        .independence-wish-card {
+            border-radius: 20px;
+        }
+
+        .independence-wheel {
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+        }
+    }
+
 </style>
 @endpush
 
@@ -1012,6 +1156,25 @@
     use Illuminate\Support\Carbon;
 
     $today = now();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Temporary Independence Day Theme
+    |--------------------------------------------------------------------------
+    | Theme: 13 Aug 2026 to 15 Aug 2026 (inclusive)
+    | Special wish: only on 15 Aug 2026
+    | 16 Aug 2026 onwards: normal dashboard automatically
+    */
+    $independenceThemeStart = Carbon::create(2026, 8, 13)->startOfDay();
+    $independenceThemeEnd = Carbon::create(2026, 8, 15)->endOfDay();
+    $independenceDay = Carbon::create(2026, 8, 15)->startOfDay();
+
+    $isIndependenceTheme = $today->between(
+        $independenceThemeStart,
+        $independenceThemeEnd
+    );
+
+    $isIndependenceDay = $today->isSameDay($independenceDay);
 
     $attendanceMap = $todayCheckIn->keyBy('user_id');
 
@@ -1153,7 +1316,43 @@
         !$hasCheckedOut;
 @endphp
 
-<div class="dashboard-page space-y-6 pb-10">
+<div class="dashboard-page {{ $isIndependenceTheme ? 'independence-theme' : '' }} space-y-6 pb-10">
+
+
+    {{-- 15 August Special Independence Day Wish --}}
+    @if($isIndependenceDay)
+        <section class="independence-wish-card p-5 sm:p-6">
+            <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-start gap-4">
+                    <div class="independence-wheel" aria-hidden="true">
+                        <i class="fas fa-dharmachakra"></i>
+                    </div>
+
+                    <div>
+                        <span class="independence-mini-badge">
+                            🇮🇳 15 August 2026
+                        </span>
+
+                        <h2 class="independence-wish-title mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+                            Happy Independence Day! 🇮🇳
+                        </h2>
+
+                        <p class="mt-2 max-w-3xl text-sm font-semibold leading-6 text-slate-700 sm:text-base">
+                            स्वतंत्रता दिवस की हार्दिक शुभकामनाएं। आइए हम सब मिलकर
+                            स्वतंत्रता, एकता और देश की प्रगति के मूल्यों का सम्मान करें।
+                        </p>
+                    </div>
+                </div>
+
+                <div class="shrink-0 text-center sm:text-right">
+                    <div class="text-5xl sm:text-6xl" aria-hidden="true">🇮🇳</div>
+                    <p class="mt-2 text-xs font-black uppercase tracking-[0.20em] text-blue-900">
+                        Jai Hind
+                    </p>
+                </div>
+            </div>
+        </section>
+    @endif
 
 
     {{-- Premium Birthday Popup: sirf logged-in birthday employee ko personal wish --}}
@@ -1376,7 +1575,7 @@
 
                         <span class="h-2 w-2 animate-pulse rounded-full bg-green-400"></span>
 
-                        Live Workforce Dashboard
+                        {{ $isIndependenceTheme ? 'Independence Week Dashboard' : 'Live Workforce Dashboard' }}
                     </span>
 
                     @if($activeOffice)
@@ -1391,23 +1590,31 @@
 
                 <h1 class="hero-title mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
 
-                    Good
-                    {{ now()->hour < 12
-                        ? 'Morning'
-                        : (
-                            now()->hour < 17
-                                ? 'Afternoon'
-                                : 'Evening'
-                        )
-                    }},
+                    @if($isIndependenceDay)
+                        Happy Independence Day, {{ auth()->user()->name }}! 🇮🇳
+                    @else
+                        Good
+                        {{ now()->hour < 12
+                            ? 'Morning'
+                            : (
+                                now()->hour < 17
+                                    ? 'Afternoon'
+                                    : 'Evening'
+                            )
+                        }},
 
-                    {{ auth()->user()->name }}
+                        {{ auth()->user()->name }}
+                    @endif
                 </h1>
 
-                <p class="hero-description mt-3 max-w-2xl text-sm leading-6 sm:text-base">
+                {{-- <p class="hero-description mt-3 max-w-2xl text-sm leading-6 sm:text-base">
 
-                    Attendance, employees, leaves, offices and salary activity को एक ही dashboard से monitor करें।
-                </p>
+                    @if($isIndependenceTheme)
+                        🇮🇳 स्वतंत्रता दिवस के उत्सव के साथ attendance, employees, leaves, offices और salary activity को एक ही dashboard से monitor करें।
+                    @else
+                        Attendance, employees, leaves, offices and salary activity को एक ही dashboard से monitor करें।
+                    @endif
+                </p> --}}
 
                 <div class="hero-meta mt-5 flex flex-wrap items-center gap-5 text-sm">
 
