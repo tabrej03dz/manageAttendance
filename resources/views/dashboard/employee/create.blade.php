@@ -396,6 +396,96 @@
         }
     }
 
+
+    /* Family Members */
+    .family-member-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .family-member-item {
+        padding: 10px;
+        border: 1px solid #d6d9dc;
+        background: #fafafa;
+    }
+
+    .family-member-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px 14px;
+    }
+
+    .family-member-field label {
+        display: block;
+        margin-bottom: 3px;
+        color: #555;
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .family-member-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .family-member-help {
+        color: #777;
+        font-size: 11px;
+    }
+
+    .btn-family-add,
+    .btn-family-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 2px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-family-add {
+        border: 1px solid #315f8c;
+        background: #3f78ad;
+        color: #fff;
+    }
+
+    .btn-family-remove {
+        border: 1px solid #c84b4b;
+        background: #fff;
+        color: #b42318;
+    }
+
+    .family-member-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .family-member-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .family-member-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .family-member-toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
 </style>
 @endpush
 
@@ -544,6 +634,24 @@
                                 required
                             >
                             @error('phone')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+
+                        <div class="field-row">
+                            <label class="field-label" for="alternate_number">Alternate Number</label>
+                            <input
+                                class="form-control-compact @error('alternate_number') has-error @enderror"
+                                id="alternate_number"
+                                name="alternate_number"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="15"
+                                value="{{ old('alternate_number') }}"
+                                placeholder="Alternate mobile number"
+                            >
+                            @error('alternate_number')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -1661,6 +1769,128 @@
                 </div>
             </section>
 
+            <section class="form-panel full-width">
+                <div class="panel-header">
+                    <h2 class="panel-title">Family Members</h2>
+                    <span class="panel-edit"><i class="fas fa-users"></i> Add Multiple</span>
+                </div>
+
+                <div class="panel-body">
+                    <div class="family-member-toolbar">
+                        <div class="family-member-help">
+                            Add employee family member details such as Father, Mother, Spouse, Son, Daughter, Brother or Sister.
+                        </div>
+
+                        <button type="button" class="btn-family-add" id="addFamilyMemberBtn">
+                            <i class="fas fa-plus"></i> Add Family Member
+                        </button>
+                    </div>
+
+                    @php
+                        $oldFamilyMembers = old('family_members', []);
+                        if (!is_array($oldFamilyMembers)) {
+                            $oldFamilyMembers = [];
+                        }
+                    @endphp
+
+                    <div id="familyMemberList" class="family-member-list">
+                        @foreach($oldFamilyMembers as $index => $member)
+                            <div class="family-member-item" data-family-member-row>
+                                <div class="family-member-grid">
+                                    <div class="family-member-field">
+                                        <label>Name <span class="required">*</span></label>
+                                        <input
+                                            type="text"
+                                            class="form-control-compact @error("family_members.$index.name") has-error @enderror"
+                                            name="family_members[{{ $index }}][name]"
+                                            value="{{ $member['name'] ?? '' }}"
+                                            placeholder="Family member name"
+                                            required
+                                        >
+                                        @error("family_members.$index.name")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="family-member-field">
+                                        <label>Relation <span class="required">*</span></label>
+                                        <select
+                                            class="form-control-compact @error("family_members.$index.relation") has-error @enderror"
+                                            name="family_members[{{ $index }}][relation]"
+                                            required
+                                        >
+                                            <option value="">Select Relation</option>
+                                            @foreach([
+                                                'Father',
+                                                'Mother',
+                                                'Spouse',
+                                                'Son',
+                                                'Daughter',
+                                                'Brother',
+                                                'Sister',
+                                                'Grandfather',
+                                                'Grandmother',
+                                                'Other'
+                                            ] as $relation)
+                                                <option
+                                                    value="{{ $relation }}"
+                                                    {{ ($member['relation'] ?? '') === $relation ? 'selected' : '' }}
+                                                >
+                                                    {{ $relation }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error("family_members.$index.relation")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="family-member-field">
+                                        <label>Occupation</label>
+                                        <input
+                                            type="text"
+                                            class="form-control-compact @error("family_members.$index.occupation") has-error @enderror"
+                                            name="family_members[{{ $index }}][occupation]"
+                                            value="{{ $member['occupation'] ?? '' }}"
+                                            placeholder="Occupation"
+                                        >
+                                        @error("family_members.$index.occupation")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="family-member-field">
+                                        <label>Age</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="120"
+                                            class="form-control-compact @error("family_members.$index.age") has-error @enderror"
+                                            name="family_members[{{ $index }}][age]"
+                                            value="{{ $member['age'] ?? '' }}"
+                                            placeholder="Age"
+                                        >
+                                        @error("family_members.$index.age")
+                                            <div class="field-error" style="grid-column:auto;margin-top:3px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="family-member-actions">
+                                    <button
+                                        type="button"
+                                        class="btn-family-remove"
+                                        data-remove-family-member
+                                    >
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+
             <section class="form-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Identity Details</h2>
@@ -2474,6 +2704,140 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         refreshQualificationRows();
+    }
+
+    /* Family Members */
+    const familyMemberList = document.getElementById('familyMemberList');
+    const addFamilyMemberBtn = document.getElementById('addFamilyMemberBtn');
+
+    const familyRelationOptions = [
+        'Father',
+        'Mother',
+        'Spouse',
+        'Son',
+        'Daughter',
+        'Brother',
+        'Sister',
+        'Grandfather',
+        'Grandmother',
+        'Other'
+    ];
+
+    const buildFamilyRelationOptions = () => {
+        return '<option value="">Select Relation</option>' +
+            familyRelationOptions.map(relation =>
+                `<option value="${escapeHtml(relation)}">${escapeHtml(relation)}</option>`
+            ).join('');
+    };
+
+    const refreshFamilyMemberRows = () => {
+        if (!familyMemberList) return;
+
+        const rows = familyMemberList.querySelectorAll('[data-family-member-row]');
+
+        rows.forEach((row, index) => {
+            row.querySelectorAll('input, select').forEach(field => {
+                const currentName = field.getAttribute('name') || '';
+
+                if (!currentName) return;
+
+                field.setAttribute(
+                    'name',
+                    currentName.replace(
+                        /family_members\[\d+\]/,
+                        `family_members[${index}]`
+                    )
+                );
+            });
+        });
+    };
+
+    const createFamilyMemberRow = () => {
+        const index = familyMemberList
+            ? familyMemberList.querySelectorAll('[data-family-member-row]').length
+            : 0;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'family-member-item';
+        wrapper.setAttribute('data-family-member-row', '');
+
+        wrapper.innerHTML = `
+            <div class="family-member-grid">
+                <div class="family-member-field">
+                    <label>Name <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        class="form-control-compact"
+                        name="family_members[${index}][name]"
+                        placeholder="Family member name"
+                        required
+                    >
+                </div>
+
+                <div class="family-member-field">
+                    <label>Relation <span class="required">*</span></label>
+                    <select
+                        class="form-control-compact"
+                        name="family_members[${index}][relation]"
+                        required
+                    >
+                        ${buildFamilyRelationOptions()}
+                    </select>
+                </div>
+
+                <div class="family-member-field">
+                    <label>Occupation</label>
+                    <input
+                        type="text"
+                        class="form-control-compact"
+                        name="family_members[${index}][occupation]"
+                        placeholder="Occupation"
+                    >
+                </div>
+
+                <div class="family-member-field">
+                    <label>Age</label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        class="form-control-compact"
+                        name="family_members[${index}][age]"
+                        placeholder="Age"
+                    >
+                </div>
+            </div>
+
+            <div class="family-member-actions">
+                <button
+                    type="button"
+                    class="btn-family-remove"
+                    data-remove-family-member
+                >
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+        `;
+
+        return wrapper;
+    };
+
+    if (addFamilyMemberBtn && familyMemberList) {
+        addFamilyMemberBtn.addEventListener('click', function () {
+            familyMemberList.appendChild(createFamilyMemberRow());
+            refreshFamilyMemberRows();
+        });
+
+        familyMemberList.addEventListener('click', function (event) {
+            const removeButton = event.target.closest('[data-remove-family-member]');
+
+            if (!removeButton) return;
+
+            removeButton.closest('[data-family-member-row]')?.remove();
+            refreshFamilyMemberRows();
+        });
+
+        refreshFamilyMemberRows();
     }
 
 });

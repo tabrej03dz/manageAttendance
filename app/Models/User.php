@@ -222,4 +222,9 @@ public function educationalQualifications()
         'user_id'
     )->orderBy('passing_year');
 }
+
+public function familyMembers()
+{
+    return $this->hasMany(EmployeeFamilyMember::class, 'user_id');
+}
 }
