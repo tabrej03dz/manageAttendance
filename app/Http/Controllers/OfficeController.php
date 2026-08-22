@@ -10,18 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class OfficeController extends Controller
 {
-    // public function index()
-    // {
-    //     if (auth()->user()->hasRole('owner')) {
-    //         $offices = auth()->user()->offices;
-    //     } else {
-    //         $offices = Office::all();
-    //     }
-
-    //     return view('dashboard.office.index', compact('offices'));
-    // }
-
-
     public function index(Request $request)
     {
         $user = auth()->user();
