@@ -6850,4 +6850,26 @@ public function store(EmployeeRequest $request)
         return back()->with('error', 'User does not have this permission.');
     }
 
+
+
+    private function generateEmployeeId(Office $office): string
+{
+    $prefix = $office->employee_prefix;
+
+    if (!$prefix) {
+        $prefix = 'OFF' . $office->id;
+    }
+
+    $nextSequence = (int) $office->employee_sequence + 1;
+
+    return strtoupper($prefix)
+        . '-'
+        . str_pad(
+            $nextSequence,
+            4,
+            '0',
+            STR_PAD_LEFT
+        );
+}
+
 }
