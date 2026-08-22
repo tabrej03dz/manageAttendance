@@ -685,16 +685,37 @@
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="employee_id">Employee ID</label>
+                            <label class="field-label" for="last_working_date">Last Working Date</label>
+                            <input
+                                class="form-control-compact @error('last_working_date') has-error @enderror"
+                                id="last_working_date"
+                                name="last_working_date"
+                                type="date"
+                                value="{{ old('last_working_date') }}"
+                            >
+                            @error('last_working_date')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="employee_id">
+                                Employee ID
+                            </label>
+
                             <input
                                 class="form-control-compact @error('employee_id') has-error @enderror"
                                 id="employee_id"
                                 name="employee_id"
                                 type="text"
-                                value="{{ old('employee_id') }}"
+                                value="{{ old('employee_id', $nextEmployeeId) }}"
+                                readonly
                             >
+
                             @error('employee_id')
-                                <div class="field-error">{{ $message }}</div>
+                                <div class="field-error">
+                                    {{ $message }}
+                                </div>
                             @enderror
                         </div>
                     </div>
@@ -2840,6 +2861,70 @@ document.addEventListener('DOMContentLoaded', function () {
         refreshFamilyMemberRows();
     }
 
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const officeSelect =
+        document.getElementById('office_id');
+
+    const employeeIdInput =
+        document.getElementById('employee_id');
+
+    if (!officeSelect || !employeeIdInput) {
+        return;
+    }
+
+    async function loadEmployeeId() {
+
+        const officeId = officeSelect.value;
+
+        if (!officeId) {
+            employeeIdInput.value = '';
+            return;
+        }
+
+        employeeIdInput.value = 'Generating...';
+
+        try {
+
+            const url =
+                "{{ route('employee.next-id', ':office') }}"
+                    .replace(':office', officeId);
+
+            const response = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(
+                    'Unable to generate Employee ID'
+                );
+            }
+
+            const data = await response.json();
+
+            employeeIdInput.value =
+                data.employee_id ?? '';
+
+        } catch (error) {
+
+            console.error(error);
+
+            employeeIdInput.value = '';
+
+        }
+    }
+
+    officeSelect.addEventListener(
+        'change',
+        loadEmployeeId
+    );
 });
 </script>
 @endpush

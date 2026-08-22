@@ -183,6 +183,11 @@ Route::middleware(['auth', 'track.activity', 'active.office'])->group(function (
         return view('dashboard.settingInstruction');
     })->name('setting.instruction');
 
+    Route::get(
+            '/employees/next-employee-id/{office}',
+            [EmployeeController::class, 'nextEmployeeId']
+        )->name('employee.next-id');
+
     Route::prefix('employee')->name('employee.')->group(function (){
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
         Route::get('create', [EmployeeController::class, 'create'])->name('create');

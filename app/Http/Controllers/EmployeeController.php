@@ -788,6 +788,8 @@ private function formattedEmployeeAddress(array $address): ?string
                     'id',
                     'name',
                     'owner_id',
+                    'employee_prefix',
+                    'employee_sequence',
                 ])
                 ->orderBy('name')
                 ->get();
@@ -803,6 +805,8 @@ private function formattedEmployeeAddress(array $address): ?string
                     'id',
                     'name',
                     'owner_id',
+                    'employee_prefix',
+                    'employee_sequence',
                 ])
                 ->where('owner_id', $loggedInUser->id)
                 ->orderBy('name')
@@ -854,6 +858,8 @@ private function formattedEmployeeAddress(array $address): ?string
                     'id',
                     'name',
                     'owner_id',
+                    'employee_prefix',
+                    'employee_sequence',
                 ])
                 ->with('owner:id,name')
                 ->find($activeOfficeId);
@@ -1028,12 +1034,47 @@ private function formattedEmployeeAddress(array $address): ?string
             ->orderBy('name')
             ->get();
 
+
+            /*
+            |------------------------------------------------------------------
+            | Use the actually selected/active office for the ID preview
+            |------------------------------------------------------------------
+            */
+
+            $preferredOfficeId = (int) old(
+                'office_id',
+                $loggedInUser->activeOfficeId()
+            );
+
+            $defaultOffice = $preferredOfficeId
+                ? $offices->firstWhere('id', $preferredOfficeId)
+                : null;
+
+            $defaultOffice = $defaultOffice ?: $offices->first();
+
+            $nextEmployeeId = null;
+
+            if ($defaultOffice) {
+                $nextEmployeeId = $this->generateEmployeeId(
+                    $defaultOffice
+                );
+            }
+
+        // return view(
+        //     'dashboard.employee.create',
+        //     compact(
+        //         'offices',
+        //         'teamLeaders',
+        //         'departments'
+        //     )
+        // );
         return view(
             'dashboard.employee.create',
             compact(
                 'offices',
                 'teamLeaders',
-                'departments'
+                'departments',
+                'nextEmployeeId'
             )
         );
     }
@@ -2399,6 +2440,18 @@ public function store(EmployeeRequest $request)
             'max:20',
         ],
 
+        'last_working_date' => [
+            'nullable',
+            'date',
+            'after_or_equal:joining_date',
+        ],
+
+        'joining_date' => [
+            'nullable',
+            'required_with:last_working_date',
+            'date',
+        ],
+
         /*
         |--------------------------------------------------------------------------
         | Family Members
@@ -2581,6 +2634,19 @@ public function store(EmployeeRequest $request)
 
         /*
         |--------------------------------------------------------------------------
+        | Allocate Employee ID safely
+        |--------------------------------------------------------------------------
+        |
+        | The submitted readonly field is only a preview. The final employee ID is
+        | generated on the server while the office row is locked, so two users
+        | cannot receive the same employee ID at the same time.
+        |
+        */
+
+        $employeeId = $this->allocateEmployeeId($targetOfficeId);
+
+        /*
+        |--------------------------------------------------------------------------
         | Employee Data
         |--------------------------------------------------------------------------
         */
@@ -2619,8 +2685,11 @@ public function store(EmployeeRequest $request)
             'joining_date' =>
                 $request->input('joining_date'),
 
+            'last_working_date' =>
+                $request->input('last_working_date'),
+
             'employee_id' =>
-                $request->input('employee_id'),
+                $employeeId,
 
             /*
             |--------------------------------------------------------------------------
@@ -5567,7 +5636,14 @@ public function store(EmployeeRequest $request)
 
                 'joining_date' => [
                     'nullable',
+                    'required_with:last_working_date',
                     'date',
+                ],
+
+                'last_working_date' => [
+                    'nullable',
+                    'date',
+                    'after_or_equal:joining_date',
                 ],
 
                 'employee_id' => [
@@ -6167,6 +6243,12 @@ public function store(EmployeeRequest $request)
         DB::beginTransaction();
 
         try {
+            $employeeId = $employee->employee_id;
+
+            if (!$employeeId) {
+                $employeeId = $this->allocateEmployeeId($targetOfficeId);
+            }
+
             /*
             |--------------------------------------------------------------------------
             | 6. Update employee details
@@ -6182,7 +6264,8 @@ public function store(EmployeeRequest $request)
 
                 'dob' => $validated['dob'] ?? null,
                 'joining_date' => $validated['joining_date'] ?? null,
-                'employee_id' => $validated['employee_id'] ?? null,
+                'last_working_date' => $validated['last_working_date'] ?? null,
+                'employee_id' => $employeeId,
 
                 'address' => $formattedAddress
                     ?? $this->cleanNullableString(
@@ -6852,24 +6935,152 @@ public function store(EmployeeRequest $request)
 
 
 
-    private function generateEmployeeId(Office $office): string
-{
-    $prefix = $office->employee_prefix;
+    private function employeeIdPrefix(Office $office): string
+    {
+        $prefix = trim((string) $office->employee_prefix);
 
-    if (!$prefix) {
-        $prefix = 'OFF' . $office->id;
+        if ($prefix === '') {
+            $prefix = 'OFF' . $office->id;
+        }
+
+        return strtoupper($prefix);
     }
 
-    $nextSequence = (int) $office->employee_sequence + 1;
 
-    return strtoupper($prefix)
-        . '-'
-        . str_pad(
-            $nextSequence,
-            4,
-            '0',
-            STR_PAD_LEFT
-        );
-}
+    private function employeeIdForSequence(
+        Office $office,
+        int $sequence
+    ): string {
+        return $this->employeeIdPrefix($office)
+            . '-'
+            . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+    }
+
+
+    private function highestExistingEmployeeSequence(Office $office): int
+    {
+        $prefix = $this->employeeIdPrefix($office);
+        $pattern = '/^'
+            . preg_quote($prefix, '/')
+            . '-(\d+)$/i';
+
+        return User::query()
+            ->where('office_id', $office->id)
+            ->whereNotNull('employee_id')
+            ->where('employee_id', 'like', $prefix . '-%')
+            ->pluck('employee_id')
+            ->reduce(function (int $highest, $employeeId) use ($pattern) {
+                if (
+                    preg_match(
+                        $pattern,
+                        trim((string) $employeeId),
+                        $matches
+                    ) === 1
+                ) {
+                    return max($highest, (int) $matches[1]);
+                }
+
+                return $highest;
+            }, 0);
+    }
+
+
+    private function nextEmployeeSequence(Office $office): int
+    {
+        return max(
+            0,
+            (int) $office->employee_sequence,
+            $this->highestExistingEmployeeSequence($office)
+        ) + 1;
+    }
+
+
+    private function generateEmployeeId(Office $office): string
+    {
+        $sequence = $this->nextEmployeeSequence($office);
+        $employeeId = $this->employeeIdForSequence($office, $sequence);
+
+        while (
+            User::query()
+                ->where('employee_id', $employeeId)
+                ->exists()
+        ) {
+            $sequence++;
+            $employeeId = $this->employeeIdForSequence($office, $sequence);
+        }
+
+        return $employeeId;
+    }
+
+
+    private function allocateEmployeeId(int $officeId): string
+    {
+        $office = Office::query()
+            ->lockForUpdate()
+            ->findOrFail($officeId);
+
+        $sequence = $this->nextEmployeeSequence($office);
+        $employeeId = $this->employeeIdForSequence($office, $sequence);
+
+        while (
+            User::query()
+                ->where('employee_id', $employeeId)
+                ->exists()
+        ) {
+            $sequence++;
+            $employeeId = $this->employeeIdForSequence($office, $sequence);
+        }
+
+        $office->forceFill([
+            'employee_sequence' => $sequence,
+        ])->save();
+
+        return $employeeId;
+    }
+
+
+    public function nextEmployeeId(
+        Request $request,
+        Office $office
+    ) {
+        $loggedInUser = $request->user();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check office permission
+        |--------------------------------------------------------------------------
+        */
+
+        if ($loggedInUser->hasRole('super_admin')) {
+            // All offices allowed
+        } elseif ($loggedInUser->hasRole('owner')) {
+
+            if (
+                (int) $office->owner_id !==
+                (int) $loggedInUser->id
+            ) {
+                abort(403);
+            }
+
+        } else {
+
+            $activeOfficeId = (int)
+                $loggedInUser->activeOfficeId();
+
+            if (
+                (int) $office->id !==
+                $activeOfficeId
+            ) {
+                abort(403);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'employee_id' => $this->generateEmployeeId(
+                $office
+            ),
+        ]);
+    }
 
 }

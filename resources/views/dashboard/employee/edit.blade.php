@@ -586,6 +586,7 @@
         $employee->phone,
         $employee->dob,
         $employee->joining_date,
+        $employee->last_working_date,
         $employee->address,
         $employee->department_id,
         $employee->designation,
@@ -840,6 +841,20 @@
                         </div>
 
                         <div class="field-row">
+                            <label class="field-label" for="last_working_date">Last Working Date</label>
+                            <input
+                                class="form-control-compact @error('last_working_date') has-error @enderror"
+                                id="last_working_date"
+                                name="last_working_date"
+                                type="date"
+                                value="{{ old('last_working_date', $employee->last_working_date ? \Carbon\Carbon::parse($employee->last_working_date)->format('Y-m-d') : '') }}"
+                            >
+                            @error('last_working_date')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
                             <label class="field-label" for="employee_id">Employee ID</label>
                             <input
                                 class="form-control-compact @error('employee_id') has-error @enderror"
@@ -847,6 +862,7 @@
                                 name="employee_id"
                                 type="text"
                                 value="{{ old('employee_id', $employee->employee_id) }}"
+                                readonly
                             >
                             @error('employee_id')
                                 <div class="field-error">{{ $message }}</div>
