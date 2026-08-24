@@ -104,6 +104,20 @@
                             <input class="form-control-compact @error('price_per_employee') has-error @enderror" id="price_per_employee" name="price_per_employee" type="number" min="0" step="0.01" value="{{ old('price_per_employee', $office->price_per_employee) }}" placeholder="Example: 100">
                             @error('price_per_employee')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
+                        @if($owners)
+                            <div class="field-row">
+                                <label class="field-label" for="owner_id">Owner</label>
+                                <select class="form-control-compact @error('owner_id') has-error @enderror" id="owner_id" name="owner_id">
+                                    <option value="">Select Owner</option>
+                                    @foreach($owners as $owner)
+                                        <option value="{{ $owner->id }}" {{ old('owner_id', $office->owner_id) == $owner->id ? 'selected' : '' }}>{{ $owner->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('owner_id')<div class="field-error">{{ $message }}</div>@enderror
+                            </div>
+                        @else
+                            <input type="hidden" id="owner_id" name="owner_id" value="{{ $office->owner_id }}">
+                        @endif
                     </div>
                 </div>
             </section>
@@ -187,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const latitudeInput = byId('latitude');
     const longitudeInput = byId('longitude');
     const radiusInput = byId('radius');
+    const ownerInput = byId('owner_id');
     const logoInput = byId('logo');
     const logoPreview = byId('officeLogoPreview');
 
@@ -207,6 +222,14 @@ document.addEventListener('DOMContentLoaded', function () {
         setText('longitudePreview', longitudeInput?.value);
         setText('radiusPreview', radiusInput?.value ? radiusInput.value + ' Metres' : '');
 
+        if (ownerInput?.tagName === 'SELECT') {
+            setText(
+                'ownerPreview',
+                ownerInput.options[ownerInput.selectedIndex]?.text,
+                '{{ $office->owner?->name ?? auth()->user()->name }}'
+            );
+        }
+
         const radiusRule = document.querySelector('input[name="under_radius_required"]:checked');
         const otpRule = document.querySelector('input[name="otp_enable"]:checked');
         setText('radiusRulePreview', radiusRule?.value === '1' ? 'Enabled' : 'Disabled');
@@ -218,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
         refreshPreview();
     });
 
-    [nameInput, limitInput, latitudeInput, longitudeInput, radiusInput]
+    [nameInput, limitInput, latitudeInput, longitudeInput, radiusInput, ownerInput]
         .filter(Boolean)
         .forEach(element => element.addEventListener('input', refreshPreview));
 

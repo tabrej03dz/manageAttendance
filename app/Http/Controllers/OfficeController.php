@@ -108,7 +108,7 @@ class OfficeController extends Controller
             'address' => ['nullable', 'string', 'max:5000'],
             'under_radius_required' => [
                 'required',
-                Rule::in(['yes', 'no']),
+                'boolean',
             ],
             'otp_enable' => ['required', 'boolean'],
             'logo' => [
@@ -205,7 +205,7 @@ class OfficeController extends Controller
             'address' => ['nullable', 'string', 'max:5000'],
             'under_radius_required' => [
                 'required',
-                Rule::in(['yes', 'no']),
+                'boolean',
             ],
             'otp_enable' => ['required', 'boolean'],
             'logo' => [
@@ -221,7 +221,16 @@ class OfficeController extends Controller
                 'This employee prefix is already being used by another office.',
         ]);
 
-        if (!$request->user()->hasRole('super_admin')) {
+        if ($request->user()->hasRole('super_admin')) {
+            /*
+             * The compact edit form currently displays the owner in the
+             * summary but does not always submit owner_id. Never overwrite the
+             * existing owner with null when the field was not submitted.
+             */
+            $validated['owner_id'] = $request->filled('owner_id')
+                ? (int) $validated['owner_id']
+                : $office->owner_id;
+        } else {
             $validated['owner_id'] = $office->owner_id
                 ?: $request->user()->id;
         }
@@ -265,8 +274,12 @@ class OfficeController extends Controller
 
             report($exception);
 
+            $message = config('app.debug')
+                ? $exception->getMessage()
+                : 'Office could not be updated. Please try again.';
+
             return back()
-                ->with('error', 'Office could not be updated. Please try again.')
+                ->with('error', $message)
                 ->withInput();
         }
 
@@ -323,20 +336,19 @@ class OfficeController extends Controller
             'employee_prefix' => strtoupper(
                 trim((string) $request->input('employee_prefix'))
             ),
-            'under_radius_required' => $this->radiusDatabaseValue(
-                $request->input('under_radius_required')
-            ),
+            'under_radius_required' =>
+                $request->boolean('under_radius_required'),
             'otp_enable' => $request->boolean('otp_enable'),
         ]);
     }
 
-    private function radiusDatabaseValue($value): string
+    private function radiusDatabaseValue($value): bool
     {
         return in_array(
             strtolower(trim((string) $value)),
-            ['1', 'true', 'yes', 'on'],
+            ['1', 'true', 'yes', 'on', 'enable', 'enabled', 'required'],
             true
-        ) ? 'yes' : 'no';
+        );
     }
 
     private function officeData(array $validated): array
@@ -354,7 +366,7 @@ class OfficeController extends Controller
             'owner_id' => $validated['owner_id'] ?? null,
             'address' => $validated['address'] ?? null,
             'under_radius_required' =>
-                $validated['under_radius_required'],
+                (bool) $validated['under_radius_required'],
             'otp_enable' => (bool) $validated['otp_enable'],
         ];
     }
