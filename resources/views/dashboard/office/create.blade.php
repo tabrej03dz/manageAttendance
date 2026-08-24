@@ -1,402 +1,249 @@
 @extends('dashboard.layout.root')
 
-@section('content')
-<div class="office-page">
-    <div class="container-fluid">
+@section('title', 'Create Office')
+@push('styles')
+<style>
+    .office-create-page{font-family:Arial,Helvetica,sans-serif;color:#333;font-size:12px}
+    .office-summary,.form-panel{background:#fff;border:1px solid #bfc4c9;box-shadow:0 1px 4px rgba(0,0,0,.20)}
+    .office-summary{padding:10px 14px;margin-bottom:12px}
+    .summary-grid{display:grid;grid-template-columns:130px minmax(0,1fr);gap:18px;align-items:center}
+    .office-logo-preview{display:flex;width:112px;height:112px;align-items:center;justify-content:center;border:1px solid #c7ccd1;border-radius:26px;background:#e7ebee;color:#334155;font-size:35px;font-weight:700;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,.16)}
+    .summary-title{margin:0 0 10px;color:#4b4b4b;font-size:22px;font-weight:700;line-height:1.1;text-transform:uppercase}
+    .summary-fields{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:8px 24px}
+    .summary-label{display:block;margin-bottom:2px;color:#555;font-size:10px;font-weight:700;text-transform:uppercase}
+    .summary-value{color:#777;font-size:11px;line-height:1.25}
+    .completion-text{margin-top:9px;color:#d90000;font-size:12px;font-weight:700;text-transform:uppercase}
+    .page-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+    .form-panel{overflow:hidden;margin-bottom:10px}.form-panel.full-width{grid-column:1/-1}
+    .panel-header{display:flex;align-items:center;justify-content:space-between;min-height:35px;padding:5px 12px;border-bottom:1px solid #d1d1d1;background:linear-gradient(#fff,#f4f4f4)}
+    .panel-title{margin:0;color:#111;font-size:16px;font-weight:700}.panel-edit{color:#111;font-size:11px;font-weight:700}
+    .panel-body{padding:10px 12px 12px}
+    .compact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:7px}.compact-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .field-row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px;align-items:center;min-width:0}.field-row.top{align-items:start}.field-row.full{grid-column:1/-1}
+    .field-label{color:#555;font-size:11px;font-weight:700;line-height:1.2}.required{color:#d00000}
+    .form-control-compact{width:100%;height:30px;min-width:0;padding:3px 8px;border:1px solid #cfd3d7!important;border-radius:0!important;background:#fff!important;color:#444!important;font-size:11px!important;outline:none;box-shadow:none!important}
+    textarea.form-control-compact{height:72px;padding-top:7px;resize:vertical}input[type=file].form-control-compact{height:auto;min-height:31px;padding:4px}
+    .form-control-compact:focus{border-color:#7c9ab7!important;box-shadow:0 0 0 1px #7c9ab7!important}.has-error{border-color:#dc2626!important;background:#fff5f5!important}
+    .field-error{grid-column:2;margin-top:-3px;color:#dc2626;font-size:10px;font-weight:700}.field-help{grid-column:2;margin-top:-3px;color:#777;font-size:10px;line-height:1.3}
+    .setting-box{height:100%;border:1px solid #d9dde2;background:#fafafa;padding:10px 12px}.setting-title{display:flex;align-items:center;gap:8px;margin-bottom:4px;color:#222;font-size:13px;font-weight:700}.setting-description{margin:0 0 9px;color:#777;font-size:10px}
+    .radio-group{display:flex;gap:18px;align-items:center;min-height:28px}.radio-label{display:inline-flex;align-items:center;gap:5px;color:#444;font-size:11px;font-weight:600;cursor:pointer}.radio-label input{accent-color:#3f78ad}
+    .error-summary{margin-bottom:10px;padding:10px 13px;border:1px solid #e6a3a3;background:#fff0f0;color:#9b1515;font-size:12px}
+    .form-actions{display:flex;justify-content:flex-end;gap:8px;padding:10px 12px;border-top:1px solid #d3d3d3;background:#f7f7f7}
+    .btn-compact{display:inline-flex;min-width:118px;height:32px;align-items:center;justify-content:center;gap:6px;padding:0 14px;border:1px solid transparent;border-radius:2px;font-size:12px;font-weight:700;text-decoration:none!important;cursor:pointer}
+    .btn-save{border-color:#315f8c;background:#3f78ad;color:#fff!important}.btn-save:hover{background:#315f8c;color:#fff!important}.btn-cancel{border-color:#aaa;background:#fff;color:#333!important}.btn-cancel:hover{background:#eee;color:#111!important}
+    @media(max-width:1100px){.summary-fields,.compact-grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:800px){.summary-grid,.page-form-grid,.summary-fields,.compact-grid,.compact-grid.three{grid-template-columns:1fr}.form-panel.full-width{grid-column:auto}.summary-grid{text-align:center}.office-logo-preview{margin:auto}}
+    @media(max-width:560px){.field-row{grid-template-columns:1fr;gap:4px}.field-error,.field-help{grid-column:1}.form-actions{flex-direction:column-reverse}.btn-compact{width:100%}}
+</style>
+@endpush
 
-        <div class="page-header">
+@section('content')
+<div class="office-create-page">
+    <section class="office-summary">
+        <div class="summary-grid">
             <div>
-                <h2>Create Office</h2>
-                <p>Manage office location, owner and login security settings.</p>
+                <img id="officeLogoPreview" class="office-logo-preview" src="https://ui-avatars.com/api/?name=New+Office&background=d8e0e6&color=333&size=200" alt="New Office">
+            </div>
+            <div>
+                <h1 class="summary-title" id="officeNamePreview">NEW OFFICE REGISTRATION</h1>
+                <div class="summary-fields">
+                    <div><span class="summary-label">Employee Prefix</span><div class="summary-value" id="prefixPreview">Not Entered</div></div>
+                    <div><span class="summary-label">Next Employee ID</span><div class="summary-value" id="employeeIdPreview">Not Available</div></div>
+                    <div><span class="summary-label">Owner</span><div class="summary-value" id="ownerPreview">{{ auth()->user()->name }}</div></div>
+                    <div><span class="summary-label">Employees Limit</span><div class="summary-value" id="employeeLimitPreview">Not Entered</div></div>
+                    <div><span class="summary-label">Latitude</span><div class="summary-value" id="latitudePreview">Not Entered</div></div>
+                    <div><span class="summary-label">Longitude</span><div class="summary-value" id="longitudePreview">Not Entered</div></div>
+                    <div><span class="summary-label">Radius</span><div class="summary-value" id="radiusPreview">Not Entered</div></div>
+                    <div><span class="summary-label">Radius Check</span><div class="summary-value" id="radiusRulePreview">Disabled</div></div>
+                    <div><span class="summary-label">OTP Login</span><div class="summary-value" id="otpPreview">Disabled</div></div>
+                </div>
+                <div class="completion-text">Complete all required fields before creating the office</div>
             </div>
         </div>
+    </section>
 
-        @if($errors->any())
-            <div class="alert alert-danger professional-alert">
-                <strong>Please fix the following errors:</strong>
-                <ul class="mb-0 mt-2">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if($errors->any())
+        <div class="error-summary">
+            <strong>Please correct the following errors:</strong>
+            <ul style="margin:6px 0 0 18px">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+        </div>
+    @endif
 
-        <form action="{{ route('office.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <div class="office-card">
-                <div class="section-title">
-                    <h4>Basic Office Information</h4>
-                    <span>Required details</span>
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-lg-6">
-                        <label class="form-label">Office Name <span>*</span></label>
-                        <input type="text" name="name" class="form-control"
-                               value="{{ old('name') }}" placeholder="Enter office name" required>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <label class="form-label">Office Logo</label>
-                        <input type="file" name="logo" class="form-control" accept="image/*">
-                        <small class="text-muted">Allowed: JPG, PNG, JPEG, WEBP. Max: 2MB</small>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <label class="form-label">Number of Employees</label>
-                        <input type="number" name="number_of_employees" class="form-control"
-                               value="{{ old('number_of_employees') }}" placeholder="Example: 25">
-                    </div>
-
-                    <div class="col-lg-6">
-                        <label class="form-label">Latitude <span>*</span></label>
-                        <input type="text" name="latitude" class="form-control"
-                               value="{{ old('latitude') }}" placeholder="Example: 26.4499" required>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <label class="form-label">Longitude <span>*</span></label>
-                        <input type="text" name="longitude" class="form-control"
-                               value="{{ old('longitude') }}" placeholder="Example: 80.3319" required>
-                    </div>
-
-                    <div class="col-lg-6">
-                        <label class="form-label">Radius</label>
-                        <input type="text" name="radius" class="form-control"
-                               value="{{ old('radius') }}" placeholder="Example: 100">
-                    </div>
-
-                    @if($owners)
-                        <div class="col-lg-6">
-                            <label class="form-label">Owner</label>
-                            <select name="owner_id" class="form-control">
-                                <option value="">Select Owner</option>
-                                @foreach($owners as $owner)
-                                    <option value="{{ $owner->id }}" {{ old('owner_id') == $owner->id ? 'selected' : '' }}>
-                                        {{ $owner->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+    <form action="{{ route('office.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="page-form-grid">
+            <section class="form-panel full-width">
+                <div class="panel-header"><h2 class="panel-title">Basic Office Information</h2><span class="panel-edit"><i class="fas fa-building"></i> Add</span></div>
+                <div class="panel-body">
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="name">Office Name <span class="required">*</span></label>
+                            <input class="form-control-compact @error('name') has-error @enderror" id="name" name="name" type="text" value="{{ old('name') }}" placeholder="Enter office name" required>
+                            @error('name')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
-                    @else
-                        <input type="hidden" name="owner_id" value="{{ auth()->user()->id }}">
-                    @endif
-
-                    <div class="col-12">
-                        <label class="form-label">Full Address</label>
-                        <textarea name="address" class="form-control" rows="3"
-                                  placeholder="Enter full office address">{{ old('address') }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4 mt-1">
-                <div class="col-lg-6">
-                    <div class="settings-card">
-                        <div class="settings-icon location-icon">📍</div>
-                        <div class="settings-content">
-                            <h5>Location Verification</h5>
-                            <p>Require employees to be inside office radius for attendance.</p>
-
-                            <div class="radio-group">
-                                <label class="radio-box">
-                                    <input type="radio" name="under_radius_required" value="1"
-                                        {{ old('under_radius_required') == '1' ? 'checked' : '' }}>
-                                    <span>
-                                        <strong>Enable</strong>
-                                        <small>Radius check required</small>
-                                    </span>
-                                </label>
-
-                                <label class="radio-box">
-                                    <input type="radio" name="under_radius_required" value="0"
-                                        {{ old('under_radius_required', '0') == '0' ? 'checked' : '' }}>
-                                    <span>
-                                        <strong>Disable</strong>
-                                        <small>Radius check not required</small>
-                                    </span>
-                                </label>
+                        <div class="field-row">
+                            <label class="field-label" for="employee_prefix">Employee Prefix <span class="required">*</span></label>
+                            <input class="form-control-compact @error('employee_prefix') has-error @enderror" id="employee_prefix" name="employee_prefix" type="text" value="{{ old('employee_prefix') }}" maxlength="20" pattern="[A-Za-z0-9]+" placeholder="Example: MO" autocomplete="off" required>
+                            @error('employee_prefix')<div class="field-error">{{ $message }}</div>@enderror
+                            <div class="field-help">Letters and numbers only. Employee ID example: MO-0001</div>
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="number_of_employees">Employee Limit</label>
+                            <input class="form-control-compact @error('number_of_employees') has-error @enderror" id="number_of_employees" name="number_of_employees" type="number" min="0" value="{{ old('number_of_employees') }}" placeholder="Example: 25">
+                            @error('number_of_employees')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="logo">Office Logo</label>
+                            <input class="form-control-compact @error('logo') has-error @enderror" id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp">
+                            @error('logo')<div class="field-error">{{ $message }}</div>@enderror
+                            <div class="field-help">JPG, PNG or WEBP; maximum 2 MB.</div>
+                        </div>
+                        @if($owners)
+                            <div class="field-row">
+                                <label class="field-label" for="owner_id">Owner</label>
+                                <select class="form-control-compact @error('owner_id') has-error @enderror" id="owner_id" name="owner_id">
+                                    <option value="">Select Owner</option>
+                                    @foreach($owners as $owner)<option value="{{ $owner->id }}" {{ old('owner_id') == $owner->id ? 'selected' : '' }}>{{ $owner->name }}</option>@endforeach
+                                </select>
+                                @error('owner_id')<div class="field-error">{{ $message }}</div>@enderror
                             </div>
+                        @else
+                            <input type="hidden" id="owner_id" name="owner_id" value="{{ auth()->user()->id }}">
+                        @endif
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-panel full-width">
+                <div class="panel-header"><h2 class="panel-title">Location Details</h2><span class="panel-edit"><i class="fas fa-map-marker-alt"></i> Add</span></div>
+                <div class="panel-body">
+                    <div class="compact-grid three">
+                        <div class="field-row">
+                            <label class="field-label" for="latitude">Latitude <span class="required">*</span></label>
+                            <input class="form-control-compact @error('latitude') has-error @enderror" id="latitude" name="latitude" type="number" step="any" value="{{ old('latitude') }}" placeholder="Example: 26.4499" required>
+                            @error('latitude')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="longitude">Longitude <span class="required">*</span></label>
+                            <input class="form-control-compact @error('longitude') has-error @enderror" id="longitude" name="longitude" type="number" step="any" value="{{ old('longitude') }}" placeholder="Example: 80.3319" required>
+                            @error('longitude')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="field-row">
+                            <label class="field-label" for="radius">Radius (Metres)</label>
+                            <input class="form-control-compact @error('radius') has-error @enderror" id="radius" name="radius" type="number" min="0" step="any" value="{{ old('radius') }}" placeholder="Example: 100">
+                            @error('radius')<div class="field-error">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="field-row full top">
+                            <label class="field-label" for="address">Full Address</label>
+                            <textarea class="form-control-compact @error('address') has-error @enderror" id="address" name="address" placeholder="Enter full office address">{{ old('address') }}</textarea>
+                            @error('address')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="col-lg-6">
-                    <div class="settings-card">
-                        <div class="settings-icon security-icon">🔐</div>
-                        <div class="settings-content">
-                            <h5>Login OTP Security</h5>
-                            <p>Enable phone OTP login for users of this office.</p>
-
-                            <div class="radio-group">
-                                <label class="radio-box">
-                                    <input type="radio" name="otp_enable" value="1"
-                                        {{ old('otp_enable') == '1' ? 'checked' : '' }}>
-                                    <span>
-                                        <strong>Enable</strong>
-                                        <small>Phone + OTP login</small>
-                                    </span>
-                                </label>
-
-                                <label class="radio-box">
-                                    <input type="radio" name="otp_enable" value="0"
-                                        {{ old('otp_enable', '0') == '0' ? 'checked' : '' }}>
-                                    <span>
-                                        <strong>Disable</strong>
-                                        <small>Email/phone + password login</small>
-                                    </span>
-                                </label>
-                            </div>
+            <section class="form-panel">
+                <div class="panel-header"><h2 class="panel-title">Location Verification</h2><span class="panel-edit"><i class="fas fa-location-crosshairs"></i> Setting</span></div>
+                <div class="panel-body">
+                    <div class="setting-box">
+                        <div class="setting-title"><i class="fas fa-map-pin"></i>Attendance Radius Rule</div>
+                        <p class="setting-description">Require employees to remain inside the office radius while marking attendance.</p>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="under_radius_required" value="1" {{ old('under_radius_required') === '1' ? 'checked' : '' }}> Enable</label>
+                            <label class="radio-label"><input type="radio" name="under_radius_required" value="0" {{ old('under_radius_required','0') === '0' ? 'checked' : '' }}> Disable</label>
                         </div>
+                        @error('under_radius_required')<div class="field-error" style="grid-column:1;margin-top:5px">{{ $message }}</div>@enderror
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="action-area">
-                <button type="submit" class="submit-btn">
-                    Create Office
-                </button>
-            </div>
-        </form>
-    </div>
+            <section class="form-panel">
+                <div class="panel-header"><h2 class="panel-title">Login Security</h2><span class="panel-edit"><i class="fas fa-shield-halved"></i> Setting</span></div>
+                <div class="panel-body">
+                    <div class="setting-box">
+                        <div class="setting-title"><i class="fas fa-mobile-screen-button"></i>Phone OTP Login</div>
+                        <p class="setting-description">Enable phone OTP login for users belonging to this office.</p>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="otp_enable" value="1" {{ old('otp_enable') === '1' ? 'checked' : '' }}> Enable</label>
+                            <label class="radio-label"><input type="radio" name="otp_enable" value="0" {{ old('otp_enable','0') === '0' ? 'checked' : '' }}> Disable</label>
+                        </div>
+                        @error('otp_enable')<div class="field-error" style="grid-column:1;margin-top:5px">{{ $message }}</div>@enderror
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-panel full-width">
+                <div class="form-actions">
+                    <a href="{{ route('office.index') }}" class="btn-compact btn-cancel"><i class="fas fa-times"></i>Cancel</a>
+                    <button type="submit" class="btn-compact btn-save"><i class="fas fa-building-circle-check"></i>Create Office</button>
+                </div>
+            </section>
+        </div>
+    </form>
 </div>
-
-<style>
-    .office-page {
-        padding: 28px 0;
-        background: #f5f7fb;
-        min-height: 100vh;
-    }
-
-    .page-header {
-        background: linear-gradient(135deg, #ffffff, #fff5f5);
-        border: 1px solid #f1d4d4;
-        border-radius: 18px;
-        padding: 22px 26px;
-        margin-bottom: 22px;
-        box-shadow: 0 10px 30px rgba(0,0,0,.04);
-    }
-
-    .page-header h2 {
-        margin: 0;
-        font-size: 28px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .page-header p {
-        margin: 6px 0 0;
-        color: #6b7280;
-        font-size: 14px;
-    }
-
-    .office-card,
-    .settings-card {
-        background: #ffffff;
-        border: 1px solid #e9edf5;
-        border-radius: 18px;
-        padding: 24px;
-        box-shadow: 0 14px 35px rgba(17, 24, 39, .06);
-    }
-
-    .section-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #eef2f7;
-        padding-bottom: 15px;
-        margin-bottom: 20px;
-    }
-
-    .section-title h4 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .section-title span {
-        background: #fee2e2;
-        color: #b91c1c;
-        font-size: 12px;
-        font-weight: 600;
-        padding: 6px 12px;
-        border-radius: 20px;
-    }
-
-    .form-label {
-        font-size: 13px;
-        font-weight: 700;
-        color: #374151;
-        margin-bottom: 7px;
-    }
-
-    .form-label span {
-        color: #dc2626;
-    }
-
-    .form-control {
-        height: 46px;
-        border-radius: 12px;
-        border: 1px solid #d8dee9;
-        font-size: 14px;
-        color: #111827;
-        box-shadow: none;
-    }
-
-    input[type="file"].form-control {
-        padding: 10px 12px;
-    }
-
-    textarea.form-control {
-        height: auto;
-        min-height: 95px;
-    }
-
-    .form-control:focus {
-        border-color: #dc2626;
-        box-shadow: 0 0 0 4px rgba(220, 38, 38, .08);
-    }
-
-    .settings-card {
-        display: flex;
-        gap: 18px;
-        height: 100%;
-    }
-
-    .settings-icon {
-        min-width: 52px;
-        height: 52px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    .location-icon {
-        background: #eff6ff;
-    }
-
-    .security-icon {
-        background: #ecfdf5;
-    }
-
-    .settings-content {
-        width: 100%;
-    }
-
-    .settings-content h5 {
-        margin: 0;
-        font-size: 17px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .settings-content p {
-        margin: 5px 0 16px;
-        color: #6b7280;
-        font-size: 13px;
-    }
-
-    .radio-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-
-    .radio-box {
-        border: 1px solid #e5e7eb;
-        border-radius: 14px;
-        padding: 14px;
-        display: flex;
-        gap: 10px;
-        cursor: pointer;
-        transition: .2s ease;
-        background: #fbfdff;
-    }
-
-    .radio-box:hover {
-        border-color: #dc2626;
-        background: #fff7f7;
-    }
-
-    .radio-box input {
-        margin-top: 4px;
-        accent-color: #dc2626;
-    }
-
-    .radio-box strong {
-        display: block;
-        color: #111827;
-        font-size: 14px;
-    }
-
-    .radio-box small {
-        display: block;
-        color: #6b7280;
-        font-size: 12px;
-        margin-top: 2px;
-    }
-
-    .action-area {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 24px;
-    }
-
-    .submit-btn {
-        border: none;
-        background: linear-gradient(135deg, #dc2626, #991b1b);
-        color: #fff;
-        padding: 13px 34px;
-        border-radius: 14px;
-        font-size: 15px;
-        font-weight: 700;
-        box-shadow: 0 12px 22px rgba(220, 38, 38, .25);
-        transition: .2s ease;
-    }
-
-    .submit-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 16px 28px rgba(220, 38, 38, .32);
-    }
-
-    .professional-alert {
-        border-radius: 14px;
-        border: none;
-        box-shadow: 0 10px 25px rgba(220, 38, 38, .08);
-    }
-
-    @media (max-width: 768px) {
-        .office-page {
-            padding: 18px 0;
-        }
-
-        .page-header,
-        .office-card,
-        .settings-card {
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .settings-card {
-            flex-direction: column;
-        }
-
-        .radio-group {
-            grid-template-columns: 1fr;
-        }
-
-        .action-area {
-            justify-content: stretch;
-        }
-
-        .submit-btn {
-            width: 100%;
-        }
-    }
-</style>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const byId = id => document.getElementById(id);
+    const nameInput = byId('name');
+    const prefixInput = byId('employee_prefix');
+    const limitInput = byId('number_of_employees');
+    const latitudeInput = byId('latitude');
+    const longitudeInput = byId('longitude');
+    const radiusInput = byId('radius');
+    const ownerInput = byId('owner_id');
+    const logoInput = byId('logo');
+    const logoPreview = byId('officeLogoPreview');
+
+    const setText = (id, value, fallback = 'Not Entered') => {
+        const element = byId(id);
+        if (element) element.textContent = value || fallback;
+    };
+
+    const refreshPreview = () => {
+        const officeName = nameInput?.value.trim() || '';
+        const prefix = prefixInput?.value.trim().toUpperCase() || '';
+        setText('officeNamePreview', officeName || 'NEW OFFICE REGISTRATION');
+        setText('prefixPreview', prefix);
+        setText('employeeIdPreview', prefix ? prefix + '-0001' : '', 'Not Available');
+        setText('employeeLimitPreview', limitInput?.value ? limitInput.value + ' Employees' : '');
+        setText('latitudePreview', latitudeInput?.value);
+        setText('longitudePreview', longitudeInput?.value);
+        setText('radiusPreview', radiusInput?.value ? radiusInput.value + ' Metres' : '');
+
+        if (ownerInput?.tagName === 'SELECT') {
+            setText('ownerPreview', ownerInput.options[ownerInput.selectedIndex]?.text, '{{ auth()->user()->name }}');
+        }
+
+        const radiusRule = document.querySelector('input[name="under_radius_required"]:checked');
+        const otpRule = document.querySelector('input[name="otp_enable"]:checked');
+        setText('radiusRulePreview', radiusRule?.value === '1' ? 'Enabled' : 'Disabled');
+        setText('otpPreview', otpRule?.value === '1' ? 'Enabled' : 'Disabled');
+    };
+
+    prefixInput?.addEventListener('input', function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        refreshPreview();
+    });
+
+    [nameInput, limitInput, latitudeInput, longitudeInput, radiusInput, ownerInput]
+        .filter(Boolean)
+        .forEach(element => element.addEventListener('input', refreshPreview));
+
+    document.querySelectorAll('input[name="under_radius_required"],input[name="otp_enable"]')
+        .forEach(element => element.addEventListener('change', refreshPreview));
+
+    logoInput?.addEventListener('change', function () {
+        const file = this.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = event => logoPreview.src = event.target.result;
+        reader.readAsDataURL(file);
+    });
+
+    refreshPreview();
+});
+</script>
+@endpush
