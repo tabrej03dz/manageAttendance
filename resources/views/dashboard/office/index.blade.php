@@ -131,7 +131,11 @@
                             $number = method_exists($offices, 'currentPage')
                                 ? (($offices->currentPage() - 1) * $offices->perPage()) + $loop->iteration
                                 : $loop->iteration;
-                            $radiusRequired = (string) $office->under_radius_required === '1';
+                            $radiusRequired = in_array(
+                                strtolower((string) $office->under_radius_required),
+                                ['1', 'yes', 'true'],
+                                true
+                            );
                             $isActive = $office->status === 'active';
                         @endphp
                         <tr>
