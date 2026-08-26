@@ -566,223 +566,103 @@ class AuthController extends Controller
 
 public function verifyLoginOtp(Request $request)
 {
-    $user = null;
-    $requestedUserId = $request->input('user_id');
+    // 1. Validate
+    $request->validate([
+        'user_id' => 'required|integer',
+        'otp'     => 'required|digits:6',
+    ]);
 
-    try {
+    // 2. User find
+    $user = User::find($request->user_id);
 
-        Log::info('VERIFY OTP API CALLED', [
-            'user_id'        => $requestedUserId,
-            'otp_received'   => $request->filled('otp'),
-            'request_method' => $request->method(),
-            'request_url'    => $request->fullUrl(),
-            'ip_address'     => $request->ip(),
-            'user_agent'     => $request->userAgent(),
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation
-        |--------------------------------------------------------------------------
-        */
-
-        $validated = $request->validate([
-            'user_id' => [
-                'required',
-                'integer',
-                'exists:users,id',
-            ],
-
-            'otp' => [
-                'required',
-                'digits:6',
-            ],
-        ], [
-            'user_id.required' => 'User ID required hai.',
-            'user_id.integer'  => 'User ID valid nahi hai.',
-            'user_id.exists'   => 'User nahi mila.',
-            'otp.required'     => 'OTP required hai.',
-            'otp.digits'       => 'OTP 6 digit ka hona chahiye.',
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | User
-        |--------------------------------------------------------------------------
-        */
-
-        $user = User::find($validated['user_id']);
-
-        if (!$user) {
-
-            return response()->json([
-                'status'  => false,
-                'success' => false,
-                'message' => 'User nahi mila.',
-            ], 404);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Status
-        |--------------------------------------------------------------------------
-        */
-
-        if ((string) $user->status !== '1') {
-
-            Log::warning('VERIFY OTP USER INACTIVE', [
-                'user_id' => $user->id,
-                'status'  => $user->status,
-            ]);
-
-            return response()->json([
-                'status'  => false,
-                'success' => false,
-                'message' => 'User inactive hai.',
-            ], 401);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP Exists
-        |--------------------------------------------------------------------------
-        */
-
-        if ($user->otp === null || trim((string) $user->otp) === '') {
-
-            Log::warning('VERIFY OTP NOT FOUND', [
-                'user_id' => $user->id,
-            ]);
-
-            return response()->json([
-                'status'  => false,
-                'success' => false,
-                'message' => 'OTP expire ya clear ho chuka hai. Please login again.',
-            ], 422);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | OTP Compare
-        |--------------------------------------------------------------------------
-        */
-
-        $storedOtp  = trim((string) $user->otp);
-        $enteredOtp = trim((string) $validated['otp']);
-
-        if (!hash_equals($storedOtp, $enteredOtp)) {
-
-            Log::warning('VERIFY OTP INVALID', [
-                'user_id' => $user->id,
-            ]);
-
-            return response()->json([
-                'status'  => false,
-                'success' => false,
-                'message' => 'Invalid OTP.',
-            ], 422);
-        }
-
-        Log::info('VERIFY OTP MATCHED', [
-            'user_id' => $user->id,
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Login Response Generate
-        |--------------------------------------------------------------------------
-        |
-        | OTP ko abhi clear nahi karenge.
-        |
-        */
-
-        try {
-
-            $response = $this->sendLoginSuccessResponse(
-                $request,
-                $user
-            );
-
-        } catch (Throwable $exception) {
-
-            Log::error('VERIFY OTP TOKEN GENERATION FAILED', [
-                'user_id'       => $user->id,
-                'error_message' => $exception->getMessage(),
-                'error_file'    => $exception->getFile(),
-                'error_line'    => $exception->getLine(),
-                'trace'         => $exception->getTraceAsString(),
-            ]);
-
-            return response()->json([
-                'status'  => false,
-                'success' => false,
-                'message' => 'OTP correct hai lekin login token generate nahi ho paya.',
-                'error'   => config('app.debug')
-                    ? $exception->getMessage()
-                    : null,
-            ], 500);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Clear OTP Only After Token Generated
-        |--------------------------------------------------------------------------
-        */
-
-        try {
-
-            $user->forceFill([
-                'otp' => null,
-            ])->save();
-
-        } catch (Throwable $exception) {
-
-            Log::error('VERIFY OTP CLEAR FAILED', [
-                'user_id'       => $user->id,
-                'error_message' => $exception->getMessage(),
-            ]);
-
-            /*
-             * Token already generated.
-             * Isliye login ko fail nahi karenge.
-             */
-        }
-
-        Log::info('VERIFY OTP LOGIN SUCCESS', [
-            'user_id' => $user->id,
-        ]);
-
-        return $response;
-
-    } catch (ValidationException $exception) {
-
+    if (!$user) {
         return response()->json([
-            'status'  => false,
-            'success' => false,
-            'message' => 'Validation failed.',
-            'errors'  => $exception->errors(),
-        ], 422);
-
-    } catch (Throwable $exception) {
-
-        Log::critical('VERIFY OTP CRITICAL ERROR', [
-            'user_id'       => $user?->id ?? $requestedUserId,
-            'error_type'    => get_class($exception),
-            'error_message' => $exception->getMessage(),
-            'error_file'    => $exception->getFile(),
-            'error_line'    => $exception->getLine(),
-            'trace'         => $exception->getTraceAsString(),
-        ]);
-
-        return response()->json([
-            'status'  => false,
-            'success' => false,
-            'message' => 'OTP verification ke dauran server error aaya.',
-            'error'   => config('app.debug')
-                ? $exception->getMessage()
-                : null,
-        ], 500);
+            'status' => false,
+            'message' => 'User not found.',
+        ], 404);
     }
+
+    // 3. User active check
+    if ((string) $user->status !== '1') {
+        return response()->json([
+            'status' => false,
+            'message' => 'User inactive hai.',
+        ], 401);
+    }
+
+    // 4. OTP check
+    if (empty($user->otp)) {
+        return response()->json([
+            'status' => false,
+            'message' => 'OTP not found. Please login again.',
+        ], 422);
+    }
+
+    // 5. OTP match
+    if ((string) $user->otp !== (string) $request->otp) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid OTP.',
+        ], 422);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | OTP MATCHED
+    |--------------------------------------------------------------------------
+    */
+
+    // 6. Purane tokens delete
+    $user->tokens()->delete();
+
+    // 7. New Sanctum token
+    $token = $user
+        ->createToken('mobile-app')
+        ->plainTextToken;
+
+    // 8. Office load
+    $user->load('office');
+
+    // 9. Roles
+    $roles = $user
+        ->getRoleNames()
+        ->values();
+
+    // 10. Permissions
+    $permissions = $user
+        ->getAllPermissions()
+        ->pluck('name')
+        ->values();
+
+    // 11. OTP clear
+    $user->forceFill([
+        'otp' => null,
+    ])->save();
+
+    // 12. Clean user data
+    $userData = $user
+        ->makeHidden([
+            'password',
+            'remember_token',
+            'otp',
+            'roles',
+            'permissions',
+        ])
+        ->toArray();
+
+    $userData['roles'] = $roles;
+    $userData['permissions'] = $permissions;
+
+    // 13. Response
+    return response()->json([
+        'status' => true,
+        'message' => 'OTP verified successfully.',
+        'token' => $token,
+        'token_type' => 'Bearer',
+        'user' => $userData,
+        'roles' => $roles,
+        'permissions' => $permissions,
+    ], 200);
 }
 
 
