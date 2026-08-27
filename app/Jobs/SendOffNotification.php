@@ -2,13 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Mail\OffNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\OffNotification;
 
 class SendOffNotification implements ShouldQueue
 {
@@ -16,6 +16,7 @@ class SendOffNotification implements ShouldQueue
 
     protected $user;
     protected $off;
+
     /**
      * Create a new job instance.
      */
@@ -30,6 +31,14 @@ class SendOffNotification implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->user->email1 ?? $this->user->email)->send(new OffNotification($this->off));
+        $email = $this->user->email1 ?? $this->user->email ?? null;
+
+        if (!$email) {
+            return;
+        }
+
+        Mail::to($email)->send(
+            new OffNotification($this->off)
+        );
     }
 }
