@@ -181,33 +181,33 @@ class AttendanceRecordController extends Controller
          * 1. user location_required = yes
          * 2. office under_radius_required = 1
          */
-        if (
-            strtolower($user->location_required) == 'yes'
-        ) {
+        // if (
+        //     strtolower($user->location_required) == 'yes'
+        // ) {
             
 
-            if ($request->distance === null) {
-                return response()->json([
-                    'status' => 'error',
-                    'code' => 'DISTANCE_REQUIRED',
-                    'message' => 'Location distance is required for check-in.',
-                ], 422);
-            }
+        //     if ($request->distance === null) {
+        //         return response()->json([
+        //             'status' => 'error',
+        //             'code' => 'DISTANCE_REQUIRED',
+        //             'message' => 'Location distance is required for check-in.',
+        //         ], 422);
+        //     }
 
-            if ((float) $request->distance > (float) $user->office->radius) {
-                return response()->json([
-                    'status' => 'error',
-                    'code' => 'OUTSIDE_OFFICE_RADIUS',
-                    'message' => 'You are ' . round((float) $request->distance) .
-                        'm away from the office. You must be within ' .
-                        $user->office->radius . 'm.',
-                    'data' => [
-                        'distance' => (float) $request->distance,
-                        'allowed_radius' => (float) $user->office->radius,
-                    ],
-                ], 422);
-            }
-        }
+        //     if ((float) $request->distance > (float) $user->office->radius) {
+        //         return response()->json([
+        //             'status' => 'error',
+        //             'code' => 'OUTSIDE_OFFICE_RADIUS',
+        //             'message' => 'You are ' . round((float) $request->distance) .
+        //                 'm away from the office. You must be within ' .
+        //                 $user->office->radius . 'm.',
+        //             'data' => [
+        //                 'distance' => (float) $request->distance,
+        //                 'allowed_radius' => (float) $user->office->radius,
+        //             ],
+        //         ], 422);
+        //     }
+        // }
 
         $record = AttendanceRecord::whereDate('created_at', Carbon::today())
             ->where('user_id', $user->id)
