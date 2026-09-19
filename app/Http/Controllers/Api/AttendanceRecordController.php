@@ -182,22 +182,9 @@ class AttendanceRecordController extends Controller
          * 2. office under_radius_required = 1
          */
         if (
-            strtolower($user->location_required ?? 'no') === 'yes'
-            && optional($user->office)->under_radius_required === '1'
+            strtolower($user->location_required) == 'yes'
         ) {
-            // if ($request->distance === null) {
-            //     return response()->json([
-            //         'status' => 'error',
-            //         'message' => 'Location distance is required for check-in.',
-            //     ], 403);
-            // }
-
-            // if ($request->distance > $user->office->radius) {
-            //     return response()->json([
-            //         'status' => 'error',
-            //         'message' => 'You are ' . round($request->distance) . 'm of distance from the office. You should be under ' . $user->office->radius . 'm.',
-            //     ], 403);
-            // }
+            
 
             if ($request->distance === null) {
                 return response()->json([
