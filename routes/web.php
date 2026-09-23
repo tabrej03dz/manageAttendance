@@ -18,6 +18,7 @@ use App\Http\Controllers\RequestDemoController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AttendanceRecordController;
+use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeRosterController;
 use App\Http\Controllers\NewUserLeadController;
 use App\Http\Controllers\OfficeAccessController;
@@ -203,6 +204,23 @@ Route::middleware(['auth', 'track.activity', 'active.office'])->group(function (
     });
 
     Route::resource('departments', \App\Http\Controllers\DepartmentController::class);
+
+    Route::resource(
+        'designations',
+        DesignationController::class
+    );
+
+
+    Route::patch(
+        'designations/{designation}/toggle-status',
+        [
+            DesignationController::class,
+            'toggleStatus'
+        ]
+    )->name(
+        'designations.toggle-status'
+    );
+
 
     Route::prefix('owner')->name('owner.')->group(function(){
        Route::get('/', [OwnerController::class, 'index'])->name('index');
