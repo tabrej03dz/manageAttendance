@@ -27,6 +27,14 @@ class Designation extends Model
         'sort_order' => 'integer',
     ];
 
+    public function employees()
+    {
+        return $this->hasMany(
+            User::class,
+            'designation_id'
+        );
+    }
+
     public function office()
     {
         return $this->belongsTo(Office::class);

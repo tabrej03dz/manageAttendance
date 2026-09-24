@@ -589,7 +589,7 @@
         $employee->last_working_date,
         $employee->address,
         $employee->department_id,
-        $employee->designation,
+        old('designation_id', $employee->designation_id),
         $employee->office_id,
         $currentRole,
     ];
@@ -610,7 +610,14 @@
 <div class="employee-edit-page">
 
 
-    <section class="profile-summary">
+                @php
+                $currentMaritalStatus = old(
+                    'marital_status',
+                    $employeeFamily?->marital_status ?? 'single'
+                );
+            @endphp
+
+<section class="profile-summary">
         <div class="profile-grid">
             <div class="profile-photo-wrap">
                 <img
@@ -644,7 +651,21 @@
                     <div>
                         <span class="summary-label">Designation</span>
                         <div class="summary-value">
-                            {{ $employee->designation ?: 'N/A' }}
+                            @php
+                                $summaryDesignationId = old(
+                                    'designation_id',
+                                    $employee->designation_id
+                                );
+
+                                $summaryDesignation = $summaryDesignationId
+                                    ? $designations->firstWhere(
+                                        'id',
+                                        (int) $summaryDesignationId
+                                    )
+                                    : null;
+                            @endphp
+
+                            {{ $summaryDesignation?->name ?? 'N/A' }}
                         </div>
                     </div>
 
@@ -854,6 +875,27 @@
                             @enderror
                         </div>
 
+                        <div class="field-row full">
+                            <label class="field-label" for="marital_status">
+                                Marital Status <span class="required">*</span>
+                            </label>
+                            <select
+                                class="form-control-compact @error('marital_status') has-error @enderror"
+                                id="marital_status"
+                                name="marital_status"
+                                required
+                            >
+                                <option value="single" {{ $currentMaritalStatus === 'single' ? 'selected' : '' }}>Single</option>
+                                <option value="married" {{ $currentMaritalStatus === 'married' ? 'selected' : '' }}>Married</option>
+                                <option value="divorced" {{ $currentMaritalStatus === 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="widowed" {{ $currentMaritalStatus === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                <option value="separated" {{ $currentMaritalStatus === 'separated' ? 'selected' : '' }}>Separated</option>
+                            </select>
+                            @error('marital_status')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="field-row">
                             <label class="field-label" for="employee_id">Employee ID</label>
                             <input
@@ -880,18 +922,13 @@
                         ?? (!$employeeAddress ? $employee->address : '')
                 );
 
-                $currentMaritalStatus = old(
-                    'marital_status',
-                    $employeeFamily?->marital_status ?? 'single'
-                );
-
                 $currentHasNominee = old(
                     'has_nominee',
                     $employeeNominee ? 'yes' : 'no'
                 );
             @endphp
 
-            <section class="form-panel full-width">
+            <section class="form-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Structured Address Details</h2>
                     <span class="panel-edit"><i class="fas fa-map-marker-alt"></i> Edit</span>
@@ -913,7 +950,7 @@
                         </div>
                     @endif
 
-                    <div class="compact-grid three">
+                    <div class="compact-grid">
                         <div class="field-row">
                             <label class="field-label" for="premise_details">Premise Details</label>
                             <input
@@ -1032,35 +1069,16 @@
                 </div>
             </section>
 
-            {{-- Marital & Spouse Details --}}
-            <section class="form-panel">
+            {{-- Spouse Details --}}
+            <section class="form-panel" id="spousePanel" style="display:none;">
                 <div class="panel-header">
-                    <h2 class="panel-title">Marital & Spouse Details</h2>
+                    <h2 class="panel-title">Spouse Details</h2>
                     <span class="panel-edit"><i class="fas fa-heart"></i> Edit</span>
                 </div>
 
                 <div class="panel-body">
                     <div class="compact-grid">
-                        <div class="field-row full">
-                            <label class="field-label" for="marital_status">
-                                Marital Status <span class="required">*</span>
-                            </label>
-                            <select
-                                class="form-control-compact @error('marital_status') has-error @enderror"
-                                id="marital_status"
-                                name="marital_status"
-                                required
-                            >
-                                <option value="single" {{ $currentMaritalStatus === 'single' ? 'selected' : '' }}>Single</option>
-                                <option value="married" {{ $currentMaritalStatus === 'married' ? 'selected' : '' }}>Married</option>
-                                <option value="divorced" {{ $currentMaritalStatus === 'divorced' ? 'selected' : '' }}>Divorced</option>
-                                <option value="widowed" {{ $currentMaritalStatus === 'widowed' ? 'selected' : '' }}>Widowed</option>
-                                <option value="separated" {{ $currentMaritalStatus === 'separated' ? 'selected' : '' }}>Separated</option>
-                            </select>
-                            @error('marital_status')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
+
 
                         <div id="spouseDetails" class="field-row full" style="display:none;">
                             <div style="grid-column:1 / -1;">
@@ -1716,15 +1734,39 @@
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="designation">Designation</label>
-                            <input
-                                class="form-control-compact @error('designation') has-error @enderror"
-                                id="designation"
-                                name="designation"
-                                type="text"
-                                value="{{ old('designation', $employee->designation) }}"
+                            <label class="field-label" for="designation_id">
+                                Designation
+                            </label>
+
+                            <select
+                                class="form-control-compact @error('designation_id') has-error @enderror"
+                                id="designation_id"
+                                name="designation_id"
                             >
-                            @error('designation')
+                                <option value="">Select Designation</option>
+
+                                @foreach($designations as $designation)
+                                    <option
+                                        value="{{ $designation->id }}"
+                                        data-office-id="{{ $designation->office_id }}"
+                                        data-department-id="{{ $designation->department_id ?? '' }}"
+                                        {{ (string) old(
+                                            'designation_id',
+                                            $employee->designation_id
+                                        ) === (string) $designation->id
+                                            ? 'selected'
+                                            : ''
+                                        }}
+                                    >
+                                        {{ $designation->name }}
+                                        @if(!$designation->is_active)
+                                            (Inactive)
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            @error('designation_id')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -2498,6 +2540,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const officeSelect = document.getElementById('office_id');
+        const departmentSelect = document.getElementById('department_id');
+        const designationSelect = document.getElementById('designation_id');
         const reportingManagerSelect = document.getElementById('team_leader_id');
         const leaveAuthoritySelect = document.getElementById('leave_authority_id');
 
@@ -2567,11 +2611,16 @@
         }
 
         const maritalStatus = document.getElementById('marital_status');
+        const spousePanel = document.getElementById('spousePanel');
         const spouseDetails = document.getElementById('spouseDetails');
         const spouseName = document.getElementById('spouse_name');
 
         function toggleSpouseDetails() {
             const isMarried = maritalStatus && maritalStatus.value === 'married';
+
+            if (spousePanel) {
+                spousePanel.style.display = isMarried ? '' : 'none';
+            }
 
             if (spouseDetails) {
                 spouseDetails.style.display = isMarried ? '' : 'none';
@@ -2653,7 +2702,84 @@
 
         refreshManagerOptions();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Filter Designations By Office + Department
+        |--------------------------------------------------------------------------
+        */
 
+        function filterDesignations() {
+            if (!designationSelect) {
+                return;
+            }
+
+            const selectedOfficeId =
+                officeSelect ? officeSelect.value : '';
+
+            const selectedDepartmentId =
+                departmentSelect ? departmentSelect.value : '';
+
+            Array.from(designationSelect.options).forEach(
+                function (option, index) {
+                    if (index === 0) {
+                        option.hidden = false;
+                        option.disabled = false;
+                        return;
+                    }
+
+                    const optionOfficeId =
+                        option.dataset.officeId || '';
+
+                    const optionDepartmentId =
+                        option.dataset.departmentId || '';
+
+                    const officeMatch =
+                        !selectedOfficeId ||
+                        String(optionOfficeId) ===
+                            String(selectedOfficeId);
+
+                    const departmentMatch =
+                        !selectedDepartmentId ||
+                        optionDepartmentId === '' ||
+                        String(optionDepartmentId) ===
+                            String(selectedDepartmentId);
+
+                    const shouldShow =
+                        officeMatch && departmentMatch;
+
+                    option.hidden = !shouldShow;
+                    option.disabled = !shouldShow;
+                }
+            );
+
+            const selectedOption =
+                designationSelect.options[
+                    designationSelect.selectedIndex
+                ];
+
+            if (
+                selectedOption &&
+                selectedOption.disabled
+            ) {
+                designationSelect.value = '';
+            }
+        }
+
+        if (officeSelect) {
+            officeSelect.addEventListener(
+                'change',
+                filterDesignations
+            );
+        }
+
+        if (departmentSelect) {
+            departmentSelect.addEventListener(
+                'change',
+                filterDesignations
+            );
+        }
+
+        filterDesignations();
 
         /*
         |--------------------------------------------------------------------------

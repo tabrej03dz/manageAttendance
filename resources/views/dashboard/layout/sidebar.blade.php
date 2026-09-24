@@ -199,7 +199,7 @@
                         <a href="{{ route('departments.index') }}"
                            class="nav-link {{ $activeMenu === 'departments' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-users"></i>
-                            <p>Departments</p>
+                            <p>Departments & Designations</p>
                         </a>
                     </li>
                 @endcanany

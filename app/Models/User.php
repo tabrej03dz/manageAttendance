@@ -46,6 +46,14 @@ class User extends Authenticatable
         'dob' => 'date',
     ];
 
+    public function designationDetails()
+    {
+        return $this->belongsTo(
+            Designation::class,
+            'designation_id'
+        );
+    }
+
     public function office()
     {
         return $this->belongsTo(Office::class, 'office_id');

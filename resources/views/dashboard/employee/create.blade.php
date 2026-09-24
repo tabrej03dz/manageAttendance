@@ -516,7 +516,7 @@
 
                     <div>
                         <span class="summary-label">Designation</span>
-                        <div class="summary-value" id="designationPreview">Not Entered</div>
+                        <div class="summary-value" id="designationPreview">Not Selected</div>
                     </div>
 
                     <div>
@@ -698,6 +698,27 @@
                             @enderror
                         </div>
 
+                        <div class="field-row full">
+                            <label class="field-label" for="marital_status">
+                                Marital Status <span class="required">*</span>
+                            </label>
+                            <select
+                                class="form-control-compact @error('marital_status') has-error @enderror"
+                                id="marital_status"
+                                name="marital_status"
+                                required
+                            >
+                                <option value="single" {{ old('marital_status', 'single') === 'single' ? 'selected' : '' }}>Single</option>
+                                <option value="married" {{ old('marital_status') === 'married' ? 'selected' : '' }}>Married</option>
+                                <option value="divorced" {{ old('marital_status') === 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="widowed" {{ old('marital_status') === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                <option value="separated" {{ old('marital_status') === 'separated' ? 'selected' : '' }}>Separated</option>
+                            </select>
+                            @error('marital_status')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="field-row">
                             <label class="field-label" for="employee_id">
                                 Employee ID
@@ -722,7 +743,7 @@
                 </div>
             </section>
 
-            <section class="form-panel full-width">
+            <section class="form-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">Address Details</h2>
                     <span class="panel-edit"><i class="fas fa-map-marker-alt"></i> Add</span>
@@ -732,7 +753,7 @@
                     {{-- Backward compatibility: old EmployeeRequest / reports can still use address --}}
                     <input type="hidden" name="address" id="address" value="{{ old('address') }}">
 
-                    <div class="compact-grid three">
+                    <div class="compact-grid">
                         <div class="field-row">
                             <label class="field-label" for="premise_details">Premise Details</label>
                             <input
@@ -855,34 +876,15 @@
                 </div>
             </section>
 
-            <section class="form-panel">
+            <section class="form-panel" id="spousePanel" style="display:none;">
                 <div class="panel-header">
-                    <h2 class="panel-title">Marital & Spouse Details</h2>
+                    <h2 class="panel-title">Spouse Details</h2>
                     <span class="panel-edit"><i class="fas fa-heart"></i> Add</span>
                 </div>
 
                 <div class="panel-body">
                     <div class="compact-grid">
-                        <div class="field-row full">
-                            <label class="field-label" for="marital_status">
-                                Marital Status <span class="required">*</span>
-                            </label>
-                            <select
-                                class="form-control-compact @error('marital_status') has-error @enderror"
-                                id="marital_status"
-                                name="marital_status"
-                                required
-                            >
-                                <option value="single" {{ old('marital_status', 'single') === 'single' ? 'selected' : '' }}>Single</option>
-                                <option value="married" {{ old('marital_status') === 'married' ? 'selected' : '' }}>Married</option>
-                                <option value="divorced" {{ old('marital_status') === 'divorced' ? 'selected' : '' }}>Divorced</option>
-                                <option value="widowed" {{ old('marital_status') === 'widowed' ? 'selected' : '' }}>Widowed</option>
-                                <option value="separated" {{ old('marital_status') === 'separated' ? 'selected' : '' }}>Separated</option>
-                            </select>
-                            @error('marital_status')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
+
 
                         <div id="spouseDetails" class="field-row full" style="display:none;">
                             <div style="grid-column:1 / -1;">
@@ -1421,17 +1423,52 @@
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="designation">Designation</label>
-                            <input
-                                class="form-control-compact @error('designation') has-error @enderror"
-                                id="designation"
-                                name="designation"
-                                type="text"
-                                value="{{ old('designation') }}"
+
+                            <label
+                                class="field-label"
+                                for="designation_id"
                             >
-                            @error('designation')
-                                <div class="field-error">{{ $message }}</div>
+                                Designation
+                            </label>
+
+                            <select
+                                class="form-control-compact @error('designation_id') has-error @enderror"
+                                id="designation_id"
+                                name="designation_id"
+                            >
+
+                                <option value="">
+                                    Select Designation
+                                </option>
+
+                                @foreach($designations as $designation)
+
+                                    <option
+                                        value="{{ $designation->id }}"
+
+                                        data-office-id="{{ $designation->office_id }}"
+
+                                        data-department-id="{{ $designation->department_id ?? '' }}"
+
+                                        {{ (string) old('designation_id')
+                                            === (string) $designation->id
+                                                ? 'selected'
+                                                : ''
+                                        }}
+                                    >
+                                        {{ $designation->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                            @error('designation_id')
+                                <div class="field-error">
+                                    {{ $message }}
+                                </div>
                             @enderror
+
                         </div>
 
                         <div class="field-row">
@@ -2227,7 +2264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const nameInput = document.getElementById('name');
     const photoInput = document.getElementById('photo');
     const department = document.getElementById('department_id');
-    const designation = document.getElementById('designation');
+    const designation = document.getElementById('designation_id');
     const role = document.getElementById('role');
     const office = document.getElementById('office_id');
     const leader = document.getElementById('team_leader_id');
@@ -2266,8 +2303,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         setText(
             'designationPreview',
-            designation?.value,
-            'Not Entered'
+            designation?.value
+                ? selectedText(designation)
+                : '',
+            'Not Selected'
         );
 
         setText(
@@ -2437,11 +2476,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const maritalStatus = document.getElementById('marital_status');
+    const spousePanel = document.getElementById('spousePanel');
     const spouseDetails = document.getElementById('spouseDetails');
     const spouseName = document.getElementById('spouse_name');
 
     const toggleSpouseDetails = () => {
         const isMarried = maritalStatus?.value === 'married';
+
+        if (spousePanel) {
+            spousePanel.style.display = isMarried ? '' : 'none';
+        }
 
         if (spouseDetails) {
             spouseDetails.style.display = isMarried ? '' : 'none';
@@ -2516,6 +2560,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (office) office.addEventListener('change', filterManagersByOffice);
     filterManagersByOffice();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filter Designations By Office + Department
+    |--------------------------------------------------------------------------
+    */
+
+    const filterDesignations = () => {
+        if (!designation) return;
+
+        const selectedOfficeId = office?.value || '';
+        const selectedDepartmentId = department?.value || '';
+
+        Array.from(designation.options).forEach((option, index) => {
+            if (index === 0) {
+                option.hidden = false;
+                option.disabled = false;
+                return;
+            }
+
+            const optionOfficeId = option.dataset.officeId || '';
+            const optionDepartmentId = option.dataset.departmentId || '';
+
+            const officeMatch =
+                !selectedOfficeId ||
+                String(optionOfficeId) === String(selectedOfficeId);
+
+            const departmentMatch =
+                !selectedDepartmentId ||
+                optionDepartmentId === '' ||
+                String(optionDepartmentId) === String(selectedDepartmentId);
+
+            const shouldShow = officeMatch && departmentMatch;
+
+            option.hidden = !shouldShow;
+            option.disabled = !shouldShow;
+        });
+
+        const selectedOption = designation.options[designation.selectedIndex];
+
+        if (selectedOption && selectedOption.disabled) {
+            designation.value = '';
+        }
+
+        updateSummary();
+    };
+
+    if (office) {
+        office.addEventListener('change', filterDesignations);
+    }
+
+    if (department) {
+        department.addEventListener('change', filterDesignations);
+    }
+
+    filterDesignations();
 
     /* Educational Qualifications */
     const qualificationList = document.getElementById('qualificationList');
