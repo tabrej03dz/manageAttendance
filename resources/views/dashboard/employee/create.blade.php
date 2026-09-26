@@ -590,7 +590,7 @@
 
                 <div class="panel-body">
                     <div class="compact-grid">
-                        <div class="field-row">
+                        {{-- <div class="field-row">
                             <label class="field-label" for="name">
                                 Full Name <span class="required">*</span>
                             </label>
@@ -603,6 +603,63 @@
                                 required
                             >
                             @error('name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div> --}}
+
+                        <div class="field-row">
+                            <label class="field-label" for="first_name">
+                                First Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                class="form-control-compact @error('first_name') has-error @enderror"
+                                id="first_name"
+                                name="first_name"
+                                type="text"
+                                value="{{ old('first_name') }}"
+                                required
+                            >
+
+                            @error('first_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+
+                        <div class="field-row">
+                            <label class="field-label" for="middle_name">
+                                Middle Name
+                            </label>
+
+                            <input
+                                class="form-control-compact @error('middle_name') has-error @enderror"
+                                id="middle_name"
+                                name="middle_name"
+                                type="text"
+                                value="{{ old('middle_name') }}"
+                            >
+
+                            @error('middle_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+
+                        <div class="field-row">
+                            <label class="field-label" for="last_name">
+                                Last Name
+                            </label>
+
+                            <input
+                                class="form-control-compact @error('last_name') has-error @enderror"
+                                id="last_name"
+                                name="last_name"
+                                type="text"
+                                value="{{ old('last_name') }}"
+                            >
+
+                            @error('last_name')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -632,6 +689,12 @@
                                 type="text"
                                 value="{{ old('phone') }}"
                                 required
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[6-9][0-9]{9}"
+                                placeholder="10 digit mobile number"
+                                autocomplete="tel"
                             >
                             @error('phone')
                                 <div class="field-error">{{ $message }}</div>
@@ -646,10 +709,13 @@
                                 id="alternate_number"
                                 name="alternate_number"
                                 type="text"
-                                inputmode="numeric"
-                                maxlength="15"
                                 value="{{ old('alternate_number') }}"
-                                placeholder="Alternate mobile number"
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[6-9][0-9]{9}"
+                                placeholder="10 digit alternate mobile number"
+                                autocomplete="tel"
                             >
                             @error('alternate_number')
                                 <div class="field-error">{{ $message }}</div>
@@ -664,6 +730,7 @@
                                 name="dob"
                                 type="date"
                                 value="{{ old('dob') }}"
+                                max="{{ now()->toDateString() }}"
                             >
                             @error('dob')
                                 <div class="field-error">{{ $message }}</div>
@@ -863,10 +930,12 @@
                                 id="pin_code"
                                 name="pin_code"
                                 type="text"
+                                value="{{ old('pin_code') }}"
                                 inputmode="numeric"
                                 maxlength="6"
-                                value="{{ old('pin_code') }}"
-                                placeholder="6-digit PIN"
+                                minlength="6"
+                                pattern="[1-9][0-9]{5}"
+                                placeholder="6 digit PIN code"
                             >
                             @error('pin_code')
                                 <div class="field-error">{{ $message }}</div>
@@ -913,6 +982,12 @@
                                             name="spouse_phone"
                                             type="text"
                                             value="{{ old('spouse_phone') }}"
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            minlength="10"
+                                            pattern="[6-9][0-9]{9}"
+                                            placeholder="10 digit mobile number"
+                                            autocomplete="tel"
                                         >
                                         @error('spouse_phone')
                                             <div class="field-error">{{ $message }}</div>
@@ -927,6 +1002,7 @@
                                             name="spouse_dob"
                                             type="date"
                                             value="{{ old('spouse_dob') }}"
+                                            max="{{ now()->toDateString() }}"
                                         >
                                         @error('spouse_dob')
                                             <div class="field-error">{{ $message }}</div>
@@ -1255,6 +1331,12 @@
                                             name="nominee_phone"
                                             type="text"
                                             value="{{ old('nominee_phone') }}"
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            minlength="10"
+                                            pattern="[6-9][0-9]{9}"
+                                            placeholder="10 digit mobile number"
+                                            autocomplete="tel"
                                         >
                                         @error('nominee_phone')
                                             <div class="field-error">{{ $message }}</div>
@@ -1269,6 +1351,7 @@
                                             name="nominee_dob"
                                             type="date"
                                             value="{{ old('nominee_dob') }}"
+                                            max="{{ now()->toDateString() }}"
                                         >
                                         @error('nominee_dob')
                                             <div class="field-error">{{ $message }}</div>
@@ -1282,9 +1365,12 @@
                                             id="nominee_aadhaar_number"
                                             name="nominee_aadhaar_number"
                                             type="text"
+                                            value="{{ old('nominee_aadhaar_number') }}"
                                             inputmode="numeric"
                                             maxlength="12"
-                                            value="{{ old('nominee_aadhaar_number') }}"
+                                            minlength="12"
+                                            pattern="[2-9][0-9]{11}"
+                                            placeholder="12 digit Aadhaar number"
                                         >
                                         @error('nominee_aadhaar_number')
                                             <div class="field-error">{{ $message }}</div>
@@ -1354,9 +1440,12 @@
                                             id="nominee_account_number"
                                             name="nominee_account_number"
                                             type="text"
-                                            inputmode="numeric"
                                             value="{{ old('nominee_account_number') }}"
-                                            placeholder="Enter account number"
+                                            inputmode="numeric"
+                                            minlength="9"
+                                            maxlength="18"
+                                            pattern="[0-9]{9,18}"
+                                            placeholder="9 to 18 digit account number"
                                         >
 
                                         @error('nominee_account_number')
@@ -1375,10 +1464,12 @@
                                             id="nominee_ifsc_code"
                                             name="nominee_ifsc_code"
                                             type="text"
-                                            maxlength="11"
                                             value="{{ old('nominee_ifsc_code') }}"
-                                            placeholder="e.g. PUNB0037400"
                                             style="text-transform: uppercase;"
+                                            minlength="11"
+                                            maxlength="11"
+                                            pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}"
+                                            placeholder="e.g. PUNB0037400"
                                         >
 
                                         @error('nominee_ifsc_code')
@@ -1617,6 +1708,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('salary') }}"
+                                min="0"
                             >
                             @error('salary')
                                 <div class="field-error">{{ $message }}</div>
@@ -1804,6 +1896,11 @@
                                 name="uan_number"
                                 type="text"
                                 value="{{ old('uan_number') }}"
+                                inputmode="numeric"
+                                maxlength="12"
+                                minlength="12"
+                                pattern="[0-9]{12}"
+                                placeholder="12 digit UAN number"
                             >
                             @error('uan_number')
                                 <div class="field-error">{{ $message }}</div>
@@ -1818,6 +1915,11 @@
                                 name="esic_number"
                                 type="text"
                                 value="{{ old('esic_number') }}"
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[0-9]{10}"
+                                placeholder="10 digit ESIC number"
                             >
                             @error('esic_number')
                                 <div class="field-error">{{ $message }}</div>
@@ -1971,12 +2073,12 @@
                                 id="adhar_number"
                                 name="adhar_number"
                                 type="text"
+                                value="{{ old('adhar_number') }}"
                                 inputmode="numeric"
                                 maxlength="12"
-                                pattern="[0-9]{12}"
+                                minlength="12"
+                                pattern="[2-9][0-9]{11}"
                                 placeholder="Enter 12 digit Aadhaar number"
-                                value="{{ old('adhar_number') }}"
-                                autocomplete="off"
                             >
 
                             @error('adhar_number')
@@ -1994,12 +2096,13 @@
                                 id="pan_number"
                                 name="pan_number"
                                 type="text"
+                                value="{{ old('pan_number') }}"
+                                style="text-transform: uppercase;"
                                 minlength="10"
                                 maxlength="10"
+                                pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}"
                                 placeholder="ABCDE1234F"
-                                value="{{ old('pan_number') }}"
                                 autocomplete="off"
-                                style="text-transform: uppercase;"
                             >
 
                             @error('pan_number')
@@ -2074,10 +2177,12 @@
                                 id="account_number"
                                 name="account_number"
                                 type="text"
-                                inputmode="numeric"
-                                maxlength="30"
                                 value="{{ old('account_number') }}"
-                                placeholder="Bank account number"
+                                inputmode="numeric"
+                                minlength="9"
+                                maxlength="18"
+                                pattern="[0-9]{9,18}"
+                                placeholder="9 to 18 digit bank account number"
                                 autocomplete="off"
                             >
                             @error('account_number')
@@ -2092,12 +2197,13 @@
                                 id="ifsc_code"
                                 name="ifsc_code"
                                 type="text"
+                                value="{{ old('ifsc_code') }}"
+                                style="text-transform: uppercase;"
                                 minlength="11"
                                 maxlength="11"
-                                value="{{ old('ifsc_code') }}"
+                                pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}"
                                 placeholder="SBIN0001234"
                                 autocomplete="off"
-                                style="text-transform: uppercase;"
                             >
                             @error('ifsc_code')
                                 <div class="field-error">{{ $message }}</div>
@@ -2159,6 +2265,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('basic_salary') }}"
+                                min="0"
                             >
                             @error('basic_salary')
                                 <div class="field-error">{{ $message }}</div>
@@ -2174,6 +2281,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('dearness_allowance') }}"
+                                min="0"
                             >
                             @error('dearness_allowance')
                                 <div class="field-error">{{ $message }}</div>
@@ -2189,6 +2297,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('relieving_charge') }}"
+                                min="0"
                             >
                             @error('relieving_charge')
                                 <div class="field-error">{{ $message }}</div>
@@ -2204,6 +2313,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('additional_allowance') }}"
+                                min="0"
                             >
                             @error('additional_allowance')
                                 <div class="field-error">{{ $message }}</div>
@@ -2219,6 +2329,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('provident_fund') }}"
+                                min="0"
                             >
                             @error('provident_fund')
                                 <div class="field-error">{{ $message }}</div>
@@ -2234,6 +2345,7 @@
                                 type="number"
                                 step="0.01"
                                 value="{{ old('employee_state_insurance_corporation') }}"
+                                min="0"
                             >
                             @error('employee_state_insurance_corporation')
                                 <div class="field-error">{{ $message }}</div>
@@ -2261,7 +2373,10 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const nameInput = document.getElementById('name');
+    // const nameInput = document.getElementById('name');
+    const firstNameInput = document.getElementById('first_name');
+    const middleNameInput = document.getElementById('middle_name');
+    const lastNameInput = document.getElementById('last_name');
     const photoInput = document.getElementById('photo');
     const department = document.getElementById('department_id');
     const designation = document.getElementById('designation_id');
@@ -2271,10 +2386,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const leaveAuthority = document.getElementById('leave_authority_id');
     const joiningDate = document.getElementById('joining_date');
     const status = document.getElementById('status');
-    const panInput = document.getElementById('pan_number');
-    const ifscInput = document.getElementById('ifsc_code');
-    const aadhaarInput = document.getElementById('adhar_number');
-    const accountNumberInput = document.getElementById('account_number');
 
     const setText = (id, value, fallback) => {
         const element = document.getElementById(id);
@@ -2289,9 +2400,23 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const updateSummary = () => {
+        // setText(
+        //     'employeePreviewName',
+        //     nameInput?.value ? nameInput.value.toUpperCase() : '',
+        //     'NEW EMPLOYEE REGISTRATION'
+        // );
+
+        const fullName = [
+            firstNameInput?.value,
+            middleNameInput?.value,
+            lastNameInput?.value
+        ]
+        .filter(value => value && value.trim() !== '')
+        .join(' ');
+
         setText(
             'employeePreviewName',
-            nameInput?.value ? nameInput.value.toUpperCase() : '',
+            fullName.toUpperCase(),
             'NEW EMPLOYEE REGISTRATION'
         );
 
@@ -2356,12 +2481,24 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     };
 
-    [nameInput, department, designation, role, office, leader, leaveAuthority, joiningDate, status]
-        .filter(Boolean)
-        .forEach(element => {
-            element.addEventListener('input', updateSummary);
-            element.addEventListener('change', updateSummary);
-        });
+    [
+    firstNameInput,
+    middleNameInput,
+    lastNameInput,
+    department,
+    designation,
+    role,
+    office,
+    leader,
+    leaveAuthority,
+    joiningDate,
+    status
+    ]
+    .filter(Boolean)
+    .forEach(element => {
+        element.addEventListener('input', updateSummary);
+        element.addEventListener('change', updateSummary);
+    });
 
     document.querySelectorAll('input[name="location_required"]').forEach(input => {
         input.addEventListener('change', updateSummary);
@@ -2386,39 +2523,51 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (panInput) {
-        panInput.addEventListener('input', function () {
+
+    /*
+     * Fixed-format input guards
+     * Browser maxlength/pattern gives validation.
+     * These listeners also prevent letters/special characters while typing
+     * in numeric-only fields.
+     */
+    const digitsOnly = (id, maxLength) => {
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        input.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, maxLength);
+        });
+    };
+
+    [
+        ['phone', 10],
+        ['alternate_number', 10],
+        ['spouse_phone', 10],
+        ['nominee_phone', 10],
+        ['pin_code', 6],
+        ['adhar_number', 12],
+        ['nominee_aadhaar_number', 12],
+        ['uan_number', 12],
+        ['esic_number', 10],
+        ['account_number', 18],
+        ['nominee_account_number', 18]
+    ].forEach(([id, maxLength]) => digitsOnly(id, maxLength));
+
+    const upperAlphaNumeric = (id, maxLength) => {
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        input.addEventListener('input', function () {
             this.value = this.value
                 .toUpperCase()
                 .replace(/[^A-Z0-9]/g, '')
-                .slice(0, 10);
+                .slice(0, maxLength);
         });
-    }
+    };
 
-    if (ifscInput) {
-        ifscInput.addEventListener('input', function () {
-            this.value = this.value
-                .toUpperCase()
-                .replace(/[^A-Z0-9]/g, '')
-                .slice(0, 11);
-        });
-    }
-
-    if (aadhaarInput) {
-        aadhaarInput.addEventListener('input', function () {
-            this.value = this.value
-                .replace(/\D/g, '')
-                .slice(0, 12);
-        });
-    }
-
-    if (accountNumberInput) {
-        accountNumberInput.addEventListener('input', function () {
-            this.value = this.value
-                .replace(/[^0-9A-Za-z]/g, '')
-                .slice(0, 30);
-        });
-    }
+    upperAlphaNumeric('pan_number', 10);
+    upperAlphaNumeric('ifsc_code', 11);
+    upperAlphaNumeric('nominee_ifsc_code', 11);
 
     /*
      * Structured address -> legacy users.address hidden field.
@@ -2460,20 +2609,6 @@ document.addEventListener('DOMContentLoaded', function () {
             input.addEventListener('change', syncLegacyAddress);
         }
     });
-
-    const pinCodeInput = document.getElementById('pin_code');
-    if (pinCodeInput) {
-        pinCodeInput.addEventListener('input', function () {
-            this.value = this.value.replace(/\D/g, '').slice(0, 6);
-        });
-    }
-
-    const nomineeAadhaarInput = document.getElementById('nominee_aadhaar_number');
-    if (nomineeAadhaarInput) {
-        nomineeAadhaarInput.addEventListener('input', function () {
-            this.value = this.value.replace(/\D/g, '').slice(0, 12);
-        });
-    }
 
     const maritalStatus = document.getElementById('marital_status');
     const spousePanel = document.getElementById('spousePanel');

@@ -580,6 +580,41 @@
         }
     }
 
+
+    /*
+     * Split-name fallback:
+     * New employees use first_name/middle_name/last_name.
+     * Old employees that only have users.name are split for editing.
+     */
+    $storedFirstName = old('first_name', $employee->first_name ?? '');
+    $storedMiddleName = old('middle_name', $employee->middle_name ?? '');
+    $storedLastName = old('last_name', $employee->last_name ?? '');
+
+    if (
+        !old('first_name') &&
+        empty($employee->first_name) &&
+        empty($employee->middle_name) &&
+        empty($employee->last_name) &&
+        !empty($employee->name)
+    ) {
+        $legacyNameParts = preg_split(
+            '/\s+/',
+            trim((string) $employee->name),
+            -1,
+            PREG_SPLIT_NO_EMPTY
+        );
+
+        $storedFirstName = $legacyNameParts[0] ?? '';
+
+        if (count($legacyNameParts) === 2) {
+            $storedLastName = $legacyNameParts[1];
+        } elseif (count($legacyNameParts) > 2) {
+            $storedLastName = array_pop($legacyNameParts);
+            array_shift($legacyNameParts);
+            $storedMiddleName = implode(' ', $legacyNameParts);
+        }
+    }
+
     $profileFields = [
         $employee->name,
         $employee->email,
@@ -773,18 +808,53 @@
                 <div class="panel-body">
                     <div class="compact-grid">
                         <div class="field-row">
-                            <label class="field-label" for="name">
-                                Full Name <span class="required">*</span>
+                            <label class="field-label" for="first_name">
+                                First Name <span class="required">*</span>
                             </label>
                             <input
-                                class="form-control-compact @error('name') has-error @enderror"
-                                id="name"
-                                name="name"
+                                class="form-control-compact @error('first_name') has-error @enderror"
+                                id="first_name"
+                                name="first_name"
                                 type="text"
-                                value="{{ old('name', $employee->name) }}"
+                                maxlength="100"
+                                value="{{ $storedFirstName }}"
                                 required
                             >
-                            @error('name')
+                            @error('first_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="middle_name">
+                                Middle Name
+                            </label>
+                            <input
+                                class="form-control-compact @error('middle_name') has-error @enderror"
+                                id="middle_name"
+                                name="middle_name"
+                                type="text"
+                                maxlength="100"
+                                value="{{ $storedMiddleName }}"
+                            >
+                            @error('middle_name')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="field-row">
+                            <label class="field-label" for="last_name">
+                                Last Name
+                            </label>
+                            <input
+                                class="form-control-compact @error('last_name') has-error @enderror"
+                                id="last_name"
+                                name="last_name"
+                                type="text"
+                                maxlength="100"
+                                value="{{ $storedLastName }}"
+                            >
+                            @error('last_name')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
@@ -804,30 +874,49 @@
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="phone">Phone</label>
+                            <label class="field-label" for="phone">
+                                Phone <span class="required">*</span>
+                            </label>
+
                             <input
                                 class="form-control-compact @error('phone') has-error @enderror"
                                 id="phone"
                                 name="phone"
                                 type="text"
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[6-9][0-9]{9}"
                                 value="{{ old('phone', $employee->phone) }}"
+                                placeholder="10 digit mobile number"
+                                autocomplete="tel"
+                                required
                             >
+
                             @error('phone')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="field-row">
-                            <label class="field-label" for="alternate_number">Alternate Number</label>
+                            <label class="field-label" for="alternate_number">
+                                Alternate Number
+                            </label>
+
                             <input
                                 class="form-control-compact @error('alternate_number') has-error @enderror"
                                 id="alternate_number"
                                 name="alternate_number"
                                 type="text"
-                                maxlength="20"
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[6-9][0-9]{9}"
                                 value="{{ old('alternate_number', $employee->alternate_number) }}"
-                                placeholder="Alternate contact number"
+                                placeholder="10 digit alternate mobile number"
+                                autocomplete="tel"
                             >
+
                             @error('alternate_number')
                                 <div class="field-error">{{ $message }}</div>
                             @enderror
@@ -841,6 +930,9 @@
                                 name="dob"
                                 type="date"
                                 value="{{ old('dob', $employee->dob ? \Carbon\Carbon::parse($employee->dob)->format('Y-m-d') : '') }}"
+                                max="{{ now()->toDateString() }}"
+                            >dob ? \Carbon\Carbon::parse($employee->dob)->format('Y-m-d') : '') }}"
+                                max="{{ now()->toDateString() }}"
                             >
                             @error('dob')
                                 <div class="field-error">{{ $message }}</div>
@@ -1059,7 +1151,11 @@
                                 type="text"
                                 inputmode="numeric"
                                 maxlength="6"
+                                minlength="6"
+                                pattern="[1-9][0-9]{5}"
                                 value="{{ old('pin_code', $employeeAddress?->pin_code) }}"
+                                placeholder="6 digit PIN code"
+                            >pin_code) }}"
                             >
                             @error('pin_code')
                                 <div class="field-error">{{ $message }}</div>
@@ -1106,7 +1202,14 @@
                                             id="spouse_phone"
                                             name="spouse_phone"
                                             type="text"
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            minlength="10"
+                                            pattern="[6-9][0-9]{9}"
                                             value="{{ old('spouse_phone', $employeeFamily?->spouse_phone) }}"
+                                            placeholder="10 digit mobile number"
+                                            autocomplete="tel"
+                                        >spouse_phone) }}"
                                         >
                                         @error('spouse_phone')
                                             <div class="field-error">{{ $message }}</div>
@@ -1121,6 +1224,9 @@
                                             name="spouse_dob"
                                             type="date"
                                             value="{{ old('spouse_dob', $employeeFamily?->spouse_dob ? \Carbon\Carbon::parse($employeeFamily->spouse_dob)->format('Y-m-d') : '') }}"
+                                            max="{{ now()->toDateString() }}"
+                                        >toDateString() }}"
+                                        >spouse_dob ? \Carbon\Carbon::parse($employeeFamily->spouse_dob)->format('Y-m-d') : '') }}"
                                         >
                                         @error('spouse_dob')
                                             <div class="field-error">{{ $message }}</div>
@@ -1216,7 +1322,14 @@
                                             id="nominee_phone"
                                             name="nominee_phone"
                                             type="text"
+                                            inputmode="numeric"
+                                            maxlength="10"
+                                            minlength="10"
+                                            pattern="[6-9][0-9]{9}"
                                             value="{{ old('nominee_phone', $employeeNominee?->phone) }}"
+                                            placeholder="10 digit mobile number"
+                                            autocomplete="tel"
+                                        >phone) }}"
                                         >
                                         @error('nominee_phone')
                                             <div class="field-error">{{ $message }}</div>
@@ -1231,6 +1344,9 @@
                                             name="nominee_dob"
                                             type="date"
                                             value="{{ old('nominee_dob', $employeeNominee?->dob ? \Carbon\Carbon::parse($employeeNominee->dob)->format('Y-m-d') : '') }}"
+                                            max="{{ now()->toDateString() }}"
+                                        >toDateString() }}"
+                                        >dob ? \Carbon\Carbon::parse($employeeNominee->dob)->format('Y-m-d') : '') }}"
                                         >
                                         @error('nominee_dob')
                                             <div class="field-error">{{ $message }}</div>
@@ -1246,7 +1362,11 @@
                                             type="text"
                                             inputmode="numeric"
                                             maxlength="12"
+                                            minlength="12"
+                                            pattern="[2-9][0-9]{11}"
                                             value="{{ old('nominee_aadhaar_number', $employeeNominee?->aadhaar_number) }}"
+                                            placeholder="12 digit Aadhaar number"
+                                        >aadhaar_number) }}"
                                         >
                                         @error('nominee_aadhaar_number')
                                             <div class="field-error">{{ $message }}</div>
@@ -1312,9 +1432,13 @@
                                             name="nominee_account_number"
                                             type="text"
                                             inputmode="numeric"
-                                            maxlength="30"
-                                            autocomplete="off"
+                                            minlength="9"
+                                            maxlength="18"
+                                            pattern="[0-9]{9,18}"
                                             value="{{ old('nominee_account_number', $employeeNominee?->account_number) }}"
+                                            placeholder="9 to 18 digit account number"
+                                            autocomplete="off"
+                                        >account_number) }}"
                                             placeholder="Enter account number"
                                         >
                                         @error('nominee_account_number')
@@ -1331,9 +1455,14 @@
                                             id="nominee_ifsc_code"
                                             name="nominee_ifsc_code"
                                             type="text"
-                                            maxlength="20"
-                                            autocomplete="off"
+                                            minlength="11"
+                                            maxlength="11"
+                                            pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}"
                                             value="{{ old('nominee_ifsc_code', $employeeNominee?->ifsc_code) }}"
+                                            placeholder="PUNB0037400"
+                                            autocomplete="off"
+                                            oninput="this.value=this.value.toUpperCase()"
+                                        >ifsc_code) }}"
                                             placeholder="SBIN0001234"
                                             oninput="this.value=this.value.toUpperCase()"
                                         >
@@ -1911,7 +2040,9 @@
                                 name="salary"
                                 type="number"
                                 step="0.01"
+                                min="0"
                                 value="{{ old('salary', $employee->salary) }}"
+                            >salary) }}"
                             >
                             @error('salary')
                                 <div class="field-error">{{ $message }}</div>
@@ -1978,20 +2109,25 @@
                 <div class="panel-body">
                     <div class="compact-grid">
                         <div class="field-row">
-                            <label class="field-label" for="adhar_number">Aadhaar Number</label>
-                            <input
-                                class="form-control-compact @error('adhar_number') has-error @enderror"
-                                id="adhar_number"
-                                name="adhar_number"
-                                type="text"
-                                maxlength="12"
-                                inputmode="numeric"
-                                value="{{ old('adhar_number', $employee->adhar_number) }}"
-                            >
-                            @error('adhar_number')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
+                        <label class="field-label" for="adhar_number">Aadhaar Number</label>
+
+                        <input
+                            class="form-control-compact @error('adhar_number') has-error @enderror"
+                            id="adhar_number"
+                            name="adhar_number"
+                            type="text"
+                            inputmode="numeric"
+                            minlength="12"
+                            maxlength="12"
+                            pattern="[2-9][0-9]{11}"
+                            value="{{ old('adhar_number', $employee->adhar_number) }}"
+                            placeholder="12 digit Aadhaar number"
+                        >
+
+                        @error('adhar_number')
+                            <div class="field-error">{{ $message }}</div>
+                        @enderror
+                    </div>
 
                         <div class="field-row">
                             <label class="field-label" for="pan_number">PAN Number</label>
@@ -2000,8 +2136,14 @@
                                 id="pan_number"
                                 name="pan_number"
                                 type="text"
+                                minlength="10"
                                 maxlength="10"
+                                pattern="[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}"
                                 value="{{ old('pan_number', $employee->pan_number) }}"
+                                placeholder="ABCDE1234F"
+                                autocomplete="off"
+                                oninput="this.value=this.value.toUpperCase()"
+                            >pan_number) }}"
                                 oninput="this.value=this.value.toUpperCase()"
                             >
                             @error('pan_number')
@@ -2180,13 +2322,35 @@
                     <div class="compact-grid">
                         <div class="field-row">
                             <label class="field-label" for="uan_number">UAN Number</label>
-                            <input class="form-control-compact @error('uan_number') has-error @enderror" id="uan_number" name="uan_number" type="text" value="{{ old('uan_number', $employee->uan_number) }}">
+                            <input
+                                class="form-control-compact @error('uan_number') has-error @enderror"
+                                id="uan_number"
+                                name="uan_number"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="12"
+                                minlength="12"
+                                pattern="[0-9]{12}"
+                                value="{{ old('uan_number', $employee->uan_number) }}"
+                                placeholder="12 digit UAN number"
+                            >uan_number) }}">
                             @error('uan_number')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="field-row">
                             <label class="field-label" for="esic_number">ESIC Number</label>
-                            <input class="form-control-compact @error('esic_number') has-error @enderror" id="esic_number" name="esic_number" type="text" value="{{ old('esic_number', $employee->esic_number) }}">
+                            <input
+                                class="form-control-compact @error('esic_number') has-error @enderror"
+                                id="esic_number"
+                                name="esic_number"
+                                type="text"
+                                inputmode="numeric"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[0-9]{10}"
+                                value="{{ old('esic_number', $employee->esic_number) }}"
+                                placeholder="10 digit ESIC number"
+                            >esic_number) }}">
                             @error('esic_number')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
                     </div>
@@ -2388,13 +2552,37 @@
 
                         <div class="field-row">
                             <label class="field-label" for="account_number">Account Number</label>
-                            <input class="form-control-compact @error('account_number') has-error @enderror" id="account_number" name="account_number" type="text" inputmode="numeric" maxlength="30" value="{{ old('account_number', $employee->account_number) }}" placeholder="Bank account number" autocomplete="off">
+                            <input
+                                class="form-control-compact @error('account_number') has-error @enderror"
+                                id="account_number"
+                                name="account_number"
+                                type="text"
+                                inputmode="numeric"
+                                minlength="9"
+                                maxlength="18"
+                                pattern="[0-9]{9,18}"
+                                value="{{ old('account_number', $employee->account_number) }}"
+                                placeholder="9 to 18 digit bank account number"
+                                autocomplete="off"
+                            >account_number) }}" placeholder="Bank account number" autocomplete="off">
                             @error('account_number')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
                         <div class="field-row">
                             <label class="field-label" for="ifsc_code">IFSC Code</label>
-                            <input class="form-control-compact @error('ifsc_code') has-error @enderror" id="ifsc_code" name="ifsc_code" type="text" minlength="11" maxlength="11" value="{{ old('ifsc_code', $employee->ifsc_code) }}" placeholder="SBIN0001234" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+                            <input
+                                class="form-control-compact @error('ifsc_code') has-error @enderror"
+                                id="ifsc_code"
+                                name="ifsc_code"
+                                type="text"
+                                minlength="11"
+                                maxlength="11"
+                                pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}"
+                                value="{{ old('ifsc_code', $employee->ifsc_code) }}"
+                                placeholder="SBIN0001234"
+                                autocomplete="off"
+                                oninput="this.value=this.value.toUpperCase()"
+                            >ifsc_code) }}" placeholder="SBIN0001234" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
                             @error('ifsc_code')<div class="field-error">{{ $message }}</div>@enderror
                         </div>
 
@@ -2435,7 +2623,9 @@
                                 name="basic_salary"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('basic_salary', $employee->userSalary?->basic_salary) }}"
+                                min="0"
+                                value="{{ old('basic_salary', $userSalary?->basic_salary) }}"
+                            >userSalary?->basic_salary) }}"
                             >
                             @error('basic_salary')
                                 <div class="field-error">{{ $message }}</div>
@@ -2450,7 +2640,9 @@
                                 name="dearness_allowance"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('dearness_allowance', $employee->userSalary?->dearness_allowance) }}"
+                                min="0"
+                                value="{{ old('dearness_allowance', $userSalary?->dearness_allowance) }}"
+                            >userSalary?->dearness_allowance) }}"
                             >
                             @error('dearness_allowance')
                                 <div class="field-error">{{ $message }}</div>
@@ -2465,7 +2657,9 @@
                                 name="relieving_charge"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('relieving_charge', $employee->userSalary?->relieving_charge) }}"
+                                min="0"
+                                value="{{ old('relieving_charge', $userSalary?->relieving_charge) }}"
+                            >userSalary?->relieving_charge) }}"
                             >
                             @error('relieving_charge')
                                 <div class="field-error">{{ $message }}</div>
@@ -2480,7 +2674,9 @@
                                 name="additional_allowance"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('additional_allowance', $employee->userSalary?->additional_allowance) }}"
+                                min="0"
+                                value="{{ old('additional_allowance', $userSalary?->additional_allowance) }}"
+                            >userSalary?->additional_allowance) }}"
                             >
                             @error('additional_allowance')
                                 <div class="field-error">{{ $message }}</div>
@@ -2495,7 +2691,9 @@
                                 name="provident_fund"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('provident_fund', $employee->userSalary?->provident_fund) }}"
+                                min="0"
+                                value="{{ old('provident_fund', $userSalary?->provident_fund) }}"
+                            >userSalary?->provident_fund) }}"
                             >
                             @error('provident_fund')
                                 <div class="field-error">{{ $message }}</div>
@@ -2510,7 +2708,9 @@
                                 name="employee_state_insurance_corporation"
                                 type="number"
                                 step="0.01"
-                                value="{{ old('employee_state_insurance_corporation', $employee->userSalary?->employee_state_insurance_corporation) }}"
+                                min="0"
+                                value="{{ old('employee_state_insurance_corporation', $userSalary?->employee_state_insurance_corporation) }}"
+                            >userSalary?->employee_state_insurance_corporation) }}"
                             >
                             @error('employee_state_insurance_corporation')
                                 <div class="field-error">{{ $message }}</div>
@@ -2586,31 +2786,7 @@
             }
         });
 
-        const pinCodeInput = document.getElementById('pin_code');
-
-        if (pinCodeInput) {
-            pinCodeInput.addEventListener('input', function () {
-                this.value = this.value.replace(/\D/g, '').slice(0, 6);
-            });
-        }
-
-        const nomineeAadhaarInput = document.getElementById('nominee_aadhaar_number');
-
-        if (nomineeAadhaarInput) {
-            nomineeAadhaarInput.addEventListener('input', function () {
-                this.value = this.value.replace(/\D/g, '').slice(0, 12);
-            });
-        }
-
-        const nomineeAccountNumberInput = document.getElementById('nominee_account_number');
-
-        if (nomineeAccountNumberInput) {
-            nomineeAccountNumberInput.addEventListener('input', function () {
-                this.value = this.value.replace(/\D/g, '').slice(0, 30);
-            });
-        }
-
-        const maritalStatus = document.getElementById('marital_status');
+const maritalStatus = document.getElementById('marital_status');
         const spousePanel = document.getElementById('spousePanel');
         const spouseDetails = document.getElementById('spouseDetails');
         const spouseName = document.getElementById('spouse_name');

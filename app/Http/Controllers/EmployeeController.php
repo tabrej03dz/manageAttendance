@@ -1571,6 +1571,18 @@ public function store(EmployeeRequest $request)
         |--------------------------------------------------------------------------
         */
 
+        $firstName = trim((string) $request->input('first_name'));
+        $middleName = trim((string) $request->input('middle_name'));
+        $lastName = trim((string) $request->input('last_name'));
+
+        $fullName = trim(
+            implode(' ', array_filter([
+                $firstName,
+                $middleName,
+                $lastName,
+            ]))
+        );
+
         $employeeData = [
 
             /*
@@ -1579,9 +1591,23 @@ public function store(EmployeeRequest $request)
             |--------------------------------------------------------------------------
             */
 
-            'name' => trim(
-                (string) $request->input('name')
-            ),
+            
+
+            // 'name' => trim(
+            //     (string) $request->input('name')
+            // ),
+
+            'first_name' => $firstName,
+
+            'middle_name' => $middleName !== ''
+                ? $middleName
+                : null,
+
+            'last_name' => $lastName !== ''
+                ? $lastName
+                : null,
+
+            'name' => $fullName,
 
             'email' => $request->filled('email')
                 ? strtolower(
@@ -4325,6 +4351,8 @@ public function store(EmployeeRequest $request)
             'userSalary',
         ]);
 
+        $userSalary = $employee->userSalary;
+
         /*
         |--------------------------------------------------------------------------
         | Structured Employee Address
@@ -4424,7 +4452,7 @@ public function store(EmployeeRequest $request)
                 'employeeFamily',
                 'employeeFamilyMembers',
                 'employeeNominee',
-                'employeeQualifications'
+                'employeeQualifications', 'userSalary'
             )
         );
     }
@@ -4516,12 +4544,20 @@ public function store(EmployeeRequest $request)
         $request->merge([
             'status' => $request->input('status', '1'),
 
+            'first_name' => $request->filled('first_name')
+                ? trim((string) $request->input('first_name'))
+                : null,
+
+            'middle_name' => $request->filled('middle_name')
+                ? trim((string) $request->input('middle_name'))
+                : null,
+
+            'last_name' => $request->filled('last_name')
+                ? trim((string) $request->input('last_name'))
+                : null,
+
             'adhar_number' => $request->filled('adhar_number')
-                ? preg_replace(
-                    '/\D+/',
-                    '',
-                    (string) $request->input('adhar_number')
-                )
+                ? preg_replace('/\D+/', '', (string) $request->input('adhar_number'))
                 : null,
 
             'pan_number' => $request->filled('pan_number')
@@ -4533,7 +4569,15 @@ public function store(EmployeeRequest $request)
                 : null,
 
             'account_number' => $request->filled('account_number')
-                ? trim((string) $request->input('account_number'))
+                ? preg_replace('/\D+/', '', (string) $request->input('account_number'))
+                : null,
+
+            'uan_number' => $request->filled('uan_number')
+                ? preg_replace('/\D+/', '', (string) $request->input('uan_number'))
+                : null,
+
+            'esic_number' => $request->filled('esic_number')
+                ? preg_replace('/\D+/', '', (string) $request->input('esic_number'))
                 : null,
 
             'upi_id' => $request->filled('upi_id')
@@ -4545,14 +4589,12 @@ public function store(EmployeeRequest $request)
                 : null,
 
             'phone' => $request->filled('phone')
-                ? trim((string) $request->input('phone'))
+                ? preg_replace('/\D+/', '', (string) $request->input('phone'))
                 : null,
 
             'alternate_number' => $request->filled('alternate_number')
-                ? trim((string) $request->input('alternate_number'))
+                ? preg_replace('/\D+/', '', (string) $request->input('alternate_number'))
                 : null,
-
-            'name' => trim((string) $request->input('name')),
         ]);
 
         /*
@@ -4566,10 +4608,28 @@ public function store(EmployeeRequest $request)
 
         $validated = $request->validate(
             [
-                'name' => [
+                // 'name' => [
+                //     'required',
+                //     'string',
+                //     'max:255',
+                // ],
+
+                'first_name' => [
                     'required',
                     'string',
-                    'max:255',
+                    'max:100',
+                ],
+
+                'middle_name' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
+
+                'last_name' => [
+                    'nullable',
+                    'string',
+                    'max:100',
                 ],
 
                 'email' => [
@@ -4581,14 +4641,14 @@ public function store(EmployeeRequest $request)
 
                 'phone' => [
                     'required',
-                    'string',
-                    'max:20',
+                    'digits:10',
+                    'regex:/^[6-9][0-9]{9}$/',
                 ],
 
                 'alternate_number' => [
                     'nullable',
-                    'string',
-                    'max:20',
+                    'digits:10',
+                    'regex:/^[6-9][0-9]{9}$/',
                 ],
 
                 'dob' => [
@@ -4727,6 +4787,7 @@ public function store(EmployeeRequest $request)
                 'adhar_number' => [
                     'nullable',
                     'digits:12',
+                    'regex:/^[2-9][0-9]{11}$/',
                     Rule::unique('users', 'adhar_number')->ignore($employee->id),
                 ],
 
@@ -4758,9 +4819,7 @@ public function store(EmployeeRequest $request)
 
                 'account_number' => [
                     'nullable',
-                    'string',
-                    'min:6',
-                    'max:30',
+                    'digits_between:9,18',
                 ],
 
                 'ifsc_code' => [
@@ -4789,14 +4848,12 @@ public function store(EmployeeRequest $request)
 
                 'uan_number' => [
                     'nullable',
-                    'string',
-                    'max:30',
+                    'digits:12',
                 ],
 
                 'esic_number' => [
                     'nullable',
-                    'string',
-                    'max:30',
+                    'digits:10',
                 ],
 
                 /*
@@ -5259,9 +5316,19 @@ public function store(EmployeeRequest $request)
             | 6. Update employee details
             |--------------------------------------------------------------------------
             */
+            $fullName = trim(
+                implode(' ', array_filter([
+                    $validated['first_name'] ?? null,
+                    $validated['middle_name'] ?? null,
+                    $validated['last_name'] ?? null,
+                ]))
+            );
 
             $employee->forceFill([
-                'name' => $validated['name'],
+                'first_name' => $validated['first_name'],
+                'middle_name' => $validated['middle_name'] ?? null,
+                'last_name' => $validated['last_name'] ?? null,
+                'name' => $fullName,
 
                 'email' => $validated['email'] ?? null,
                 'phone' => $validated['phone'],
@@ -6087,5 +6154,4 @@ public function store(EmployeeRequest $request)
             ),
         ]);
     }
-
 }
