@@ -2109,25 +2109,25 @@
                 <div class="panel-body">
                     <div class="compact-grid">
                         <div class="field-row">
-                        <label class="field-label" for="adhar_number">Aadhaar Number</label>
+                            <label class="field-label" for="adhar_number">Aadhaar Number</label>
 
-                        <input
-                            class="form-control-compact @error('adhar_number') has-error @enderror"
-                            id="adhar_number"
-                            name="adhar_number"
-                            type="text"
-                            inputmode="numeric"
-                            minlength="12"
-                            maxlength="12"
-                            pattern="[2-9][0-9]{11}"
-                            value="{{ old('adhar_number', $employee->adhar_number) }}"
-                            placeholder="12 digit Aadhaar number"
-                        >
+                            <input
+                                class="form-control-compact @error('adhar_number') has-error @enderror"
+                                id="adhar_number"
+                                name="adhar_number"
+                                type="text"
+                                inputmode="numeric"
+                                minlength="12"
+                                maxlength="12"
+                                pattern="[2-9][0-9]{11}"
+                                value="{{ old('adhar_number', $employee->adhar_number) }}"
+                                placeholder="12 digit Aadhaar number"
+                            >
 
-                        @error('adhar_number')
-                            <div class="field-error">{{ $message }}</div>
-                        @enderror
-                    </div>
+                            @error('adhar_number')
+                                <div class="field-error">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <div class="field-row">
                             <label class="field-label" for="pan_number">PAN Number</label>
