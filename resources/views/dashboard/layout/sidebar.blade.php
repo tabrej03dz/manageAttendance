@@ -184,7 +184,7 @@
                     </li>
                 @endcan
 
-                  @can('show chat')
+                  {{-- @can('show chat') --}}
                     <li class="nav-item">
                         <a href="{{ route('chat.index') }}"
                            class="nav-link {{ $activeMenu === 'chat' ? 'active' : '' }}">
@@ -192,7 +192,7 @@
                             <p>Chat</p>
                         </a>
                     </li>
-                @endcan
+                {{-- @endcan --}}
 
                 @can('show attendance')
                     <li class="nav-item">
