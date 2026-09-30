@@ -30,17 +30,51 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\LogViewerController;
 use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserActivityPageController;
+use App\Http\Controllers\ChatController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
+
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/chat', [
+        ChatController::class,
+        'index'
+    ])->name('chat.index');
+
+    Route::get('/chat/start/{user}', [
+        ChatController::class,
+        'startPrivateChat'
+    ])->name('chat.start');
+
+    Route::post('/chat/team/create', [
+        ChatController::class,
+        'createTeamChat'
+    ])->name('chat.team.create');
+
+    Route::get('/chat/{conversation}', [
+        ChatController::class,
+        'show'
+    ])->name('chat.show');
+
+    Route::post('/chat/{conversation}/send', [
+        ChatController::class,
+        'send'
+    ])->name('chat.send');
+
+    Route::get('/chat/{conversation}/messages', [
+        ChatController::class,
+        'messages'
+    ])->name('chat.messages');
+
+    Route::post('/chat/{conversation}/read', [
+        ChatController::class,
+        'markRead'
+    ])->name('chat.read');
+});
+
+
+
 
 Route::post('/new-user-lead/store', [NewUserLeadController::class, 'store'])->name('request.store');
 
@@ -480,5 +514,5 @@ Route::prefix('logs')
         Route::delete('/delete-all', 'destroyAll')
             ->name('destroy-all');
     });
-    
+
 });
