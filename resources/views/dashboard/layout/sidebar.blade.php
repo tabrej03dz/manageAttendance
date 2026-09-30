@@ -194,7 +194,7 @@
                     </li>
                 {{-- @endcan --}}
 
-                @can('show attendance')
+                {{-- @can('show attendance')
                     <li class="nav-item">
                         <a href="{{ route('attendance.day-wise') }}"
                            class="nav-link {{ $activeMenu === 'attendance' ? 'active' : '' }}">
@@ -202,7 +202,7 @@
                             <p>Attendance</p>
                         </a>
                     </li>
-                @endcan
+                @endcan --}}
 
                 @can('show attendance')
                     <li class="nav-item">
