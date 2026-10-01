@@ -1068,37 +1068,89 @@ class ChatController extends Controller
         User $targetUser
     ): bool {
 
-        // Khud ko message nahi
+        /*
+        |--------------------------------------------------------------------------
+        | Self chat not allowed
+        |--------------------------------------------------------------------------
+        */
         if ((int) $authUser->id === (int) $targetUser->id) {
             return false;
         }
 
         /*
-        * Super Admin / Admin
-        * => existing full access
+        |--------------------------------------------------------------------------
+        | SUPER ADMIN
+        |--------------------------------------------------------------------------
+        | Super Admin sabko message kar sakta hai.
         */
-        if ($this->isAdminUser($authUser)) {
+        if ($authUser->hasRole('super_admin')) {
             return true;
         }
 
         /*
-        * OWNER
-        * => existing hierarchy me allowed
+        |--------------------------------------------------------------------------
+        | OWNER
+        |--------------------------------------------------------------------------
+        | Owner sirf apne office ke:
+        | - Admin
+        | - Team Leader
+        | - Employee
         */
         if ($authUser->hasRole('owner')) {
-            return true;
+
+            return
+                !empty($authUser->office_id) &&
+                !empty($targetUser->office_id) &&
+                (int) $authUser->office_id ===
+                (int) $targetUser->office_id;
         }
 
         /*
-        * TEAM LEADER
-        *
-        * Allowed:
-        * 1. Apne employees
-        * 2. Higher roles: admin / owner / super_admin
+        |--------------------------------------------------------------------------
+        | ADMIN
+        |--------------------------------------------------------------------------
+        | Admin:
+        | - apne office ke Team Leader
+        | - apne office ke Employee
+        | - apne office ke Owner
+        */
+        if ($authUser->hasRole('admin')) {
+
+            if (
+                empty($authUser->office_id) ||
+                empty($targetUser->office_id)
+            ) {
+                return false;
+            }
+
+            if (
+                (int) $authUser->office_id !==
+                (int) $targetUser->office_id
+            ) {
+                return false;
+            }
+
+            return $targetUser->hasAnyRole([
+                'owner',
+                'team_leader',
+                'employee',
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TEAM LEADER / REPORTING MANAGER
+        |--------------------------------------------------------------------------
+        | TL:
+        | - apne assigned employees
+        | - same office Admin
+        | - same office Owner
         */
         if ($authUser->hasRole('team_leader')) {
 
-            // Apna employee
+            /*
+            * Apna direct employee
+            */
             if (
                 (int) $targetUser->team_leader_id ===
                 (int) $authUser->id
@@ -1106,12 +1158,17 @@ class ChatController extends Controller
                 return true;
             }
 
-            // Higher role
+            /*
+            * Same office Admin / Owner
+            */
             if (
+                !empty($authUser->office_id) &&
+                !empty($targetUser->office_id) &&
+                (int) $authUser->office_id ===
+                (int) $targetUser->office_id &&
                 $targetUser->hasAnyRole([
                     'admin',
                     'owner',
-                    'super_admin',
                 ])
             ) {
                 return true;
@@ -1121,19 +1178,23 @@ class ChatController extends Controller
         }
 
         /*
-        * NORMAL EMPLOYEE
-        *
-        * Allowed:
-        * 1. Apna Reporting Manager / Team Leader
-        * 2. Higher roles:
-        *    team_leader
-        *    admin
-        *    owner
-        *    super_admin
+        |--------------------------------------------------------------------------
+        | NORMAL EMPLOYEE
+        |--------------------------------------------------------------------------
+        | Employee:
+        | - apna assigned Reporting Manager / Team Leader
+        | - same office Admin
+        | - same office Owner
+        |
+        | Kisi dusre TL ko nahi.
+        | Kisi dusre office ke kisi user ko nahi.
+        | Super Admin ko list me nahi.
         */
         if ($authUser->hasRole('employee')) {
 
-            // Direct reporting manager
+            /*
+            * Assigned Reporting Manager
+            */
             if (
                 !empty($authUser->team_leader_id) &&
                 (int) $authUser->team_leader_id ===
@@ -1142,34 +1203,19 @@ class ChatController extends Controller
                 return true;
             }
 
-            // Higher roles
+            /*
+            * Same office Admin / Owner
+            */
             if (
+                !empty($authUser->office_id) &&
+                !empty($targetUser->office_id) &&
+                (int) $authUser->office_id ===
+                (int) $targetUser->office_id &&
                 $targetUser->hasAnyRole([
-                    'team_leader',
                     'admin',
                     'owner',
-                    'super_admin',
                 ])
             ) {
-
-                /*
-                * Team Leader / Admin same office ka ho
-                */
-                if (
-                    $targetUser->hasAnyRole([
-                        'team_leader',
-                        'admin',
-                    ])
-                ) {
-                    return
-                        !empty($authUser->office_id) &&
-                        (int) $authUser->office_id ===
-                        (int) $targetUser->office_id;
-                }
-
-                /*
-                * Owner / Super Admin
-                */
                 return true;
             }
 
@@ -1284,10 +1330,12 @@ class ChatController extends Controller
     private function getAllowedUsers(User $user)
     {
         /*
-        * Super Admin / Admin
-        * => existing: sab users
+        |--------------------------------------------------------------------------
+        | SUPER ADMIN
+        |--------------------------------------------------------------------------
+        | Sab users dikhenge.
         */
-        if ($this->isAdminUser($user)) {
+        if ($user->hasRole('super_admin')) {
 
             return User::query()
                 ->where('id', '!=', $user->id)
@@ -1299,54 +1347,38 @@ class ChatController extends Controller
         }
 
         /*
-        * OWNER
+        |--------------------------------------------------------------------------
+        | OWNER
+        |--------------------------------------------------------------------------
+        | Sirf apne office ke niche ke log:
+        | - Admin
+        | - Team Leader
+        | - Employee
         */
         if ($user->hasRole('owner')) {
 
-            return User::query()
-                ->where('id', '!=', $user->id)
-                ->orderBy('name')
-                ->get([
-                    'id',
-                    'name',
-                ]);
-        }
-
-        /*
-        * TEAM LEADER
-        *
-        * Show:
-        * - apne employees
-        * - admin
-        * - owner
-        * - super_admin
-        */
-        if ($user->hasRole('team_leader')) {
+            if (empty($user->office_id)) {
+                return collect();
+            }
 
             return User::query()
+
                 ->where('id', '!=', $user->id)
 
-                ->where(function ($query) use ($user) {
+                ->where(
+                    'office_id',
+                    $user->office_id
+                )
 
-                    // Apne employees
-                    $query->where(
-                        'team_leader_id',
-                        $user->id
-                    );
+                ->whereHas('roles', function ($query) {
 
-                    // Higher roles
-                    $query->orWhereHas(
-                        'roles',
-                        function ($roleQuery) {
-                            $roleQuery->whereIn(
-                                'roles.name',
-                                [
-                                    'admin',
-                                    'owner',
-                                    'super_admin',
-                                ]
-                            );
-                        }
+                    $query->whereIn(
+                        'roles.name',
+                        [
+                            'admin',
+                            'team_leader',
+                            'employee',
+                        ]
                     );
                 })
 
@@ -1359,14 +1391,142 @@ class ChatController extends Controller
         }
 
         /*
-        * NORMAL EMPLOYEE
-        *
-        * Show:
-        * - direct reporting manager
-        * - same office ke Team Leaders
-        * - same office ke Admin
-        * - Owner
-        * - Super Admin
+        |--------------------------------------------------------------------------
+        | ADMIN
+        |--------------------------------------------------------------------------
+        | Apne office me:
+        | - Owner
+        | - Team Leader
+        | - Employee
+        */
+        if ($user->hasRole('admin')) {
+
+            if (empty($user->office_id)) {
+                return collect();
+            }
+
+            return User::query()
+
+                ->where('id', '!=', $user->id)
+
+                ->where(
+                    'office_id',
+                    $user->office_id
+                )
+
+                ->whereHas('roles', function ($query) {
+
+                    $query->whereIn(
+                        'roles.name',
+                        [
+                            'owner',
+                            'team_leader',
+                            'employee',
+                        ]
+                    );
+                })
+
+                ->orderBy('name')
+
+                ->get([
+                    'id',
+                    'name',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TEAM LEADER / REPORTING MANAGER
+        |--------------------------------------------------------------------------
+        | Show:
+        | - apne assigned employees
+        | - same office Admin
+        | - same office Owner
+        */
+        if ($user->hasRole('team_leader')) {
+
+            return User::query()
+
+                ->where(
+                    'id',
+                    '!=',
+                    $user->id
+                )
+
+                ->where(function ($query) use ($user) {
+
+                    /*
+                    * Apne direct employees
+                    */
+                    $query->where(function ($employeeQuery) use ($user) {
+
+                        $employeeQuery
+                            ->where(
+                                'team_leader_id',
+                                $user->id
+                            )
+                            ->whereHas(
+                                'roles',
+                                function ($roleQuery) {
+
+                                    $roleQuery->where(
+                                        'roles.name',
+                                        'employee'
+                                    );
+                                }
+                            );
+                    });
+
+                    /*
+                    * Same office Admin / Owner
+                    */
+                    if (!empty($user->office_id)) {
+
+                        $query->orWhere(function ($higherQuery) use ($user) {
+
+                            $higherQuery
+                                ->where(
+                                    'office_id',
+                                    $user->office_id
+                                )
+                                ->whereHas(
+                                    'roles',
+                                    function ($roleQuery) {
+
+                                        $roleQuery->whereIn(
+                                            'roles.name',
+                                            [
+                                                'admin',
+                                                'owner',
+                                            ]
+                                        );
+                                    }
+                                );
+                        });
+                    }
+                })
+
+                ->orderBy('name')
+
+                ->get([
+                    'id',
+                    'name',
+                ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMAL EMPLOYEE
+        |--------------------------------------------------------------------------
+        | Show ONLY:
+        |
+        | - assigned Team Leader / Reporting Manager
+        | - same office Admin
+        | - same office Owner
+        |
+        | Dusre Team Leaders nahi.
+        | Dusre office ke users nahi.
+        | Super Admin nahi.
         */
         if ($user->hasRole('employee')) {
 
@@ -1381,7 +1541,7 @@ class ChatController extends Controller
                 ->where(function ($query) use ($user) {
 
                     /*
-                    * Direct Reporting Manager
+                    * Assigned Reporting Manager
                     */
                     if (!empty($user->team_leader_id)) {
 
@@ -1389,52 +1549,40 @@ class ChatController extends Controller
                             'id',
                             $user->team_leader_id
                         );
+
                     } else {
-                        // First condition initialize
+
                         $query->whereRaw('1 = 0');
                     }
 
                     /*
-                    * Same office Team Leader / Admin
+                    * Same office Admin / Owner
                     */
-                    $query->orWhere(function ($officeQuery) use ($user) {
+                    if (!empty($user->office_id)) {
 
-                        $officeQuery
-                            ->where(
-                                'office_id',
-                                $user->office_id
-                            )
-                            ->whereHas(
-                                'roles',
-                                function ($roleQuery) {
+                        $query->orWhere(function ($higherQuery) use ($user) {
 
-                                    $roleQuery->whereIn(
-                                        'roles.name',
-                                        [
-                                            'team_leader',
-                                            'admin',
-                                        ]
-                                    );
-                                }
-                            );
-                    });
+                            $higherQuery
+                                ->where(
+                                    'office_id',
+                                    $user->office_id
+                                )
 
-                    /*
-                    * Owner / Super Admin
-                    */
-                    $query->orWhereHas(
-                        'roles',
-                        function ($roleQuery) {
+                                ->whereHas(
+                                    'roles',
+                                    function ($roleQuery) {
 
-                            $roleQuery->whereIn(
-                                'roles.name',
-                                [
-                                    'owner',
-                                    'super_admin',
-                                ]
-                            );
-                        }
-                    );
+                                        $roleQuery->whereIn(
+                                            'roles.name',
+                                            [
+                                                'admin',
+                                                'owner',
+                                            ]
+                                        );
+                                    }
+                                );
+                        });
+                    }
                 })
 
                 ->orderBy('name')
