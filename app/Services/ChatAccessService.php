@@ -170,17 +170,63 @@ class ChatAccessService
         return $this->visibleQuery($viewer)->whereKey($conversation->id)->exists();
     }
 
-    public function canSend(User $viewer, ChatConversation $conversation): bool
-    {
-        if ($conversation->type !== 'private') {
-            return false; // Legacy group histories are read-only.
-        }
-        $ids = $conversation->participants()->pluck('user_id')->map(fn ($id) => (int) $id);
-        if ($ids->count() !== 2 || $ids->unique()->count() !== 2 || !$ids->contains((int) $viewer->id)) {
-            return false;
-        }
-        $target = $this->users()->get($ids->first(fn ($id) => $id !== (int) $viewer->id));
+    // public function canSend(User $viewer, ChatConversation $conversation): bool
+    // {
+    //     if ($conversation->type !== 'private') {
+    //         return false; // Legacy group histories are read-only.
+    //     }
+    //     $ids = $conversation->participants()->pluck('user_id')->map(fn ($id) => (int) $id);
+    //     if ($ids->count() !== 2 || $ids->unique()->count() !== 2 || !$ids->contains((int) $viewer->id)) {
+    //         return false;
+    //     }
+    //     $target = $this->users()->get($ids->first(fn ($id) => $id !== (int) $viewer->id));
 
-        return $target && $this->canChat($viewer, $target);
+    //     return $target && $this->canChat($viewer, $target);
+    // }
+
+    public function canSend(
+    User $viewer,
+    ChatConversation $conversation
+): bool {
+    $ids = $conversation->participants()
+        ->pluck('user_id')
+        ->map(fn ($id) => (int) $id);
+
+    /*
+     * जिस lower user की chat देखने का अधिकार है,
+     * उसके conversation में message भी भेज सकता है।
+     *
+     * Existing office/owner/reporting scope लागू रहेगा।
+     */
+    $monitoredIds = $this->monitoredIds($viewer);
+
+    if ($ids->intersect($monitoredIds)->isNotEmpty()) {
+        return true;
     }
+
+    /*
+     * बाकी users के लिए पहले वाला private-chat rule।
+     * Employee ↔ Employee chat अब भी बंद रहेगी।
+     */
+    if ($conversation->type !== 'private') {
+        return false;
+    }
+
+    if (
+        $ids->count() !== 2 ||
+        $ids->unique()->count() !== 2 ||
+        !$ids->contains((int) $viewer->id)
+    ) {
+        return false;
+    }
+
+    $targetId = $ids->first(
+        fn ($id) => $id !== (int) $viewer->id
+    );
+
+    $target = $this->users()->get($targetId);
+
+    return $target !== null
+        && $this->canChat($viewer, $target);
+}
 }
