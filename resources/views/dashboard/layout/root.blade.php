@@ -719,7 +719,9 @@
 
 @stack('scripts')
 
-
+@auth
+    @include('chat.partials.notifications')
+@endauth
 
 @if(auth()->check() && isset($currentUserActivityId))
 <script>

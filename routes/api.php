@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\HomeController;
 use \App\Http\Controllers\Api\LeaveController;
 use \App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserActivityController;
-
+use App\Http\Controllers\ChatNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +38,12 @@ Route::get('/network-test', function (Request $request) {
         'cf_connecting_ip' => $request->header('CF-Connecting-IP'),
         'user_agent' => $request->userAgent(),
     ]);
+});
+
+Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(function () {
+    Route::post('/devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:30,1')->name('devices.store');
+    Route::delete('/devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
+    Route::post('/notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->name('notifications.read');
 });
 
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

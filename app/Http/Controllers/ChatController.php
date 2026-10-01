@@ -7,6 +7,7 @@ use App\Models\ChatMessage;
 use App\Models\ChatParticipant;
 use App\Models\User;
 use App\Services\ChatAccessService;
+use App\Services\ChatNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,10 @@ use Illuminate\Validation\ValidationException;
 
 class ChatController extends Controller
 {
-    public function __construct(private ChatAccessService $access) {}
+    public function __construct(
+        private ChatAccessService $access,
+        private ChatNotificationService $chatNotifications
+    ) {}
 
     private function pageData(User $user): array
     {
@@ -112,6 +116,7 @@ class ChatController extends Controller
         // Monitors never become participants and never mark someone else's chat read.
         ChatParticipant::query()->where('conversation_id', $conversation->id)
             ->where('user_id', $user->id)->update(['last_read_at' => $readAt]);
+        $this->chatNotifications->markConversationRead($user, $conversation, $readAt);
     }
 
     public function show(ChatConversation $conversation)
@@ -151,11 +156,12 @@ class ChatController extends Controller
         foreach ($members as $member) {
             $conversation = $this->privateConversation($user, $member);
             DB::transaction(function () use ($conversation, $user, $text) {
-                ChatMessage::create([
+                $newMessage = ChatMessage::create([
                     'conversation_id' => $conversation->id,
                     'sender_id' => $user->id, 'message' => $text,
                 ]);
                 $conversation->touch();
+                $this->chatNotifications->record($newMessage);
             });
         }
 
@@ -188,7 +194,7 @@ class ChatController extends Controller
         }
         try {
             DB::transaction(function () use ($conversation, $user, $text, $reply, $path, $file) {
-                ChatMessage::create([
+                $newMessage = ChatMessage::create([
                     'conversation_id' => $conversation->id, 'sender_id' => $user->id,
                     'message' => $text !== '' ? $text : null,
                     'attachment' => $path,
@@ -197,6 +203,7 @@ class ChatController extends Controller
                     'reply_to_id' => $reply?->id,
                 ]);
                 $conversation->touch();
+                $this->chatNotifications->record($newMessage);
             });
         } catch (\Throwable $error) {
             if ($path) {

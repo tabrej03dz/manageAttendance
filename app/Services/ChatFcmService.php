@@ -1,0 +1,65 @@
+<?php
+namespace App\Services;
+
+use App\Models\ChatDevice;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Google\Auth\HttpHandler\HttpHandlerFactory;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+
+class ChatFcmService
+{
+    private function credentials(): array
+    {
+        $path = config('chat_notifications.credentials');
+        if (!$path || !is_readable($path)) { throw new \RuntimeException('Chat Firebase credentials are missing.'); }
+        $json = json_decode(file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        if (($json['type'] ?? '') !== 'service_account') { throw new \RuntimeException('Chat Firebase service-account credentials are required.'); }
+        return $json;
+    }
+
+    public function send(ChatDevice $device, array $data): void
+    {
+        if (!config('chat_notifications.fcm_enabled')) { throw new \RuntimeException('Chat FCM is disabled.'); }
+        $credentials = $this->credentials();
+        $project = config('chat_notifications.project_id') ?: ($credentials['project_id'] ?? null);
+        if (!$project || !preg_match('/^[a-z][a-z0-9-]{4,62}$/', $project)) { throw new \RuntimeException('Invalid Chat Firebase project ID.'); }
+        $key = 'chat-fcm-oauth-' . hash('sha256', ($credentials['client_email'] ?? '') . ($credentials['private_key_id'] ?? ''));
+        $accessToken = Cache::get($key);
+        if (!$accessToken) {
+            $auth = new ServiceAccountCredentials('https://www.googleapis.com/auth/firebase.messaging', $credentials);
+            $token = $auth->fetchAuthToken(HttpHandlerFactory::build(new Client(['timeout' => 10, 'connect_timeout' => 5])));
+            $accessToken = $token['access_token'] ?? null;
+            if (!$accessToken) { throw new \RuntimeException('Firebase OAuth token could not be obtained.'); }
+            Cache::put($key, $accessToken, max(1, (int) ($token['expires_in'] ?? 3600) - 60));
+        }
+        $response = Http::withToken($accessToken)->acceptJson()->connectTimeout(5)->timeout(15)
+            ->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", [
+                'message' => [
+                    'token' => $device->fcm_token,
+                    // Keep lock-screen text generic; fetch authorized content when chat opens.
+                    'notification' => ['title' => 'New chat message', 'body' => 'You have received a new message.'],
+                    'data' => array_map(fn ($value) => (string) $value, $data),
+                    'android' => [
+                        'priority' => 'high', 'ttl' => '300s',
+                        'notification' => ['sound' => 'default', 'tag' => 'chat-message-' . $data['message_id']],
+                    ],
+                    'apns' => [
+                        'headers' => ['apns-priority' => '10', 'apns-push-type' => 'alert', 'apns-expiration' => (string) (time() + 300)],
+                        'payload' => ['aps' => ['sound' => 'default']],
+                    ],
+                ],
+            ]);
+        if ($response->successful()) { return; }
+        foreach ($response->json('error.details', []) as $detail) {
+            if (($detail['@type'] ?? '') === 'type.googleapis.com/google.firebase.fcm.v1.FcmError'
+                && ($detail['errorCode'] ?? '') === 'UNREGISTERED') {
+                ChatDevice::query()->whereKey($device->id)->where('token_hash', $device->token_hash)->delete();
+                return;
+            }
+        }
+        if ($response->status() === 401) { Cache::forget($key); }
+        throw new \RuntimeException('FCM delivery failed (HTTP ' . $response->status() . ').');
+    }
+}
