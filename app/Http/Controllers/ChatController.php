@@ -2461,21 +2461,23 @@ class ChatController extends Controller
             return false;
         }
 
-        // Same role wale users aapas me nahi dikhenge/chat nahi karenge.
+        /*
+         * Same role aapas me nahi.
+         */
         if ($authLevel === $targetLevel) {
             return false;
         }
 
         /*
-         * Super Admin global role hai:
-         * usko sab offices/departments ke different-role users dikh sakte hain.
+         * Super Admin:
+         * sabhi lower roles ko dekh/chat kar sakta hai.
          */
         if ($authUser->hasRole('super_admin')) {
-            return true;
+            return $targetLevel < $authLevel;
         }
 
         /*
-         * Normal roles ke liye current active office compulsory.
+         * Baaki users apne active office ke bahar nahi ja sakte.
          */
         $activeOfficeId = $authUser->activeOfficeId();
 
@@ -2488,18 +2490,141 @@ class ChatController extends Controller
         }
 
         /*
-         * Owner/Admin/Team Leader/Employee:
-         * same department compulsory.
+         * Admin:
+         * apne office ke Owner + Team Leaders + Employees.
+         * Department restriction nahi.
          */
-        if (
-            empty($authUser->department_id) ||
-            empty($targetUser->department_id) ||
-            (int) $authUser->department_id !== (int) $targetUser->department_id
-        ) {
+        if ($authUser->hasRole('admin')) {
+            return $targetUser->hasAnyRole([
+                'owner',
+                'team_leader',
+                'employee',
+            ]);
+        }
+
+        /*
+         * Owner:
+         * apne office ke Admin + Team Leaders + Employees.
+         * Super Admin bhi higher role ke roop me visible.
+         */
+        if ($authUser->hasRole('owner')) {
+            return $targetUser->hasAnyRole([
+                'super_admin',
+                'admin',
+                'team_leader',
+                'employee',
+            ]);
+        }
+
+        /*
+         * Team Leader:
+         * - apne direct/indirect niche ke users
+         * - apni reporting chain ke higher Team Leader
+         * - Admin / Owner / Super Admin
+         */
+        if ($authUser->hasRole('team_leader')) {
+            if ($targetUser->hasAnyRole(['admin', 'owner', 'super_admin'])) {
+                return true;
+            }
+
+            if ($targetUser->hasRole('team_leader')) {
+                return $this->isInReportingChain($authUser, $targetUser);
+            }
+
+            if ($targetUser->hasRole('employee')) {
+                return $this->isDescendantUser($authUser, $targetUser);
+            }
+
             return false;
         }
 
-        return true;
+        /*
+         * Employee:
+         * - apna Team Leader
+         * - Team Leader ka Team Leader ... poori reporting chain
+         * - Admin / Owner / Super Admin
+         */
+        if ($authUser->hasRole('employee')) {
+            if ($targetUser->hasAnyRole(['admin', 'owner', 'super_admin'])) {
+                return true;
+            }
+
+            if ($targetUser->hasRole('team_leader')) {
+                return $this->isInReportingChain($authUser, $targetUser);
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check target user auth user ki upward reporting chain me hai ya nahi.
+     */
+    private function isInReportingChain(
+        User $authUser,
+        User $targetUser
+    ): bool {
+        $leaderId = $authUser->team_leader_id;
+        $visited = [];
+
+        while ($leaderId) {
+            $leaderId = (int) $leaderId;
+
+            if (isset($visited[$leaderId])) {
+                break;
+            }
+
+            $visited[$leaderId] = true;
+
+            if ($leaderId === (int) $targetUser->id) {
+                return true;
+            }
+
+            $leader = User::query()
+                ->select(['id', 'team_leader_id', 'office_id'])
+                ->find($leaderId);
+
+            if (!$leader) {
+                break;
+            }
+
+            $leaderId = $leader->team_leader_id;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check target user auth user ke niche reporting tree me hai ya nahi.
+     */
+    private function isDescendantUser(
+        User $authUser,
+        User $targetUser
+    ): bool {
+        $current = $targetUser;
+        $visited = [];
+
+        while ($current && $current->team_leader_id) {
+            $leaderId = (int) $current->team_leader_id;
+
+            if (isset($visited[$leaderId])) {
+                break;
+            }
+
+            $visited[$leaderId] = true;
+
+            if ($leaderId === (int) $authUser->id) {
+                return true;
+            }
+
+            $current = User::query()
+                ->select(['id', 'team_leader_id', 'office_id'])
+                ->find($leaderId);
+        }
+
+        return false;
     }
 
     /**
@@ -2534,14 +2659,15 @@ class ChatController extends Controller
 
     private function getAllowedUsers(User $user)
     {
-        if ($this->roleLevel($user) === null) {
+        $userLevel = $this->roleLevel($user);
+
+        if ($userLevel === null) {
             return collect();
         }
 
         /*
          * Super Admin:
-         * Dropdown hamesha dikhega aur sab offices/departments ke
-         * different-role users list honge.
+         * apne se niche ke sab roles, all offices.
          */
         if ($user->hasRole('super_admin')) {
             $users = User::query()
@@ -2557,22 +2683,21 @@ class ChatController extends Controller
             return $this->sortUsersByRoleHierarchy($users);
         }
 
-        /*
-         * Owner/Admin/Team Leader/Employee:
-         * dropdown sabko milega, lekin list same active office
-         * aur same department se hi aayegi.
-         */
         $activeOfficeId = $user->activeOfficeId();
 
-        if (!$activeOfficeId || empty($user->department_id)) {
+        if (!$activeOfficeId) {
             return collect();
         }
 
+        /*
+         * Baaki sab roles ke candidates same active office se.
+         * Yahan department filter intentionally nahi hai.
+         * Actual hierarchy canStartPrivateChat() decide karega.
+         */
         $users = User::query()
             ->with('roles')
             ->where('id', '!=', $user->id)
             ->where('office_id', $activeOfficeId)
-            ->where('department_id', $user->department_id)
             ->get()
             ->filter(function (User $targetUser) use ($user) {
                 return $this->canStartPrivateChat($user, $targetUser);
