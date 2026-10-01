@@ -240,8 +240,7 @@ class ChatAccessService
                 SELECT 1 FROM chat_participants AS p
                 WHERE p.conversation_id = chat_messages.conversation_id
                 AND p.user_id = ?
-                AND (p.last_read_at IS NULL
-                    OR chat_messages.created_at > p.last_read_at)
+                AND chat_messages.id > p.last_read_message_id
             )', [$user->id]);
 
         return [

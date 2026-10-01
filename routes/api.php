@@ -9,6 +9,7 @@ use \App\Http\Controllers\Api\LeaveController;
 use \App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserActivityController;
 use App\Http\Controllers\ChatNotificationController;
+use App\Http\Controllers\Api\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,27 @@ Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(func
     Route::post('/devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:30,1')->name('devices.store');
     Route::delete('/devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
     Route::post('/notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->name('notifications.read');
+});
+
+
+
+// Require ONCE from routes/api.php; Laravel adds /api to this group.
+Route::middleware(['auth:sanctum', 'throttle:chat-api'])->prefix('chat')->name('api.chat.')->group(function () {
+    Route::get('users', [ChatController::class, 'users'])->name('users');
+    Route::get('unread-count', [ChatController::class, 'unread'])->name('unread');
+    Route::get('conversations', [ChatController::class, 'conversations'])->name('conversations.index');
+    Route::post('conversations/private', [ChatController::class, 'start'])->name('conversations.start');
+    Route::get('conversations/{conversation}', [ChatController::class, 'show'])->whereNumber('conversation')->name('conversations.show');
+    Route::get('conversations/{conversation}/messages', [ChatController::class, 'messages'])->whereNumber('conversation')->name('messages.index');
+    Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->whereNumber('conversation')->middleware('throttle:chat-send')->name('messages.store');
+    Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->whereNumber('conversation')->name('conversations.read');
+    Route::get('attachments/{message}', [ChatController::class, 'attachment'])->whereNumber('message')->name('attachments.show');
+    Route::get('team/members', [ChatController::class, 'team'])->name('team.members');
+    Route::post('team/broadcast', [ChatController::class, 'broadcast'])->middleware('throttle:chat-broadcast')->name('team.broadcast');
+    Route::get('notifications', [ChatController::class, 'notifications'])->name('notifications.index');
+    Route::post('notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->whereNumber('notification')->name('notifications.read');
+    Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:chat-devices')->name('devices.store');
+    Route::delete('devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
 });
 
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -8,6 +8,7 @@ use App\Models\ChatParticipant;
 use App\Models\User;
 use App\Services\ChatAccessService;
 use App\Services\ChatNotificationService;
+use App\Services\ChatReadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,8 @@ class ChatController extends Controller
 {
     public function __construct(
         private ChatAccessService $access,
-        private ChatNotificationService $chatNotifications
+        private ChatNotificationService $chatNotifications,
+        private ChatReadService $reads
     ) {}
 
     private function pageData(User $user): array
@@ -30,8 +32,7 @@ class ChatController extends Controller
                 $q->where('sender_id', '!=', $user->id)
                     ->whereRaw('EXISTS (SELECT 1 FROM chat_participants p
                         WHERE p.conversation_id = chat_messages.conversation_id
-                        AND p.user_id = ? AND (p.last_read_at IS NULL
-                        OR chat_messages.created_at > p.last_read_at))', [$user->id]);
+                        AND p.user_id = ? AND chat_messages.id > p.last_read_message_id)', [$user->id]);
             }])
             ->orderByDesc(ChatMessage::query()->select('created_at')
                 ->whereColumn('chat_messages.conversation_id', 'chat_conversations.id')
@@ -111,22 +112,18 @@ class ChatController extends Controller
         return $user;
     }
 
-    private function updateRead(ChatConversation $conversation, User $user, $readAt): void
+    private function updateRead(ChatConversation $conversation, User $user, int $lastMessageId): void
     {
-        // Monitors never become participants and never mark someone else's chat read.
-        ChatParticipant::query()->where('conversation_id', $conversation->id)
-            ->where('user_id', $user->id)->update(['last_read_at' => $readAt]);
-        $this->chatNotifications->markConversationRead($user, $conversation, $readAt);
+        $this->reads->mark($user, $conversation, $lastMessageId);
     }
 
     public function show(ChatConversation $conversation)
     {
         $user = $this->authorizeView($conversation);
-        $readAt = now();
         $conversation->load('users:id,name');
         $messages = $conversation->messages()->with(['sender:id,name', 'replyTo.sender:id,name'])
             ->orderBy('id')->get();
-        $this->updateRead($conversation, $user, $readAt);
+        $this->updateRead($conversation, $user, (int) ($messages->max('id') ?? 0));
 
         return view('chat.index', array_merge($this->pageData($user), [
             'conversation' => $conversation, 'messages' => $messages,
@@ -156,6 +153,7 @@ class ChatController extends Controller
         foreach ($members as $member) {
             $conversation = $this->privateConversation($user, $member);
             DB::transaction(function () use ($conversation, $user, $text) {
+                ChatConversation::query()->whereKey($conversation->id)->lockForUpdate()->firstOrFail();
                 $newMessage = ChatMessage::create([
                     'conversation_id' => $conversation->id,
                     'sender_id' => $user->id, 'message' => $text,
@@ -194,6 +192,7 @@ class ChatController extends Controller
         }
         try {
             DB::transaction(function () use ($conversation, $user, $text, $reply, $path, $file) {
+                ChatConversation::query()->whereKey($conversation->id)->lockForUpdate()->firstOrFail();
                 $newMessage = ChatMessage::create([
                     'conversation_id' => $conversation->id, 'sender_id' => $user->id,
                     'message' => $text !== '' ? $text : null,
@@ -219,10 +218,9 @@ class ChatController extends Controller
     {
         $user = $this->authorizeView($conversation);
         $data = $request->validate(['last_message_id' => ['nullable', 'integer', 'min:0']]);
-        $readAt = now();
         $messages = $conversation->messages()->with(['sender:id,name', 'replyTo.sender:id,name'])
             ->where('id', '>', $data['last_message_id'] ?? 0)->orderBy('id')->get();
-        $this->updateRead($conversation, $user, $readAt);
+        $this->updateRead($conversation, $user, (int) ($messages->max('id') ?? 0));
         $canSend = $this->access->canSend($user, $conversation);
 
         return response()->json([
@@ -247,7 +245,7 @@ class ChatController extends Controller
     public function markRead(ChatConversation $conversation)
     {
         $user = $this->authorizeView($conversation);
-        $this->updateRead($conversation, $user, now());
+        $this->updateRead($conversation, $user, (int) ($conversation->messages()->max('id') ?? 0));
 
         return response()->json(['success' => true]);
     }
