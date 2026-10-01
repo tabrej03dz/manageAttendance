@@ -172,15 +172,25 @@
                 @endphp
                 <li class="nav-item">
                     <a href="{{ route('chat.index') }}"
-                       class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}"
+                    style="display:flex; align-items:center; padding-right:24px;">
+
                         <i class="nav-icon fas fa-comments"></i>
-                        <p>
-                            Chat
+
+                        <p style="display:flex; align-items:center; gap:10px; margin:0; min-width:0;">
+                            <span>Chat</span>
+
                             <span id="sidebarChatUnreadBadge"
-                                  class="right badge badge-danger"
-                                  title="{{ $chatUnread['unread_messages'] }} unread messages"
-                                  aria-label="{{ $chatUnread['unread_chats'] }} unread chats"
-                                  style="{{ $chatUnread['unread_chats'] > 0 ? '' : 'display:none;' }}">
+                                class="badge badge-danger"
+                                title="{{ $chatUnread['unread_messages'] }} unread messages"
+                                aria-label="{{ $chatUnread['unread_chats'] }} unread chats"
+                                style="
+                                    position:static !important;
+                                    float:none !important;
+                                    flex-shrink:0;
+                                    padding:4px 7px;
+                                    {{ $chatUnread['unread_chats'] > 0 ? '' : 'display:none;' }}
+                                ">
                                 {{ $chatUnread['unread_chats'] }}
                             </span>
                         </p>
