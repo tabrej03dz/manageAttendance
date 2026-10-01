@@ -7,70 +7,56 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Convert the existing radius setting to a real boolean column.
-     */
     public function up(): void
     {
-        Schema::table('offices', function (Blueprint $table) {
-            $table
-                ->boolean('under_radius_required_new')
-                ->default(false)
-                ->after('under_radius_required');
-        });
-
-        DB::table('offices')
-            ->select(['id', 'under_radius_required'])
-            ->orderBy('id')
-            ->chunkById(100, function ($offices) {
-                foreach ($offices as $office) {
-                    $value = strtolower(
-                        trim((string) $office->under_radius_required)
-                    );
-
-                    DB::table('offices')
-                        ->where('id', $office->id)
-                        ->update([
-                            'under_radius_required_new' => in_array(
-                                $value,
-                                [
-                                    '1',
-                                    'true',
-                                    'yes',
-                                    'on',
-                                    'enable',
-                                    'enabled',
-                                    'required',
-                                ],
-                                true
-                            ),
-                        ]);
-                }
+        // Step 1: temp column (skip if a previous failed run already created it)
+        if (! Schema::hasColumn('offices', 'under_radius_required_new')) {
+            Schema::table('offices', function (Blueprint $table) {
+                $table->boolean('under_radius_required_new')->default(false);
             });
+        }
 
-        Schema::table('offices', function (Blueprint $table) {
-            $table->dropColumn('under_radius_required');
-        });
+        // Step 2: copy data, only if the old column still exists
+        if (Schema::hasColumn('offices', 'under_radius_required')) {
+            DB::table('offices')
+                ->select(['id', 'under_radius_required'])
+                ->orderBy('id')
+                ->chunkById(100, function ($offices) {
+                    foreach ($offices as $office) {
+                        $value = strtolower(trim((string) $office->under_radius_required));
 
-        Schema::table('offices', function (Blueprint $table) {
-            $table->renameColumn(
-                'under_radius_required_new',
-                'under_radius_required'
+                        DB::table('offices')
+                            ->where('id', $office->id)
+                            ->update([
+                                'under_radius_required_new' => in_array(
+                                    $value,
+                                    ['1', 'true', 'yes', 'on', 'enable', 'enabled', 'required'],
+                                    true
+                                ),
+                            ]);
+                    }
+                });
+
+            Schema::table('offices', function (Blueprint $table) {
+                $table->dropColumn('under_radius_required');
+            });
+        }
+
+        // Step 3: rename using raw SQL that works on old MariaDB/MySQL
+        if (! Schema::hasColumn('offices', 'under_radius_required')) {
+            DB::statement(
+                'ALTER TABLE `offices` CHANGE `under_radius_required_new` `under_radius_required` TINYINT(1) NOT NULL DEFAULT 0'
             );
-        });
+        }
     }
 
-    /**
-     * Restore the old yes/no representation if the migration is rolled back.
-     */
     public function down(): void
     {
-        Schema::table('offices', function (Blueprint $table) {
-            $table
-                ->enum('under_radius_required_old', ['yes', 'no'])
-                ->default('no')
-                ->after('under_radius_required');
-        });
+        if (! Schema::hasColumn('offices', 'under_radius_required_old')) {
+            Schema::table('offices', function (Blueprint $table) {
+                $table->enum('under_radius_required_old', ['yes', 'no'])->default('no');
+            });
+        }
 
         DB::table('offices')
             ->select(['id', 'under_radius_required'])
@@ -80,10 +66,7 @@ return new class extends Migration
                     DB::table('offices')
                         ->where('id', $office->id)
                         ->update([
-                            'under_radius_required_old' =>
-                                (bool) $office->under_radius_required
-                                    ? 'yes'
-                                    : 'no',
+                            'under_radius_required_old' => $office->under_radius_required ? 'yes' : 'no',
                         ]);
                 }
             });
@@ -92,11 +75,8 @@ return new class extends Migration
             $table->dropColumn('under_radius_required');
         });
 
-        Schema::table('offices', function (Blueprint $table) {
-            $table->renameColumn(
-                'under_radius_required_old',
-                'under_radius_required'
-            );
-        });
+        DB::statement(
+            "ALTER TABLE `offices` CHANGE `under_radius_required_old` `under_radius_required` ENUM('yes','no') NOT NULL DEFAULT 'no'"
+        );
     }
 };

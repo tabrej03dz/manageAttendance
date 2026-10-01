@@ -184,6 +184,26 @@
                     </li>
                 @endcan
 
+                  {{-- @can('show chat') --}}
+                    <li class="nav-item">
+                        <a href="{{ route('chat.index') }}"
+                           class="nav-link {{ $activeMenu === 'chat' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Chat</p>
+                        </a>
+                    </li>
+                {{-- @endcan --}}
+
+                {{-- @can('show attendance')
+                    <li class="nav-item">
+                        <a href="{{ route('attendance.day-wise') }}"
+                           class="nav-link {{ $activeMenu === 'attendance' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-edit"></i>
+                            <p>Attendance</p>
+                        </a>
+                    </li>
+                @endcan --}}
+
                 @can('show attendance')
                     <li class="nav-item">
                         <a href="{{ route('attendance.day-wise') }}"
