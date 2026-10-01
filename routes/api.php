@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(func
 
 
 // Require ONCE from routes/api.php; Laravel adds /api to this group.
-Route::middleware(['auth:sanctum', 'throttle:chat-api'])->prefix('chat')->name('api.chat.')->group(function () {
+Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(function () {
     Route::get('users', [ChatController::class, 'users'])->name('users');
     Route::get('unread-count', [ChatController::class, 'unread'])->name('unread');
     Route::get('conversations', [ChatController::class, 'conversations'])->name('conversations.index');
