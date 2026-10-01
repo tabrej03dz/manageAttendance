@@ -1002,61 +1002,183 @@ class ChatController extends Controller
      * PRIVATE CHAT PERMISSION
      * ============================================================
      */
+    // private function canStartPrivateChat(
+    //     User $authUser,
+    //     User $targetUser
+    // ): bool {
+
+    //     /*
+    //      * Super Admin / Admin
+    //      * => kisi bhi user ko message.
+    //      */
+    //     if ($this->isAdminUser($authUser)) {
+    //         return true;
+    //     }
+
+
+    //     /*
+    //      * Team Leader
+    //      * => sirf apne employees.
+    //      */
+    //     if (
+    //         $authUser->hasRole(
+    //             'team_leader'
+    //         )
+    //     ) {
+
+    //         return
+    //             (int) $targetUser->team_leader_id
+    //             ===
+    //             (int) $authUser->id;
+    //     }
+
+
+    //     /*
+    //      * Employee
+    //      * => sirf apne Team Leader.
+    //      */
+    //     if (
+    //         $authUser->hasRole(
+    //             'employee'
+    //         )
+    //     ) {
+
+    //         if (!$authUser->team_leader_id) {
+    //             return false;
+    //         }
+
+
+    //         return
+    //             (int) $authUser->team_leader_id
+    //             ===
+    //             (int) $targetUser->id;
+    //     }
+
+
+    //     return false;
+    // }
+
+    /**
+     * ============================================================
+     * PRIVATE CHAT PERMISSION
+     * ============================================================
+     */
     private function canStartPrivateChat(
         User $authUser,
         User $targetUser
     ): bool {
 
+        // Khud ko message nahi
+        if ((int) $authUser->id === (int) $targetUser->id) {
+            return false;
+        }
+
         /*
-         * Super Admin / Admin
-         * => kisi bhi user ko message.
-         */
+        * Super Admin / Admin
+        * => existing full access
+        */
         if ($this->isAdminUser($authUser)) {
             return true;
         }
 
-
         /*
-         * Team Leader
-         * => sirf apne employees.
-         */
-        if (
-            $authUser->hasRole(
-                'team_leader'
-            )
-        ) {
-
-            return
-                (int) $targetUser->team_leader_id
-                ===
-                (int) $authUser->id;
+        * OWNER
+        * => existing hierarchy me allowed
+        */
+        if ($authUser->hasRole('owner')) {
+            return true;
         }
 
-
         /*
-         * Employee
-         * => sirf apne Team Leader.
-         */
-        if (
-            $authUser->hasRole(
-                'employee'
-            )
-        ) {
+        * TEAM LEADER
+        *
+        * Allowed:
+        * 1. Apne employees
+        * 2. Higher roles: admin / owner / super_admin
+        */
+        if ($authUser->hasRole('team_leader')) {
 
-            if (!$authUser->team_leader_id) {
-                return false;
+            // Apna employee
+            if (
+                (int) $targetUser->team_leader_id ===
+                (int) $authUser->id
+            ) {
+                return true;
             }
 
+            // Higher role
+            if (
+                $targetUser->hasAnyRole([
+                    'admin',
+                    'owner',
+                    'super_admin',
+                ])
+            ) {
+                return true;
+            }
 
-            return
-                (int) $authUser->team_leader_id
-                ===
-                (int) $targetUser->id;
+            return false;
         }
 
+        /*
+        * NORMAL EMPLOYEE
+        *
+        * Allowed:
+        * 1. Apna Reporting Manager / Team Leader
+        * 2. Higher roles:
+        *    team_leader
+        *    admin
+        *    owner
+        *    super_admin
+        */
+        if ($authUser->hasRole('employee')) {
+
+            // Direct reporting manager
+            if (
+                !empty($authUser->team_leader_id) &&
+                (int) $authUser->team_leader_id ===
+                (int) $targetUser->id
+            ) {
+                return true;
+            }
+
+            // Higher roles
+            if (
+                $targetUser->hasAnyRole([
+                    'team_leader',
+                    'admin',
+                    'owner',
+                    'super_admin',
+                ])
+            ) {
+
+                /*
+                * Team Leader / Admin same office ka ho
+                */
+                if (
+                    $targetUser->hasAnyRole([
+                        'team_leader',
+                        'admin',
+                    ])
+                ) {
+                    return
+                        !empty($authUser->office_id) &&
+                        (int) $authUser->office_id ===
+                        (int) $targetUser->office_id;
+                }
+
+                /*
+                * Owner / Super Admin
+                */
+                return true;
+            }
+
+            return false;
+        }
 
         return false;
     }
+
 
 
     /**
@@ -1064,22 +1186,169 @@ class ChatController extends Controller
      * ALLOWED USERS FOR "+ START NEW CHAT"
      * ============================================================
      */
-    private function getAllowedUsers(
-        User $user
-    ) {
+    // private function getAllowedUsers(
+    //     User $user
+    // ) {
+    //     /*
+    //      * Super Admin / Admin
+    //      * => sab users.
+    //      */
+    //     if ($this->isAdminUser($user)) {
+
+    //         return User::query()
+
+    //             ->where(
+    //                 'id',
+    //                 '!=',
+    //                 $user->id
+    //             )
+
+    //             ->orderBy('name')
+
+    //             ->get([
+    //                 'id',
+    //                 'name',
+    //             ]);
+    //     }
+
+
+    //     /*
+    //      * Team Leader
+    //      * => sirf apne employees.
+    //      */
+    //     if (
+    //         $user->hasRole(
+    //             'team_leader'
+    //         )
+    //     ) {
+
+    //         return User::query()
+
+    //             ->where(
+    //                 'team_leader_id',
+    //                 $user->id
+    //             )
+
+    //             ->where(
+    //                 'id',
+    //                 '!=',
+    //                 $user->id
+    //             )
+
+    //             ->orderBy('name')
+
+    //             ->get([
+    //                 'id',
+    //                 'name',
+    //             ]);
+    //     }
+
+
+    //     /*
+    //      * Employee
+    //      * => sirf apna Team Leader.
+    //      */
+    //     if (
+    //         $user->hasRole(
+    //             'employee'
+    //         )
+    //     ) {
+
+    //         if (!$user->team_leader_id) {
+    //             return collect();
+    //         }
+
+
+    //         return User::query()
+
+    //             ->where(
+    //                 'id',
+    //                 $user->team_leader_id
+    //             )
+
+    //             ->get([
+    //                 'id',
+    //                 'name',
+    //             ]);
+    //     }
+
+
+    //     return collect();
+    // }
+
+    /**
+     * ============================================================
+     * ALLOWED USERS FOR "+ START NEW CHAT"
+     * ============================================================
+     */
+    private function getAllowedUsers(User $user)
+    {
         /*
-         * Super Admin / Admin
-         * => sab users.
-         */
+        * Super Admin / Admin
+        * => existing: sab users
+        */
         if ($this->isAdminUser($user)) {
 
             return User::query()
-
-                ->where(
+                ->where('id', '!=', $user->id)
+                ->orderBy('name')
+                ->get([
                     'id',
-                    '!=',
-                    $user->id
-                )
+                    'name',
+                ]);
+        }
+
+        /*
+        * OWNER
+        */
+        if ($user->hasRole('owner')) {
+
+            return User::query()
+                ->where('id', '!=', $user->id)
+                ->orderBy('name')
+                ->get([
+                    'id',
+                    'name',
+                ]);
+        }
+
+        /*
+        * TEAM LEADER
+        *
+        * Show:
+        * - apne employees
+        * - admin
+        * - owner
+        * - super_admin
+        */
+        if ($user->hasRole('team_leader')) {
+
+            return User::query()
+                ->where('id', '!=', $user->id)
+
+                ->where(function ($query) use ($user) {
+
+                    // Apne employees
+                    $query->where(
+                        'team_leader_id',
+                        $user->id
+                    );
+
+                    // Higher roles
+                    $query->orWhereHas(
+                        'roles',
+                        function ($roleQuery) {
+                            $roleQuery->whereIn(
+                                'roles.name',
+                                [
+                                    'admin',
+                                    'owner',
+                                    'super_admin',
+                                ]
+                            );
+                        }
+                    );
+                })
 
                 ->orderBy('name')
 
@@ -1089,29 +1358,84 @@ class ChatController extends Controller
                 ]);
         }
 
-
         /*
-         * Team Leader
-         * => sirf apne employees.
-         */
-        if (
-            $user->hasRole(
-                'team_leader'
-            )
-        ) {
+        * NORMAL EMPLOYEE
+        *
+        * Show:
+        * - direct reporting manager
+        * - same office ke Team Leaders
+        * - same office ke Admin
+        * - Owner
+        * - Super Admin
+        */
+        if ($user->hasRole('employee')) {
 
             return User::query()
-
-                ->where(
-                    'team_leader_id',
-                    $user->id
-                )
 
                 ->where(
                     'id',
                     '!=',
                     $user->id
                 )
+
+                ->where(function ($query) use ($user) {
+
+                    /*
+                    * Direct Reporting Manager
+                    */
+                    if (!empty($user->team_leader_id)) {
+
+                        $query->where(
+                            'id',
+                            $user->team_leader_id
+                        );
+                    } else {
+                        // First condition initialize
+                        $query->whereRaw('1 = 0');
+                    }
+
+                    /*
+                    * Same office Team Leader / Admin
+                    */
+                    $query->orWhere(function ($officeQuery) use ($user) {
+
+                        $officeQuery
+                            ->where(
+                                'office_id',
+                                $user->office_id
+                            )
+                            ->whereHas(
+                                'roles',
+                                function ($roleQuery) {
+
+                                    $roleQuery->whereIn(
+                                        'roles.name',
+                                        [
+                                            'team_leader',
+                                            'admin',
+                                        ]
+                                    );
+                                }
+                            );
+                    });
+
+                    /*
+                    * Owner / Super Admin
+                    */
+                    $query->orWhereHas(
+                        'roles',
+                        function ($roleQuery) {
+
+                            $roleQuery->whereIn(
+                                'roles.name',
+                                [
+                                    'owner',
+                                    'super_admin',
+                                ]
+                            );
+                        }
+                    );
+                })
 
                 ->orderBy('name')
 
@@ -1120,36 +1444,6 @@ class ChatController extends Controller
                     'name',
                 ]);
         }
-
-
-        /*
-         * Employee
-         * => sirf apna Team Leader.
-         */
-        if (
-            $user->hasRole(
-                'employee'
-            )
-        ) {
-
-            if (!$user->team_leader_id) {
-                return collect();
-            }
-
-
-            return User::query()
-
-                ->where(
-                    'id',
-                    $user->team_leader_id
-                )
-
-                ->get([
-                    'id',
-                    'name',
-                ]);
-        }
-
 
         return collect();
     }
