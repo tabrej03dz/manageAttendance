@@ -2403,33 +2403,48 @@ class ChatController extends Controller
 
 /**
 
+
      * ============================================================
+
 
      * PRIVATE CHAT PERMISSION
 
+
      * ============================================================
 
+
      *
+
 
      * Rules:
 
+
      * - Same office required.
+
 
      * - Same department required.
 
+
      * - Same role blocked.
+
 
      * - Higher <-> Lower roles allowed.
 
+
      *
+
 
      * IMPORTANT:
 
+
      * activeOfficeId() use kiya gaya hai because app me office switching
+
 
      * session('active_office_id') se hoti hai.
 
+
      */
+
 
     private function canStartPrivateChat(
         User $authUser,
@@ -2446,19 +2461,26 @@ class ChatController extends Controller
             return false;
         }
 
-        // Same role wale users aapas me chat nahi karenge.
+        // Same role wale users aapas me nahi dikhenge/chat nahi karenge.
         if ($authLevel === $targetLevel) {
             return false;
         }
 
-        $activeOfficeId = $authUser->activeOfficeId();
-
-        if (!$activeOfficeId) {
-            return false;
+        /*
+         * Super Admin global role hai:
+         * usko sab offices/departments ke different-role users dikh sakte hain.
+         */
+        if ($authUser->hasRole('super_admin')) {
+            return true;
         }
 
-        // Target current selected/active office ka hi hona chahiye.
+        /*
+         * Normal roles ke liye current active office compulsory.
+         */
+        $activeOfficeId = $authUser->activeOfficeId();
+
         if (
+            !$activeOfficeId ||
             empty($targetUser->office_id) ||
             (int) $targetUser->office_id !== (int) $activeOfficeId
         ) {
@@ -2466,17 +2488,8 @@ class ChatController extends Controller
         }
 
         /*
-         * Super Admin:
-         * Current selected office ke sabhi lower-role users dekh sakta hai.
-         * Super Admin ka department_id required nahi hai.
-         */
-        if ($authUser->hasRole('super_admin')) {
-            return true;
-        }
-
-        /*
-         * Baaki roles:
-         * Same office + same department + different role compulsory.
+         * Owner/Admin/Team Leader/Employee:
+         * same department compulsory.
          */
         if (
             empty($authUser->department_id) ||
@@ -2491,23 +2504,33 @@ class ChatController extends Controller
 
     /**
 
+
      * ============================================================
+
 
      * ALLOWED USERS FOR "+ START NEW CHAT"
 
+
      * ============================================================
+
 
      *
 
+
      * Sirf:
+
 
      * - current active office
 
+
      * - same department
+
 
      * - different hierarchy role
 
+
      */
+
 
     private function getAllowedUsers(User $user)
     {
@@ -2515,28 +2538,18 @@ class ChatController extends Controller
             return collect();
         }
 
-        $activeOfficeId = $user->activeOfficeId();
-
-        if (!$activeOfficeId) {
-            return collect();
-        }
-
         /*
          * Super Admin:
-         * selected active office ke sab users,
-         * department filter nahi lagega.
+         * Dropdown hamesha dikhega aur sab offices/departments ke
+         * different-role users list honge.
          */
         if ($user->hasRole('super_admin')) {
             $users = User::query()
                 ->with('roles')
                 ->where('id', '!=', $user->id)
-                ->where('office_id', $activeOfficeId)
                 ->get()
                 ->filter(function (User $targetUser) use ($user) {
-                    return $this->canStartPrivateChat(
-                        $user,
-                        $targetUser
-                    );
+                    return $this->canStartPrivateChat($user, $targetUser);
                 })
                 ->unique('id')
                 ->values();
@@ -2546,9 +2559,12 @@ class ChatController extends Controller
 
         /*
          * Owner/Admin/Team Leader/Employee:
-         * same active office + same department only.
+         * dropdown sabko milega, lekin list same active office
+         * aur same department se hi aayegi.
          */
-        if (empty($user->department_id)) {
+        $activeOfficeId = $user->activeOfficeId();
+
+        if (!$activeOfficeId || empty($user->department_id)) {
             return collect();
         }
 
@@ -2559,10 +2575,7 @@ class ChatController extends Controller
             ->where('department_id', $user->department_id)
             ->get()
             ->filter(function (User $targetUser) use ($user) {
-                return $this->canStartPrivateChat(
-                    $user,
-                    $targetUser
-                );
+                return $this->canStartPrivateChat($user, $targetUser);
             })
             ->unique('id')
             ->values();
@@ -2572,54 +2585,77 @@ class ChatController extends Controller
 
     /**
 
+
      * ============================================================
+
 
      * SORT USERS BY ROLE HIERARCHY
 
+
      * ============================================================
+
 
      *
 
+
      * Order:
+
 
      * super_admin -> owner -> admin -> team_leader -> employee
 
+
      */
+
 
     private function sortUsersByRoleHierarchy(
 
+
         \Illuminate\Support\Collection $users
+
 
     ): \Illuminate\Support\Collection {
 
+
         return $users
+
 
             ->sort(function (User $first, User $second) {
 
+
                 $firstLevel = $this->roleLevel($first) ?? 0;
+
 
                 $secondLevel = $this->roleLevel($second) ?? 0;
 
 
                 if ($firstLevel !== $secondLevel) {
 
+
                     return $secondLevel <=> $firstLevel;
+
 
                 }
 
 
                 return strcasecmp(
 
+
                     (string) $first->name,
+
 
                     (string) $second->name
 
+
                 );
+
 
             })
 
+
             ->values();
 
+
     }
+
 
 }
