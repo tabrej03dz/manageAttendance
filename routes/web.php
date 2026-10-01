@@ -35,43 +35,56 @@ use App\Http\Controllers\ChatController;
 
 
 
-Route::middleware('auth')->group(function () {
-
-    Route::get('/chat', [
-        ChatController::class,
-        'index'
-    ])->name('chat.index');
-
-    Route::get('/chat/start/{user}', [
-        ChatController::class,
-        'startPrivateChat'
-    ])->name('chat.start');
-
-    Route::post('/chat/team/create', [
-        ChatController::class,
-        'createTeamChat'
-    ])->name('chat.team.create');
-
-    Route::get('/chat/{conversation}', [
-        ChatController::class,
-        'show'
-    ])->name('chat.show');
-
-    Route::post('/chat/{conversation}/send', [
-        ChatController::class,
-        'send'
-    ])->name('chat.send');
-
-    Route::get('/chat/{conversation}/messages', [
-        ChatController::class,
-        'messages'
-    ])->name('chat.messages');
-
-    Route::post('/chat/{conversation}/read', [
-        ChatController::class,
-        'markRead'
-    ])->name('chat.read');
+// Load once from routes/web.php so web/session/CSRF middleware is applied.
+Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('index');
+    Route::post('/start/{user}', [ChatController::class, 'startPrivateChat'])->name('start');
+    Route::post('/team', [ChatController::class, 'createTeamChat'])->name('team.create');
+    Route::get('/attachments/{message}', [ChatController::class, 'attachment'])->name('attachment');
+    Route::get('/{conversation}/messages', [ChatController::class, 'messages'])->name('messages');
+    Route::post('/{conversation}/send', [ChatController::class, 'send'])->name('send');
+    Route::post('/{conversation}/read', [ChatController::class, 'markRead'])->name('read');
+    Route::get('/{conversation}', [ChatController::class, 'show'])->name('show');
 });
+
+
+// Route::middleware('auth')->group(function () {
+
+//     Route::get('/chat', [
+//         ChatController::class,
+//         'index'
+//     ])->name('chat.index');
+
+//     Route::get('/chat/start/{user}', [
+//         ChatController::class,
+//         'startPrivateChat'
+//     ])->name('chat.start');
+
+//     Route::post('/chat/team/create', [
+//         ChatController::class,
+//         'createTeamChat'
+//     ])->name('chat.team.create');
+
+//     Route::get('/chat/{conversation}', [
+//         ChatController::class,
+//         'show'
+//     ])->name('chat.show');
+
+//     Route::post('/chat/{conversation}/send', [
+//         ChatController::class,
+//         'send'
+//     ])->name('chat.send');
+
+//     Route::get('/chat/{conversation}/messages', [
+//         ChatController::class,
+//         'messages'
+//     ])->name('chat.messages');
+
+//     Route::post('/chat/{conversation}/read', [
+//         ChatController::class,
+//         'markRead'
+//     ])->name('chat.read');
+// });
 
 
 
