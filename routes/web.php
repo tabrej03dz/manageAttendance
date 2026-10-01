@@ -37,6 +37,7 @@ use App\Http\Controllers\ChatController;
 
 // Load once from routes/web.php so web/session/CSRF middleware is applied.
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/unread-count', [ChatController::class, 'unreadCount'])->name('unread-count');
     Route::get('/', [ChatController::class, 'index'])->name('index');
     Route::post('/start/{user}', [ChatController::class, 'startPrivateChat'])->name('start');
     Route::post('/team', [ChatController::class, 'createTeamChat'])->name('team.create');

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ChatConversation;
+use App\Models\ChatMessage;
 use App\Models\Office;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -154,15 +155,43 @@ class ChatAccessService
         )->keys()->map(fn ($id) => (int) $id)->all();
     }
 
-    // Used for BOTH sidebar and every read/download endpoint.
-    // One lower participant grants visibility to the WHOLE conversation.
+    // A monitor must outrank every participant, including senior TLs in the chain.
+    // Existing office/owner/team scope must also match at least one lower user.
     public function visibleQuery(User $viewer): Builder
     {
-        $ids = array_values(array_unique(array_merge([(int) $viewer->id], $this->monitoredIds($viewer))));
+        $viewerId = (int) $viewer->id;
+        $monitoredIds = $this->monitoredIds($viewer);
+        $lowerIds = $this->users()->filter(function (User $target) use ($viewer) {
+            if (!$this->level($target)) {
+                return false;
+            }
+            if ($this->level($viewer) > $this->level($target)) {
+                return true;
+            }
 
-        return ChatConversation::query()->whereHas('participants', fn (Builder $q) =>
-            $q->whereIn('user_id', $ids)
-        );
+            return $this->role($viewer) === 'team_leader'
+                && $this->role($target) === 'team_leader'
+                && $this->isAncestor($viewer, $target);
+        })->keys()->map(fn ($id) => (int) $id)->all();
+
+        return ChatConversation::query()->where(function (Builder $query) use (
+            $viewerId, $monitoredIds, $lowerIds
+        ) {
+            // Actual participants always see their own conversation.
+            $query->whereHas('participants', fn (Builder $p) =>
+                $p->where('user_id', $viewerId)
+            );
+
+            if ($monitoredIds !== [] && $lowerIds !== []) {
+                $query->orWhere(function (Builder $monitor) use ($monitoredIds, $lowerIds) {
+                    $monitor->whereHas('participants', fn (Builder $p) =>
+                        $p->whereIn('user_id', $monitoredIds)
+                    )->whereDoesntHave('participants', fn (Builder $p) =>
+                        $p->whereNotIn('user_id', $lowerIds)
+                    );
+                });
+            }
+        });
     }
 
     public function canView(User $viewer, ChatConversation $conversation): bool
@@ -170,63 +199,55 @@ class ChatAccessService
         return $this->visibleQuery($viewer)->whereKey($conversation->id)->exists();
     }
 
-    // public function canSend(User $viewer, ChatConversation $conversation): bool
-    // {
-    //     if ($conversation->type !== 'private') {
-    //         return false; // Legacy group histories are read-only.
-    //     }
-    //     $ids = $conversation->participants()->pluck('user_id')->map(fn ($id) => (int) $id);
-    //     if ($ids->count() !== 2 || $ids->unique()->count() !== 2 || !$ids->contains((int) $viewer->id)) {
-    //         return false;
-    //     }
-    //     $target = $this->users()->get($ids->first(fn ($id) => $id !== (int) $viewer->id));
+    public function canSend(User $viewer, ChatConversation $conversation): bool
+    {
+        // The new visibility rule also protects sending, including direct POSTs.
+        if (!$this->canView($viewer, $conversation)) {
+            return false;
+        }
 
-    //     return $target && $this->canChat($viewer, $target);
-    // }
+        $ids = $conversation->participants()->pluck('user_id')
+            ->map(fn ($id) => (int) $id);
 
-    public function canSend(
-    User $viewer,
-    ChatConversation $conversation
-): bool {
-    $ids = $conversation->participants()
-        ->pluck('user_id')
-        ->map(fn ($id) => (int) $id);
+        // Authorized higher users can still send in permitted lower-user chats.
+        if ($ids->intersect($this->monitoredIds($viewer))->isNotEmpty()) {
+            return true;
+        }
 
-    /*
-     * जिस lower user की chat देखने का अधिकार है,
-     * उसके conversation में message भी भेज सकता है।
-     *
-     * Existing office/owner/reporting scope लागू रहेगा।
-     */
-    $monitoredIds = $this->monitoredIds($viewer);
+        if ($conversation->type !== 'private') {
+            return false;
+        }
+        if (
+            $ids->count() !== 2 ||
+            $ids->unique()->count() !== 2 ||
+            !$ids->contains((int) $viewer->id)
+        ) {
+            return false;
+        }
+        $targetId = $ids->first(fn ($id) => $id !== (int) $viewer->id);
+        $target = $this->users()->get($targetId);
 
-    if ($ids->intersect($monitoredIds)->isNotEmpty()) {
-        return true;
+        return $target !== null && $this->canChat($viewer, $target);
     }
 
-    /*
-     * बाकी users के लिए पहले वाला private-chat rule।
-     * Employee ↔ Employee chat अब भी बंद रहेगी।
-     */
-    if ($conversation->type !== 'private') {
-        return false;
+    // Counts only incoming unread messages in the user's own participant chats.
+    // Monitoring chats never become personal unread notifications.
+    public function unreadCounts(User $user): array
+    {
+        $query = ChatMessage::query()
+            ->where('sender_id', '!=', $user->id)
+            ->whereRaw('EXISTS (
+                SELECT 1 FROM chat_participants AS p
+                WHERE p.conversation_id = chat_messages.conversation_id
+                AND p.user_id = ?
+                AND (p.last_read_at IS NULL
+                    OR chat_messages.created_at > p.last_read_at)
+            )', [$user->id]);
+
+        return [
+            'unread_chats' => (clone $query)->distinct()
+                ->count('chat_messages.conversation_id'),
+            'unread_messages' => (clone $query)->count(),
+        ];
     }
-
-    if (
-        $ids->count() !== 2 ||
-        $ids->unique()->count() !== 2 ||
-        !$ids->contains((int) $viewer->id)
-    ) {
-        return false;
-    }
-
-    $targetId = $ids->first(
-        fn ($id) => $id !== (int) $viewer->id
-    );
-
-    $target = $this->users()->get($targetId);
-
-    return $target !== null
-        && $this->canChat($viewer, $target);
-}
 }

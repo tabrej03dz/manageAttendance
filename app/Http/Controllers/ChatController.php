@@ -46,6 +46,14 @@ class ChatController extends Controller
         ];
     }
 
+    public function unreadCount()
+    {
+        return response()->json(array_merge(
+            ['success' => true],
+            $this->access->unreadCounts(Auth::user())
+        ))->header('Cache-Control', 'private, no-store');
+    }
+
     public function index()
     {
         return view('chat.index', $this->pageData(Auth::user()));

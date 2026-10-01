@@ -4,15 +4,12 @@
             overflow-y: auto;
             height: calc(100vh - 0px);
         }
-
         .sidebar-selected-office {
             background: rgba(255, 193, 7, 0.15) !important;
             color: #ffc107 !important;
         }
     </style>
-
     <div class="sidebar" id="appSidebarScrollArea">
-
         {{-- Sidebar user panel --}}
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="info">
@@ -21,19 +18,15 @@
                 </a>
             </div>
         </div>
-
         @php
             $authUser = auth()->user();
-
             $sidebarOffices = collect();
             $activeOfficeId = session('active_office_id', $authUser->office_id);
             $activeOfficeName = null;
-
             $canSeeOfficeSwitch =
                 $authUser->hasRole('super_admin') ||
                 $authUser->hasRole('owner') ||
                 $authUser->can('switch offices');
-
             if ($canSeeOfficeSwitch) {
                 if ($authUser->hasRole('super_admin')) {
                     $sidebarOffices = \App\Models\Office::query()
@@ -48,7 +41,6 @@
                         ->get();
                 } else {
                     $currentOffice = $authUser->office;
-
                     if ($currentOffice && $currentOffice->owner_id) {
                         $sidebarOffices = \App\Models\Office::query()
                             ->where('owner_id', $currentOffice->owner_id)
@@ -57,16 +49,13 @@
                             ->get();
                     }
                 }
-
                 $activeOfficeName = optional($sidebarOffices->firstWhere('id', $activeOfficeId))->name;
             }
-
             /*
                 Ek hi menu active rakhne ke liye activeMenu variable use kiya hai.
                 Broad routeIs jaise off*, employee*, reports* hata diye hain.
             */
             $activeMenu = null;
-
             if (request()->routeIs('home')) {
                 $activeMenu = 'dashboard';
             } elseif (request()->routeIs('attendance.index')) {
@@ -137,23 +126,19 @@
             } elseif (request()->routeIs('half-day.index')) {
                 $activeMenu = 'half-days';
             }
-
             $isOfficeSwitchOpen = $canSeeOfficeSwitch && $sidebarOffices->count() > 0 && session('active_office_id');
-
             $isHrLettersOpen = in_array($activeMenu, [
                 'document-types',
                 'letter-templates',
                 'employee-letters',
             ]);
         @endphp
-
         {{-- Sidebar Menu --}}
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column"
                 data-widget="treeview"
                 role="menu"
                 data-accordion="false">
-
                 @can('show dashboard')
                     <li class="nav-item">
                         <a href="{{ route('home') }}"
@@ -163,7 +148,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show records')
                     <li class="nav-item">
                         <a href="{{ route('attendance.index') }}"
@@ -173,7 +157,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show owners')
                     <li class="nav-item">
                         <a href="{{ route('owner.index') }}"
@@ -183,17 +166,26 @@
                         </a>
                     </li>
                 @endcan
-
-                  {{-- @can('show chat') --}}
-                    <li class="nav-item">
-                        <a href="{{ route('chat.index') }}"
-                           class="nav-link {{ $activeMenu === 'chat' ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-comments"></i>
-                            <p>Chat</p>
-                        </a>
-                    </li>
-                {{-- @endcan --}}
-
+                @php
+                    $chatUnread = app(\App\Services\ChatAccessService::class)
+                        ->unreadCounts(auth()->user());
+                @endphp
+                <li class="nav-item">
+                    <a href="{{ route('chat.index') }}"
+                       class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            Chat
+                            <span id="sidebarChatUnreadBadge"
+                                  class="right badge badge-danger"
+                                  title="{{ $chatUnread['unread_messages'] }} unread messages"
+                                  aria-label="{{ $chatUnread['unread_chats'] }} unread chats"
+                                  style="{{ $chatUnread['unread_chats'] > 0 ? '' : 'display:none;' }}">
+                                {{ $chatUnread['unread_chats'] }}
+                            </span>
+                        </p>
+                    </a>
+                </li>
                 {{-- @can('show attendance')
                     <li class="nav-item">
                         <a href="{{ route('attendance.day-wise') }}"
@@ -203,7 +195,6 @@
                         </a>
                     </li>
                 @endcan --}}
-
                 @can('show attendance')
                     <li class="nav-item">
                         <a href="{{ route('attendance.day-wise') }}"
@@ -213,7 +204,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @canany(['Show Departments', 'show departments'])
                     <li class="nav-item">
                         <a href="{{ route('departments.index') }}"
@@ -223,7 +213,6 @@
                         </a>
                     </li>
                 @endcanany
-
                 @can('show employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.index') }}"
@@ -233,7 +222,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show leaves')
                     <li class="nav-item">
                         <a href="{{ route('leave.index') }}"
@@ -243,7 +231,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show offices')
                     <li class="nav-item">
                         <a href="{{ route('office.index') }}"
@@ -253,7 +240,6 @@
                         </a>
                     </li>
                 @endcan
-
                 {{-- Office Switch: sirf active offices --}}
                 @if($canSeeOfficeSwitch && $sidebarOffices->count() > 0)
                     <li class="nav-item has-treeview {{ $isOfficeSwitchOpen ? 'menu-open' : '' }}">
@@ -261,15 +247,12 @@
                             <i class="nav-icon fas fa-random"></i>
                             <p>
                                 Office Switch
-
                                 @if($activeOfficeName)
                                     <small class="ml-2 text-warning">({{ $activeOfficeName }})</small>
                                 @endif
-
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
-
                         <ul class="nav nav-treeview" style="{{ $isOfficeSwitchOpen ? 'display:block;' : '' }}">
                             @foreach($sidebarOffices as $office)
                                 <li class="nav-item">
@@ -277,14 +260,12 @@
                                           method="POST"
                                           style="display:block;">
                                         @csrf
-
                                         <button type="submit"
                                                 class="nav-link w-100 text-left border-0 bg-transparent {{ (int) $activeOfficeId === (int) $office->id ? 'sidebar-selected-office' : '' }}"
                                                 style="width:100%; cursor:pointer;">
                                             <i class="far fa-circle nav-icon"></i>
                                             <p>
                                                 {{ $office->name }}
-
                                                 @if((int) $activeOfficeId === (int) $office->id)
                                                     <span class="badge badge-success ml-2">Selected</span>
                                                 @endif
@@ -293,14 +274,12 @@
                                     </form>
                                 </li>
                             @endforeach
-
                             @if(session('active_office_id'))
                                 <li class="nav-item">
                                     <form action="{{ route('office.clearSwitch') }}"
                                           method="POST"
                                           style="display:block;">
                                         @csrf
-
                                         <button type="submit"
                                                 class="nav-link w-100 text-left border-0 bg-transparent text-danger"
                                                 style="width:100%; cursor:pointer;">
@@ -313,7 +292,6 @@
                         </ul>
                     </li>
                 @endif
-
                 @can('manage offs')
                     <li class="nav-item">
                         <a href="{{ route('off.index') }}"
@@ -323,7 +301,6 @@
                         </a>
                     </li>
                 @endcan
-
                 <li class="nav-item">
                     <a href="{{ route('rosters.index') }}"
                        class="nav-link {{ $activeMenu === 'roaster' ? 'active' : '' }}">
@@ -331,7 +308,6 @@
                         <p>Roaster</p>
                     </a>
                 </li>
-
                 @can('show policies')
                     <li class="nav-item">
                         <a href="{{ route('policy.index') }}"
@@ -341,7 +317,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show reports')
                     <li class="nav-item">
                         <a href="{{ route('reports.index') }}"
@@ -351,7 +326,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show old records')
                     <li class="nav-item">
                         <a href="{{ route('old-attendance.index') }}"
@@ -361,7 +335,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('mark attendance of employees')
                     <li class="nav-item">
                         <a href="{{ route('employee.attendance') }}"
@@ -371,7 +344,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show salaries')
                     <li class="nav-item">
                         <a href="{{ route('salary.index') }}"
@@ -381,7 +353,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('advance salary')
                     <li class="nav-item">
                         <a href="{{ route('advance.index') }}"
@@ -391,7 +362,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @role('super_admin|owner')
                     <li class="nav-item">
                         <a href="{{ route('note.index') }}"
@@ -401,7 +371,6 @@
                         </a>
                     </li>
                 @endrole
-
                 @role('super_admin')
                     <li class="nav-item">
                         <a href="{{ route('request.index') }}"
@@ -411,7 +380,6 @@
                         </a>
                     </li>
                 @endrole
-
                 @can('show roles')
                     <li class="nav-item">
                         <a href="{{ route('role.index') }}"
@@ -421,7 +389,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show visits')
                     <li class="nav-item">
                         <a href="{{ route('visit.index') }}"
@@ -431,7 +398,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show recycles')
                     <li class="nav-item">
                         <a href="{{ route('recycle.index') }}"
@@ -441,7 +407,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show breaks')
                     <li class="nav-item">
                         <a href="{{ route('break.index') }}"
@@ -451,7 +416,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('manual attendance entry')
                     <li class="nav-item">
                         <a href="{{ route('manual.entry.form') }}"
@@ -461,7 +425,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show permissions')
                     <li class="nav-item">
                         <a href="{{ route('permission.index') }}"
@@ -471,7 +434,6 @@
                         </a>
                     </li>
                 @endcan
-
                 @can('show hr documents')
                     <li class="nav-item has-treeview {{ $isHrLettersOpen ? 'menu-open' : '' }}">
                         <a href="javascript:void(0)" class="nav-link">
@@ -481,7 +443,6 @@
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
-
                         <ul class="nav nav-treeview" style="{{ $isHrLettersOpen ? 'display:block;' : '' }}">
                             <li class="nav-item">
                                 <a href="{{ route('document-types.index') }}"
@@ -490,7 +451,6 @@
                                     <p>Document Types</p>
                                 </a>
                             </li>
-
                             <li class="nav-item">
                                 <a href="{{ route('letter-templates.index') }}"
                                    class="nav-link {{ $activeMenu === 'letter-templates' ? 'active' : '' }}">
@@ -498,7 +458,6 @@
                                     <p>Letter Templates</p>
                                 </a>
                             </li>
-
                             <li class="nav-item">
                                 <a href="{{ route('employee-letters.index') }}"
                                    class="nav-link {{ $activeMenu === 'employee-letters' ? 'active' : '' }}">
@@ -509,7 +468,6 @@
                         </ul>
                     </li>
                 @endcan
-
                 <li class="nav-item">
                     <a href="{{ route('half-day.index') }}"
                        class="nav-link {{ $activeMenu === 'half-days' ? 'active' : '' }}">
@@ -517,7 +475,6 @@
                         <p>Half Days</p>
                     </a>
                 </li>
-
                 @role('super_admin|owner|admin|team_leader')
                 <li class="nav-item">
                     <a
@@ -533,7 +490,6 @@
                     </a>
                 </li>
                 @endrole
-
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="post" style="display:block;">
                         @csrf
@@ -545,55 +501,42 @@
                         </button>
                     </form>
                 </li>
-
             </ul>
         </nav>
     </div>
 </aside>
-
 <script>
     (function () {
         const storageKey = 'attendance_sidebar_scroll_top_v2';
-
         function getSidebarBase() {
             return document.getElementById('appSidebarScrollArea');
         }
-
         function getScrollBox() {
             const sidebar = getSidebarBase();
-
             if (!sidebar) {
                 return null;
             }
-
             /*
                 AdminLTE kabhi sidebar ke andar OverlayScrollbars use karta hai.
                 Actual scroll .os-viewport par hota hai.
             */
             return sidebar.querySelector('.os-viewport') || sidebar;
         }
-
         function saveSidebarScroll() {
             const scrollBox = getScrollBox();
-
             if (!scrollBox) {
                 return;
             }
-
             localStorage.setItem(storageKey, String(scrollBox.scrollTop || 0));
         }
-
         function restoreSidebarScroll() {
             const scrollBox = getScrollBox();
             const sidebar = getSidebarBase();
-
             if (!scrollBox || !sidebar) {
                 return;
             }
-
             const saved = parseInt(localStorage.getItem(storageKey) || '0', 10);
             const activeLink = sidebar.querySelector('.nav-link.active');
-
             if (saved > 10) {
                 scrollBox.scrollTop = saved;
             } else if (activeLink) {
@@ -601,33 +544,75 @@
                     block: 'center',
                     inline: 'nearest'
                 });
-
                 setTimeout(function () {
                     saveSidebarScroll();
                 }, 100);
             }
         }
-
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(restoreSidebarScroll, 100);
             setTimeout(restoreSidebarScroll, 400);
             setTimeout(restoreSidebarScroll, 900);
-
             const scrollBox = getScrollBox();
-
             if (scrollBox) {
                 scrollBox.addEventListener('scroll', saveSidebarScroll, { passive: true });
             }
-
             document.addEventListener('click', function (event) {
                 const sidebar = getSidebarBase();
-
                 if (sidebar && sidebar.contains(event.target)) {
                     saveSidebarScroll();
                 }
             }, true);
-
             window.addEventListener('beforeunload', saveSidebarScroll);
         });
     })();
+</script>
+<script>
+(() => {
+    const badge = document.getElementById('sidebarChatUnreadBadge');
+    if (!badge) return;
+    const url = @json(route('chat.unread-count'));
+    let stopped = false;
+    let timer;
+
+    async function refreshChatBadge() {
+        if (stopped) return;
+        try {
+            if (document.hidden) return;
+            const response = await fetch(url, {
+                credentials: 'same-origin',
+                cache: 'no-store',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            if ([401, 403, 404].includes(response.status)) {
+                badge.style.display = 'none';
+                stopped = true;
+                return;
+            }
+            if (!response.ok) return;
+            const data = await response.json();
+            if (!data.success) return;
+            const chats = Number(data.unread_chats);
+            const messages = Number(data.unread_messages);
+            if (!Number.isSafeInteger(chats) || chats < 0 || !Number.isSafeInteger(messages) || messages < 0) return;
+            badge.textContent = String(chats);
+            badge.style.display = chats > 0 ? '' : 'none';
+            badge.title = messages + ' unread messages';
+            badge.setAttribute('aria-label', chats + ' unread chats');
+        } catch (error) {
+            console.error('Chat unread count failed', error);
+        } finally {
+            if (!stopped) timer = setTimeout(refreshChatBadge, 10000);
+        }
+    }
+
+    refreshChatBadge();
+    window.addEventListener('pagehide', () => {
+        stopped = true;
+        clearTimeout(timer);
+    });
+})();
 </script>
