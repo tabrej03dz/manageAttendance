@@ -420,7 +420,7 @@
                                 <div class="chat-list-name" title="{{ $title }}">{{ $title }}</div>
                                 @if($latest)<div class="chat-list-time">{{ $latest->created_at->format('h:i A') }}</div>@endif
                             </div>
-                            @if($monitor)<div class="chat-monitor-label">Monitoring · Read only</div>@endif
+                            {{-- @if($monitor)<div class="chat-monitor-label">Monitoring · Read only</div>@endif --}}
                             <div class="chat-last-message">
                                 <span>{{ $latest ? \Illuminate\Support\Str::limit($latest->message ?: 'Attachment', 35) : 'No messages yet' }}</span>
                                 @if(!$monitor && $item->unread_count > 0)<span class="unread-badge">{{ $item->unread_count }}</span>@endif
