@@ -47,6 +47,39 @@ Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
     Route::get('/{conversation}', [ChatController::class, 'show'])->name('show');
 });
 
+// Route::middleware('auth')->group(function () {
+
+//     Route::get(
+//         '/chat',
+//         [ChatController::class, 'index']
+//     )->name('chat.index');
+
+
+//     Route::get(
+//         '/chat/{conversation}',
+//         [ChatController::class, 'show']
+//     )->name('chat.show');
+
+
+//     Route::post(
+//         '/chat/{conversation}/send',
+//         [ChatController::class, 'send']
+//     )->name('chat.send');
+
+
+//     Route::get(
+//         '/chat/{conversation}/messages',
+//         [ChatController::class, 'messages']
+//     )->name('chat.messages');
+
+
+//     Route::get(
+//         '/chat/attachment/{message}',
+//         [ChatController::class, 'attachment']
+//     )->name('chat.attachment');
+
+// });
+
 
 // Route::middleware('auth')->group(function () {
 
