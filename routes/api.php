@@ -57,14 +57,14 @@ Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(func
     Route::post('conversations/private', [ChatController::class, 'start'])->name('conversations.start');
     Route::get('conversations/{conversation}', [ChatController::class, 'show'])->whereNumber('conversation')->name('conversations.show');
     Route::get('conversations/{conversation}/messages', [ChatController::class, 'messages'])->whereNumber('conversation')->name('messages.index');
-    Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->whereNumber('conversation')->middleware('throttle:chat-send')->name('messages.store');
+    Route::post('conversations/{conversation}/messages', [ChatController::class, 'send'])->whereNumber('conversation')->name('messages.store');
     Route::post('conversations/{conversation}/read', [ChatController::class, 'read'])->whereNumber('conversation')->name('conversations.read');
     Route::get('attachments/{message}', [ChatController::class, 'attachment'])->whereNumber('message')->name('attachments.show');
     Route::get('team/members', [ChatController::class, 'team'])->name('team.members');
-    Route::post('team/broadcast', [ChatController::class, 'broadcast'])->middleware('throttle:chat-broadcast')->name('team.broadcast');
+    Route::post('team/broadcast', [ChatController::class, 'broadcast'])->name('team.broadcast');
     Route::get('notifications', [ChatController::class, 'notifications'])->name('notifications.index');
     Route::post('notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->whereNumber('notification')->name('notifications.read');
-    Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:chat-devices')->name('devices.store');
+    Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->name('devices.store');
     Route::delete('devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
 });
 
