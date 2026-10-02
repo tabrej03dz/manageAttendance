@@ -348,7 +348,7 @@ class ChatController extends Controller
 
             'message' => ['nullable', 'string', 'max:5000'],
 
-            'attachment' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,webp,pdf,doc,docx,xls,xlsx'],
+            'attachment' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,webp,webm,pdf,doc,docx,xls,xlsx'],
 
             'reply_to_id' => ['nullable', 'integer'],
 
