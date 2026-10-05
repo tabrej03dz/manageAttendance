@@ -71,14 +71,19 @@ return [
             'after_commit' => false,
         ],
 
+        // 'chat_push' => [
+        //     'driver' => 'database',
+        //     'connection' => null,
+        //     'table' => 'chat_push_jobs',
+        //     'queue' => 'chat-push',
+        //     'retry_after' => 120,
+        //     'after_commit' => true,
+        // ],
+
         'chat_push' => [
-            'driver' => 'database',
-            'connection' => null,
-            'table' => 'chat_push_jobs',
-            'queue' => 'chat-push',
-            'retry_after' => 120,
-            'after_commit' => true,
-        ],
+    'driver' => 'sync',
+    'after_commit' => true,
+],
 
     ],
 
