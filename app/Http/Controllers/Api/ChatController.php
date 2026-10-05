@@ -229,7 +229,7 @@ class ChatController extends Controller
         abort_unless($this->access->canSend($user, $conversation), 403, 'This conversation is read-only for you.');
         $data = $request->validate([
             'message' => ['nullable', 'string', 'max:5000'],
-            'attachment' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,webp,webm,aac,wav,opus,ogg,caf,m4a,pdf,doc,docx,xls,xlsx'],
+            'attachment' => ['nullable', 'file', 'max:10240', 'mimes:jpg,jpeg,png,webp,webm,aac,wav,mp4,x-m4a,opus,ogg,caf,m4a,pdf,doc,docx,xls,xlsx'],
             'reply_to_id' => ['nullable', 'integer', 'min:1'],
         ]);
         $text = trim($data['message'] ?? '');
