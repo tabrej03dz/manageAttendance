@@ -486,20 +486,12 @@ class ChatController extends Controller
 
 
 
-    public function messages(
-
-    Request $request,
-
-    \App\Models\Conversation $conversation
-
-) {
+  public function messages(Request $request, ChatConversation $conversation)
+{
 
     $user =
 
         $request->user();
-
-
-
 
 
     $allowed =
