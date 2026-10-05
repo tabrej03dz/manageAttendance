@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class SendChatPush implements ShouldQueue, ShouldBeUnique
 {
@@ -36,7 +37,24 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
 
     public function handle(ChatAccessService $access, ChatFcmService $fcm): void
     {
-        $notice = ChatNotification::query()->with('conversation')->find($this->notificationId);
+        // Share the same cache store between requests/workers for these guards.
+        $lock = Cache::lock('chat-push-delivery-' . $this->notificationId, 600);
+        if (!$lock->get()) {
+            if ($this->job && $this->job->getConnectionName() !== 'sync') {
+                $this->release(10);
+            }
+            return;
+        }
+        try {
+            $this->deliver($access, $fcm);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function deliver(ChatAccessService $access, ChatFcmService $fcm): void
+    {
+        $notice = ChatNotification::query()->with(['conversation', 'message.sender'])->find($this->notificationId);
         if (!$notice || $notice->push_sent_at || $notice->read_at || ($notice->expires_at && $notice->expires_at->isPast())) {
             return;
         }
@@ -49,6 +67,11 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
             $notice->update(['push_sent_at' => now()]);
             return;
         }
+        $message = $notice->message;
+        if (!$message) {
+            return;
+        }
+        $notification = $fcm->notificationFor($message);
         $devices = ChatDevice::query()->where('user_id', $user->id)->get();
         if ($devices->isEmpty()) {
             Log::warning('Chat push skipped: recipient has no registered device', [
@@ -64,12 +87,20 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
                 continue;
             }
             $attempted = true;
+            // Record each successful token so a later device failure does not resend to it.
+            $receiptKey = 'chat-push-sent-' . $notice->id . '-' . $device->token_hash;
+            if (Cache::has($receiptKey)) {
+                continue;
+            }
             $fcm->send($device, [
                 'type' => 'chat_message',
                 'notification_id' => $notice->id,
                 'conversation_id' => $notice->conversation_id,
                 'message_id' => $notice->message_id,
-            ]);
+                'title' => $notification['title'],
+                'body' => $notification['body'],
+            ], $notification);
+            Cache::put($receiptKey, true, now()->addDay());
         }
         if ($attempted) {
             $notice->update(['push_sent_at' => now()]);

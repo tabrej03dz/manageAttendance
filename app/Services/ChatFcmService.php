@@ -2,6 +2,8 @@
 namespace App\Services;
 
 use App\Models\ChatDevice;
+use App\Models\ChatMessage;
+use Illuminate\Support\Str;
 use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\HttpHandler\HttpHandlerFactory;
 use GuzzleHttp\Client;
@@ -19,7 +21,35 @@ class ChatFcmService
         return $json;
     }
 
-    public function send(ChatDevice $device, array $data): void
+    public function notificationFor(ChatMessage $message): array
+    {
+        $senderName = (string) ($message->sender?->name ?? '');
+        $text = (string) ($message->message ?? '');
+        if (trim($text) !== '') {
+            $body = Str::limit($text, 120);
+        } else {
+            $mime = strtolower(trim((string) $message->attachment_type));
+            $extension = strtolower(pathinfo((string) ($message->attachment_name ?: $message->attachment), PATHINFO_EXTENSION));
+            if (str_starts_with($mime, 'image/') || $mime === 'image') {
+                $body = '📷 Sent a photo';
+            } elseif (str_starts_with($mime, 'audio/') || in_array($mime, ['audio', 'voice'], true)) {
+                $body = '🎤 Sent a voice message';
+            } elseif (str_starts_with($mime, 'video/') || $mime === 'video') {
+                $body = '🎥 Sent a video';
+            } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'gif', 'heic', 'heif', 'avif'], true)) {
+                $body = '📷 Sent a photo';
+            } elseif (in_array($extension, ['aac', 'wav', 'opus', 'ogg', 'caf', 'm4a', 'mp3', 'amr', 'flac'], true)) {
+                $body = '🎤 Sent a voice message';
+            } elseif (in_array($extension, ['mp4', 'webm', 'mov', 'mkv', 'avi', '3gp'], true)) {
+                $body = '🎥 Sent a video';
+            } else {
+                $body = '📎 Sent a file';
+            }
+        }
+        return ['title' => trim($senderName) !== '' ? $senderName : 'New chat message', 'body' => $body];
+    }
+
+    public function send(ChatDevice $device, array $data, array $notification): void
     {
         if (!config('chat_notifications.fcm_enabled')) { throw new \RuntimeException('Chat FCM is disabled.'); }
         $credentials = $this->credentials();
@@ -38,15 +68,14 @@ class ChatFcmService
             ->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", [
                 'message' => [
                     'token' => $device->fcm_token,
-                    // Keep lock-screen text generic; fetch authorized content when chat opens.
-                    'notification' => ['title' => 'New chat message', 'body' => 'You have received a new message.'],
+                    'notification' => $notification,
                     'data' => array_map(fn ($value) => (string) $value, $data),
                     'android' => [
                         'priority' => 'high', 'ttl' => '300s',
                         'notification' => ['sound' => 'default', 'tag' => 'chat-message-' . $data['message_id']],
                     ],
                     'apns' => [
-                        'headers' => ['apns-priority' => '10', 'apns-push-type' => 'alert', 'apns-expiration' => (string) (time() + 300)],
+                        'headers' => ['apns-priority' => '10', 'apns-collapse-id' => 'chat-message-' . $data['message_id'], 'apns-push-type' => 'alert', 'apns-expiration' => (string) (time() + 300)],
                         'payload' => ['aps' => ['sound' => 'default']],
                     ],
                 ],
