@@ -60,15 +60,22 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
         }
         $user = User::query()->find($notice->user_id);
         $conversation = $notice->conversation;
-        if (
-            !$user || !$conversation || !$access->canView($user, $conversation)
-            || !$conversation->participants()->where('user_id', $user->id)->exists()
-        ) {
-            $notice->update(['push_sent_at' => now()]);
-            return;
-        }
         $message = $notice->message;
         if (!$message) {
+            return;
+        }
+        $sender = $access->users()->get((int) $message->sender_id);
+        $isParticipant = $user && $conversation
+            && $conversation->participants()->where('user_id', $user->id)->exists();
+        $isEmployeeSenior = $user && $sender
+            && $access->role($sender) === 'employee'
+            && $access->canMonitorUser($user, $sender);
+        // Recheck access at send time; seniors do not become chat participants.
+        if (
+            !$user || !$conversation || !$access->canView($user, $conversation)
+            || (!$isParticipant && !$isEmployeeSenior)
+        ) {
+            $notice->update(['push_sent_at' => now()]);
             return;
         }
         $notification = $fcm->notificationFor($message);
