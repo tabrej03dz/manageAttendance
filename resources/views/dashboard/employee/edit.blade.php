@@ -1219,12 +1219,15 @@
                                 @foreach($teamLeaders as $leader)
                                     <option
                                         value="{{ $leader->id }}"
-                                        data-office-id="{{ $leader->office_id }}"
+                                        data-office-ids="{{ implode(',', $leader->selectable_office_ids ?? []) }}"
                                         {{ (string) old('team_leader_id', $employee->team_leader_id) === (string) $leader->id ? 'selected' : '' }}
                                     >
                                         {{ $leader->name }}
+
                                         @if($leader->office)
                                             - {{ $leader->office->name }}
+                                        @elseif($leader->hasRole('owner'))
+                                            - Owner
                                         @endif
                                     </option>
                                 @endforeach
@@ -1242,15 +1245,18 @@
                                 id="leave_authority_id"
                             >
                                 <option value="">Select</option>
-                                @foreach($teamLeaders as $authority)
+                                @foreach($leaveAuthorities as $authority)
                                     <option
                                         value="{{ $authority->id }}"
-                                        data-office-id="{{ $authority->office_id }}"
+                                        data-office-ids="{{ implode(',', $authority->selectable_office_ids ?? []) }}"
                                         {{ (string) old('leave_authority_id', $employee->leave_authority_id) === (string) $authority->id ? 'selected' : '' }}
                                     >
                                         {{ $authority->name }}
+
                                         @if($authority->office)
                                             - {{ $authority->office->name }}
+                                        @elseif($authority->hasRole('owner'))
+                                            - Owner
                                         @endif
                                     </option>
                                 @endforeach
@@ -2153,238 +2159,6 @@
                     </div>
                 </div>
             </section>
-            {{-- Employment Details --}}
-            <section class="form-panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">Employment Details</h2>
-                    <span class="panel-edit"><i class="fas fa-pencil-alt"></i> Edit</span>
-                </div>
-
-                <div class="panel-body">
-                    <div class="compact-grid">
-                        <div class="field-row">
-                            <label class="field-label" for="department_id">Department</label>
-                            <select
-                                class="form-control-compact @error('department_id') has-error @enderror"
-                                name="department_id"
-                                id="department_id"
-                            >
-                                <option value="">Select</option>
-                                @foreach($departments as $department)
-                                    <option
-                                        value="{{ $department->id }}"
-                                        {{ (string) old('department_id', $employee->department_id) === (string) $department->id ? 'selected' : '' }}
-                                    >
-                                        {{ $department->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('department_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="designation_id">
-                                Designation
-                            </label>
-
-                            <select
-                                class="form-control-compact @error('designation_id') has-error @enderror"
-                                id="designation_id"
-                                name="designation_id"
-                            >
-                                <option value="">Select Designation</option>
-
-                                @foreach($designations as $designation)
-                                    <option
-                                        value="{{ $designation->id }}"
-                                        data-office-id="{{ $designation->office_id }}"
-                                        data-department-id="{{ $designation->department_id ?? '' }}"
-                                        {{ (string) old(
-                                            'designation_id',
-                                            $employee->designation_id
-                                        ) === (string) $designation->id
-                                            ? 'selected'
-                                            : ''
-                                        }}
-                                    >
-                                        {{ $designation->name }}
-                                        @if(!$designation->is_active)
-                                            (Inactive)
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            @error('designation_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="office_id">
-                                Office <span class="required">*</span>
-                            </label>
-                            <select
-                                class="form-control-compact @error('office_id') has-error @enderror"
-                                name="office_id"
-                                id="office_id"
-                                required
-                            >
-                                <option value="">Select</option>
-                                @foreach($offices as $office)
-                                    <option
-                                        value="{{ $office->id }}"
-                                        {{ (string) old('office_id', $employee->office_id) === (string) $office->id ? 'selected' : '' }}
-                                    >
-                                        {{ $office->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('office_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="role">Role</label>
-                            <select
-                                class="form-control-compact @error('role') has-error @enderror"
-                                name="role"
-                                id="role"
-                                required
-                            >
-                                <option value="">Select</option>
-                                <option value="admin" {{ $currentRole === 'admin' ? 'selected' : '' }}>
-                                    Admin
-                                </option>
-                                <option value="team_leader" {{ $currentRole === 'team_leader' ? 'selected' : '' }}>
-                                    Team Leader
-                                </option>
-                                <option value="employee" {{ $currentRole === 'employee' ? 'selected' : '' }}>
-                                    Employee
-                                </option>
-                            </select>
-                            @error('role')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="team_leader_id">Reporting Manager</label>
-                            <select
-                                class="form-control-compact @error('team_leader_id') has-error @enderror"
-                                name="team_leader_id"
-                                id="team_leader_id"
-                            >
-                                <option value="">Select</option>
-                                @foreach($teamLeaders as $leader)
-                                    <option
-                                        value="{{ $leader->id }}"
-                                        data-office-id="{{ $leader->office_id }}"
-                                        {{ (string) old('team_leader_id', $employee->team_leader_id) === (string) $leader->id ? 'selected' : '' }}
-                                    >
-                                        {{ $leader->name }}
-                                        @if($leader->office)
-                                            - {{ $leader->office->name }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('team_leader_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="leave_authority_id">Leave Authority</label>
-                            <select
-                                class="form-control-compact @error('leave_authority_id') has-error @enderror"
-                                name="leave_authority_id"
-                                id="leave_authority_id"
-                            >
-                                <option value="">Select</option>
-                                @foreach($teamLeaders as $authority)
-                                    <option
-                                        value="{{ $authority->id }}"
-                                        data-office-id="{{ $authority->office_id }}"
-                                        {{ (string) old('leave_authority_id', $employee->leave_authority_id) === (string) $authority->id ? 'selected' : '' }}
-                                    >
-                                        {{ $authority->name }}
-                                        @if($authority->office)
-                                            - {{ $authority->office->name }}
-                                        @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('leave_authority_id')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="status">
-                                Status <span class="required">*</span>
-                            </label>
-
-                            <select
-                                class="form-control-compact @error('status') has-error @enderror"
-                                name="status"
-                                id="status"
-                                required
-                            >
-                                <option
-                                    value="1"
-                                    {{ (string) old('status', $employee->status) == '1' ? 'selected' : '' }}
-                                >
-                                    Active
-                                </option>
-
-                                <option
-                                    value="0"
-                                    {{ (string) old('status', $employee->status) == '0' ? 'selected' : '' }}
-                                >
-                                    Inactive
-                                </option>
-                            </select>
-
-                            @error('status')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row">
-                            <label class="field-label" for="salary">Monthly Salary</label>
-                            <input
-                                class="form-control-compact @error('salary') has-error @enderror"
-                                id="salary"
-                                name="salary"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value="{{ old('salary', $employee->salary) }}"
-                            >
-                            @error('salary')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="field-row top full">
-                            <label class="field-label" for="responsibility">Responsibility</label>
-                            <textarea
-                                class="form-control-compact @error('responsibility') has-error @enderror"
-                                id="responsibility"
-                                name="responsibility"
-                            >{{ old('responsibility', $employee->responsibility) }}</textarea>
-                            @error('responsibility')
-                                <div class="field-error">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {{-- Profile Photo --}}
             <section class="form-panel">
                 <div class="panel-header">
@@ -3213,6 +2987,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterByOffice = (selectElement, officeId) => {
         if (!selectElement) return;
 
+        const selectedOfficeId = String(officeId || '');
+
         Array.from(selectElement.options).forEach((option, index) => {
             if (index === 0) {
                 option.hidden = false;
@@ -3220,8 +2996,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const optionOfficeId = option.dataset.officeId || '';
-            const shouldShow = !officeId || optionOfficeId === String(officeId);
+            const allowedOfficeIds = String(
+                option.dataset.officeIds || ''
+            )
+                .split(',')
+                .map(id => id.trim())
+                .filter(Boolean);
+
+            const shouldShow =
+                !selectedOfficeId ||
+                allowedOfficeIds.includes(selectedOfficeId);
 
             option.hidden = !shouldShow;
             option.disabled = !shouldShow;
