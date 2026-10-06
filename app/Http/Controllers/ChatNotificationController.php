@@ -1,40 +1,48 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\ChatDevice;
 use App\Models\ChatNotification;
 use App\Services\ChatAccessService;
+use App\Services\ChatFcmService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ChatNotificationController extends Controller
 {
-    public function feed(Request $request, ChatAccessService $access)
+    public function feed(Request $request, ChatAccessService $access, ChatFcmService $fcm)
     {
         $user = $request->user();
         $data = $request->validate(['after_id' => ['nullable', 'integer', 'min:0']]);
         $counts = $access->unreadCounts($user);
         if (!$request->has('after_id')) {
-            return response()->json(array_merge(['success' => true, 'notifications' => [],
-                'cursor' => (int) ChatNotification::query()->where('user_id', $user->id)->max('id')], $counts))
+            return response()->json(array_merge([
+                'success' => true,
+                'notifications' => [],
+                'cursor' => (int) ChatNotification::query()->where('user_id', $user->id)->max('id')
+            ], $counts))
                 ->header('Cache-Control', 'private, no-store');
         }
         // Scan all own notices so read/revoked rows also advance the cursor.
         $rows = ChatNotification::query()->where('user_id', $user->id)
-            ->where('id', '>', $data['after_id'] ?? 0)->with(['conversation', 'sender:id,name'])
+            ->where('id', '>', $data['after_id'] ?? 0)->with(['conversation', 'message.sender'])
             ->orderBy('id')->limit(50)->get();
-        $notices = $rows->filter(fn ($row) => !$row->read_at && $row->conversation
-            && $access->canView($user, $row->conversation)
-            && $row->conversation->participants()->where('user_id', $user->id)->exists())
-            ->map(fn ($row) => [
-                'id' => $row->id, 'conversation_id' => $row->conversation_id,
+        $notices = $rows->filter(fn($row) => !$row->read_at && $row->conversation
+            && $row->message && $access->canView($user, $row->conversation))
+            ->map(fn($row) => [
+                'id' => $row->id,
+                'conversation_id' => $row->conversation_id,
                 'message_id' => $row->message_id,
-                'title' => ($row->sender?->name ?? 'User') . ' sent a message',
-                'body' => 'Open chat to read the new message.',
+                'title' => $fcm->notificationFor($row->message)['title'],
+                'body' => $fcm->notificationFor($row->message)['body'],
                 'url' => route('chat.show', $row->conversation_id),
             ])->values();
-        return response()->json(array_merge(['success' => true, 'notifications' => $notices,
-            'cursor' => (int) ($rows->last()?->id ?? ($data['after_id'] ?? 0))], $counts))
+        return response()->json(array_merge([
+            'success' => true,
+            'notifications' => $notices,
+            'cursor' => (int) ($rows->last()?->id ?? ($data['after_id'] ?? 0))
+        ], $counts))
             ->header('Cache-Control', 'private, no-store');
     }
 
@@ -53,7 +61,9 @@ class ChatNotificationController extends Controller
                 $q->where('user_id', '!=', $userId)->orWhere('device_id', '!=', $data['device_id']);
             })->delete();
             ChatDevice::updateOrCreate(['user_id' => $userId, 'device_id' => $data['device_id']], [
-                'platform' => $data['platform'], 'fcm_token' => $data['fcm_token'], 'token_hash' => $hash,
+                'platform' => $data['platform'],
+                'fcm_token' => $data['fcm_token'],
+                'token_hash' => $hash,
             ]);
         }, 3);
         return response()->json(['success' => true]);

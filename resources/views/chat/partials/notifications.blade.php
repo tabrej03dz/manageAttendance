@@ -64,7 +64,7 @@
         beep();
         if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
             try {
-                const native = new Notification('New chat message', {body:'You have received a new message.',tag:'chat-' + notice.id});
+                const native = new Notification(notice.title, {body:notice.body,tag:'chat-message-' + notice.message_id});
                 native.onclick = () => {window.focus();window.location.href = url.href;native.close();};
             } catch (_) {}
         }

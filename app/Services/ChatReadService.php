@@ -19,7 +19,12 @@ class ChatReadService
                 ? $conversation->messages()->whereKey($messageId)->firstOrFail() : null;
             $participant = ChatParticipant::query()->where('conversation_id', $conversation->id)
                 ->where('user_id', $user->id)->lockForUpdate()->first();
-            if (!$participant) { return null; } // A monitoring user is not a participant.
+            if (!$participant) {
+                ChatNotification::query()->where('user_id', $user->id)
+                    ->where('conversation_id', $conversation->id)->whereNull('read_at')
+                    ->where('message_id', '<=', $messageId)->update(['read_at' => now()]);
+                return null;
+            }
             $lastId = max((int) $participant->last_read_message_id, $messageId);
             if ($lastId > (int) $participant->last_read_message_id) {
                 $participant->update([

@@ -18,18 +18,7 @@ class ChatNotificationService
     public function record(ChatMessage $message): void
     {
         $conversation = ChatConversation::query()->findOrFail($message->conversation_id);
-        $ids = $conversation->participants()->pluck('user_id')->map(fn($id) => (int) $id);
-        $sender = $this->access->users()->get((int) $message->sender_id);
-        if ($sender && $this->access->role($sender) === 'employee') {
-            // Add only scoped seniors who can already view this conversation.
-            $seniorIds = $this->access->users()->filter(
-                fn(User $senior) =>
-                $this->access->canMonitorUser($senior, $sender)
-                    && $this->access->canView($senior, $conversation)
-            )->keys()->map(fn($id) => (int) $id);
-            $ids = $ids->merge($seniorIds);
-        }
-        foreach ($ids->unique() as $id) {
+        foreach ($this->recipientIds($message) as $id) {
             if ((int) $id === (int) $message->sender_id) {
                 continue;
             }
@@ -57,6 +46,27 @@ class ChatNotificationService
                 });
             }
         }
+    }
+
+    public function recipientIds(ChatMessage $message): \Illuminate\Support\Collection
+    {
+        $conversation = ChatConversation::query()->findOrFail($message->conversation_id);
+        $ids = $conversation->participants()->pluck('user_id')->map(fn($id) => (int) $id);
+        $sender = $this->access->users()->get((int) $message->sender_id);
+        if ($sender && in_array($this->access->role($sender), ['employee', 'team_leader'], true)) {
+            // Add only scoped seniors who can already view this conversation.
+            $seniorIds = $this->access->users()->filter(
+                fn(User $senior) =>
+                $this->access->canMonitorUser($senior, $sender)
+                    && $this->access->canView($senior, $conversation)
+            )->keys()->map(fn($id) => (int) $id);
+            $ids = $ids->merge($seniorIds);
+        }
+        return $ids->unique()->filter(function ($id) use ($message, $conversation) {
+            if ((int) $id === (int) $message->sender_id) { return false; }
+            $receiver = $this->access->users()->get((int) $id);
+            return $receiver && $this->access->canView($receiver, $conversation);
+        })->values();
     }
 
     public function markConversationRead(User $user, ChatConversation $conversation, $readAt): void

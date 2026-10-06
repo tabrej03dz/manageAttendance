@@ -41,11 +41,7 @@ Route::get('/network-test', function (Request $request) {
     ]);
 });
 
-Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(function () {
-    Route::post('/devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:30,1')->name('devices.store');
-    Route::delete('/devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
-    Route::post('/notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->name('notifications.read');
-});
+
 
 
 
@@ -64,7 +60,7 @@ Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(func
     Route::post('team/broadcast', [ChatController::class, 'broadcast'])->name('team.broadcast');
     Route::get('notifications', [ChatController::class, 'notifications'])->name('notifications.index');
     Route::post('notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->whereNumber('notification')->name('notifications.read');
-    Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->name('devices.store');
+    Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:30,1')->name('devices.store');
     Route::delete('devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
 });
 

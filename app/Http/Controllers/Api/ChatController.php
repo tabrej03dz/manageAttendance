@@ -332,7 +332,7 @@ class ChatController extends Controller
         return $this->ok(['sent_count' => count($deliveries), 'deliveries' => $deliveries], 201);
     }
 
-    public function notifications(Request $request)
+    public function notifications(Request $request, \App\Services\ChatFcmService $fcm)
     {
         $data = $request->validate([
             'before_id' => ['nullable', 'integer', 'min:1', 'prohibits:after_id'],
@@ -341,8 +341,9 @@ class ChatController extends Controller
             'unread_only' => ['nullable', 'boolean'],
         ]);
         $user = $request->user();
-        $visible = $this->access->visibleQuery($user)->whereHas('participants', fn ($q) => $q->where('user_id', $user->id));
+        $visible = $this->access->visibleQuery($user);
         $query = ChatNotification::query()->where('user_id', $user->id)
+            ->whereHas('message')->with('message.sender')
             ->whereIn('conversation_id', $visible->select('chat_conversations.id'));
         if ($request->boolean('unread_only')) { $query->whereNull('read_at'); }
         $forward = isset($data['after_id']);
@@ -357,7 +358,8 @@ class ChatController extends Controller
             'id' => (int) $n->id, 'conversation_id' => (int) $n->conversation_id,
             'message_id' => (int) $n->message_id,
             'sender' => $this->userData($this->access->users()->get((int) $n->sender_id), (int) $n->sender_id),
-            'body' => 'You received a new chat message.', 'read_at' => $this->timestamp($n->read_at),
+            'title' => $fcm->notificationFor($n->message)['title'],
+            'body' => $fcm->notificationFor($n->message)['body'], 'read_at' => $this->timestamp($n->read_at),
             'created_at' => $this->timestamp($n->created_at),
         ])->values()->all(), 200, [
             'pagination' => ['has_more' => $hasMore, 'oldest_id' => $rows->first()?->id, 'newest_id' => $rows->last()?->id,

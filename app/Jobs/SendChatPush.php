@@ -67,15 +67,14 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
         $sender = $access->users()->get((int) $message->sender_id);
         $isParticipant = $user && $conversation
             && $conversation->participants()->where('user_id', $user->id)->exists();
-        $isEmployeeSenior = $user && $sender
-            && $access->role($sender) === 'employee'
+        $isScopedSenior = $user && $sender
+            && in_array($access->role($sender), ['employee', 'team_leader'], true)
             && $access->canMonitorUser($user, $sender);
         // Recheck access at send time; seniors do not become chat participants.
         if (
             !$user || !$conversation || !$access->canView($user, $conversation)
-            || (!$isParticipant && !$isEmployeeSenior)
+            || (!$isParticipant && !$isScopedSenior)
         ) {
-            $notice->update(['push_sent_at' => now()]);
             return;
         }
         $notification = $fcm->notificationFor($message);
@@ -87,29 +86,46 @@ class SendChatPush implements ShouldQueue, ShouldBeUnique
             ]);
             return;
         }
-        $attempted = false;
+        $accepted = 0;
+        $failures = 0;
         foreach ($devices as $device) {
             // A device might have changed account since it was loaded.
             if (!ChatDevice::query()->whereKey($device->id)->where('user_id', $user->id)->where('token_hash', $device->token_hash)->exists()) {
                 continue;
             }
-            $attempted = true;
             // Record each successful token so a later device failure does not resend to it.
             $receiptKey = 'chat-push-sent-' . $notice->id . '-' . $device->token_hash;
             if (Cache::has($receiptKey)) {
+                $accepted++;
                 continue;
             }
-            $fcm->send($device, [
-                'type' => 'chat_message',
-                'notification_id' => $notice->id,
-                'conversation_id' => $notice->conversation_id,
-                'message_id' => $notice->message_id,
-                'title' => $notification['title'],
-                'body' => $notification['body'],
-            ], $notification);
-            Cache::put($receiptKey, true, now()->addDay());
+            try {
+                $sent = $fcm->send($device, [
+                    'type' => 'chat_message',
+                    'notification_id' => $notice->id,
+                    'conversation_id' => $notice->conversation_id,
+                    'message_id' => $notice->message_id,
+                    'title' => $notification['title'],
+                    'body' => $notification['body'],
+                ], $notification);
+                if ($sent) {
+                    $accepted++;
+                    Cache::put($receiptKey, true, now()->addDay());
+                }
+            } catch (\Throwable $e) {
+                $failures++;
+                Log::warning('Chat push device delivery failed', [
+                    'notification_id' => $notice->id,
+                    'user_id' => $user->id,
+                    'device_id' => $device->id,
+                    'exception' => get_class($e),
+                ]);
+            }
         }
-        if ($attempted) {
+        if ($failures > 0) {
+            throw new \RuntimeException('Chat push failed for ' . $failures . ' device(s); successful devices will not be resent while receipts are retained.');
+        }
+        if ($accepted > 0) {
             $notice->update(['push_sent_at' => now()]);
         }
     }

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CheckChatPush extends Command
 {
-    protected $signature = 'chat:check-push {--user= : Receiver user ID}';
+    protected $signature = 'chat:check-push {--user= : Receiver user ID} {--message= : Message ID to inspect recipients}';
     protected $description = 'Check chat push configuration without sending a notification or exposing credentials';
 
     public function handle(): int
@@ -19,7 +19,8 @@ class CheckChatPush extends Command
             $ok = $ok && $passed;
         };
         $check('FCM enabled', (bool) config('chat_notifications.fcm_enabled'), 'Set CHAT_FCM_ENABLED=true');
-        $check('Queue connection', config('queue.connections.chat_push.driver') === 'database', 'chat_push must use the database driver');
+        $driver = config('queue.connections.chat_push.driver');
+        $check('Queue connection', in_array($driver, ['sync', 'database'], true), 'Current driver: ' . ($driver ?? 'missing'));
         $check('Google auth package', class_exists(\Google\Auth\Credentials\ServiceAccountCredentials::class), 'Install dependencies with composer install');
         $path = config('chat_notifications.credentials');
         $readable = is_string($path) && is_readable($path);
@@ -37,7 +38,7 @@ class CheckChatPush extends Command
             }
         }
         try {
-            foreach (['chat_devices', 'chat_notifications', 'chat_push_jobs', 'failed_jobs'] as $table) {
+            foreach (array_merge(['chat_devices', 'chat_notifications'], $driver === 'database' ? ['chat_push_jobs', 'failed_jobs'] : []) as $table) {
                 $check($table, Schema::hasTable($table), 'Run php artisan migrate --force if missing');
             }
             if (Schema::hasTable('chat_push_jobs')) {
@@ -56,7 +57,31 @@ class CheckChatPush extends Command
         }
         $this->table(['Check', 'Result', 'Detail'], $rows);
         $this->line('This check does not test live FCM delivery or confirm that a worker is running.');
-        $this->line('Worker: php artisan queue:work chat_push --queue=chat-push --tries=4 --timeout=75 -v');
+        $this->line($driver === 'sync' ? 'Sync mode: new chat pushes run after commit; no queue worker is required.' : 'Worker: php artisan queue:work chat_push --queue=chat-push --tries=4 --timeout=75 -v');
+        if ($this->option('message') !== null) {
+            $this->inspectMessage();
+        }
         return $ok ? self::SUCCESS : self::FAILURE;
     }
+
+    private function inspectMessage(): void
+    {
+        $id = filter_var($this->option('message'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $message = $id !== false ? \App\Models\ChatMessage::query()->with('sender')->find($id) : null;
+        if (!$message) { $this->error('Message not found.'); return; }
+        $access = app(\App\Services\ChatAccessService::class);
+        $sender = $access->users()->get((int) $message->sender_id);
+        $this->line('Message ' . $message->id . '; sender ' . $message->sender_id . '; role ' . ($sender ? $access->role($sender) : 'missing'));
+        $rows = [];
+        foreach (app(\App\Services\ChatNotificationService::class)->recipientIds($message) as $userId) {
+            $user = $access->users()->get((int) $userId);
+            $notice = \App\Models\ChatNotification::query()->where('user_id', $userId)->where('message_id', $message->id)->first();
+            $devices = \App\Models\ChatDevice::query()->where('user_id', $userId)->count();
+            $rows[] = [$userId, $user?->name, $user ? $access->role($user) : '', $devices,
+                $notice?->id ?? '-', $notice?->push_sent_at?->toDateTimeString() ?? 'not accepted/recorded'];
+        }
+        $this->table(['User ID', 'Name', 'Role', 'Devices', 'Notice ID', 'FCM accepted/recorded at'], $rows);
+        $this->line('Current eligibility is shown. Accepted/recorded does not prove phone display. Zero devices: register via POST /api/chat/devices.');
+    }
+
 }

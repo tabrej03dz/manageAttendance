@@ -17,7 +17,8 @@ class ChatAccessService
     // Supports: super_admin, Super Admin, super-admin, Team Leader, etc.
     public function role(User $user): ?string
     {
-        $names = $user->getRoleNames()->map(fn ($name) =>
+        $names = $user->getRoleNames()->map(
+            fn($name) =>
             trim(preg_replace('/[^a-z0-9]+/', '_', strtolower(trim($name))), '_')
         )->all();
 
@@ -32,8 +33,13 @@ class ChatAccessService
 
     public function level(User $user): int
     {
-        return ['super_admin' => 5, 'owner' => 4, 'admin' => 3,
-            'team_leader' => 2, 'employee' => 1][$this->role($user)] ?? 0;
+        return [
+            'super_admin' => 5,
+            'owner' => 4,
+            'admin' => 3,
+            'team_leader' => 2,
+            'employee' => 1
+        ][$this->role($user)] ?? 0;
     }
 
     public function users(): Collection
@@ -47,8 +53,8 @@ class ChatAccessService
         $this->officeOwners ??= Office::query()->pluck('owner_id', 'id');
 
         return $this->officeOwners
-            ->filter(fn ($ownerId) => (int) $ownerId === (int) $owner->id)
-            ->keys()->map(fn ($id) => (int) $id)->all();
+            ->filter(fn($ownerId) => (int) $ownerId === (int) $owner->id)
+            ->keys()->map(fn($id) => (int) $id)->all();
     }
 
     private function ownsUserOffice(User $owner, User $other): bool
@@ -141,7 +147,7 @@ class ChatAccessService
 
     public function allowedUsers(User $viewer): Collection
     {
-        return $this->users()->filter(fn (User $target) => $this->canChat($viewer, $target))
+        return $this->users()->filter(fn(User $target) => $this->canChat($viewer, $target))
             ->sort(function (User $a, User $b) {
                 return ($this->level($b) <=> $this->level($a))
                     ?: strcasecmp((string) $a->name, (string) $b->name);
@@ -150,9 +156,10 @@ class ChatAccessService
 
     public function monitoredIds(User $viewer): array
     {
-        return $this->users()->filter(fn (User $target) =>
+        return $this->users()->filter(
+            fn(User $target) =>
             $this->canMonitorUser($viewer, $target)
-        )->keys()->map(fn ($id) => (int) $id)->all();
+        )->keys()->map(fn($id) => (int) $id)->all();
     }
 
     // A monitor must outrank every participant, including senior TLs in the chain.
@@ -172,21 +179,29 @@ class ChatAccessService
             return $this->role($viewer) === 'team_leader'
                 && $this->role($target) === 'team_leader'
                 && $this->isAncestor($viewer, $target);
-        })->keys()->map(fn ($id) => (int) $id)->all();
+        })->keys()->map(fn($id) => (int) $id)->all();
 
         return ChatConversation::query()->where(function (Builder $query) use (
-            $viewerId, $monitoredIds, $lowerIds
+            $viewerId,
+            $monitoredIds,
+            $lowerIds
         ) {
             // Actual participants always see their own conversation.
-            $query->whereHas('participants', fn (Builder $p) =>
+            $query->whereHas(
+                'participants',
+                fn(Builder $p) =>
                 $p->where('user_id', $viewerId)
             );
 
             if ($monitoredIds !== [] && $lowerIds !== []) {
                 $query->orWhere(function (Builder $monitor) use ($monitoredIds, $lowerIds) {
-                    $monitor->whereHas('participants', fn (Builder $p) =>
+                    $monitor->whereHas(
+                        'participants',
+                        fn(Builder $p) =>
                         $p->whereIn('user_id', $monitoredIds)
-                    )->whereDoesntHave('participants', fn (Builder $p) =>
+                    )->whereDoesntHave(
+                        'participants',
+                        fn(Builder $p) =>
                         $p->whereNotIn('user_id', $lowerIds)
                     );
                 });
@@ -207,7 +222,7 @@ class ChatAccessService
         }
 
         $ids = $conversation->participants()->pluck('user_id')
-            ->map(fn ($id) => (int) $id);
+            ->map(fn($id) => (int) $id);
 
         // Authorized higher users can still send in permitted lower-user chats.
         if ($ids->intersect($this->monitoredIds($viewer))->isNotEmpty()) {
@@ -224,7 +239,7 @@ class ChatAccessService
         ) {
             return false;
         }
-        $targetId = $ids->first(fn ($id) => $id !== (int) $viewer->id);
+        $targetId = $ids->first(fn($id) => $id !== (int) $viewer->id);
         $target = $this->users()->get($targetId);
 
         return $target !== null && $this->canChat($viewer, $target);
