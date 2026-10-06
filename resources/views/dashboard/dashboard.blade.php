@@ -2502,7 +2502,7 @@
                         </th>
 
                         <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
-                            Office
+                            Department
                         </th>
 
                         <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -2590,7 +2590,6 @@
                                         <p class="truncate text-xs text-gray-500">
 
                                             {{ $employee->email
-                                                ?? $employee->phone
                                                 ?? 'No contact details'
                                             }}
                                         </p>
@@ -2600,8 +2599,8 @@
 
                             <td class="whitespace-nowrap px-5 py-4 text-sm font-medium text-gray-600">
 
-                                {{ optional($employee->office)->name
-                                    ?? 'Not Assigned'
+                                {{ optional($employee->department)->name
+                                    ?? 'Department Not Assigned'
                                 }}
                             </td>
 
