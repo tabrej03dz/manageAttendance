@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Jobs\SendChatPush;
@@ -17,13 +18,28 @@ class ChatNotificationService
     public function record(ChatMessage $message): void
     {
         $conversation = ChatConversation::query()->findOrFail($message->conversation_id);
-        $ids = $conversation->participants()->pluck('user_id');
+        $ids = $conversation->participants()->pluck('user_id')->map(fn($id) => (int) $id);
+        $sender = $this->access->users()->get((int) $message->sender_id);
+        if ($sender && $this->access->role($sender) === 'employee') {
+            // Add only scoped seniors who can already view this conversation.
+            $seniorIds = $this->access->users()->filter(
+                fn(User $senior) =>
+                $this->access->canMonitorUser($senior, $sender)
+                    && $this->access->canView($senior, $conversation)
+            )->keys()->map(fn($id) => (int) $id);
+            $ids = $ids->merge($seniorIds);
+        }
         foreach ($ids->unique() as $id) {
-            if ((int) $id === (int) $message->sender_id) { continue; }
+            if ((int) $id === (int) $message->sender_id) {
+                continue;
+            }
             $receiver = $this->access->users()->get((int) $id);
-            if (!$receiver || !$this->access->canView($receiver, $conversation)) { continue; }
+            if (!$receiver || !$this->access->canView($receiver, $conversation)) {
+                continue;
+            }
             $notice = ChatNotification::firstOrCreate([
-                'user_id' => $receiver->id, 'message_id' => $message->id,
+                'user_id' => $receiver->id,
+                'message_id' => $message->id,
             ], [
                 'sender_id' => $message->sender_id,
                 'conversation_id' => $message->conversation_id,
@@ -32,8 +48,9 @@ class ChatNotificationService
             if ($notice->wasRecentlyCreated) {
                 $noticeId = (int) $notice->id;
                 DB::afterCommit(function () use ($noticeId) {
-                    try { SendChatPush::dispatch($noticeId); }
-                    catch (\Throwable $e) {
+                    try {
+                        SendChatPush::dispatch($noticeId);
+                    } catch (\Throwable $e) {
                         // Durable notification row remains; the recovery command can queue it again.
                         Log::warning('Chat push queue dispatch failed', ['notification_id' => $noticeId, 'exception' => get_class($e)]);
                     }
