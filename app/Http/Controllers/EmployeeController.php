@@ -2881,15 +2881,64 @@ class EmployeeController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ($loggedInUser->hasRole('super_admin')) {
-            $targetOfficeId = (int) (
-                $request->input('office_id')
-                ?: $employee->office_id
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Resolve target office and authorize employee access
+        |--------------------------------------------------------------------------
+        */
+
+        $switchableOfficeIds = collect(
+            $this->switchableOfficeIds($request)
+        )
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Employee ki current office par access check
+        |--------------------------------------------------------------------------
+        |
+        | Super Admin sab employees edit kar sakta hai.
+        | Baaki users sirf apni accessible offices ke employees edit kar sakte hain.
+        |
+        */
+
+        if (
+            !$loggedInUser->hasRole('super_admin')
+            && (
+                !$employee->office_id
+                || !$switchableOfficeIds->contains((int) $employee->office_id)
+            )
+        ) {
+            abort(
+                403,
+                'You are not allowed to edit this employee.'
             );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Resolve submitted office
+        |--------------------------------------------------------------------------
+        */
+
+        $requestedOfficeId = (int) (
+            $request->input('office_id')
+            ?: $employee->office_id
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Super Admin
+        |--------------------------------------------------------------------------
+        */
+
+        if ($loggedInUser->hasRole('super_admin')) {
 
             if (
-                !$targetOfficeId ||
-                !Office::query()->whereKey($targetOfficeId)->exists()
+                !$requestedOfficeId
+                || !Office::query()->whereKey($requestedOfficeId)->exists()
             ) {
                 return back()
                     ->withErrors([
@@ -2897,55 +2946,63 @@ class EmployeeController extends Controller
                     ])
                     ->withInput();
             }
-        } elseif ($loggedInUser->hasRole('owner')) {
-            $ownerOfficeIds = Office::query()
-                ->where('owner_id', $loggedInUser->id)
-                ->pluck('id')
-                ->map(fn($id) => (int) $id);
 
-            if ($ownerOfficeIds->isEmpty()) {
-                return back()
-                    ->with('error', 'No office found for this owner.')
-                    ->withInput();
-            }
+            $targetOfficeId = $requestedOfficeId;
 
-            if (
-                !$employee->office_id ||
-                !$ownerOfficeIds->contains((int) $employee->office_id)
-            ) {
-                abort(403, 'This employee does not belong to your office.');
-            }
+        /*
+        |--------------------------------------------------------------------------
+        | Owner / user having office switching permission
+        |--------------------------------------------------------------------------
+        */
 
-            $targetOfficeId = (int) (
-                $request->input('office_id')
-                ?: $employee->office_id
-            );
+        } elseif ($this->hasSwitchOfficeAccess($loggedInUser)) {
 
             if (
-                !$targetOfficeId ||
-                !$ownerOfficeIds->contains($targetOfficeId)
+                !$requestedOfficeId
+                || !$switchableOfficeIds->contains($requestedOfficeId)
             ) {
                 return back()
                     ->withErrors([
-                        'office_id' => 'Invalid office selected.',
+                        'office_id' => 'You cannot assign this employee to the selected office.',
                     ])
                     ->withInput();
             }
-        } else {
-            $targetOfficeId = (int) $loggedInUser->activeOfficeId();
 
-            if (!$targetOfficeId) {
+            $targetOfficeId = $requestedOfficeId;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Normal Admin / Team Leader / Employee
+        |--------------------------------------------------------------------------
+        */
+
+        } else {
+
+            $activeOfficeId = $this->activeOfficeId($request);
+
+            if (!$activeOfficeId) {
                 return back()
-                    ->with('error', 'Please select an office first.')
+                    ->withErrors([
+                        'office_id' => 'Please select an office first.',
+                    ])
                     ->withInput();
             }
 
-            if ((int) $employee->office_id !== $targetOfficeId) {
-                abort(
-                    403,
-                    'This employee does not belong to the selected office.'
-                );
+            /*
+            * Normal user ko dusri office me transfer karne ki permission nahi.
+            */
+            if (
+                $request->filled('office_id')
+                && (int) $request->input('office_id') !== (int) $activeOfficeId
+            ) {
+                return back()
+                    ->withErrors([
+                        'office_id' => 'You are not allowed to change the employee office.',
+                    ])
+                    ->withInput();
             }
+
+            $targetOfficeId = (int) $activeOfficeId;
         }
 
         /*
@@ -3412,7 +3469,7 @@ class EmployeeController extends Controller
                 ],
 
                 'office_id' => [
-                    'nullable',
+                    'required',
                     'integer',
                     'exists:offices,id',
                 ],
