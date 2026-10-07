@@ -37,7 +37,7 @@ class ChatFcmService
             $extension = strtolower(pathinfo((string) ($message->attachment_name ?: $message->attachment), PATHINFO_EXTENSION));
             if (str_starts_with($mime, 'image/') || $mime === 'image') {
                 $body = '📷 Sent a photo';
-            } elseif (str_starts_with($mime, 'audio/') || in_array($mime, ['audio', 'voice'], true)) {
+            } elseif (str_starts_with($mime, 'audio/') || in_array($mime, ['audio', 'voice'], true) || ($extension === 'm4a' && $mime === 'video/mp4')) {
                 $body = '🎤 Sent a voice message';
             } elseif (str_starts_with($mime, 'video/') || $mime === 'video') {
                 $body = '🎥 Sent a video';

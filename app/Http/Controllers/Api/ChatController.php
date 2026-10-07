@@ -248,7 +248,9 @@ class ChatController extends Controller
                     'conversation_id' => $conversation->id, 'sender_id' => $user->id,
                     'message' => $text !== '' ? $text : null, 'attachment' => $path,
                     'attachment_name' => $file ? basename(str_replace('\\', '/', $file->getClientOriginalName())) : null,
-                    'attachment_type' => $file?->getMimeType(), 'reply_to_id' => $reply?->id,
+                    'attachment_type' => ($file && strtolower($file->getClientOriginalExtension()) === 'm4a'
+                        && $file->getMimeType() === 'video/mp4') ? 'audio/mp4' : $file?->getMimeType(),
+                    'reply_to_id' => $reply?->id,
                 ]);
                 $conversation->touch();
                 $this->notifications->record($message);
