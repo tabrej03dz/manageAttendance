@@ -248,7 +248,7 @@ class ChatController extends Controller
 
             ->orderBy('id')->get();
 
-        $this->updateRead($conversation, $user, (int) ($messages->max('id') ?? 0));
+        // $this->updateRead($conversation, $user, (int) ($messages->max('id') ?? 0));
 
 
 
@@ -486,290 +486,329 @@ class ChatController extends Controller
 
 
 
-  public function messages(Request $request, ChatConversation $conversation)
+//   public function messages(Request $request, ChatConversation $conversation)
+// {
+
+//     $user =
+
+//         $request->user();
+
+
+//     $allowed =
+
+//         $conversation
+
+//             ->users()
+
+//             ->where(
+
+//                 'users.id',
+
+//                 $user->id
+
+//             )
+
+//             ->exists();
+
+
+
+
+
+//     /*
+
+//     |--------------------------------------------------------------------------
+
+//     | Yahan apni existing hierarchy/monitor permission ko preserve karein.
+
+//     |--------------------------------------------------------------------------
+
+//     */
+
+
+
+//     abort_unless(
+
+//         $allowed,
+
+//         403
+
+//     );
+
+
+
+
+
+//     $lastMessageId =
+
+//         (int) $request->query(
+
+//             'last_message_id',
+
+//             0
+
+//         );
+
+
+
+
+
+//     $messages =
+
+//         \App\Models\ChatMessage::query()
+
+//             ->with([
+
+//                 'sender:id,name',
+
+//                 'replyTo.sender:id,name',
+
+//             ])
+
+//             ->where(
+
+//                 'conversation_id',
+
+//                 $conversation->id
+
+//             )
+
+//             ->where(
+
+//                 'id',
+
+//                 '>',
+
+//                 $lastMessageId
+
+//             )
+
+//             ->orderBy('id')
+
+//             ->limit(100)
+
+//             ->get();
+
+
+
+
+
+//     $data =
+
+//         $messages->map(
+
+//             function ($message)
+
+//             use ($user) {
+
+
+
+//                 return [
+
+//                     'id' =>
+
+//                         $message->id,
+
+
+
+//                     'sender_id' =>
+
+//                         $message->sender_id,
+
+
+
+//                     'sender_name' =>
+
+//                         $message->sender?->name
+
+//                         ?? 'Deleted User',
+
+
+
+//                     'is_mine' =>
+
+//                         (int) $message->sender_id ===
+
+//                         (int) $user->id,
+
+
+
+//                     'message' =>
+
+//                         $message->message,
+
+
+
+//                     /*
+
+//                     |--------------------------------------------------------------------------
+
+//                     | Actual protected attachment URL
+
+//                     |--------------------------------------------------------------------------
+
+//                     */
+
+
+
+//                     'attachment' =>
+
+//                         $message->attachment
+
+//                             ? route(
+
+//                                 'chat.attachment',
+
+//                                 $message->id
+
+//                             )
+
+//                             : null,
+
+
+
+//                     'attachment_name' =>
+
+//                         $message->attachment_name,
+
+
+
+//                     'created_at' =>
+
+//                         $message
+
+//                             ->created_at
+
+//                             ->format(
+
+//                                 'd M, h:i A'
+
+//                             ),
+
+
+
+//                     'reply_to' =>
+
+//                         $message->replyTo
+
+//                             ? [
+
+//                                 'id' =>
+
+//                                     $message
+
+//                                         ->replyTo
+
+//                                         ->id,
+
+
+
+//                                 'sender_name' =>
+
+//                                     $message
+
+//                                         ->replyTo
+
+//                                         ->sender
+
+//                                         ?->name
+
+//                                     ?? 'Deleted User',
+
+
+
+//                                 'message' =>
+
+//                                     $message
+
+//                                         ->replyTo
+
+//                                         ->message,
+
+
+
+//                                 'attachment_name' =>
+
+//                                     $message
+
+//                                         ->replyTo
+
+//                                         ->attachment_name,
+
+//                             ]
+
+//                             : null,
+
+//                 ];
+
+//             }
+
+//         );
+
+
+
+
+
+//     return response()->json([
+
+//         'success' =>
+
+//             true,
+
+
+
+//         'can_send' =>
+
+//             $allowed,
+
+
+
+//         'messages' =>
+
+//             $data,
+
+//     ]);
+
+// }
+
+
+public function messages(Request $request, ChatConversation $conversation)
 {
+    $user = $this->authorizeView($conversation);
 
-    $user =
-
-        $request->user();
-
-
-    $allowed =
-
-        $conversation
-
-            ->users()
-
-            ->where(
-
-                'users.id',
-
-                $user->id
-
-            )
-
-            ->exists();
-
-
-
-
-
-    /*
-
-    |--------------------------------------------------------------------------
-
-    | Yahan apni existing hierarchy/monitor permission ko preserve karein.
-
-    |--------------------------------------------------------------------------
-
-    */
-
-
-
-    abort_unless(
-
-        $allowed,
-
-        403
-
-    );
-
-
-
-
-
-    $lastMessageId =
-
-        (int) $request->query(
-
-            'last_message_id',
-
-            0
-
-        );
-
-
-
-
-
-    $messages =
-
-        \App\Models\ChatMessage::query()
-
-            ->with([
-
-                'sender:id,name',
-
-                'replyTo.sender:id,name',
-
-            ])
-
-            ->where(
-
-                'conversation_id',
-
-                $conversation->id
-
-            )
-
-            ->where(
-
-                'id',
-
-                '>',
-
-                $lastMessageId
-
-            )
-
-            ->orderBy('id')
-
-            ->limit(100)
-
-            ->get();
-
-
-
-
-
-    $data =
-
-        $messages->map(
-
-            function ($message)
-
-            use ($user) {
-
-
-
-                return [
-
-                    'id' =>
-
-                        $message->id,
-
-
-
-                    'sender_id' =>
-
-                        $message->sender_id,
-
-
-
-                    'sender_name' =>
-
-                        $message->sender?->name
-
-                        ?? 'Deleted User',
-
-
-
-                    'is_mine' =>
-
-                        (int) $message->sender_id ===
-
-                        (int) $user->id,
-
-
-
-                    'message' =>
-
-                        $message->message,
-
-
-
-                    /*
-
-                    |--------------------------------------------------------------------------
-
-                    | Actual protected attachment URL
-
-                    |--------------------------------------------------------------------------
-
-                    */
-
-
-
-                    'attachment' =>
-
-                        $message->attachment
-
-                            ? route(
-
-                                'chat.attachment',
-
-                                $message->id
-
-                            )
-
-                            : null,
-
-
-
-                    'attachment_name' =>
-
-                        $message->attachment_name,
-
-
-
-                    'created_at' =>
-
-                        $message
-
-                            ->created_at
-
-                            ->format(
-
-                                'd M, h:i A'
-
-                            ),
-
-
-
-                    'reply_to' =>
-
-                        $message->replyTo
-
-                            ? [
-
-                                'id' =>
-
-                                    $message
-
-                                        ->replyTo
-
-                                        ->id,
-
-
-
-                                'sender_name' =>
-
-                                    $message
-
-                                        ->replyTo
-
-                                        ->sender
-
-                                        ?->name
-
-                                    ?? 'Deleted User',
-
-
-
-                                'message' =>
-
-                                    $message
-
-                                        ->replyTo
-
-                                        ->message,
-
-
-
-                                'attachment_name' =>
-
-                                    $message
-
-                                        ->replyTo
-
-                                        ->attachment_name,
-
-                            ]
-
-                            : null,
-
-                ];
-
-            }
-
-        );
-
-
-
-
-
-    return response()->json([
-
-        'success' =>
-
-            true,
-
-
-
-        'can_send' =>
-
-            $allowed,
-
-
-
-        'messages' =>
-
-            $data,
-
+    $data = $request->validate([
+        'last_message_id' => ['nullable', 'integer', 'min:0'],
     ]);
 
-}
+    $messages = $conversation->messages()
+        ->with(['sender:id,name', 'replyTo.sender:id,name'])
+        ->where('id', '>', (int) ($data['last_message_id'] ?? 0))
+        ->orderBy('id')
+        ->limit(100)
+        ->get();
 
+    return response()->json([
+        'success' => true,
+        'can_send' => $this->access->canSend($user, $conversation),
+        'messages' => $messages->map(fn ($message) => [
+            'id' => $message->id,
+            'sender_id' => $message->sender_id,
+            'sender_name' => $message->sender?->name ?? 'Deleted User',
+            'is_mine' => (int) $message->sender_id === (int) $user->id,
+            'message' => $message->message,
+            'attachment' => $message->attachment
+                ? route('chat.attachment', $message->id) : null,
+            'attachment_name' => $message->attachment_name,
+            'created_at' => $message->created_at->format('d M, h:i A'),
+            'reply_to' => $message->replyTo ? [
+                'id' => $message->replyTo->id,
+                'sender_name' => $message->replyTo->sender?->name
+                    ?? 'Deleted User',
+                'message' => $message->replyTo->message,
+                'attachment_name' => $message->replyTo->attachment_name,
+            ] : null,
+        ])->values(),
+    ]);
+}
 
 
     public function markRead(ChatConversation $conversation)

@@ -2462,4 +2462,5 @@
 })();
 </script>
 @endif
+@include('chat.partials.message-info')
 @endsection

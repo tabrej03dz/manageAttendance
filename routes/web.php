@@ -45,6 +45,16 @@ Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
     Route::post('/{conversation}/send', [ChatController::class, 'send'])->name('send');
     Route::post('/{conversation}/read', [ChatController::class, 'markRead'])->name('read');
     Route::get('/{conversation}', [ChatController::class, 'show'])->name('show');
+
+    Route::get('/messages/{message}/info', [
+        \App\Http\Controllers\ChatMessageInfoController::class,
+        'info',
+    ])->whereNumber('message')->name('messages.info');
+
+    Route::post('/conversations/{conversation}/seen', [
+        \App\Http\Controllers\ChatMessageInfoController::class,
+        'seen',
+    ])->whereNumber('conversation')->name('messages.seen');
 });
 
 // Route::middleware('auth')->group(function () {

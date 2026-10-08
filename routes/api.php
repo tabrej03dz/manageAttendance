@@ -62,6 +62,16 @@ Route::middleware('auth:sanctum')->prefix('chat')->name('api.chat.')->group(func
     Route::post('notifications/{notification}/read', [ChatNotificationController::class, 'markRead'])->whereNumber('notification')->name('notifications.read');
     Route::post('devices', [ChatNotificationController::class, 'registerDevice'])->middleware('throttle:30,1')->name('devices.store');
     Route::delete('devices/{deviceId}', [ChatNotificationController::class, 'unregisterDevice'])->name('devices.destroy');
+
+    Route::get('messages/{message}/info', [
+        \App\Http\Controllers\ChatMessageInfoController::class,
+        'info',
+    ])->whereNumber('message')->name('messages.info');
+
+    Route::post('conversations/{conversation}/seen', [
+        \App\Http\Controllers\ChatMessageInfoController::class,
+        'seen',
+    ])->whereNumber('conversation')->name('messages.seen');
 });
 
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
