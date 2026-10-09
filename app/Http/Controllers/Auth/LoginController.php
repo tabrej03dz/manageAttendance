@@ -145,42 +145,42 @@ class LoginController extends Controller
 
 
 
-// OTP SKIP
+    // OTP SKIP
 
     public function login(Request $request)
-{
-    $request->validate([
-        'phone' => [
-            'required',
-            'digits:10',
-            'regex:/^[6-9][0-9]{9}$/',
-        ],
-    ], [
-        'phone.required' => 'Mobile number required hai.',
-        'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
-        'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
-    ]);
-
-    $phone = $request->phone;
-
-    $user = User::where('phone', $phone)
-        ->where('status', '1')
-        ->first();
-
-    if (!$user) {
-        throw ValidationException::withMessages([
-            'phone' => ['Invalid mobile number ya user inactive hai.'],
+    {
+        $request->validate([
+            'phone' => [
+                'required',
+                'digits:10',
+                'regex:/^[6-9][0-9]{9}$/',
+            ],
+        ], [
+            'phone.required' => 'Mobile number required hai.',
+            'phone.digits'   => 'Mobile number 10 digit ka hona chahiye.',
+            'phone.regex'    => 'Mobile number 6, 7, 8 ya 9 se start hona chahiye.',
         ]);
+
+        $phone = $request->phone;
+
+        $user = User::where('phone', $phone)
+            ->where('status', '1')
+            ->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages([
+                'phone' => ['Invalid mobile number ya user inactive hai.'],
+            ]);
+        }
+
+        // Testing ke liye direct login
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/home')
+            ->with('success', 'Login successful.');
     }
-
-    // Testing ke liye direct login
-    Auth::login($user);
-
-    $request->session()->regenerate();
-
-    return redirect()->intended('/home')
-        ->with('success', 'Login successful.');
-}
 
     // public function login(Request $request)
     // {
