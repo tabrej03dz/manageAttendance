@@ -35,7 +35,14 @@ use App\Http\Controllers\ChatNotificationController;
 
 // Load once from routes/web.php so web/session/CSRF middleware is applied.
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
+
+
+
     Route::get('/notifications/feed', [ChatNotificationController::class, 'feed'])->name('notifications.feed');
+    Route::post(
+        '/notifications/device',
+        [ChatNotificationController::class, 'registerDevice']
+    )->name('notifications.device');
     Route::get('/unread-count', [ChatController::class, 'unreadCount'])->name('unread-count');
     Route::get('/', [ChatController::class, 'index'])->name('index');
     Route::post('/start/{user}', [ChatController::class, 'startPrivateChat'])->name('start');

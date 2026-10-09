@@ -3,7 +3,26 @@
 <div style="position:fixed;right:20px;bottom:5px;z-index:1101;">
     <button type="button" id="enableChatBrowserNotifications" style="border:0;border-radius:6px;padding:4px 8px;font-size:11px;background:#eef2ff;color:#3730a3;">Enable desktop notifications</button>
 </div>
+<script src="https://www.gstatic.com/firebasejs/13.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/13.0.0/firebase-messaging-compat.js"></script>
 <script>
+const firebaseConfig = {
+    apiKey: @json(config('chat_notifications.web.api_key')),
+    authDomain: @json(config('chat_notifications.web.auth_domain')),
+    projectId: @json(config('chat_notifications.web.project_id')),
+    storageBucket: @json(config('chat_notifications.web.storage_bucket')),
+    messagingSenderId: @json(config('chat_notifications.web.messaging_sender_id')),
+    appId: @json(config('chat_notifications.web.app_id'))
+};
+
+const firebaseVapidKey =
+    @json(config('chat_notifications.web.vapid_key'));
+
+const registerDeviceEndpoint =
+    @json(route('chat.notifications.device'));
+
+const csrfToken =
+    document.querySelector('meta[name="csrf-token"]')?.content;
 (() => {
     if (window.chatNotificationWidgetStarted) return;
     window.chatNotificationWidgetStarted = true;
@@ -28,9 +47,18 @@
     else {
         enable.hidden = Notification.permission !== 'default';
         enable.addEventListener('click', async () => {
-            await Notification.requestPermission();
-            enable.hidden = Notification.permission !== 'default';
+
+            await registerWebPush();
+
+            enable.hidden =
+                Notification.permission === 'granted';
         });
+        if (
+            'Notification' in window &&
+            Notification.permission === 'granted'
+        ) {
+            registerWebPush();
+        }
     }
     function beep() {
         if (!soundEnabled || !audio || audio.state !== 'running') return;
@@ -89,4 +117,127 @@
     poll();
     window.addEventListener('pagehide', () => {stopped=true;clearTimeout(timer);});
 })();
+
+
+async function registerWebPush() {
+
+    if (!('serviceWorker' in navigator)) {
+        console.warn('Service Worker not supported');
+        return;
+    }
+
+    if (!('Notification' in window)) {
+        console.warn('Notifications not supported');
+        return;
+    }
+
+    if (!window.isSecureContext) {
+        console.warn('HTTPS required for push notifications');
+        return;
+    }
+
+    try {
+
+        const permission =
+            await Notification.requestPermission();
+
+        if (permission !== 'granted') {
+            console.warn('Notification permission not granted');
+            return;
+        }
+
+        const registration =
+            await navigator.serviceWorker.register(
+                '/firebase-messaging-sw.js'
+            );
+
+        console.log(
+            'Firebase service worker registered',
+            registration
+        );
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const messaging = firebase.messaging();
+
+        const token = await messaging.getToken({
+            vapidKey: firebaseVapidKey,
+            serviceWorkerRegistration: registration
+        });
+
+        if (!token) {
+            console.warn('FCM token not available');
+            return;
+        }
+
+        let deviceId =
+            localStorage.getItem('chat_web_device_id');
+
+        if (!deviceId) {
+
+            deviceId =
+                'web_' +
+                crypto.randomUUID()
+                    .replace(/-/g, '');
+
+            localStorage.setItem(
+                'chat_web_device_id',
+                deviceId
+            );
+        }
+
+        const response = await fetch(
+            registerDeviceEndpoint,
+            {
+                method: 'POST',
+
+                credentials: 'same-origin',
+
+                headers: {
+                    'Content-Type':
+                        'application/json',
+
+                    'Accept':
+                        'application/json',
+
+                    'X-CSRF-TOKEN':
+                        csrfToken,
+
+                    'X-Requested-With':
+                        'XMLHttpRequest'
+                },
+
+                body: JSON.stringify({
+                    device_id: deviceId,
+                    platform: 'web',
+                    fcm_token: token
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error(
+                'FCM device registration failed',
+                result
+            );
+
+            return;
+        }
+
+        console.log(
+            'Web FCM device registered successfully'
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Web push setup failed:',
+            error
+        );
+    }
+}
 </script>

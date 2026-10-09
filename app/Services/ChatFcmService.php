@@ -90,6 +90,32 @@ class ChatFcmService
                         'headers' => ['apns-priority' => '10', 'apns-collapse-id' => 'chat-message-' . $data['message_id'], 'apns-push-type' => 'alert', 'apns-expiration' => (string) (time() + 300)],
                         'payload' => ['aps' => ['sound' => 'default']],
                     ],
+                    'webpush' => [
+                        'headers' => [
+                            'Urgency' => 'high',
+                            'TTL' => '300',
+                        ],
+
+                        'notification' => [
+                            'icon' => '/favicon.ico',
+
+                            'badge' => '/favicon.ico',
+
+                            'tag' =>
+                                'chat-message-' .
+                                $data['message_id'],
+
+                            'requireInteraction' => false,
+                        ],
+
+                        'fcm_options' => [
+                            'link' =>
+                                url(
+                                    '/chat/' .
+                                    $data['conversation_id']
+                                ),
+                        ],
+                    ],
                 ],
             ]);
         if ($response->successful()) {

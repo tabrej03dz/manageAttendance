@@ -46,27 +46,78 @@ class ChatNotificationController extends Controller
             ->header('Cache-Control', 'private, no-store');
     }
 
+    // public function registerDevice(Request $request)
+    // {
+    //     $data = $request->validate([
+    //         'device_id' => ['required', 'string', 'regex:/^[A-Za-z0-9_-]{12,128}$/'],
+    //         'platform' => ['required', 'in:android,ios','web'],
+    //         'fcm_token' => ['required', 'string', 'min:20', 'max:4096'],
+    //     ]);
+    //     $userId = $request->user()->id;
+    //     $hash = hash('sha256', $data['fcm_token']);
+    //     DB::transaction(function () use ($data, $hash, $userId) {
+    //         // This installation/token belongs to the currently authenticated account.
+    //         ChatDevice::query()->where('token_hash', $hash)->where(function ($q) use ($userId, $data) {
+    //             $q->where('user_id', '!=', $userId)->orWhere('device_id', '!=', $data['device_id']);
+    //         })->delete();
+    //         ChatDevice::updateOrCreate(['user_id' => $userId, 'device_id' => $data['device_id']], [
+    //             'platform' => $data['platform'],
+    //             'fcm_token' => $data['fcm_token'],
+    //             'token_hash' => $hash,
+    //         ]);
+    //     }, 3);
+    //     return response()->json(['success' => true]);
+    // }
+
     public function registerDevice(Request $request)
     {
         $data = $request->validate([
-            'device_id' => ['required', 'string', 'regex:/^[A-Za-z0-9_-]{12,128}$/'],
-            'platform' => ['required', 'in:android,ios'],
-            'fcm_token' => ['required', 'string', 'min:20', 'max:4096'],
+            'device_id' => [
+                'required',
+                'string',
+                'regex:/^[A-Za-z0-9_-]{12,128}$/'
+            ],
+            'platform' => [
+                'required',
+                'in:android,ios,web'
+            ],
+            'fcm_token' => [
+                'required',
+                'string',
+                'min:20',
+                'max:4096'
+            ],
         ]);
+
         $userId = $request->user()->id;
         $hash = hash('sha256', $data['fcm_token']);
+
         DB::transaction(function () use ($data, $hash, $userId) {
-            // This installation/token belongs to the currently authenticated account.
-            ChatDevice::query()->where('token_hash', $hash)->where(function ($q) use ($userId, $data) {
-                $q->where('user_id', '!=', $userId)->orWhere('device_id', '!=', $data['device_id']);
-            })->delete();
-            ChatDevice::updateOrCreate(['user_id' => $userId, 'device_id' => $data['device_id']], [
-                'platform' => $data['platform'],
-                'fcm_token' => $data['fcm_token'],
-                'token_hash' => $hash,
-            ]);
+
+            ChatDevice::query()
+                ->where('token_hash', $hash)
+                ->where(function ($q) use ($userId, $data) {
+                    $q->where('user_id', '!=', $userId)
+                        ->orWhere('device_id', '!=', $data['device_id']);
+                })
+                ->delete();
+
+            ChatDevice::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'device_id' => $data['device_id']
+                ],
+                [
+                    'platform' => $data['platform'],
+                    'fcm_token' => $data['fcm_token'],
+                    'token_hash' => $hash,
+                ]
+            );
         }, 3);
-        return response()->json(['success' => true]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     public function unregisterDevice(Request $request, string $deviceId)
