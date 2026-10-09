@@ -160,7 +160,7 @@ class ChatAccessService
             ->filter(function (User $target) use ($viewer) {
 
                 // सिर्फ Active Users (status = 1)
-                if ((int) $target->status !== 1) {
+                if ((int) $target->status !== '1') {
                     return false;
                 }
 
