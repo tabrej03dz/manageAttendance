@@ -17,7 +17,9 @@ class User extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
     protected $casts = [
         'email_verified_at' => 'datetime', 'password' => 'hashed',
-        'check_in_time' => 'datetime', 'check_out_time' => 'datetime', 'dob' => 'date',
+        'check_in_time' => 'datetime', 'check_out_time' => 'datetime', 'dob' => 'date', 'status' => 'boolean',
+        'joining_date' => 'date',
+        'leaving_date' => 'date'
     ];
 
     public function designationDetails() { return $this->belongsTo(Designation::class, 'designation_id'); }
