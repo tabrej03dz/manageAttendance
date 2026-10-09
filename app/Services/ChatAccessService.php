@@ -45,7 +45,7 @@ class ChatAccessService
     public function users(): Collection
     {
         return $this->directory ??= User::query()
-            ->select(['id', 'name', 'office_id', 'team_leader_id'])->with('roles')->get()->keyBy('id');
+            ->select(['id', 'name', 'office_id', 'team_leader_id', 'status'])->with('roles')->get()->keyBy('id');
     }
 
     public function ownedOfficeIds(User $owner): array
