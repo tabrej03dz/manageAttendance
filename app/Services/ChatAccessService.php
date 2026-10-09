@@ -145,13 +145,36 @@ class ChatAccessService
         };
     }
 
+    // public function allowedUsers(User $viewer): Collection
+    // {
+    //     return $this->users()->filter(fn(User $target) => $this->canChat($viewer, $target))
+    //         ->sort(function (User $a, User $b) {
+    //             return ($this->level($b) <=> $this->level($a))
+    //                 ?: strcasecmp((string) $a->name, (string) $b->name);
+    //         })->values();
+    // }
+
     public function allowedUsers(User $viewer): Collection
     {
-        return $this->users()->filter(fn(User $target) => $this->canChat($viewer, $target))
+        return $this->users()
+            ->filter(function (User $target) use ($viewer) {
+
+                // सिर्फ Active Users (status = 1)
+                if ((int) $target->status !== 1) {
+                    return false;
+                }
+
+                // Existing Chat Permission Rules
+                return $this->canChat($viewer, $target);
+
+            })
             ->sort(function (User $a, User $b) {
+
                 return ($this->level($b) <=> $this->level($a))
                     ?: strcasecmp((string) $a->name, (string) $b->name);
-            })->values();
+
+            })
+            ->values();
     }
 
     public function monitoredIds(User $viewer): array
