@@ -7,12 +7,20 @@ importScripts(
 );
 
 firebase.initializeApp({
-    apiKey: 'YOUR_FIREBASE_API_KEY',
-    authDomain: 'https://accounts.google.com/o/oauth2/auth',
-    projectId: 'attendanceapp-master-7b02c',
-    storageBucket: 'YOUR_PROJECT.firebasestorage.app',
-    messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-    appId: 'YOUR_FIREBASE_APP_ID'
+    // apiKey: 'BNsVDq838lfTCzmhIXdw7RdHYeVzMLieRtHzRhfIc7JJxhvDhUN3o_3uRwH0utIlYYOkzLNaFGKfmMGCujlCgK8',
+    // authDomain: 'https://accounts.google.com/o/oauth2/auth',
+    // projectId: 'attendanceapp-master-7b02c',
+    // storageBucket: 'YOUR_PROJECT.firebasestorage.app',
+    // messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+    // appId: 'YOUR_FIREBASE_APP_ID'
+
+    apiKey: "AIzaSyBcH-c3K61HKEUShD56TQeoA5iVPs8A0HE",
+    authDomain: "attendanceapp-master-7b02c.firebaseapp.com",
+    projectId: "attendanceapp-master-7b02c",
+    storageBucket: "attendanceapp-master-7b02c.firebasestorage.app",
+    messagingSenderId: "988289578227",
+    appId: "1:988289578227:web:e27da53120a9b7d8897386",
+    measurementId: "G-NBBCK4FB21"
 });
 
 const messaging = firebase.messaging();
