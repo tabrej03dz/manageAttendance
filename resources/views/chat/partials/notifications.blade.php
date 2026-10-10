@@ -1,3 +1,43 @@
+@if(request()->routeIs('home'))
+<div id="notificationPermissionModal"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;align-items:center;justify-content:center;padding:15px;">
+
+    <div style="background:white;padding:30px;border-radius:16px;text-align:center;max-width:400px;width:100%;box-shadow:0 20px 60px #0003;">
+
+        <div style="font-size:45px;margin-bottom:15px;">
+            🔔
+        </div>
+
+        <h3 style="font-size:22px;font-weight:700;margin-bottom:12px;">
+            Enable Notifications
+        </h3>
+
+        <p style="color:#64748b;font-size:14px;margin-bottom:22px;">
+            Chat messages aur important updates
+            receive karne ke liye notifications
+            allow karein.
+        </p>
+
+        <button type="button"
+                id="allowDashboardNotifications"
+                style="background:#4f46e5;color:white;border:0;border-radius:8px;padding:12px 22px;font-weight:600;cursor:pointer;">
+            Allow Notifications
+        </button>
+
+        <button type="button"
+                id="laterDashboardNotifications"
+                style="display:block;margin:15px auto 0;background:none;border:0;color:#64748b;cursor:pointer;">
+            Later
+        </button>
+
+        <p id="notificationPermissionHelp"
+           style="display:none;color:#b45309;font-size:12px;margin-top:15px;">
+            Browser settings mein notifications allow karein.
+        </p>
+    </div>
+</div>
+@endif
+
 {{-- Include once in dashboard.layout.root, before </body>. --}}
 <div id="chatNotificationToasts" aria-live="polite" style="position:fixed;right:20px;bottom:20px;z-index:1100;display:flex;flex-direction:column;gap:10px;max-width:min(360px,calc(100vw - 40px));"></div>
 <div style="position:fixed;right:20px;bottom:5px;z-index:1101;">
@@ -394,3 +434,74 @@ async function registerWebPush() {
     }
 }
 </script>
+
+@if(request()->routeIs('home'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const modal = document.getElementById(
+        'notificationPermissionModal'
+    );
+
+    const allowButton = document.getElementById(
+        'allowDashboardNotifications'
+    );
+
+    const laterButton = document.getElementById(
+        'laterDashboardNotifications'
+    );
+
+    const help = document.getElementById(
+        'notificationPermissionHelp'
+    );
+
+    if (!modal || !('Notification' in window) || !window.isSecureContext) {
+        return;
+    }
+
+    if (Notification.permission === 'granted') {
+        return;
+    }
+
+    if (Notification.permission === 'denied') {
+        help.style.display = 'block';
+    }
+
+    // Dashboard open hone par popup show
+    setTimeout(function () {
+        modal.style.display = 'flex';
+    }, 1200);
+
+    allowButton.addEventListener('click', async function () {
+
+        if (Notification.permission === 'denied') {
+            help.style.display = 'block';
+            return;
+        }
+
+        allowButton.disabled = true;
+        allowButton.innerText = 'Please wait...';
+
+        try {
+            await registerWebPush();
+
+            if (Notification.permission === 'granted') {
+                modal.style.display = 'none';
+            } else {
+                help.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Notification setup error:', error);
+        } finally {
+            allowButton.disabled = false;
+            allowButton.innerText = 'Allow Notifications';
+        }
+    });
+
+    laterButton.addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+});
+</script>
+@endif
