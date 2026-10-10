@@ -43,21 +43,35 @@ const csrfToken =
             audio?.resume().catch(() => {});
         } catch (_) {}
     }, {once:true});
-    if (!('Notification' in window) || !window.isSecureContext) enable.hidden = true;
-    else {
-        enable.hidden = Notification.permission !== 'default';
+    if (
+        !('Notification' in window) ||
+        !('serviceWorker' in navigator) ||
+        !window.isSecureContext
+    ) {
+        enable.hidden = true;
+        console.warn('Web push requires HTTPS and browser support');
+    } else {
+
+        enable.hidden = Notification.permission === 'granted';
+
         enable.addEventListener('click', async () => {
 
-            await registerWebPush();
+            const success = await registerWebPush();
 
-            enable.hidden =
-                Notification.permission === 'granted';
+            if (success) {
+                enable.hidden = true;
+            }
         });
-        if (
-            'Notification' in window &&
-            Notification.permission === 'granted'
-        ) {
-            registerWebPush();
+
+        if (Notification.permission === 'granted') {
+
+            window.addEventListener('load', () => {
+                registerWebPush();
+            }, { once: true });
+
+            if (document.readyState === 'complete') {
+                registerWebPush();
+            }
         }
     }
     function beep() {
@@ -119,46 +133,185 @@ const csrfToken =
 })();
 
 
+// async function registerWebPush() {
+
+//     if (!('serviceWorker' in navigator)) {
+//         console.warn('Service Worker not supported');
+//         return;
+//     }
+
+//     if (!('Notification' in window)) {
+//         console.warn('Notifications not supported');
+//         return;
+//     }
+
+//     if (!window.isSecureContext) {
+//         console.warn('HTTPS required for push notifications');
+//         return;
+//     }
+
+//     try {
+
+//         const permission =
+//             await Notification.requestPermission();
+
+//         if (permission !== 'granted') {
+//             console.warn('Notification permission not granted');
+//             return;
+//         }
+
+//         const registration =
+//             await navigator.serviceWorker.register(
+//                 '/firebase-messaging-sw.js'
+//             );
+
+//         console.log(
+//             'Firebase service worker registered',
+//             registration
+//         );
+
+//         if (!firebase.apps.length) {
+//             firebase.initializeApp(firebaseConfig);
+//         }
+
+//         const messaging = firebase.messaging();
+
+//         const token = await messaging.getToken({
+//             vapidKey: firebaseVapidKey,
+//             serviceWorkerRegistration: registration
+//         });
+
+//         if (!token) {
+//             console.warn('FCM token not available');
+//             return;
+//         }
+
+//         let deviceId =
+//             localStorage.getItem('chat_web_device_id');
+
+//         if (!deviceId) {
+
+//             deviceId =
+//                 'web_' +
+//                 crypto.randomUUID()
+//                     .replace(/-/g, '');
+
+//             localStorage.setItem(
+//                 'chat_web_device_id',
+//                 deviceId
+//             );
+//         }
+
+//         const response = await fetch(
+//             registerDeviceEndpoint,
+//             {
+//                 method: 'POST',
+
+//                 credentials: 'same-origin',
+
+//                 headers: {
+//                     'Content-Type':
+//                         'application/json',
+
+//                     'Accept':
+//                         'application/json',
+
+//                     'X-CSRF-TOKEN':
+//                         csrfToken,
+
+//                     'X-Requested-With':
+//                         'XMLHttpRequest'
+//                 },
+
+//                 body: JSON.stringify({
+//                     device_id: deviceId,
+//                     platform: 'web',
+//                     fcm_token: token
+//                 })
+//             }
+//         );
+
+//         const result = await response.json();
+
+//         if (!response.ok) {
+//             console.error(
+//                 'FCM device registration failed',
+//                 result
+//             );
+
+//             return;
+//         }
+
+//         console.log(
+//             'Web FCM device registered successfully'
+//         );
+
+//     } catch (error) {
+
+//         console.error(
+//             'Web push setup failed:',
+//             error
+//         );
+//     }
+// }
+
+
 async function registerWebPush() {
 
     if (!('serviceWorker' in navigator)) {
-        console.warn('Service Worker not supported');
-        return;
-    }
-
-    if (!('Notification' in window)) {
-        console.warn('Notifications not supported');
-        return;
+        console.error('Service Worker not supported');
+        return false;
     }
 
     if (!window.isSecureContext) {
-        console.warn('HTTPS required for push notifications');
-        return;
+        console.error('HTTPS required');
+        return false;
+    }
+
+    if (!('Notification' in window)) {
+        console.error('Notification API not supported');
+        return false;
     }
 
     try {
 
-        const permission =
-            await Notification.requestPermission();
+        let permission = Notification.permission;
 
-        if (permission !== 'granted') {
-            console.warn('Notification permission not granted');
-            return;
+        if (permission === 'default') {
+            permission = await Notification.requestPermission();
         }
 
-        const registration =
-            await navigator.serviceWorker.register(
-                '/firebase-messaging-sw.js'
-            );
+        if (permission !== 'granted') {
+            console.warn('Notification permission:', permission);
+            return false;
+        }
 
-        console.log(
-            'Firebase service worker registered',
-            registration
-        );
+        if (
+            !firebaseConfig.apiKey ||
+            !firebaseConfig.projectId ||
+            !firebaseConfig.messagingSenderId ||
+            !firebaseConfig.appId ||
+            !firebaseVapidKey
+        ) {
+            console.error('Firebase configuration incomplete');
+            return false;
+        }
+
+        if (typeof firebase === 'undefined') {
+            console.error('Firebase SDK not loaded');
+            return false;
+        }
 
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
+
+        const registration = await navigator.serviceWorker.register(
+            '/firebase-messaging-sw.js',
+            { scope: '/' }
+        );
+
+        console.log('Service Worker registered');
 
         const messaging = firebase.messaging();
 
@@ -168,19 +321,20 @@ async function registerWebPush() {
         });
 
         if (!token) {
-            console.warn('FCM token not available');
-            return;
+            console.error('Firebase did not return an FCM token');
+            return false;
         }
 
-        let deviceId =
-            localStorage.getItem('chat_web_device_id');
+        console.log('FCM token generated successfully');
+
+        let deviceId = localStorage.getItem('chat_web_device_id');
 
         if (!deviceId) {
 
-            deviceId =
-                'web_' +
-                crypto.randomUUID()
-                    .replace(/-/g, '');
+            const randomId = crypto.randomUUID()
+                .replace(/-/g, '');
+
+            deviceId = 'web_' + randomId;
 
             localStorage.setItem(
                 'chat_web_device_id',
@@ -188,56 +342,55 @@ async function registerWebPush() {
             );
         }
 
-        const response = await fetch(
-            registerDeviceEndpoint,
-            {
-                method: 'POST',
+        if (!csrfToken) {
+            console.error('CSRF token missing');
+            return false;
+        }
 
-                credentials: 'same-origin',
+        const response = await fetch(registerDeviceEndpoint, {
 
-                headers: {
-                    'Content-Type':
-                        'application/json',
+            method: 'POST',
 
-                    'Accept':
-                        'application/json',
+            credentials: 'same-origin',
 
-                    'X-CSRF-TOKEN':
-                        csrfToken,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
 
-                    'X-Requested-With':
-                        'XMLHttpRequest'
-                },
-
-                body: JSON.stringify({
-                    device_id: deviceId,
-                    platform: 'web',
-                    fcm_token: token
-                })
-            }
-        );
+            body: JSON.stringify({
+                device_id: deviceId,
+                platform: 'web',
+                fcm_token: token
+            })
+        });
 
         const result = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
+
             console.error(
-                'FCM device registration failed',
+                'Device registration failed',
+                response.status,
                 result
             );
 
-            return;
+            return false;
         }
 
         console.log(
-            'Web FCM device registered successfully'
+            'Device saved successfully in chat_devices'
         );
+
+        return true;
 
     } catch (error) {
 
-        console.error(
-            'Web push setup failed:',
-            error
-        );
+        console.error('Web push registration error:', error);
+
+        return false;
     }
 }
 </script>
