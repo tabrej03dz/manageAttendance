@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'chat_firebase' => [
+        'credentials' => env('CHAT_FIREBASE_CREDENTIALS'),
+    ],
+
 ];
