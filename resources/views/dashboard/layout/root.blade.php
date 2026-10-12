@@ -847,5 +847,7 @@
 </script>
 @endif
 
+@include('chat.partials.notifications')
+
 </body>
 </html>
