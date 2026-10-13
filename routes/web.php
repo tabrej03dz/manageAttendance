@@ -32,6 +32,7 @@ use App\Http\Controllers\UserActivityController;
 use App\Http\Controllers\UserActivityPageController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ChatNotificationController;
+use App\Http\Controllers\RecycleController;
 
 // Load once from routes/web.php so web/session/CSRF middleware is applied.
 Route::middleware('auth')->prefix('chat')->name('chat.')->group(function () {
@@ -449,6 +450,23 @@ Route::middleware(['auth', 'track.activity', 'active.office'])->group(function (
         Route::get('/', [\App\Http\Controllers\RecycleController::class, 'index'])->name('index');
         Route::get('user/delete/{user}', [\App\Http\Controllers\RecycleController::class, 'userDelete'])->name('user.delete');
         Route::get('user/restore/{user}', [\App\Http\Controllers\RecycleController::class, 'userRestore'])->name('user.restore');
+        /*
+        |--------------------------------------------------------------------------
+        | Employee Letter Restore & Permanent Delete
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post('/recycle/employee-letter/{letter}/restore', [
+            RecycleController::class,
+            'employeeLetterRestore'
+        ])
+        ->name('employee-letter.restore');
+
+        Route::delete('/recycle/employee-letter/{letter}/delete', [
+            RecycleController::class,
+            'employeeLetterDelete'
+        ])
+        ->name('employee-letter.delete');
     });
 
     Route::get('manual/entry/form', [AttendanceRecordController::class, 'manualEntryForm'])->name('manual.entry.form');
