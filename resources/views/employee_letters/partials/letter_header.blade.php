@@ -61,9 +61,9 @@
         <img src="{{ $logoUrl }}" alt="{{ $officeName }}" class="letter-logo">
     </div>
 
-    <div class="letter-office-address">
+    {{-- <div class="letter-office-address">
         Corporate Office: {{ $fullAddress }}
-    </div>
+    </div> --}}
 
-    <div class="letter-header-line"></div>
+    {{-- <div class="letter-header-line"></div> --}}
 </div>

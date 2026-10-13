@@ -215,16 +215,16 @@
             Letter No: {{ $employeeLetter->letter_no }}
         </div> --}}
 
-        <div class="meta">
+        {{-- <div class="meta">
             <strong>Issue Date: {{ optional($employeeLetter->issue_date)->format('d-m-Y') }}</strong>
-        </div>
+        </div> --}}
     </div>
 
-    @if($employeeLetter->rendered_subject)
+    {{-- @if($employeeLetter->rendered_subject)
         <div class="subject">
             {{ $employeeLetter->rendered_subject }}
         </div>
-    @endif
+    @endif --}}
 
     <div class="content">
         {!! $employeeLetter->rendered_html !!}
