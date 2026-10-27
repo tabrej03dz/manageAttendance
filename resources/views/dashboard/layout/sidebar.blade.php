@@ -372,7 +372,7 @@
                         </a>
                     </li>
                 @endcan
-                @role('super_admin|owner')
+                @role('super_admin|owner|admin')
                     <li class="nav-item">
                         <a href="{{ route('note.index') }}"
                            class="nav-link {{ $activeMenu === 'note' ? 'active' : '' }}">
