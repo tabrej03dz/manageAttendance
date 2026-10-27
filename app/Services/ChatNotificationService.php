@@ -75,4 +75,53 @@ class ChatNotificationService
             ->where('conversation_id', $conversation->id)->whereNull('read_at')
             ->where('created_at', '<=', $readAt)->update(['read_at' => $readAt]);
     }
+
+
+    
+public function recordNoteMessage(
+    ChatMessage $message,
+    User $receiver
+): void {
+    $conversation = ChatConversation::findOrFail(
+        $message->conversation_id
+    );
+
+    if ((int) $receiver->id === (int) $message->sender_id) {
+        return;
+    }
+
+    if (!$this->access->canView($receiver, $conversation)) {
+        throw new \RuntimeException(
+            'Note receiver cannot view this conversation.'
+        );
+    }
+
+    $notice = ChatNotification::firstOrCreate(
+        [
+            'user_id' => $receiver->id,
+            'message_id' => $message->id,
+        ],
+        [
+            'sender_id' => $message->sender_id,
+            'conversation_id' => $conversation->id,
+            'expires_at' => now()->addMinutes(10),
+        ]
+    );
+
+    if ($notice->wasRecentlyCreated) {
+        $noticeId = (int) $notice->id;
+
+        DB::afterCommit(function () use ($noticeId) {
+            try {
+                SendChatPush::dispatch($noticeId);
+            } catch (\Throwable $e) {
+                Log::warning('Note push dispatch failed', [
+                    'notification_id' => $noticeId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        });
+    }
+}
+
 }
