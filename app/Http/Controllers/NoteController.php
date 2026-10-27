@@ -36,27 +36,59 @@ public function __construct(
         return view('dashboard.note.index', compact('notes'));
     }
 
-    public function create(){
+    // public function create(){
 
-        if (auth()->user()->hasRole('super_admin')){
-            $offices = Office::all();
-        }elseif(auth()->user()->hasRole('owner')){
-            $officeNames = Office::where('owner_id', auth()->user()->id)->pluck('name');
-            //            $roles = Role::where(function ($query) use ($officeNames) {
-            //                foreach ($officeNames as $officeName) {
-            //                    $query->orWhere('name', 'like', $officeName . '%');
-            //                }
-            //            })->get();
-            $offices = auth()->user()->offices;
-        }else{
-            //            $roles = Role::where('name', 'like', auth()->user()->office->name.'%')->get();
-            $offices = Office::find(auth()->user()->office_id);
-        }
+    //     if (auth()->user()->hasRole('super_admin')){
+    //         $offices = Office::all();
+    //     }elseif(auth()->user()->hasRole('owner')){
+    //         $officeNames = Office::where('owner_id', auth()->user()->id)->pluck('name');
+    //         //            $roles = Role::where(function ($query) use ($officeNames) {
+    //         //                foreach ($officeNames as $officeName) {
+    //         //                    $query->orWhere('name', 'like', $officeName . '%');
+    //         //                }
+    //         //            })->get();
+    //         $offices = auth()->user()->offices;
+    //     }else{
+    //         //            $roles = Role::where('name', 'like', auth()->user()->office->name.'%')->get();
+    //         $offices = Office::find(auth()->user()->office_id);
+    //     }
 
 
-            //        $employees = HomeController::employeeList();
-        return view('dashboard.note.create', compact( 'offices'));
+    //         //        $employees = HomeController::employeeList();
+    //     return view('dashboard.note.create', compact( 'offices'));
+    // }
+
+
+    public function create()
+{
+    $user = auth()->user();
+
+    if ($user->hasRole('super_admin')) {
+
+        // Super Admin: All offices
+        $offices = Office::query()
+            ->orderBy('name')
+            ->get();
+
+    } elseif ($user->hasRole('owner')) {
+
+        // Owner: Only owned offices
+        $offices = Office::query()
+            ->where('owner_id', $user->id)
+            ->orderBy('name')
+            ->get();
+
+    } else {
+
+        // Admin / Team Leader / Employee:
+        // Only assigned office
+        $offices = Office::query()
+            ->where('id', $user->office_id)
+            ->get();
     }
+
+    return view('dashboard.note.create', compact('offices'));
+}
 
     // public function store(Request $request){
     //     $request->validate([
