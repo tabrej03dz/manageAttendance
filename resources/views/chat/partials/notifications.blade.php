@@ -89,6 +89,8 @@
     let soundEnabled = false;
     let audio = null;
     let registrationPromise = null;
+    let pushRegistered = false;
+    let lastPushError = null;
 
     function closePermissionModal() {
         permissionOverlay?.classList.remove('is-visible');
@@ -123,8 +125,10 @@
             return;
         }
         if (Notification.permission === 'granted') {
-            control.style.display = 'none';
-            clearHelp();
+            control.style.display = pushRegistered ? 'none' : 'block';
+            enableButton.disabled = false;
+            enableButton.textContent = 'Retry notification setup';
+            if (pushRegistered) clearHelp();
         } else {
             control.style.display = 'block';
             enableButton.disabled = false;
@@ -169,10 +173,12 @@
             return;
         }
         closePermissionModal();
-        await registerWebPush();
+        clearHelp();
+        await registerWebPush(true);
     }
 
-    async function registerWebPush() {
+    // Background registration is silent. A manual retry shows actionable errors.
+    async function registerWebPush(showErrors = false) {
         if (!isSupported || Notification.permission !== 'granted') return false;
         if (registrationPromise) return registrationPromise;
 
@@ -180,23 +186,32 @@
             try {
                 if (!firebaseConfig.apiKey || !firebaseConfig.projectId ||
                     !firebaseConfig.messagingSenderId || !firebaseConfig.appId || !firebaseVapidKey) {
-                    throw new Error('Firebase web configuration / VAPID key missing');
+                    throw new Error('Firebase Web config ya VAPID key missing hai. .env aur config/chat_notifications.php check karein.');
                 }
                 if (typeof firebase === 'undefined' || !firebase.messaging) {
-                    throw new Error('Firebase messaging SDK not loaded');
+                    throw new Error('Firebase Messaging SDK load nahi hua. Browser Network tab check karein.');
                 }
-                if (!csrfToken) throw new Error('CSRF token missing in page meta');
+                if (!csrfToken) throw new Error('CSRF meta tag missing hai.');
+
+                // Ensure missing SW paths and HTML fallback are reported clearly.
+                const swResponse = await fetch('/firebase-messaging-sw.js', { cache: 'no-store' });
+                const swType = swResponse.headers.get('content-type') || '';
+                if (!swResponse.ok || (!swType.includes('javascript') && !swType.includes('text/plain'))) {
+                    throw new Error('firebase-messaging-sw.js missing/invalid hai (HTTP ' + swResponse.status + ', ' + swType + '). File public folder mein honi chahiye.');
+                }
 
                 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
                 const serviceWorkerRegistration = await navigator.serviceWorker.register(
-                    '/firebase-messaging-sw.js', {scope: '/'}
+                    '/firebase-messaging-sw.js', { scope: '/' }
                 );
+                await navigator.serviceWorker.ready;
+
                 const messaging = firebase.messaging();
                 const fcmToken = await messaging.getToken({
                     vapidKey: firebaseVapidKey,
                     serviceWorkerRegistration
                 });
-                if (!fcmToken) throw new Error('Firebase returned empty FCM token');
+                if (!fcmToken) throw new Error('Firebase ne FCM token return nahi kiya. VAPID key check karein.');
 
                 let deviceId = localStorage.getItem('chat_web_device_id');
                 if (!deviceId) {
@@ -223,15 +238,23 @@
                 });
                 const result = await response.json().catch(() => ({}));
                 if (!response.ok || !result.success) {
-                    throw new Error('Device registration failed: HTTP ' + response.status + ' ' + JSON.stringify(result));
+                    const serverMessage = result.message || result.error || 'Server returned invalid response';
+                    throw new Error('Laravel device registration HTTP ' + response.status + ': ' + serverMessage);
                 }
-                console.info('Web push notifications registered successfully');
+
+                pushRegistered = true;
+                lastPushError = null;
+                updatePermissionUI();
+                console.info('Web push device registered successfully');
                 return true;
             } catch (error) {
+                pushRegistered = false;
+                lastPushError = error instanceof Error ? error.message : String(error);
                 console.error('Web push setup failed:', error);
-                showHelp('Permission mil gayi, lekin Firebase device register nahi hua. Console aur Firebase configuration check karein.');
-                control.style.display = 'block';
-                enableButton.textContent = 'Retry notification setup';
+                updatePermissionUI();
+                // Do not repeatedly display the warning on every page load.
+                if (showErrors) showHelp(lastPushError);
+                else clearHelp();
                 return false;
             }
         })();
@@ -260,7 +283,7 @@
     }
     updatePermissionUI();
 
-    // Already granted? Register silently, without asking permission again.
+    // Already granted? Try silently, without repeating the warning.
     if (isSupported && Notification.permission === 'granted') {
         registerWebPush();
     }
@@ -269,7 +292,7 @@
         const wasHidden = control.style.display === 'none';
         updatePermissionUI();
         if (isSupported && Notification.permission === 'granted') closePermissionModal();
-        if (!wasHidden && isSupported && Notification.permission === 'granted') registerWebPush();
+        if (!wasHidden && isSupported && Notification.permission === 'granted' && !pushRegistered) registerWebPush();
     });
 
     document.addEventListener('pointerdown', () => {
