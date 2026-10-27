@@ -377,7 +377,7 @@
                         <a href="{{ route('note.index') }}"
                            class="nav-link {{ $activeMenu === 'note' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-sticky-note"></i>
-                            <p>Note</p>
+                            <p>Note/Notice</p>
                         </a>
                     </li>
                 @endrole
