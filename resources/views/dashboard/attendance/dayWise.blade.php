@@ -366,20 +366,38 @@
     {{-- Filter section --}}
     <section class="day-filter-panel p-5 sm:p-6">
         <form action="{{ route('attendance.day-wise') }}" method="GET">
+
             <div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-end">
-                <div class="md:col-span-8">
-                    <label for="attendance-date" class="day-filter-label">
-                        Select Date
-                    </label>
+
+                <div class="{{ $isManagement ? 'md:col-span-5' : 'md:col-span-8' }}">
+                    <label class="day-filter-label">Select Date</label>
 
                     <input
                         type="date"
-                        id="attendance-date"
                         name="date"
                         value="{{ request('date', $selectedDate) }}"
                         class="day-filter-control"
                     >
                 </div>
+
+                @if($isManagement)
+                    <div class="md:col-span-3">
+                        <label class="day-filter-label">Department</label>
+
+                        <select name="department_id" class="day-filter-control">
+                            <option value="">All Departments</option>
+
+                            @foreach($departments as $department)
+                                <option
+                                    value="{{ $department->id }}"
+                                    @selected(request('department_id') == $department->id)
+                                >
+                                    {{ $department->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
                 <div class="md:col-span-2">
                     <button type="submit" class="day-button day-button-primary w-full">
@@ -397,7 +415,9 @@
                         Clear
                     </a>
                 </div>
+
             </div>
+
         </form>
     </section>
 
