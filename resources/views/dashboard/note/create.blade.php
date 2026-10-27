@@ -4,14 +4,17 @@
 @section('content')
 
 <style>
+    /* Main Page */
     .note-page {
+        width: 100%;
+        max-width: 100%;
         padding: 20px 8px 35px;
     }
 
     .note-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         flex-wrap: wrap;
         gap: 12px;
         margin-bottom: 22px;
@@ -21,16 +24,19 @@
         font-size: 24px;
         font-weight: 700;
         color: #273142;
-        margin-bottom: 4px;
+        margin: 0 0 5px;
     }
 
     .note-page-subtitle {
-        font-size: 13px;
         color: #8290a4;
+        font-size: 13px;
         margin: 0;
     }
 
+    /* Card */
     .note-card {
+        width: 100%;
+        max-width: 100%;
         background: #fff;
         border: 1px solid #e6eaf0;
         border-radius: 12px;
@@ -39,23 +45,24 @@
     }
 
     .note-card-header {
-        background: #fff;
-        padding: 22px 25px;
-        border-bottom: 1px solid #edf0f4;
         display: flex;
         align-items: center;
         gap: 14px;
+        padding: 22px 25px;
+        background: #fff;
+        border-bottom: 1px solid #edf0f4;
     }
 
     .note-card-icon {
         width: 44px;
         height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-shrink: 0;
         background: #eef3ff;
         color: #3168d7;
         border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         font-size: 19px;
     }
 
@@ -76,6 +83,7 @@
         padding: 26px;
     }
 
+    /* Sections */
     .note-section-title {
         font-size: 14px;
         font-weight: 700;
@@ -90,12 +98,13 @@
         margin-right: 8px;
     }
 
+    /* Fields */
     .note-label {
+        display: block;
         font-size: 13px;
         font-weight: 600;
         color: #455367;
         margin-bottom: 9px;
-        display: block;
     }
 
     .note-field {
@@ -104,8 +113,8 @@
         border: 1px solid #dfe5ed;
         border-radius: 7px;
         padding: 9px 13px;
-        color: #344054;
         background: #fff;
+        color: #344054;
         font-size: 13px;
         transition: .2s;
     }
@@ -137,13 +146,28 @@
         border-radius: 4px;
     }
 
+    .note-field.is-invalid {
+        border-color: #dc3545;
+    }
+
     .note-helper {
         display: block;
-        font-size: 11px;
         color: #98a2b3;
+        font-size: 11px;
         margin-top: 7px;
     }
 
+    .note-required {
+        color: #e74c3c;
+    }
+
+    .note-error {
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    /* Employee Controls */
     .note-counter {
         font-size: 12px;
         font-weight: 600;
@@ -153,10 +177,33 @@
         padding: 4px 10px;
     }
 
+    .note-select-all {
+        background: transparent;
+        border: 0;
+        color: #3168d7;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .note-select-all:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    .note-loading {
+        display: none;
+        color: #3168d7;
+        font-size: 12px;
+        margin-top: 8px;
+    }
+
+    /* Footer */
     .note-action-footer {
+        background: #fcfdff;
         border-top: 1px solid #edf0f4;
         padding: 19px 26px;
-        background: #fcfdff;
         display: flex;
         justify-content: flex-end;
         gap: 10px;
@@ -164,18 +211,18 @@
     }
 
     .note-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         padding: 11px 22px;
         font-size: 13px;
         font-weight: 600;
         border-radius: 7px;
         border: 1px solid transparent;
-        transition: .2s;
         cursor: pointer;
         text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        transition: .2s;
     }
 
     .note-btn-primary {
@@ -205,56 +252,22 @@
         text-decoration: none;
     }
 
-    .note-select-all {
-        cursor: pointer;
-        color: #3168d7;
-        font-size: 12px;
-        font-weight: 600;
-        background: transparent;
-        border: 0;
-        padding: 0;
-    }
+    /* Mobile */
+    @media (max-width: 767px) {
+        .note-page {
+            padding: 15px 0 25px;
+        }
 
-    .note-select-all:disabled {
-        opacity: .5;
-        cursor: not-allowed;
-    }
-
-    .note-required {
-        color: #e74c3c;
-    }
-
-    .note-alert {
-        border-radius: 8px;
-        padding: 14px 18px;
-        font-size: 13px;
-        margin-bottom: 20px;
-    }
-
-    .note-loading {
-        display: none;
-        color: #3168d7;
-        font-size: 12px;
-        margin-top: 8px;
-    }
-
-    .note-error {
-        color: #dc3545;
-        font-size: 12px;
-        margin-top: 6px;
-    }
-
-    @media(max-width: 767px) {
-        .note-card-body {
-            padding: 18px;
+        .note-page-title {
+            font-size: 21px;
         }
 
         .note-card-header {
             padding: 18px;
         }
 
-        .note-page-title {
-            font-size: 21px;
+        .note-card-body {
+            padding: 18px;
         }
 
         .note-action-footer {
@@ -267,302 +280,327 @@
     }
 </style>
 
-<div class="content-wrapper">
-    <section class="content">
-        <div class="container-fluid">
+{{-- No extra content-wrapper here --}}
+<section class="content">
+    <div class="container-fluid">
 
-            <div class="note-page">
+        <div class="note-page">
 
-                {{-- Page Header --}}
-                <div class="note-header">
+            {{-- Page Header --}}
+            <div class="note-header">
+
+                <div>
+                    <h2 class="note-page-title">
+                        Create New Note
+                    </h2>
+
+                    <p class="note-page-subtitle">
+                        Create and share notes with your office team.
+                    </p>
+                </div>
+
+                <a href="{{ route('note.index') }}"
+                   class="note-btn note-btn-light">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Notes
+                </a>
+
+            </div>
+
+            {{-- Errors --}}
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <strong>
+                        <i class="fas fa-exclamation-circle mr-1"></i>
+                        Please correct the following errors:
+                    </strong>
+
+                    <ul class="mb-0 mt-2">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle mr-1"></i>
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <div class="note-card">
+
+                {{-- Card Header --}}
+                <div class="note-card-header">
+
+                    <div class="note-card-icon">
+                        <i class="fas fa-sticky-note"></i>
+                    </div>
+
                     <div>
-                        <h2 class="note-page-title">
-                            Create New Note
-                        </h2>
-                        <p class="note-page-subtitle">
-                            Create and share notes with your office team.
-                        </p>
+                        <h5>Note Information</h5>
+                        <p>Fill the details to create a new note</p>
                     </div>
 
-                    <a href="{{ route('note.index') }}"
-                       class="note-btn note-btn-light">
-                        <i class="fas fa-arrow-left"></i>
-                        Back to Notes
-                    </a>
                 </div>
 
-                {{-- Validation Errors --}}
-                @if($errors->any())
-                    <div class="alert alert-danger note-alert">
-                        <strong>
-                            <i class="fas fa-exclamation-circle mr-1"></i>
-                            Please correct the following errors:
-                        </strong>
+                <form action="{{ route('note.store') }}"
+                      method="POST"
+                      id="createNoteForm">
 
-                        <ul class="mb-0 mt-2">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                    @csrf
 
-                {{-- Success Message --}}
-                @if(session('success'))
-                    <div class="alert alert-success note-alert">
-                        <i class="fas fa-check-circle mr-1"></i>
-                        {{ session('success') }}
-                    </div>
-                @endif
+                    <div class="note-card-body">
 
-                <div class="note-card">
-
-                    {{-- Card Header --}}
-                    <div class="note-card-header">
-                        <div class="note-card-icon">
-                            <i class="fas fa-sticky-note"></i>
+                        {{-- Basic Information --}}
+                        <div class="note-section-title">
+                            <i class="fas fa-edit"></i>
+                            Basic Information
                         </div>
 
-                        <div>
-                            <h5>Note Information</h5>
-                            <p>Fill the details to create a new note</p>
+                        <div class="row">
+
+                            {{-- Title --}}
+                            <div class="col-md-6 mb-4">
+
+                                <label for="title" class="note-label">
+                                    Note Title
+                                    <span class="note-required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    id="title"
+                                    class="note-field @error('title') is-invalid @enderror"
+                                    placeholder="Enter note title"
+                                    value="{{ old('title') }}"
+                                    maxlength="255"
+                                    required
+                                >
+
+                                @error('title')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                            </div>
+
+                            {{-- Description --}}
+                            <div class="col-md-6 mb-4">
+
+                                <label for="description" class="note-label">
+                                    Description
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    id="description"
+                                    class="note-field @error('description') is-invalid @enderror"
+                                    rows="4"
+                                    placeholder="Enter note description"
+                                >{{ old('description') }}</textarea>
+
+                                @error('description')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                            </div>
+
                         </div>
-                    </div>
 
-                    <form action="{{ route('note.store') }}"
-                          method="POST"
-                          id="createNoteForm">
+                        {{-- Visibility --}}
+                        <div class="note-section-title mt-3">
+                            <i class="fas fa-users"></i>
+                            Note Visibility & Access
+                        </div>
 
-                        @csrf
+                        <div class="row">
 
-                        <div class="note-card-body">
+                            {{-- Office --}}
+                            <div class="col-md-6 mb-4">
 
-                            {{-- Basic Information --}}
-                            <div class="note-section-title">
-                                <i class="fas fa-edit"></i>
-                                Basic Information
-                            </div>
+                                <label for="office_id" class="note-label">
+                                    <i class="fas fa-building text-muted mr-1"></i>
+                                    Select Office
+                                </label>
 
-                            <div class="row">
+                                <select
+                                    name="office_id"
+                                    id="office_id"
+                                    class="note-field @error('office_id') is-invalid @enderror"
+                                >
+                                    <option value="">
+                                        Select office to show note
+                                    </option>
 
-                                {{-- Title --}}
-                                <div class="col-md-6 mb-4">
-                                    <label for="title" class="note-label">
-                                        Note Title
-                                        <span class="note-required">*</span>
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        id="title"
-                                        class="note-field @error('title') is-invalid @enderror"
-                                        placeholder="Enter note title"
-                                        value="{{ old('title') }}"
-                                        maxlength="255"
-                                        required
-                                    >
-
-                                    @error('title')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                {{-- Description --}}
-                                <div class="col-md-6 mb-4">
-                                    <label for="description" class="note-label">
-                                        Description
-                                    </label>
-
-                                    <textarea
-                                        name="description"
-                                        id="description"
-                                        class="note-field @error('description') is-invalid @enderror"
-                                        rows="4"
-                                        placeholder="Enter note description"
-                                    >{{ old('description') }}</textarea>
-
-                                    @error('description')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                            </div>
-
-                            {{-- Note Visibility --}}
-                            <div class="note-section-title mt-3">
-                                <i class="fas fa-users"></i>
-                                Note Visibility & Access
-                            </div>
-
-                            <div class="row">
-
-                                {{-- Office --}}
-                                <div class="col-md-6 mb-4">
-                                    <label for="office_id" class="note-label">
-                                        <i class="fas fa-building text-muted mr-1"></i>
-                                        Select Office
-                                    </label>
-
-                                    <select
-                                        name="office_id"
-                                        id="office_id"
-                                        class="note-field @error('office_id') is-invalid @enderror"
-                                    >
-                                        <option value="">
-                                            Select office to show note
+                                    @foreach($offices as $office)
+                                        <option
+                                            value="{{ $office->id }}"
+                                            {{ (string) old('office_id') === (string) $office->id ? 'selected' : '' }}
+                                        >
+                                            {{ $office->name }}
                                         </option>
+                                    @endforeach
 
-                                        @foreach(collect($offices)->filter(fn($office) => $office instanceof \App\Models\Office) as $office)
-                                            <option
-                                                value="{{ $office->id }}"
-                                                {{ (string) old('office_id') === (string) $office->id ? 'selected' : '' }}
-                                            >
-                                                {{ $office->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                </select>
 
-                                    <small class="note-helper">
-                                        Select the office where this note should appear.
-                                    </small>
+                                <small class="note-helper">
+                                    Select the office where this note should appear.
+                                </small>
 
-                                    @error('office_id')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                @error('office_id')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
 
-                                {{-- Role --}}
-                                <div class="col-md-6 mb-4">
-                                    <label for="role" class="note-label">
-                                        <i class="fas fa-user-shield text-muted mr-1"></i>
-                                        Select Role
+                            </div>
+
+                            {{-- Role --}}
+                            <div class="col-md-6 mb-4">
+
+                                <label for="role" class="note-label">
+                                    <i class="fas fa-user-shield text-muted mr-1"></i>
+                                    Select Role
+                                </label>
+
+                                <select
+                                    name="role"
+                                    id="role"
+                                    class="note-field @error('role') is-invalid @enderror"
+                                >
+                                    <option value="">Select role</option>
+                                </select>
+
+                                <small class="note-helper">
+                                    Roles will load after selecting an office.
+                                </small>
+
+                                @error('role')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                            </div>
+
+                        </div>
+
+                        {{-- Employees --}}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+
+                                <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
+
+                                    <label for="employee" class="note-label mb-0">
+                                        <i class="fas fa-user-friends text-muted mr-1"></i>
+                                        Select Employees
                                     </label>
 
-                                    <select
-                                        name="role"
-                                        id="role"
-                                        class="note-field @error('role') is-invalid @enderror"
-                                    >
-                                        <option value="">Select role</option>
-                                    </select>
+                                    <div class="d-flex align-items-center flex-wrap"
+                                         style="gap:15px;">
 
-                                    <small class="note-helper">
-                                        Roles will load after selecting an office.
-                                    </small>
+                                        <span class="note-counter"
+                                              id="employeeCount">
+                                            0 Selected
+                                        </span>
 
-                                    @error('role')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
+                                        <button
+                                            type="button"
+                                            class="note-select-all"
+                                            id="selectAllEmployees"
+                                            disabled
+                                        >
+                                            <i class="fas fa-check-double mr-1"></i>
+                                            Select All
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="note-select-all"
+                                            id="clearEmployees"
+                                            disabled
+                                        >
+                                            Clear
+                                        </button>
+
+                                    </div>
                                 </div>
 
-                            </div>
+                                <select
+                                    name="employees[]"
+                                    id="employee"
+                                    multiple
+                                    class="note-field @error('employees') is-invalid @enderror"
+                                    disabled
+                                ></select>
 
-                            {{-- Employees --}}
-                            <div class="row">
-                                <div class="col-md-12 mb-3">
+                                <small class="note-helper">
+                                    Use Ctrl + Click to select multiple employees,
+                                    or click Select All to choose everyone.
+                                </small>
 
-                                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
-                                        <label for="employee" class="note-label mb-0">
-                                            <i class="fas fa-user-friends text-muted mr-1"></i>
-                                            Select Employees
-                                        </label>
-
-                                        <div class="d-flex align-items-center"
-                                             style="gap:15px;">
-
-                                            <span class="note-counter"
-                                                  id="employeeCount">
-                                                0 Selected
-                                            </span>
-
-                                            <button
-                                                type="button"
-                                                class="note-select-all"
-                                                id="selectAllEmployees"
-                                                disabled
-                                            >
-                                                <i class="fas fa-check-double mr-1"></i>
-                                                Select All
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                class="note-select-all"
-                                                id="clearEmployees"
-                                                disabled
-                                            >
-                                                Clear
-                                            </button>
-
-                                        </div>
-                                    </div>
-
-                                    <select
-                                        name="employees[]"
-                                        id="employee"
-                                        multiple
-                                        class="note-field @error('employees') is-invalid @enderror @error('employees.*') is-invalid @enderror"
-                                        disabled
-                                    ></select>
-
-                                    <small class="note-helper">
-                                        Select multiple employees using Ctrl + Click.
-                                        Use Select All to choose everyone.
-                                    </small>
-
-                                    <div class="note-loading" id="noteLoading">
-                                        <i class="fas fa-spinner fa-spin mr-1"></i>
-                                        Loading roles and employees...
-                                    </div>
-
-                                    <div class="note-error"
-                                         id="noteAjaxError"
-                                         style="display:none;">
-                                    </div>
-
-                                    @error('employees')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
-
-                                    @error('employees.*')
-                                        <div class="note-error">{{ $message }}</div>
-                                    @enderror
-
+                                <div class="note-loading" id="noteLoading">
+                                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                                    Loading roles and employees...
                                 </div>
+
+                                <div class="note-error"
+                                     id="noteAjaxError"
+                                     style="display:none;">
+                                </div>
+
+                                @error('employees')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
+                                @error('employees.*')
+                                    <div class="note-error">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+
                             </div>
-
                         </div>
 
-                        {{-- Footer --}}
-                        <div class="note-action-footer">
+                    </div>
 
-                            <a href="{{ route('note.index') }}"
-                               class="note-btn note-btn-light">
-                                <i class="fas fa-times"></i>
-                                Cancel
-                            </a>
+                    {{-- Footer --}}
+                    <div class="note-action-footer">
 
-                            <button
-                                type="submit"
-                                id="submitNoteButton"
-                                class="note-btn note-btn-primary"
-                            >
-                                <i class="fas fa-save"></i>
-                                Create Note
-                            </button>
+                        <a href="{{ route('note.index') }}"
+                           class="note-btn note-btn-light">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
 
-                        </div>
+                        <button
+                            type="submit"
+                            id="submitNoteButton"
+                            class="note-btn note-btn-primary"
+                        >
+                            <i class="fas fa-save"></i>
+                            Create Note
+                        </button>
 
-                    </form>
+                    </div>
 
-                </div>
+                </form>
 
             </div>
 
         </div>
-    </section>
-</div>
+
+    </div>
+</section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -573,7 +611,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const selectAllBtn = document.getElementById('selectAllEmployees');
     const clearBtn = document.getElementById('clearEmployees');
-
     const employeeCount = document.getElementById('employeeCount');
     const loading = document.getElementById('noteLoading');
     const ajaxError = document.getElementById('noteAjaxError');
@@ -584,14 +621,35 @@ document.addEventListener('DOMContentLoaded', function () {
     const oldRole = @json(old('role'));
     const oldEmployees = @json(old('employees', []));
 
-    // Existing relative AJAX URL preserved.
+    // Existing AJAX path
     const endpointBase = @json(url('note/get-office-role-and-employee'));
 
     let activeController = null;
     let requestNumber = 0;
 
+    function updateSelectedCount() {
+        const options = Array.from(employeeSelect.options);
+        const selected = options.filter(option =>
+            option.selected && option.value !== 'all'
+        );
+
+        const allSelected = options.some(option =>
+            option.value === 'all' && option.selected
+        );
+
+        const actualCount = options.filter(option =>
+            option.value !== 'all'
+        ).length;
+
+        employeeCount.textContent = allSelected
+            ? actualCount + ' Selected'
+            : selected.length + ' Selected';
+    }
+
     function resetOptions() {
-        roleSelect.replaceChildren(new Option('Select role', ''));
+        roleSelect.replaceChildren(
+            new Option('Select role', '')
+        );
 
         employeeSelect.replaceChildren();
         employeeSelect.disabled = true;
@@ -602,18 +660,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectedCount();
     }
 
-    function updateSelectedCount() {
-        const selected = Array.from(employeeSelect.selectedOptions);
-
-        employeeCount.textContent = selected.length + ' Selected';
-
-        selectAllBtn.textContent =
-            employeeSelect.options.length > 0 &&
-            selected.length === employeeSelect.options.length
-                ? 'All Selected'
-                : 'Select All';
-    }
-
     function showError(message) {
         ajaxError.textContent = message;
         ajaxError.style.display = 'block';
@@ -621,9 +667,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function populateData(data, restoreOld = false) {
         const roles = Array.isArray(data.roles) ? data.roles : [];
-        const employees = Array.isArray(data.employees) ? data.employees : [];
+        const employees = Array.isArray(data.employees)
+            ? data.employees
+            : [];
 
-        roleSelect.replaceChildren(new Option('Select role', ''));
+        roleSelect.replaceChildren(
+            new Option('Select role', '')
+        );
 
         roles.forEach(function (role) {
             if (!role || role.name == null) return;
@@ -638,14 +688,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         employeeSelect.replaceChildren();
 
-        const selectedOldEmployees = Array.isArray(oldEmployees)
+        const oldSelected = Array.isArray(oldEmployees)
             ? oldEmployees.map(String)
             : [];
 
-        // Existing backend supports employees[]=all.
-        // Keep that value for compatibility.
         if (employees.length > 0) {
-            employeeSelect.add(new Option('Select All', 'all'));
+            employeeSelect.add(
+                new Option('Select All', 'all')
+            );
 
             employees.forEach(function (employee) {
                 if (!employee || employee.id == null) return;
@@ -659,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (restoreOld) {
             Array.from(employeeSelect.options).forEach(function (option) {
-                option.selected = selectedOldEmployees.includes(option.value);
+                option.selected = oldSelected.includes(option.value);
             });
         }
 
@@ -705,7 +755,10 @@ document.addEventListener('DOMContentLoaded', function () {
             );
 
             if (!response.ok) {
-                throw new Error('Unable to load office data (HTTP ' + response.status + ').');
+                throw new Error(
+                    'Unable to load office data. HTTP ' +
+                    response.status
+                );
             }
 
             const data = await response.json();
@@ -718,7 +771,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (error.name === 'AbortError') return;
             if (thisRequest !== requestNumber) return;
 
-            showError(error.message || 'Error fetching office data.');
+            showError(
+                error.message || 'Error fetching office data.'
+            );
+
             resetOptions();
 
         } finally {
@@ -732,6 +788,7 @@ document.addEventListener('DOMContentLoaded', function () {
         loadOfficeData(false);
     });
 
+    // Select All: compatible with employees[]=all backend
     selectAllBtn.addEventListener('click', function () {
         Array.from(employeeSelect.options).forEach(function (option) {
             option.selected = option.value === 'all';
@@ -740,6 +797,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectedCount();
     });
 
+    // Clear Selection
     clearBtn.addEventListener('click', function () {
         Array.from(employeeSelect.options).forEach(function (option) {
             option.selected = false;
@@ -748,6 +806,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectedCount();
     });
 
+    // Employees selection
     employeeSelect.addEventListener('change', function () {
         const allOption = Array.from(employeeSelect.options)
             .find(option => option.value === 'all');
@@ -763,6 +822,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectedCount();
     });
 
+    // Prevent double submit
     form.addEventListener('submit', function () {
         if (!form.checkValidity()) return;
 
@@ -771,6 +831,7 @@ document.addEventListener('DOMContentLoaded', function () {
             '<i class="fas fa-spinner fa-spin"></i> Saving Note...';
     });
 
+    // Restore data after validation error
     if (officeSelect.value) {
         loadOfficeData(true);
     }
