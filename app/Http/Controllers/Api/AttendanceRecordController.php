@@ -287,21 +287,51 @@ class AttendanceRecordController extends Controller
     }
 
 
-    public function dayWise(Request $request){
-        $user = $request->user();
-//        $user = User::find(1);
-        if ($request->date){
-            $date = Carbon::parse($request->date);
-        }else{
-            $date = Carbon::today();
-        }
-        $employees = HomeController::employeeList($user);
-        foreach ($employees as $employee){
-            $latest_attendance = AttendanceRecord::whereDate('created_at', $date)->where('user_id', $employee->id)->first();
-            $employee->latest_attendance = $latest_attendance;
-        }
-        return response($employees);
+    // public function dayWise(Request $request){
+    //     $user = $request->user();
+    //         //        $user = User::find(1);
+    //     if ($request->date){
+    //         $date = Carbon::parse($request->date);
+    //     }else{
+    //         $date = Carbon::today();
+    //     }
+    //     $employees = HomeController::employeeList($user);
+    //     foreach ($employees as $employee){
+    //         $latest_attendance = AttendanceRecord::whereDate('created_at', $date)->where('user_id', $employee->id)->first();
+    //         $employee->latest_attendance = $latest_attendance;
+    //     }
+    //     return response($employees);
+    // }
+
+
+public function dayWise(Request $request)
+{
+    $user = $request->user();
+
+    if ($request->date) {
+        $date = Carbon::parse($request->date);
+    } else {
+        $date = Carbon::today();
     }
+
+    // Sirf active employees (status = 1)
+    $employees = HomeController::employeeList($user)
+        ->filter(function ($employee) {
+            return (int) $employee->status === 1;
+        })
+        ->values();
+
+    foreach ($employees as $employee) {
+        $latest_attendance = AttendanceRecord::whereDate('created_at', $date)
+            ->where('user_id', $employee->id)
+            ->first();
+
+        $employee->latest_attendance = $latest_attendance;
+    }
+
+    return response($employees);
+}
+
 
     // public function monthlyRecord(Request $request)
     // {
